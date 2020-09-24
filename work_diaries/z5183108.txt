@@ -1,0 +1,26 @@
+Week 1 (Wed 16 Sept - Wed 23 Sept)
+
+We formed a group of five and collectively decided on doing the PhotoPro project.
+We outlined the key features of the web application and drafted some user stories.
+Discussed software stack. Set up communication channels (Teams, Messenger), Jira and Google Drive.
+
+PLANNED
+We allocated user stories to everyone to complete during the week. We also had
+to trial a software stack for proof of concept.
+
+FINISHED
+I completed the user stories for the explorer user (photo features) during the week.
+
+CHALLENGES
+I need to do some reconfiguration to my virtual environment and python system set up
+in order to trial the software stack.
+
+REFLECTION
+The user stories went well for myself and everyone on the team. We were able to make
+useful suggestions to each others work.
+
+I need to make sure I install MongoDB and fix my venv so I can be ready for development.
+
+NEXT
+Complete storyboard diagram for proposal. Help with background if needed. Fix venv
+and install MongoDB.
