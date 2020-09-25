@@ -1,4 +1,4 @@
-Week 1
+---------------- Week 1 ---------------- 
 Group formed and decided on PhotoPro for the project.
 I created the Jira board.
 I wrote stories relating to contributor interactions with photos and make edits/comments to the other stories that have been created.
