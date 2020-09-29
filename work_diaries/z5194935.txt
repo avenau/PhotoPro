@@ -1,0 +1,15 @@
+___Week 1___
+
+- Met teammates
+- Discussed which project we were interested in doing.
+- Discussed technologies to be used
+
+___Week 2___
+
+- Created a CRUD application using AngularJS, MongoDB, Python and Flask as a demo of how our web app could work
+- Created a video that demonstrated how the CRUD application worked.
+
+___Week 3___
+
+- Created the Software Architecture diagram
+- Created teh Software Architecture explanation.
