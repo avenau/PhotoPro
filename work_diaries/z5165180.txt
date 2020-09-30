@@ -1,0 +1,8 @@
+Week 1
+Joined JAJAC. Discussed possible software stacks to implement PhotoPro. We all decided to include Python in the stack, but were undecided on the rest of the stack. Joseph suggested CRUD using MongoDB, Angular, Flask, and Python. Rest of us are looking in to it. For next week we have allocated certain categories of user stories to each team member, and the acceptance criteria for the stories as well. My portion of the stories are related to login, authentication, user profile management. 
+
+Week 2
+User stories were completed by all team members. I checked over all the user stories briefly, providing a few possible tweaks. I wrote the criteria for story point assignment, which could be 1, 2, 3, 5 or 8 (Fibonacci). As a team we assigned story points to a few stories to calibrate our definitions of how points should be assigned. My job over the next week is to (1) Assign points to the rest of the stories, (2) Work with Aven and Joanne to complete the Interface and Flow diagrams for the Proposal.
+
+Week 3
+Assigned points to the rest of the user stories on Jira. Created collaborative sketchboard to work on interface/flow diagrams. Spent many hours or so with Aven and Joanne finishing the interface/flow diagrams. Coen and Joseph helped out with storyboarding later in the week as it turned out to be a lot of work with all the extensions we have planned.
