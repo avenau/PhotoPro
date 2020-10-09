@@ -105,6 +105,4 @@ export default function Register() {
         </Form>
         </Container>
     )
-
-
 }
