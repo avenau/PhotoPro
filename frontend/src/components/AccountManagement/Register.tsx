@@ -37,7 +37,13 @@ export default function Register() {
           axios.post('/accountregistration', 
             {firstName: firstName,
             lastName: lastName,
-            email: email})
+            email: email,
+            nickname: nickname,
+            password: password,
+            privFName: privFName,
+            privLastName: privLastName,
+            privEmail: privEmail
+        })
       }
       setFeedback(true)
     };
@@ -97,7 +103,7 @@ export default function Register() {
             </Form.Group>
             <Form.Group>
                 <Form.Label>Photopro nickname</Form.Label>
-                <Form.Control required placeholder="Enter nickname"/>
+                <Form.Control required placeholder="Enter nickname" onChange={e => setNickname(e.target.value)}/>
             </Form.Group>
             </Form.Group>
             <Form.Group controlId="password">

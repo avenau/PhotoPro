@@ -84,14 +84,20 @@ def auth_passwordreset_reset():
 
 @app.route('/accountregistration', methods=['POST'])
 def account_registration():
-    if request.method == "POST":
-        print(request.form)
     # Register a new account
     
+    # Get all the values
     firstName = request.form.get("firstName")
     lastName = request.form.get("lastName")
     email = request.form.get("email")
-    
+    nickname = request.form.get("nickname")
+    password = request.form.get("password")
+    privFName = request.form.get("privFName")
+    privLastName = request.form.get("privLastName")
+    privEmail = request.form.get("privEmail")
+
+    print(firstName,lastName, email, nickname, password, privFName, privLastName,privEmail)
+
     return dumps({})
 
 
