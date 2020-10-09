@@ -1,21 +1,24 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
+import Form from 'react-bootstrap/Form';
+import Search from './Search/Search';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Toolbar() {
   return (
-    <Container className="p-3">
-      <ButtonToolbar aria-label="Toolbar buttons">
-        <ButtonGroup className="mr-2" aria-label="First group">
-          <Button>Create an account</Button>
-        </ButtonGroup>
-        <ButtonGroup className="mr-2" aria-label="Second group">
-          <Button>Login</Button>
-        </ButtonGroup>
-      </ButtonToolbar>
+    <Container>
+      <Navbar bg="light" expand="lg">
+        <Navbar.Brand href="#home">PhotoPro</Navbar.Brand>
+        <Nav className="mr-auto">
+          <Nav.Link>Create an account</Nav.Link>
+          <Nav.Link>Login</Nav.Link>
+        </Nav>
+        <Form inline>
+          <Search />
+        </Form>
+      </Navbar>
     </Container>
   );
 }
