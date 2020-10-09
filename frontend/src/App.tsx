@@ -1,11 +1,13 @@
 import React from "react";
 import "./App.css";
-import Form from "./components/Form/Form";
+import Welcome from "./components/Welcome";
+import Toolbar from "./components/Toolbar";
 
 function App() {
   return (
-    <div className="App">
-      <Form title="Enter your details here" />
+    <div className = "App">
+      <Toolbar />
+      <Welcome />
     </div>
   );
 }

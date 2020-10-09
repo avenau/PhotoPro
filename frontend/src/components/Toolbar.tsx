@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Toolbar() {
   return (
-    <Container classname="p-3">
+    <Container className="p-3">
       <ButtonToolbar aria-label="Toolbar buttons">
         <ButtonGroup className="mr-2" aria-label="First group">
           <Button>Create an account</Button>
