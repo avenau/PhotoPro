@@ -44,3 +44,25 @@ if we set out certain standards for design decisions earlier on.
 
 NEXT
 Finish storyboard. Help with writing assumptions for proposal.
+
+=======================Week 3 (Wed 30 Sept - Wed 7 Oct)=======================
+
+We brainstormed some more ideas on introducing novelty to the project - ended up on showdown. We
+finished off the proposal.
+We allocated tasks for our two week sprint for the Prospective demo. I chose to complete the task
+of account creation
+
+PLANNED
+Finish proposal. Allocate tasks for sprint. Start working on front end part of page.
+
+FINISHED
+The proposal. I mostly helped with the flowchart, storyboard.
+
+CHALLENGES
+Learning React again. Coordinating with many people.
+
+REFLECTION
+Read more documentation!!! Be more patient.
+
+NEXT
+Continue working on account creation and connect to backend.
