@@ -2,6 +2,7 @@ import React, {useState} from "react"
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container'
+import axios from "axios";
 
 export default function Register() {
     const [validateFeedback, setFeedback] = useState(false)
@@ -30,6 +31,13 @@ export default function Register() {
         if (form.checkValidity() === false) {
           event.preventDefault();
           event.stopPropagation();
+          console.log('false')
+      } else {
+          // All inputs are valid
+          axios.post('/accountregistration', 
+            {firstName: firstName,
+            lastName: lastName,
+            email: email})
       }
       setFeedback(true)
     };
@@ -74,18 +82,18 @@ export default function Register() {
             <Form.Group>
             <Form.Group>
                 <Form.Label>First name</Form.Label>
-                <Form.Control required placeholder="Enter first name"/>
-                <Form.Check type="checkbox" label="Hide from my public profile" checked={privFName} onClick={() => setPrivFName(!privFName)}/>
+                <Form.Control required placeholder="Enter first name" onChange={e => setFName(e.target.value)}/>
+                <Form.Check type="checkbox" label="Hide from my public profile" checked={privFName} onChange={() => setPrivFName(!privFName)}/>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Last name</Form.Label>
-                <Form.Control required placeholder="Enter last name"/>
-                <Form.Check type="checkbox" label="Hide from my public profile" checked={privLastName} onClick={() => setPrivLastName(!privLastName)}/>
+                <Form.Control required placeholder="Enter last name" onChange={e => setLName(e.target.value)}/>
+                <Form.Check type="checkbox" label="Hide from my public profile" checked={privLastName} onChange={() => setPrivLastName(!privLastName)}/>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Email address</Form.Label>
-                <Form.Control required type="email" placeholder="Enter email address"/>
-                <Form.Check type="checkbox" label="Hide from my public profile" checked={privEmail} onClick={() => setPrivEmail(!privEmail)}/>
+                <Form.Control required type="email" placeholder="Enter email address" onChange={e => setEmail(e.target.value)}/>
+                <Form.Check type="checkbox" label="Hide from my public profile" checked={privEmail} onChange={() => setPrivEmail(!privEmail)}/>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Photopro nickname</Form.Label>
