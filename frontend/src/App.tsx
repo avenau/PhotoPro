@@ -1,11 +1,13 @@
 import React from "react";
 import "./App.css";
-import Form from "./components/Form/Form";
+import Register from "./components/AccountManagement/Register";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
   return (
     <div className="App">
-      <Form title="Enter your details here" />
+      <Register/>
     </div>
   );
 }
