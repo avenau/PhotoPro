@@ -9,7 +9,7 @@ from flask_mail import Mail, Message
 from flask_pymongo import PyMongo
 
 import password_reset as password_reset
-
+# from decorator import make_pretty
 app = Flask(__name__)
 CORS(app)
 
@@ -26,6 +26,14 @@ app.config.update(
     MAIL_USERNAME = "photopro.jajac@gmail.com",
     MAIL_PASSWORD = "photoprodemopassword"
 )
+
+@app.route('/', methods=['GET'])
+# @make_pretty
+def basic():
+    return dumps({
+        'first_name' : "test",
+        'colour': "test"
+    })
 
 
 @app.route('/start', methods=['GET', 'POST'])
@@ -47,7 +55,7 @@ def send_data():
         'colour': colour
     })
 
-@app.route('/passwordreset/request', methods=['GET','POST'])
+@app.route('/passwordreset/request', methods=['POST'])
 def auth_password_reset_request():
     """
     Given an email address, if the user is a registered user, semd an email

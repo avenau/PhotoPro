@@ -1,11 +1,13 @@
 import React from "react";
 import "./App.css";
-import Form from "./components/Form/Form";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import "./axios";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
     <div className="App">
-      <Form title="Enter your details here" />
+      <ForgotPasswordPage />
     </div>
   );
 }
