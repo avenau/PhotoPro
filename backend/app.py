@@ -7,6 +7,9 @@ from flask import Flask, render_template, request
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from flask_pymongo import PyMongo
+#Added BSON as library, needed for ObjectId data type
+from bson.objectid import ObjectId
+import traceback
 
 import password_reset as password_reset
 # from decorator import make_pretty
@@ -15,12 +18,8 @@ CORS(app)
 
 # Mongo setup, connect to the db
 app.config["MONGO_URI"] = "mongodb://localhost:27017/angular-flask-muckaround"
-<<<<<<< HEAD
 #app.config["MONGO_URI"] = "mongodb://localhost:27017/other-db"
 #app.config["MONGO_URI"] = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
-=======
-# app.config["MONGO_URI"] = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
->>>>>>> feature/JAJAC-43-register-account
 mongo = PyMongo(app)
 
 # Creating email server
@@ -105,25 +104,48 @@ def account_registration():
 
     return dumps({})
 
-@app.route('/manage_privacy', methods=['GET', 'POST'])
-def send_privacy_options():
+#@app.route('/manage_privacy', methods=['GET', 'POST'])
+#def send_privacy_options():
+#    errors = []
+#    results = {}
+#    data = json.loads(request.data.decode())
+#    try:
+#        mongo.db.privacy_settings.insert_many(data)
+#    except:
+#        print("Errors... :-(")
+#        errors.append("Couldn't get text")
+#
+#    return dumps({
+#        "first_name" : first_name,
+#        "last_name": last_name, 
+#        "age": age, 
+#        "dob": dob, 
+#        "city": city, 
+#        "country": country
+#    })
+    
+@app.route('/manage_account', methods=['GET', 'POST'])
+def manage_account():
     errors = []
     results = {}
     data = json.loads(request.data.decode())
+    #Need Something to Check if current logged in account exist in database
+    #I am assuming user_id is stored in localStorage
+    #Hard coded this part, this part should check what the logged in user object_id is
+    current_user = "5f81131a48ca54daa5e46324"
     try:
-        mongo.db.privacy_settings.insert_many(data)
-    except:
+        find_userdb = {"_id": ObjectId(current_user)}
+        for key, value in data.items():
+            print(key, value)
+            change_userdb = {"$set": { key: value } }
+            mongo.db.user.update_one(find_userdb, change_userdb)    
+        
+    except Exception:
         print("Errors... :-(")
+        print (traceback.format_exc())
         errors.append("Couldn't get text")
 
-    return dumps({
-        "first_name" : first_name,
-        "last_name": last_name, 
-        "age": age, 
-        "dob": dob, 
-        "city": city, 
-        "country": country
-    })
+    return dumps(data)
 
 
 if __name__ == '__main__':

@@ -1,24 +1,28 @@
 import React from "react";
 import "./App.css";
-/*<<<<<<< HEAD
 import Form from "./components/Form/Form";
 import PrivacyForm from "./components/PrivacyForm/PrivacyForm"
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import "./axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Register from "./components/AccountManagement/Register";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link
 } from "react-router-dom";
-import ManageAccount from "./manageAccount";
+import ManageAccount from "./pages/ManageAccount/ManageAccount";
 
 function App() {
   return (
+    //Disregard my router set up, just playing around with routers
     <Router>
       <div>
         <nav>
           <ul>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/home">Home</Link>
             </li>
             <li>
               <Link to="/manage_privacy">Manage Privacy</Link>
@@ -26,32 +30,43 @@ function App() {
             <li>
               <Link to="/manage_account">Manage Account</Link>
             </li>
+            <li>
+              <Link to="/register">Register</Link>
+            </li>
+            <li>
+              <Link to="/recover_password">Forgot Password</Link>
+            </li>
           </ul>
         </nav>
 
 
         <Switch>
+          <Route path="/home">
+            <Form title="Enter your details here"> </Form>
+          </Route>
           <Route path="/manage_privacy">
             <PrivacyForm title="Manage Privacy"></PrivacyForm>
           </Route>
           <Route path="/manage_account">
-            <ManageAccount></ManageAccount>
+            <ManageAccount />
           </Route>
-          <Route path="/">
-            <div className="App">
-              <Form title="Enter your details here" />
-            </div>
+          <Route path="/register">
+            <Register />
+          </Route>
+          <Route path="/recover_password">
+            <ForgotPasswordPage />
           </Route>
         </Switch>
       </div>
     </Router>
+  )
+}
 
-    /*      <div className="App">
-            <Form title="Enter your details here" />
-            <MenuButton title="Manage Privacy" destintation="/manage_privacy" />
-          </div>*/
-//=========
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+/*      <div className="App">
+        <Form title="Enter your details here" />
+        <MenuButton title="Manage Privacy" destintation="/manage_privacy" />
+      </div>*/
+/*import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import "./axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Register from "./components/AccountManagement/Register";
@@ -59,11 +74,11 @@ import Register from "./components/AccountManagement/Register";
 
 function App() {
   return (
-    <div className="App">
-      <Register />
-      <ForgotPasswordPage />
-    </div>
+      <div className="App">
+        <Register />
+        <ForgotPasswordPage />
+      </div>
   );
-}
+}*/
 
 export default App;
