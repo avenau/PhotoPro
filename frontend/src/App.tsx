@@ -2,19 +2,14 @@ import React from "react";
 import {
   BrowserRouter as Router,
   Route,
-  RouteComponentProps,
+//  RouteComponentProps,
   Switch,
 } from "react-router-dom";
 import "./App.css";
-import Toolbar from "./components/Toolbar";
 import HomePage from "./pages/HomePage";
 import { AuthProvider } from "./AuthContext";
 import "./axios";
-import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
-import ExamplePage from "./pages/Examples/ExmaplePage";
-import ExamplePage2 from "./pages/Examples/ExmaplePage2";
-import ExamplePageAuth from "./pages/Examples/ExmaplePageAuth";
+// import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   /**
@@ -34,23 +29,14 @@ function App() {
     setAuthDetails(token);
   }
   return (
-    <div className = "App">
-      <Toolbar />
-      <HomePage />
-    </div>
     <AuthProvider value={authDetails!}>
       <Router>
         <Switch>
-          <Route exact path="/example" component={ExamplePage} />
-          <Route exact path="/example2" component={ExamplePage2} />
           <Route
             exact
-            path="/login"
-            render={(props: RouteComponentProps) => {
-              return <ExampleLoginPage {...props} setAuth={setAuth} />;
-            }}
-          />
-          <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
+            path="/"
+            component = {HomePage}
+          />;
 
           {/* EXAMPLE LOGIN/REGISTER ROUTES BELOW */}
           {/* <Route

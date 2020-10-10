@@ -1,12 +1,12 @@
 import React from 'react';
-import Welcome from '../components/Welcome';
-import Showdown from '../components/Showdown/Showdown';
+import Welcome from '../components/Welcome/Welcome';
+import Toolbar from '../components/Toolbar/Toolbar'
 
 function HomePage() {
   return (
     <div className = "HomePage">
+      <Toolbar />
       <Welcome />
-      <Showdown />
     </div>
   )
 }
