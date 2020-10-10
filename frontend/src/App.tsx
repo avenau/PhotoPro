@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+/*<<<<<<< HEAD
 import Form from "./components/Form/Form";
 import PrivacyForm from "./components/PrivacyForm/PrivacyForm"
 import {
@@ -49,6 +50,19 @@ function App() {
             <Form title="Enter your details here" />
             <MenuButton title="Manage Privacy" destintation="/manage_privacy" />
           </div>*/
+//=========
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import "./axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Register from "./components/AccountManagement/Register";
+
+
+function App() {
+  return (
+    <div className="App">
+      <Register />
+      <ForgotPasswordPage />
+    </div>
   );
 }
 
