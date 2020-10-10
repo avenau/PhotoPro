@@ -7,7 +7,7 @@ from flask import Flask, render_template, request
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from flask_pymongo import PyMongo
-#Added BSON as library, needed for ObjectId data type
+#Added BSON library, needed for ObjectId data type
 from bson.objectid import ObjectId
 import traceback
 
