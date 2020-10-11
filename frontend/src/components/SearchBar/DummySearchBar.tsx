@@ -2,10 +2,6 @@ import React from "react";
 import Button from 'react-bootstrap/Button'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
-import InputGroup from "react-bootstrap/InputGroup"
-import DropdownButton from "react-bootstrap/DropdownButton"
-import Dropdown from "react-bootstrap/Dropdown"
-import FormControl from "react-bootstrap/FormControl"
 import Col from "react-bootstrap/Col"
 import Form from "react-bootstrap/Form"
 import Image from "react-bootstrap/Image"
@@ -13,7 +9,6 @@ import Image from "react-bootstrap/Image"
 class SearchBar extends React.Component {
     render() {
       return (
-      <div>
         <Container>
           <Image src="https://iiif.actacroatica.com/fcgi-bin/iipsrv.fcgi?IIIF=svJer/1906/SVJER1906_0168.tif/1313,1204,91,110/,200/0/default.jpg" rounded />
           <Form>
@@ -45,7 +40,6 @@ class SearchBar extends React.Component {
             </Row>
           </Form>
         </Container>
-      </div>
       );
       }
 }

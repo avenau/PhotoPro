@@ -4,15 +4,17 @@ import {
   Route,
   RouteComponentProps,
   Switch,
+  NavLink
 } from "react-router-dom";
 import "./App.css";
 import { AuthProvider } from "./AuthContext";
 import "./axios";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
-import ExamplePage from "./pages/Examples/ExmaplePage";
-import ExamplePage2 from "./pages/Examples/ExmaplePage2";
-import ExamplePageAuth from "./pages/Examples/ExmaplePageAuth";
+import Login from "./pages/LoginPage"
+import SearchBar from './components/SearchBar/DummySearchBar'
+import DummyFeed from './DummyFeed'
+
+
 
 function App() {
   /**
@@ -35,39 +37,12 @@ function App() {
     <AuthProvider value={authDetails!}>
       <Router>
         <Switch>
-          <Route exact path="/example" component={ExamplePage} />
-          <Route exact path="/example2" component={ExamplePage2} />
-          <Route
-            exact
-            path="/login"
-            render={(props: RouteComponentProps) => {
-              return <ExampleLoginPage {...props} setAuth={setAuth} />;
+          <Route exact path="/" component={SearchBar}/>
+          <Route exact path="/login" render={(props) => {
+              return <Login {...props} setAuth={setAuth} />;
             }}
           />
-          <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
-
-          {/* EXAMPLE LOGIN/REGISTER ROUTES BELOW */}
-          {/* <Route
-            exact
-            path="/login"
-            render={(props: RouteComponentProps) => {
-              return <LoginPage {...props} setAuth={setAuth} />;
-            }}
-          />
-          <Route
-            exact
-            path="/register"
-            render={(props: RouteComponentProps) => {
-              return <RegisterPage {...props} setAuth={setAuth} />;
-            }}
-          /> */}
-
-          {/* EXAMPLE PAGES WHICH REQUIRE LOGIN TO REACH */}
-          {/* <ProtectedRoute exact path="/" component={HomePage} />
-          <ProtectedRoute path="/profile/:profile" component={ProfilePage} />
-          <ProtectedRoute path="/channel/:channel_id" component={ChannelPage} />
-          <ProtectedRoute path="/search/:query_str" component={SearchPage} />
-          <ProtectedRoute path="/search" component={SearchPage} /> */}
+          <ProtectedRoute path="/feed" component={DummyFeed} />
         </Switch>
       </Router>
     </AuthProvider>

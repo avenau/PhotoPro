@@ -32,34 +32,21 @@ def send_data():
         'colour': colour
     })
 
-# Test
+
 @app.route('/login', methods= ['POST'])
 def process_login():
-    data = json.loads(request.data.decode())
-    email = data["loginEmail"]
-    password = data["loginPassword"]
-    print(email + " " + password)
-    loggedIn = False
+    email = request.form.get("email")
+    password = request.form.get("password")
+    token = ""
+    user = mongo.db.users.find_one({"email": email, "password": password})
+    # TODO: set the token properly with jwt
+    if user != None:
+        token = "1" 
 
-    
-    doc = mongo.db.users.find_one({"email": email, "password": password})
-    if doc == None:
-        print("email: " + email + " password: " + password + " is not in the database")
-    else:
-        print("email: " + email + " password: " + password + " was found in the database")
-        loggedIn = True
-
-    return dumps({
-        'email' : email,
-        'password': password,
-        'loggedIn': loggedIn
-    })
-    
-    # 
-
-@app.route('/gallery', methods= ['GET'])
-def render_gallery():
-    return "<p> You logged in <p>"
+    return {
+        "email": email,
+        "token": token
+    }
 
 if __name__ == '__main__':
     app.run(port=8001, debug=True)

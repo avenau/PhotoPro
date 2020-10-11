@@ -1,50 +1,54 @@
 import React from "react";
-import "./App.css";
 import Jumbotron from "react-bootstrap/Jumbotron"
 import Container from "react-bootstrap/Container"
 import Button from "react-bootstrap/Button"
 import Form from "react-bootstrap/Form"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
+import axios from "axios";
 
+interface LoginProps  {
+  setAuth: (token: string, email: string) => void
+  history: any
+}
 
-export default class Login extends React.Component {
+export default class Login extends React.Component <LoginProps, any> {
   constructor(props: any) {
     super(props);
-    this.state = {};
+    this.state = {
+      email: "",
+      password: ""
+    };
   }
 
   handleSubmit(event: any) {
     if (event) {
       event.preventDefault();
     }
-    fetch('http://localhost:8001/login', {
-      method: 'POST',
-      body: JSON.stringify(this.state),
-    }).then(response => response.json())
-    .then((res) => {
-      console.log(res)
+    const email = this.state.email;
+    const password = this.state.password;
+    axios.post('/login', { email, password })
+      .then((response: any) => {
+        const data = response.data;
+        this.props.setAuth(data.token, data.email);
+        this.props.history.push("/feed");
     });
-    console.log(this.state);
   }
 
   handleChange(event: any) {
     const id = event.target.id;
     this.setState({ [id]: event.target.value });
-    console.log(this.state);
   }
 
   render() {
     return (
-      <div>
       <Container>
         <Jumbotron>
           <h1>Log In to PhotoPro</h1>
+          <p>by JAJAC</p>
         </Jumbotron>
-      </Container>
-      <Container>
         <Form onSubmit={(e) => this.handleSubmit(e)}>
-          <Form.Group as={Row} controlId="loginEmail">
+          <Form.Group as={Row} controlId="email">
             <Col xs={3}>
               <Form.Label>
                 Email
@@ -54,8 +58,7 @@ export default class Login extends React.Component {
               <Form.Control type="email" placeholder="Enter Email" onChange={(e) => this.handleChange(e)} />
             </Col>
           </Form.Group>
-
-          <Form.Group as={Row} controlId="loginPassword">
+          <Form.Group as={Row} controlId="password">
             <Col xs={3}>
               <Form.Label>
                 Password
@@ -67,8 +70,8 @@ export default class Login extends React.Component {
           </Form.Group>
           <Row>
             <Col>
-              {/* TODO href */}
-              <a href="/">Forgot your password? Click here.</a>
+              {/* TODO: change href */}
+              <a href="/recover">Forgot your password? Click here.</a>
             </Col>
             <Col>
             </Col>
@@ -79,9 +82,7 @@ export default class Login extends React.Component {
             </Col>
           </Row>
         </Form>
-        {}
       </Container>
-      </div>
     );
   }
 }
