@@ -2,9 +2,7 @@ import React from "react";
 import {
   BrowserRouter as Router,
   Route,
-  RouteComponentProps,
-  Switch,
-  NavLink
+  Switch
 } from "react-router-dom";
 import "./App.css";
 import { AuthProvider } from "./AuthContext";
@@ -33,6 +31,7 @@ function App() {
     localStorage.setItem("u_id", u_id);
     setAuthDetails(token);
   }
+
   return (
     <AuthProvider value={authDetails!}>
       <Router>
