@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container'
 import axios from "axios";
+import ValidatePassword from "./ValidatePassword";
 
 export default function Register() {
     const [validateFeedback, setFeedback] = useState(false)
@@ -16,9 +17,7 @@ export default function Register() {
 
     // Password states
     const [validPassword, setValidPass] = useState(false)
-    const [matchMessage, setMatchMessage] = useState('')
     const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
 
     // Privacy states
     const [privFName, setPrivFName] = useState(true)
@@ -48,37 +47,7 @@ export default function Register() {
       setFeedback(true)
     };
 
-    // TODO Clean up later
-    const validatePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const form = event.currentTarget
-        const elementType = form.id
-        const input = form.value
-
-        if (elementType === 'password') {
-            if (confirmPassword === input) {
-                setMatchMessage('Password matches')
-                setValidPass(true)
-            } else {
-                setValidPass(false)
-                setMatchMessage('Password does not match')
-            }
-            setPassword(input)
-        } else if (elementType === 'confirmPassword') {
-            if (password === input) {
-                setMatchMessage('Password matches')
-                setValidPass(true)
-            } else {
-                setValidPass(false)
-                setMatchMessage('Password does not match')
-            }
-            setConfirmPassword(input)
-        }
-    }
-
     // TODO
-    // validate email format, contains [ > 1 char string] + [@] + domain + [.com]
-    // check if password acceptable, and have password meter
-    // set privacy settings with checkboxes
     // DOB
     // About me
     // Location
@@ -106,15 +75,7 @@ export default function Register() {
                 <Form.Control required placeholder="Enter nickname" onChange={e => setNickname(e.target.value)}/>
             </Form.Group>
             </Form.Group>
-            <Form.Group controlId="password">
-                <Form.Label>Password</Form.Label>
-                <Form.Control required type="password" placeholder="Enter password" onChange={validatePassword}/>
-            </Form.Group>
-            <Form.Group controlId="confirmPassword">
-                <Form.Label>Confirm password</Form.Label>
-                <Form.Control required type="password" placeholder="Confirm password" onChange={validatePassword}/>
-                <Form.Text>{matchMessage}</Form.Text>
-            </Form.Group>
+            <ValidatePassword validPass={setValidPass} setPassword={setPassword}/>
             <Button disabled={!validPassword} type='submit'>Submit</Button>
         </Form>
         </Container>
