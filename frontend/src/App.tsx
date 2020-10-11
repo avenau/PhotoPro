@@ -1,7 +1,6 @@
 import React from "react";
 import "./App.css";
 import Form from "./components/Form/Form";
-import PrivacyForm from "./components/PrivacyForm/PrivacyForm"
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import "./axios";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -26,9 +25,6 @@ function App() {
               <Link to="/home">Home</Link>
             </li>
             <li>
-              <Link to="/manage_privacy">Manage Privacy</Link>
-            </li>
-            <li>
               <Link to="/manage_account">Manage Account</Link>
             </li>
             <li>
@@ -45,9 +41,6 @@ function App() {
           <Route path="/home">
             <Form title="Enter your details here"> </Form>
           </Route>
-          <Route path="/manage_privacy">
-            <PrivacyForm title="Manage Privacy"></PrivacyForm>
-          </Route>
           <Route path="/manage_account">
             <ManageAccount />
           </Route>
@@ -62,7 +55,7 @@ function App() {
           </Route>
         </Switch>
       </div>
-    </Router>
+    </Router >
   )
 }
 

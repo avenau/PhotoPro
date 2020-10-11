@@ -1,34 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./ManageAccount.scss";
-import ManageConfirmationProps from "./ManageConfirmationProps";
-import ManageConfirmationStates from "./ManageConfirmationStates";
 import { useHistory, useLocation } from "react-router-dom";
 import Axios from "axios";
 
 
 export default function ManageConfirmation() {
+
     const location = useLocation();
-    const history = useHistory();
     let inputPassword = "";
+
+    function mapToObject(map: Map<string, any>) {
+        const result = Object.create(null);
+        map.forEach((value: any, key: string) => {
+            if (value instanceof Map) {
+                result[key] = mapToObject(value)
+            } else {
+                result[key] = value;
+            }
+        })
+        return result
+    }
 
     function updateDB(event: React.FormEvent<HTMLElement>) {
         if (event) {
             event.preventDefault();
         }
+        let stateMap = location.state as Map<string, any>;
+        console.log(stateMap);
+        console.log(JSON.stringify(mapToObject(stateMap)));
         fetch(`http://localhost:8001/manage_account/success`, {
             method: "POST",
-            body: JSON.stringify(location.state),
+            body: JSON.stringify(mapToObject(stateMap))
         });
     }
 
     function handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
-        //const name = event.target.name;
         inputPassword = event.target.value;
     }
 
     function checkPassword(event: React.FormEvent<HTMLElement>) {
+
         if (event) {
             event.preventDefault();
         }
@@ -40,14 +53,6 @@ export default function ManageConfirmation() {
 
                 }
             })
-
-
-        /* fetch(`http://localhost:8001/manage_account/confirm`, {
-                method: "GET",
-                body: JSON.stringify({ password: { inputPassword } }),
-            }).then(function (response) {
-                console.log(response)
-            });*/
     }
 
     return (
@@ -57,7 +62,7 @@ export default function ManageConfirmation() {
             <Form onSubmit={(e) => checkPassword(e)}>
                 <Form.Group controlId="passwordForm">
                     <Form.Label>Current Password</Form.Label>
-                    <Form.Control type="password" placeholder="Enter Your Current Password" name="password" onChange={(e) => handleChange(e)} />
+                    <Form.Control required type="password" placeholder="Enter Your Password" name="password" onChange={(e) => handleChange(e)} />
                 </Form.Group>
                 <Button variant="primary" type="submit">
                     Save Change

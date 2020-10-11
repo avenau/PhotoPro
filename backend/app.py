@@ -109,6 +109,7 @@ def manage_account():
     errors = []
     results = {}
     data = json.loads(request.data.decode())
+    print(type(data))
     #Need Something to Check if current logged in account exist in database
     #I am assuming user_id is stored in localStorage
     #Hard coded this part, this part should check what the logged in user object_id is
@@ -143,6 +144,7 @@ def password_check():
         data['password'] = "true"
     else:
         data['password'] = "false"
+    print(data)
 
     return data
 
