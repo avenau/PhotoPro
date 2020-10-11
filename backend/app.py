@@ -103,28 +103,8 @@ def account_registration():
     print(firstName,lastName, email, nickname, password, privFName, privLastName,privEmail)
 
     return dumps({})
-
-#@app.route('/manage_privacy', methods=['GET', 'POST'])
-#def send_privacy_options():
-#    errors = []
-#    results = {}
-#    data = json.loads(request.data.decode())
-#    try:
-#        mongo.db.privacy_settings.insert_many(data)
-#    except:
-#        print("Errors... :-(")
-#        errors.append("Couldn't get text")
-#
-#    return dumps({
-#        "first_name" : first_name,
-#        "last_name": last_name, 
-#        "age": age, 
-#        "dob": dob, 
-#        "city": city, 
-#        "country": country
-#    })
     
-@app.route('/manage_account', methods=['GET', 'POST'])
+@app.route('/manage_account/success', methods=['GET', 'POST'])
 def manage_account():
     errors = []
     results = {}
@@ -136,7 +116,8 @@ def manage_account():
     try:
         find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
-            print(key, value)
+            if (value == ""):
+                continue
             change_userdb = {"$set": { key: value } }
             mongo.db.user.update_one(find_userdb, change_userdb)    
         
@@ -146,6 +127,24 @@ def manage_account():
         errors.append("Couldn't get text")
 
     return dumps(data)
+    
+@app.route('/manage_account/confirm', methods=['GET', 'POST'])
+def password_check():
+    errors = []
+    results = {}
+    #data = json.loads(request.data.decode())
+    #Need Something to Check if current logged in account exist in database
+    #I am assuming user_id is stored in localStorage
+    #Hard coded this part, this part should check what the logged in user object_id is
+    current_user = "5f81131a48ca54daa5e46324"
+    data = request.form.to_dict()
+    current_password = mongo.db.user.find_one({"_id":ObjectId(current_user)})['password']
+    if (current_password == data['password']):
+        data['password'] = "true"
+    else:
+        data['password'] = "false"
+
+    return data
 
 
 if __name__ == '__main__':

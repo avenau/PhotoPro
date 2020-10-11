@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./ManageAccount.scss";
 import ManageAccountProps from "./ManageAccountProps";
 import ManageAccountStates from "./ManageAccountStates";
+import { Link } from "react-router-dom";
 
 export default class ManageAccount extends React.Component<ManageAccountProps, ManageAccountStates> {
     constructor(props: ManageAccountProps) {
@@ -15,15 +16,15 @@ export default class ManageAccount extends React.Component<ManageAccountProps, M
         if (event) {
             event.preventDefault();
         }
-        fetch(`http://localhost:8001/manage_account`, {
+        /*fetch(`http://localhost:8001/manage_account`, {
             method: "POST",
             body: JSON.stringify(this.state),
-        });
+        });*/
+
     }
 
     handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
         const name = event.target.name;
-        console.log(name);
         this.setState({ [name]: event.target.value });
     }
 
@@ -74,16 +75,17 @@ export default class ManageAccount extends React.Component<ManageAccountProps, M
                         <Form.Label>About Me</Form.Label>
                         <Form.Control as="textarea" name="about_me" onChange={(e) => this.handleChange(e)} />
                     </Form.Group>
-                    <Button variant="primary" type="submit">
-                        Submit
-                </Button>
-                </Form>
-            </div>
+                    <Link to={{
+                        pathname: '/manage_confirmation',
+                        state: this.state
+                    }}>
+                        <Button variant="primary" type="submit">
+                            Submit
+                        </Button>
+                    </Link>
 
-            /*      <div className="App">
-                    <Form title="Enter your details here" />
-                    <MenuButton title="Manage Privacy" destintation="/manage_privacy" />
-                </div>*/
+                </Form>
+            </div >
         );
     }
 }

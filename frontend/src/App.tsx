@@ -13,6 +13,7 @@ import {
   Link
 } from "react-router-dom";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
+import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 
 function App() {
   return (
@@ -55,6 +56,9 @@ function App() {
           </Route>
           <Route path="/recover_password">
             <ForgotPasswordPage />
+          </Route>
+          <Route path="/manage_confirmation">
+            <ManageConfirmation />
           </Route>
         </Switch>
       </div>
