@@ -9,6 +9,7 @@ import Axios from "axios";
 export default function ManageConfirmation() {
 
     const location = useLocation();
+    const history = useHistory();
     let inputPassword = "";
 
     function mapToObject(map: Map<string, any>) {
@@ -49,6 +50,11 @@ export default function ManageConfirmation() {
             .then(function (response) {
                 if (response.data.password == "true") {
                     updateDB(event);
+                    //This will lead to profile page when the page is done
+                    //Just using home as a filler
+                    history.push({
+                        pathname: '/home',
+                    })
                 } else {
 
                 }

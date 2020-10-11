@@ -12,6 +12,7 @@ Find out how to know who is currently logged in so I know which user's database 
 Display error message when password is wrong
 Redirect user to profile when changes are successful
 List all the changes that the user is making on the confirmation page
+Display password is incorrect on confirmation page
 */
 
 export default function ManageAccount() {
