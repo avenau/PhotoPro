@@ -12,4 +12,10 @@ ___Week 2___
 ___Week 3___
 
 - Created the Software Architecture diagram
-- Created teh Software Architecture explanation.
+- Created the Software Architecture explanation.
+
+__Week 4__
+
+- Worked on JAJAC-63:
+  - Implemented frontend design
+  - Demoed to group
