@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 from json import dumps
+import jwt
 
 app = Flask(__name__)
 CORS(app)
@@ -41,7 +42,7 @@ def process_login():
     user = mongo.db.users.find_one({"email": email, "password": password})
     # TODO: set the token properly with jwt
     if user != None:
-        token = "1" 
+        token = email
 
     return {
         "email": email,

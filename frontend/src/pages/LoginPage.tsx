@@ -6,6 +6,8 @@ import Form from "react-bootstrap/Form"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import axios from "axios";
+import Toolbar from "../components/Toolbar/Toolbar"
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface LoginProps  {
   setAuth: (token: string, email: string) => void
@@ -42,6 +44,8 @@ export default class Login extends React.Component <LoginProps, any> {
 
   render() {
     return (
+      <div className="loginPage">
+      <Toolbar />
       <Container>
         <Jumbotron>
           <h1>Log In to PhotoPro</h1>
@@ -83,6 +87,7 @@ export default class Login extends React.Component <LoginProps, any> {
           </Row>
         </Form>
       </Container>
+      </div>
     );
   }
 }
