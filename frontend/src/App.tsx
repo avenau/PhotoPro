@@ -38,8 +38,8 @@ function App() {
     <AuthProvider value={authDetails!}>
       <Router>
         <Switch>
-          <AnonRoute exact path="/" component={HomePage}/>
-          <AnonRoute exact path="/login" render={(props) => {
+          <Route exact path="/" component={HomePage}/>
+          <Route exact path="/login" render={(props) => {
               return <Login {...props} setAuth={setAuth} />;
             }}
           />
