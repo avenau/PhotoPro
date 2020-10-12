@@ -93,6 +93,17 @@ def login():
 
 @app.route('/accountregistration', methods=['POST'])
 def account_registration():
+
+    # TODO
+    # ======= Backend validation =======
+    # As front end checks could be avoided
+    # Make a helper function for backend validation too
+    # Backend check on password 10 characters
+    # Backend check on email
+    # First name
+    # Last name
+
+
     # Register a new account
     # Get all form values
     firstName = request.form.get("firstName")
@@ -103,6 +114,8 @@ def account_registration():
     privFName = request.form.get("privFName")
     privLastName = request.form.get("privLastName")
     privEmail = request.form.get("privEmail")
+    aboutMe = request.form.get("aboutMe")
+    DOB = request.form.get('DOB')
 
     # Make some hashbrowns
     hashedPassword = bcrypt.generate_password_hash(password)
@@ -117,7 +130,9 @@ def account_registration():
                         'password': hashedPassword,
                         'privFName': privFName,
                         'privLName':  privLastName,
-                        'privEmail': privEmail
+                        'privEmail': privEmail,
+                        'aboutMe': aboutMe,
+                        'DOB': DOB
                         }
     )
 
