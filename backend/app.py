@@ -149,6 +149,26 @@ def password_check():
     print(data)
 
     return data
+    
+@app.route('/get_user_info', methods=['GET', 'POST'])
+def get_user():
+    errors = []
+    results = {}
+   # print('In get_user_info')
+    data = request.form.to_dict()
+    #print(data)
+    current_uid = data['u_id']
+    current_user = mongo.db.user.find_one({"_id":ObjectId(current_uid)})
+    #print(current_user)
+    data['fname'] = current_user['fname']
+    data['lname'] = current_user['lname']
+    data['email'] = current_user['email']
+    data['nickname'] = current_user['nickname']
+    data['dob'] = current_user['birth_date']
+    data['location'] = current_user['country']
+    data['about_me'] = current_user['about_me']
+
+    return data
 
 
 if __name__ == '__main__':
