@@ -58,7 +58,17 @@ export default function Register() {
             privEmail: privEmail,
             aboutMe: aboutMe,
             DOB: DOB
-        })
+            })
+            .then((r) => {
+                if(r.status !== 200) {
+                    throw new Error()
+                }
+                console.log('Success')
+            })
+            . catch((e) => {
+                console.log(e)
+                alert(e.message)
+            })
       }
       setFeedback(true)
     };
