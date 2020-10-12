@@ -10,12 +10,8 @@ import Toolbar from "../components/Toolbar/Toolbar";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {RouteChildrenProps} from "react-router-dom";
 
-interface LoginProps extends RouteChildrenProps {
-  setAuth: (token: string, email: string) => void
-}
-
-export default class Login extends React.Component <LoginProps, any> {
-  constructor(props: LoginProps) {
+export default class Login extends React.Component <RouteChildrenProps, any> {
+  constructor(props: RouteChildrenProps) {
     super(props);
     this.state = {
       email: "",
@@ -23,16 +19,18 @@ export default class Login extends React.Component <LoginProps, any> {
     };
   }
 
-  handleSubmit(event: any) {
-    if (event) {
-      event.preventDefault();
+  handleSubmit(e: React.FormEvent<HTMLElement>) {
+    if (e) {
+      e.preventDefault();
     }
     const email = this.state.email;
     const password = this.state.password;
     axios.post('/login', { email, password })
       .then((response: any) => {
+        console.log("then");
         const data = response.data;
-        this.props.setAuth(data.token, data.email);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("u_id", data.email);
         this.props.history.push("/feed");
     });
   }

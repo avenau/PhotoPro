@@ -11,7 +11,7 @@ import AuthContext from "../../AuthContext";
  * rather than just checking its existence
  */
 function ProtectedRoute(props: RouteProps) {
-  const token = React.useContext(AuthContext);
+  const token = localStorage.getItem("token") !== null ? localStorage.getItem("token") : "";
   console.log(token);
   if (!token) {
     return <Redirect to="/login" />;
