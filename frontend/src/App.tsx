@@ -44,6 +44,7 @@ function App() {
               return <ExampleLoginPage {...props} setAuth={setAuth} />;
             }}
           />
+          <Route exact path="/register" component={Register}/>
           <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
 
           {/* EXAMPLE LOGIN/REGISTER ROUTES BELOW */}
