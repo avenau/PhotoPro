@@ -2,7 +2,7 @@ import React from "react";
 import {
   BrowserRouter as Router,
   Route,
-//  RouteComponentProps,
+  RouteComponentProps,
   Switch,
 } from "react-router-dom";
 import "./App.css";
@@ -45,6 +45,11 @@ function App() {
             render={(props: RouteComponentProps) => {
               return <ExampleLoginPage {...props} setAuth={setAuth} />;
             }}
+          />
+          <Route
+            exact
+            path="/"
+            component={HomePage}
           />
           <Route exact path="/register" component={Register} />
           <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
