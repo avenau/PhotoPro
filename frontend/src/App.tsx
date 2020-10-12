@@ -15,6 +15,7 @@ import ExamplePage2 from "./pages/Examples/ExmaplePage2";
 import ExamplePageAuth from "./pages/Examples/ExmaplePageAuth";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
+import Register from "./pages/Register";
 
 function App() {
   /**
@@ -46,6 +47,7 @@ function App() {
               return <ExampleLoginPage {...props} setAuth={setAuth} />;
             }}
           />
+          <Route exact path="/register" component={Register} />
           <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
 
           <Route
