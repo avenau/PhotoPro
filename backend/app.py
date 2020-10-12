@@ -10,9 +10,22 @@ from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 
 import password_reset as password_reset
-# from decorator import make_pretty
+
 app = Flask(__name__)
 CORS(app)
+
+def defaultHandler(err):
+    print(err)
+    response = err.get_response()
+    response.data = dumps({
+        "code": err.code,
+        "name": "System Error",
+        "message": err.description,
+    })
+    response.content_type = 'application/json'
+    return response
+
+app.register_error_handler(Exception, defaultHandler)
 
 # Mongo setup, connect to the db
 app.config["MONGO_URI"] = "mongodb://localhost:27017/angular-flask-muckaround"
@@ -81,9 +94,10 @@ def auth_passwordreset_reset():
 
     reset_code = request.form.get("reset_code")
     new_password = request.form.get("new_password")
+    email = request.form.get("email")
 
     return dumps(
-        password_reset.password_reset_reset(reset_code, new_password)
+        password_reset.password_reset_reset(reset_code, new_password, email)
     )
 
 @app.route('/login', methods=['GET','POST'])

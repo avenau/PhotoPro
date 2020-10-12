@@ -13,9 +13,8 @@ import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
 import ExamplePage from "./pages/Examples/ExmaplePage";
 import ExamplePage2 from "./pages/Examples/ExmaplePage2";
 import ExamplePageAuth from "./pages/Examples/ExmaplePageAuth";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import "./axios";
-import "bootstrap/dist/css/bootstrap.min.css";
+import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import Register from "./pages/Register";
 
 function App() {
@@ -48,9 +47,19 @@ function App() {
               return <ExampleLoginPage {...props} setAuth={setAuth} />;
             }}
           />
-          <Route exact path="/register" component={Register}/>
+          <Route exact path="/register" component={Register} />
           <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
 
+          <Route
+            exact
+            path="/forgotpassword/request"
+            component={ForgotPasswordPage}
+          />
+          <Route
+            exact
+            path="/forgotpassword/reset"
+            component={ResetPasswordPage}
+          />
           {/* EXAMPLE LOGIN/REGISTER ROUTES BELOW */}
           {/* <Route
             exact

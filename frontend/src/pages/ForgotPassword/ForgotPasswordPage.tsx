@@ -4,8 +4,9 @@ import Button from "react-bootstrap/Button";
 import axios from "axios";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import "./ForgotPasswordPage.scss";
+import { RouteChildrenProps } from "react-router-dom";
 
-interface Props {}
+interface Props extends RouteChildrenProps {}
 
 interface State {
   email?: string;
@@ -17,30 +18,41 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
     this.state = {};
   }
   private handleSubmit(event: React.FormEvent<HTMLElement>) {
-    if (event) {
-      event.preventDefault();
-    }
+    event.preventDefault();
     let email = this.state.email;
-    // axios.post("/passwordreset/request", { email: email });
-    axios.get("/").then(console.log);
+    axios
+      .post("/passwordreset/request", { email })
+      .then((r) => {
+        if (r.status !== 200) {
+          throw new Error();
+        }
+        this.props.history.push({
+          pathname: "/forgotpassword/reset",
+          state: { email },
+        });
+      })
+      .catch((e) => console.log(e));
   }
 
   private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event) {
-      event.preventDefault();
-    }
+    event.preventDefault();
     const name = event.target.name;
     this.setState({ [name]: event.target.value });
-    console.log(this.state);
   }
 
   render() {
     return (
       <Jumbotron className="forgot-jumbo">
-        <Form onSubmit={(e) => this.handleSubmit(e)}>
+        <p>
+          Enter your email below and you will be sent a verification code. Enter
+          this on the next page to reset your password.
+        </p>
+        <Form
+          onSubmit={(e: React.FormEvent<HTMLElement>) => this.handleSubmit(e)}
+        >
           <Form.Group controlId="formGroupEmail">
-            <Form.Label column>Email address</Form.Label>
             <Form.Control
+              required
               type="email"
               placeholder="Email Address"
               name="email"
