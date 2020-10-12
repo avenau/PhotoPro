@@ -10,7 +10,7 @@ TODO
 Put users current details as placeholders of inputs
 Find out how to know who is currently logged in so I know which user's database to change
 Display error message when password is wrong
-Redirect user to profile when changes are successful
+Redirect user to profile when changes are successful x
 List all the changes that the user is making on the confirmation page
 Display password is incorrect on confirmation page
 */
