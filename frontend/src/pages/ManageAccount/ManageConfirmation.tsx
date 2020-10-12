@@ -11,6 +11,7 @@ export default function ManageConfirmation() {
     const location = useLocation();
     const history = useHistory();
     let inputPassword = "";
+    const [passwordFeedback, setFeedback] = useState("");
 
     function mapToObject(map: Map<string, any>) {
         const result = Object.create(null);
@@ -58,7 +59,7 @@ export default function ManageConfirmation() {
                         pathname: '/home',
                     })
                 } else {
-
+                    setFeedback("The password you entered is incorrect!");
                 }
             })
     }
@@ -71,6 +72,9 @@ export default function ManageConfirmation() {
                 <Form.Group controlId="passwordForm">
                     <Form.Label>Current Password</Form.Label>
                     <Form.Control required type="password" placeholder="Enter Your Password" name="password" onChange={(e) => handleChange(e)} />
+                    <Form.Text id="passwordFeedback">
+                        {passwordFeedback}
+                    </Form.Text>
                 </Form.Group>
                 <Button variant="primary" type="submit">
                     Save Change
