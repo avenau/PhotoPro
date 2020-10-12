@@ -78,11 +78,9 @@ def auth_password_reset_request():
     Given an email address, if the user is a registered user, semd an email
     with a link that they can access temporarily to change their password
     """
-    print(request.values.get("email"))
-    # data = json.loads(request.args)
     email = request.values.get("email")
 
-    msg = password_reset.password_reset_request(email)
+    msg = password_reset.password_reset_request(email, mongo)
     mail = Mail(app)
     mail.send(msg)
 
@@ -92,12 +90,12 @@ def auth_password_reset_request():
 def auth_passwordreset_reset():
     """ Given a reset code, change user's password """
 
+    email = request.form.get("email")
     reset_code = request.form.get("reset_code")
     new_password = request.form.get("new_password")
-    email = request.form.get("email")
 
     return dumps(
-        password_reset.password_reset_reset(reset_code, new_password, email)
+        password_reset.password_reset_reset(email, reset_code, new_password)
     )
 
 @app.route('/login', methods=['GET','POST'])
@@ -133,7 +131,7 @@ def account_registration():
 
     # Make some hashbrowns
     hashedPassword = bcrypt.generate_password_hash(password)
-   
+
     print(firstName,lastName, email, nickname, password, privFName, privLastName,privEmail)
 
     # Insert account details into collection called 'user'
