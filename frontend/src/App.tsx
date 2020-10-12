@@ -9,7 +9,14 @@ import "./App.css";
 import HomePage from "./pages/HomePage";
 import { AuthProvider } from "./AuthContext";
 import "./axios";
-// import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
+import ExamplePage from "./pages/Examples/ExmaplePage";
+import ExamplePage2 from "./pages/Examples/ExmaplePage2";
+import ExamplePageAuth from "./pages/Examples/ExmaplePageAuth";
+import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
+import Register from "./pages/Register";
 
 function App() {
   /**
@@ -34,10 +41,24 @@ function App() {
         <Switch>
           <Route
             exact
-            path="/"
-            component = {HomePage}
-          />;
+            path="/login"
+            render={(props: RouteComponentProps) => {
+              return <ExampleLoginPage {...props} setAuth={setAuth} />;
+            }}
+          />
+          <Route exact path="/register" component={Register} />
+          <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
 
+          <Route
+            exact
+            path="/forgotpassword/request"
+            component={ForgotPasswordPage}
+          />
+          <Route
+            exact
+            path="/forgotpassword/reset"
+            component={ResetPasswordPage}
+          />
           {/* EXAMPLE LOGIN/REGISTER ROUTES BELOW */}
           {/* <Route
             exact

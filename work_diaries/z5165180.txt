@@ -1,0 +1,13 @@
+Include: what was finished, technical and non-technical obstacles, what was not finished (and why, how it affects the project, what adjustments need to be made), what is planned for next period
+
+Week 1
+Joined JAJAC. Discussed possible software stacks to implement PhotoPro. We all decided to include Python in the stack, but were undecided on the rest of the stack. Joseph suggested CRUD using MongoDB, Angular, Flask, and Python. Rest of us are looking in to it. For next week we have allocated certain categories of user stories to each team member, and the acceptance criteria for the stories as well. My portion of the stories are related to login, authentication, user profile management. 
+
+Week 2
+User stories were completed by all team members. I checked over all the user stories briefly, providing a few possible tweaks. During our lab I wrote the criteria for story point assignment, which could be 1, 2, 3, 5 or 8 (Fibonacci). As a team we assigned story points to a few stories to calibrate our definitions of how points should be assigned. My job over the next week is to (1) Assign points to the rest of the stories, (2) Work with Aven and Joanne to complete the Interface and Flow diagrams for the Proposal.
+
+Week 3
+I assigned points to the rest of the user stories on Jira. I created a collaborative sketchboard to work on interface/flow diagrams. I spent many hours with Aven and Joanne making progress the interface/flow diagrams. Coen and Joseph helped out with storyboarding later in the week as it turned out to be a lot of work with all the extensions we planned. Storyboards were not completed on time since we didn't correctly estimate the amount of work that needed to be done. Since the storyboards weren't complete, our draft proposal was pushed back. The effect on the project wasn't too bad as we still had 4 days before the proposal was due. Before next week we are planning to have the proposal complete by Saturday and some functioning web pages before our meeting on Tuesday.
+
+Week 4
+Finished storyboard. Coen and Joseph had to help out more than expected. I wrote a few paragraphs in the proposal relating to Photo Showdown, and fixed the wording of a few sentences. Coen submitted the proposal on Sunday afternoon. Spent a few days learning how React works, as I had zero prior experience. We are aiming to have some functioning pages for the progressive demo in week 5.

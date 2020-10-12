@@ -1,0 +1,22 @@
+Week 1
+Formed a group and decided on doing PhotoPro.
+Discussed our options on what development stack to use.
+
+Week 2
+I did the 'Achieving Project Objectives' section.
+Met with Allan and Joanne to work on the storyboard.
+I didn't make it to the extra team meeting this week.
+In the first meeting the team talked about potential novelty features.
+In the lab we were drafting and starting our proposal, planning to get the draft finished by week 3 first meeting.
+Joseph made a quick app using the development stack we agreed on and made a video on what he did.
+
+Week 3
+Worked on the storyboard a little bit with Allan and Joanne.
+In the first meeting we were discussing about what we did on week 2.
+	- Coen did the Background section in the proposal as well as copying all the user stories into JIRA
+	- Joseph did the Software Architecture section for the proposal
+	- Joanne did a big part of the storyboard
+	- Allan estimated the rest of the story points and also did a big part of the storyboard
+In the second meeting we planned for our first sprint.
+We later decided to use React instead of Angular because Coen and Joanne has some experience in React.
+
