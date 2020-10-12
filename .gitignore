@@ -5,6 +5,7 @@ __pycache__/
 instance/
 .webassets-cache
 
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
