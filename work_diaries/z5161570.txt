@@ -11,8 +11,13 @@ I added all of the user stories and acceptance criteria that the team has writte
 We met in the lab and allocated tasks to be completed by next week. I will write up the background for the proposal and duplicate the user story text.
 I created as base example of integrating python flask with react and essentially created the basis for the project, expanding on Joe's previous creation. I also created a video walkthrough of this creation for the team.
 
----------------- Week 2 ----------------
+---------------- Week 3 ----------------
 I wrote the background section, copied all of the user story text, and explained the novelty features for the proposal.
 Joe and I assisted in storyboarding but this was mainly completed by Allan, Aven and Joanne.
 I made some minor adjustments to the base example I created last week and added that to the repo as our starting point.
 In the lab we planned our first sprint and brainstormed our new novelty feature.
+
+---------------- Week 4 ----------------
+I began working on JAJAC-16
+I set up frontend routing for different pages
+I set up default backend connections through axios
