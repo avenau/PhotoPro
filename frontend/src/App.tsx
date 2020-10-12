@@ -13,6 +13,10 @@ import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
 import ExamplePage from "./pages/Examples/ExmaplePage";
 import ExamplePage2 from "./pages/Examples/ExmaplePage2";
 import ExamplePageAuth from "./pages/Examples/ExmaplePageAuth";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import "./axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Register from "./pages/Register";
 
 function App() {
   /**
