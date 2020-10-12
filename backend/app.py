@@ -98,10 +98,12 @@ def account_registration():
     # ======= Backend validation =======
     # As front end checks could be avoided
     # Make a helper function for backend validation too
-    # Backend check on password 10 characters
+    # Backend check on password 8 characters
     # Backend check on email
     # First name
     # Last name
+
+    
 
 
     # Register a new account
