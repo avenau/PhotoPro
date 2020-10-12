@@ -6,6 +6,7 @@ import {
   Switch,
 } from "react-router-dom";
 import "./App.css";
+import HomePage from "./pages/HomePage";
 import { AuthProvider } from "./AuthContext";
 import "./axios";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
@@ -38,14 +39,17 @@ function App() {
     <AuthProvider value={authDetails!}>
       <Router>
         <Switch>
-          <Route exact path="/example" component={ExamplePage} />
-          <Route exact path="/example2" component={ExamplePage2} />
           <Route
             exact
             path="/login"
             render={(props: RouteComponentProps) => {
               return <ExampleLoginPage {...props} setAuth={setAuth} />;
             }}
+          />
+          <Route
+            exact
+            path="/"
+            component={HomePage}
           />
           <Route exact path="/register" component={Register} />
           <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
