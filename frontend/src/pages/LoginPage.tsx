@@ -1,21 +1,21 @@
 import React from "react";
-import Jumbotron from "react-bootstrap/Jumbotron"
-import Container from "react-bootstrap/Container"
-import Button from "react-bootstrap/Button"
-import Form from "react-bootstrap/Form"
-import Row from "react-bootstrap/Row"
-import Col from "react-bootstrap/Col"
+import Jumbotron from "react-bootstrap/Jumbotron";
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import axios from "axios";
-import Toolbar from "../components/Toolbar/Toolbar"
+import Toolbar from "../components/Toolbar/Toolbar";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {RouteChildrenProps} from "react-router-dom";
 
-interface LoginProps  {
+interface LoginProps extends RouteChildrenProps {
   setAuth: (token: string, email: string) => void
-  history: any
 }
 
 export default class Login extends React.Component <LoginProps, any> {
-  constructor(props: any) {
+  constructor(props: LoginProps) {
     super(props);
     this.state = {
       email: "",
