@@ -1,4 +1,4 @@
-Week 1 (Wed 16 Sept - Wed 23 Sept)
+=======================Week 1 (Wed 16 Sept - Wed 23 Sept)=======================
 
 We formed a group of five and collectively decided on doing the PhotoPro project.
 We outlined the key features of the web application and drafted some user stories.
@@ -24,3 +24,45 @@ I need to make sure I install MongoDB and fix my venv so I can be ready for deve
 NEXT
 Complete storyboard diagram for proposal. Help with background if needed. Fix venv
 and install MongoDB.
+
+=======================Week 2 (Wed 23 Sept - Wed 30 Sept)=======================
+
+We focused on completing our allocated tasks for the proposal.
+
+PLANNED
+Complete storyboard diagram. Fix up venv and install MongoDB
+
+FINISHED
+Almost completed storyboard diagram. Fixed virtualenv, installed MongoDB, watched video on React.
+
+CHALLENGES
+Figuring out each component for storyboard.
+
+REFLECTION
+It was good being able to collaborate on the storyboard. The process could be more efficient
+if we set out certain standards for design decisions earlier on.
+
+NEXT
+Finish storyboard. Help with writing assumptions for proposal.
+
+=======================Week 3 (Wed 30 Sept - Wed 7 Oct)=======================
+
+We brainstormed some more ideas on introducing novelty to the project - ended up on showdown. We
+finished off the proposal.
+We allocated tasks for our two week sprint for the Prospective demo. I chose to complete the task
+of account creation
+
+PLANNED
+Finish proposal. Allocate tasks for sprint. Start working on front end part of page.
+
+FINISHED
+The proposal. I mostly helped with the flowchart, storyboard.
+
+CHALLENGES
+Learning React again. Coordinating with many people.
+
+REFLECTION
+Read more documentation!!! Be more patient.
+
+NEXT
+Continue working on account creation and connect to backend.
