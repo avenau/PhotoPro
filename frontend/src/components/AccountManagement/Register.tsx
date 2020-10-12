@@ -24,14 +24,28 @@ export default function Register() {
     const [privLastName, setPrivLastName] = useState(true)
     const [privEmail, setPrivEmail] = useState(true)
 
+    // Optional values
+    const [aboutMe, setAboutMe] = useState('')
+    const [DOB, setDOB] = useState('')
+
+
+    // Get today's date for max DOB
+    const now = new Date()
+    const day: number = now.getDate()
+    const month: number = now.getMonth() + 1
+    const year: number = now.getFullYear()
+    const today = year + '-' + month + '-' + day
+
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
-          event.preventDefault();
-          event.stopPropagation();
-          console.log('false')
+            event.preventDefault();
+            event.stopPropagation();
+            console.log('false')
       } else {
+          // Check if email is already registered for photopro
+
           // All inputs are valid
           axios.post('/accountregistration', 
             {firstName: firstName,
@@ -41,20 +55,20 @@ export default function Register() {
             password: password,
             privFName: privFName,
             privLastName: privLastName,
-            privEmail: privEmail
+            privEmail: privEmail,
+            aboutMe: aboutMe,
+            DOB: DOB
         })
       }
       setFeedback(true)
     };
 
     // TODO
-    // DOB
-    // About me
     // Location
+
     return (
         <Container>
         <Form noValidate validated={validateFeedback} onSubmit={handleSubmit}>
-            <Form.Group>
             <Form.Group>
                 <Form.Label>First name</Form.Label>
                 <Form.Control required placeholder="Enter first name" onChange={e => setFName(e.target.value)}/>
@@ -74,8 +88,17 @@ export default function Register() {
                 <Form.Label>Photopro nickname</Form.Label>
                 <Form.Control required placeholder="Enter nickname" onChange={e => setNickname(e.target.value)}/>
             </Form.Group>
-            </Form.Group>
             <ValidatePassword validPass={setValidPass} setPassword={setPassword}/>
+            <br/>
+            <Form.Group>
+                <Form.Label>About me</Form.Label>
+                <Form.Control type="text" placeholder="Optional" onChange={e => setAboutMe(e.target.value)} />
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Date of birth</Form.Label>
+                <Form.Control type="date" placeholder="Birthday" max={today} onChange={e => setDOB(e.target.value)} />
+                <Form.Text className="text-muted">Optional. This will NOT be displayed on your profile.</Form.Text>
+            </Form.Group>
             <Button disabled={!validPassword} type='submit'>Submit</Button>
         </Form>
         </Container>
