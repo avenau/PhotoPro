@@ -3,11 +3,12 @@ from Error import ValueError
 from threading import Timer
 from hashlib import md5
 from random import random
+import traceback
 
 
 reset_codes = []
 
-def password_reset_request(email, mongo):
+def password_reset_request(email):
     """
     Given an email address, if the user is a registered user, semd an email
     with a link that they can access temporarily to change their password
@@ -37,11 +38,16 @@ def password_reset_request(email, mongo):
 
     return msg
 
-def password_reset_reset(email, reset_code, new_password):
+def password_reset_reset(email, reset_code, new_password, mongo):
     """
     TODO Contact Database
     """
     if(valid_reset_code(email, reset_code)):
+        try:
+            mongo.db.user.update_one({"email": email}, {"$set":{"password": new_password}})
+        except Exception:
+            print("Errors... :-(")
+            print (traceback.format_exc())
         remove_code(email, reset_code)
         return {}
 

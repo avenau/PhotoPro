@@ -80,7 +80,7 @@ def auth_password_reset_request():
     """
     email = request.values.get("email")
 
-    msg = password_reset.password_reset_request(email, mongo)
+    msg = password_reset.password_reset_request(email)
     mail = Mail(app)
     mail.send(msg)
 
@@ -93,9 +93,10 @@ def auth_passwordreset_reset():
     email = request.form.get("email")
     reset_code = request.form.get("reset_code")
     new_password = request.form.get("new_password")
+    hashedPassword = bcrypt.generate_password_hash(new_password)
 
     return dumps(
-        password_reset.password_reset_reset(email, reset_code, new_password)
+        password_reset.password_reset_reset(email, reset_code, hashedPassword, mongo)
     )
 
 @app.route('/login', methods=['GET','POST'])
