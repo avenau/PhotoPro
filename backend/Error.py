@@ -19,3 +19,17 @@ class ValueError(HTTPException):
     '''
     code = 400
     message = 'No message specified'
+
+class EmailError(HTTPException):
+    '''
+    EmailError: Error with the email given
+    '''
+    code = 400
+    message = 'No message specified'
+
+class PasswordError(HTTPException):
+    '''
+    PasswordError: Error with the email given
+    '''
+    code = 400
+    message = 'No message specified'

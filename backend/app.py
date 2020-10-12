@@ -10,6 +10,7 @@ from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 
 import password_reset as password_reset
+import validate_registration as val_reg
 
 app = Flask(__name__)
 CORS(app)
@@ -107,26 +108,29 @@ def login():
 
 @app.route('/accountregistration', methods=['POST'])
 def account_registration():
-
-    # TODO
+    # TODO Access to XMLHttpRequest at 'http://localhost:8001/accountregistration' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
     # ======= Backend validation =======
-    # As front end checks could be avoided
-    # Make a helper function for backend validation too
+    # As front end checks could be bypassed
     # Backend check on password 8 characters
     # Backend check on email
     # First name
     # Last name
 
-    
+    email = request.form.get("email")
+    val_reg.valid_email(mongo,email)
 
+    firstName = request.form.get("firstName")
+    val_reg.valid_name(firstName)
+
+    lastName = request.form.get("lastName")
+    val_reg.valid_name(lastName)
+
+    password = request.form.get("password")
+    val_reg.valid_pass(password)
 
     # Register a new account
     # Get all form values
-    firstName = request.form.get("firstName")
-    lastName = request.form.get("lastName")
     nickname = request.form.get("nickname")
-    password = request.form.get("password")
-    email = request.form.get("email")
     privFName = request.form.get("privFName")
     privLastName = request.form.get("privLastName")
     privEmail = request.form.get("privEmail")
