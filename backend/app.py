@@ -113,7 +113,7 @@ def manage_account():
     #Need Something to Check if current logged in account exist in database
     #I am assuming user_id is stored in localStorage
     #Hard coded this part, this part should check what the logged in user object_id is
-    current_user = "5f81131a48ca54daa5e46324"
+    current_user = data['u_id']
     try:
         find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
@@ -137,8 +137,10 @@ def password_check():
     #Need Something to Check if current logged in account exist in database
     #I am assuming user_id is stored in localStorage
     #Hard coded this part, this part should check what the logged in user object_id is
-    current_user = "5f81131a48ca54daa5e46324"
+    
     data = request.form.to_dict()
+    print(data)
+    current_user = data['u_id']
     current_password = mongo.db.user.find_one({"_id":ObjectId(current_user)})['password']
     if (current_password == data['password']):
         data['password'] = "true"

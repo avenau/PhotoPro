@@ -24,11 +24,13 @@ export default function ManageConfirmation() {
         return result
     }
 
-    function updateDB(event: React.FormEvent<HTMLElement>) {
+    function updateDB(event: React.FormEvent<HTMLElement>, u_id: string) {
         if (event) {
             event.preventDefault();
         }
         let stateMap = location.state as Map<string, any>;
+
+        stateMap.set('u_id', localStorage.getItem('u_id'));
         console.log(stateMap);
         console.log(JSON.stringify(mapToObject(stateMap)));
         fetch(`http://localhost:8001/manage_account/success`, {
@@ -46,10 +48,10 @@ export default function ManageConfirmation() {
         if (event) {
             event.preventDefault();
         }
-        Axios.post('http://localhost:8001/manage_account/confirm', { password: inputPassword })
+        Axios.post('http://localhost:8001/manage_account/confirm', { password: inputPassword, u_id: localStorage.getItem('u_id') })
             .then(function (response) {
                 if (response.data.password == "true") {
-                    updateDB(event);
+                    updateDB(event, response.data.u_id);
                     //This will lead to profile page when the page is done
                     //Just using home as a filler
                     history.push({

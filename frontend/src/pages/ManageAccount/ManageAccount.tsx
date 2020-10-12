@@ -8,9 +8,7 @@ import { Link, useHistory, useLocation } from "react-router-dom";
 /*
 TODO
 Put users current details as placeholders of inputs
-Find out how to know who is currently logged in so I know which user's database to change
 Display error message when password is wrong
-Redirect user to profile when changes are successful x
 List all the changes that the user is making on the confirmation page
 Display password is incorrect on confirmation page
 */
@@ -22,6 +20,8 @@ export default function ManageAccount() {
     const updateInput = (key: string, value: any) => {
         setInput(inputState.set(key, value));
     }
+
+
     const location = useLocation();
     const history = useHistory();
 
@@ -30,6 +30,7 @@ export default function ManageAccount() {
             event.preventDefault();
         }
         setFeedback(true);
+        console.log(inputState);
         history.push({
             pathname: '/manage_confirmation',
             state: inputState
