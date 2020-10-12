@@ -9,6 +9,7 @@ import HomePage from "./pages/HomePage";
 import { AuthProvider } from "./AuthContext";
 import "./axios";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import AnonRoute from "./components/AnonRoute/AnonRoute";
 import Login from "./pages/LoginPage"
 import SearchBar from './components/SearchBar/DummySearchBar'
 import DummyFeed from './DummyFeed'
@@ -37,8 +38,8 @@ function App() {
     <AuthProvider value={authDetails!}>
       <Router>
         <Switch>
-          <Route exact path="/" component={HomePage}/>
-          <Route exact path="/login" render={(props) => {
+          <AnonRoute exact path="/" component={HomePage}/>
+          <AnonRoute exact path="/login" render={(props) => {
               return <Login {...props} setAuth={setAuth} />;
             }}
           />
