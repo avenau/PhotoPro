@@ -10,6 +10,10 @@ from flask_bcrypt import Bcrypt
 from showdown.get_images import get_images
 from welcome.contributors import get_popular_contributors_images
 from welcome.popular_images import get_popular_images
+#Added BSON library, needed for ObjectId data type
+from bson.objectid import ObjectId
+import traceback
+
 import password_reset as password_reset
 import validate_registration as val_reg
 
@@ -33,9 +37,8 @@ app.register_error_handler(Exception, defaultHandler)
 
 # Mongo setup, connect to the db
 local_db = "mongodb://localhost:27017/angular-flask-muckaround"
-remote_db = """mongodb://jajac:databasepassword@coen-townson.me:27017/
-               angular-flask-muckaround?authSource=admin"""
-app.config["MONGO_URI"] = local_db
+remote_db = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
+app.config["MONGO_URI"] = remote_db
 mongo = PyMongo(app)
 
 # Creating email server
@@ -211,6 +214,73 @@ def welcome_get_popular_images():
     return dumps({
         'popular_images': images
     })
+    return dumps({})
+    
+@app.route('/manage_account/success', methods=['GET', 'POST'])
+def manage_account():
+    errors = []
+    results = {}
+    data = json.loads(request.data.decode())
+    print(type(data))
+    #Need Something to Check if current logged in account exist in database
+    #I am assuming user_id is stored in localStorage
+    #Hard coded this part, this part should check what the logged in user object_id is
+    current_user = data['u_id']
+    try:
+        find_userdb = {"_id": ObjectId(current_user)}
+        for key, value in data.items():
+            if (value == ""):
+                continue
+            change_userdb = {"$set": { key: value } }
+            mongo.db.user.update_one(find_userdb, change_userdb)    
+        
+    except Exception:
+        print("Errors... :-(")
+        print (traceback.format_exc())
+        errors.append("Couldn't get text")
+
+    return dumps(data)
+    
+@app.route('/manage_account/confirm', methods=['GET', 'POST'])
+def password_check():
+    errors = []
+    results = {}
+    #data = json.loads(request.data.decode())
+    #Need Something to Check if current logged in account exist in database
+    #I am assuming user_id is stored in localStorage
+    #Hard coded this part, this part should check what the logged in user object_id is
+    
+    data = request.form.to_dict()
+    print(data)
+    current_user = data['u_id']
+    current_password = mongo.db.user.find_one({"_id":ObjectId(current_user)})['password']
+    if (current_password == data['password']):
+        data['password'] = "true"
+    else:
+        data['password'] = "false"
+    print(data)
+
+    return data
+    
+@app.route('/get_user_info', methods=['GET', 'POST'])
+def get_user():
+    errors = []
+    results = {}
+   # print('In get_user_info')
+    data = request.form.to_dict()
+    #print(data)
+    current_uid = data['u_id']
+    current_user = mongo.db.user.find_one({"_id":ObjectId(current_uid)})
+    #print(current_user)
+    data['fname'] = current_user['fname']
+    data['lname'] = current_user['lname']
+    data['email'] = current_user['email']
+    data['nickname'] = current_user['nickname']
+    data['dob'] = current_user['birth_date']
+    data['location'] = current_user['country']
+    data['about_me'] = current_user['about_me']
+
+    return data
 
 
 if __name__ == '__main__':
