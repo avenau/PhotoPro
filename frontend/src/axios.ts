@@ -26,6 +26,8 @@ const errorHandler = (error: any) => {
   // if has response show the error
   console.error(error);
 
+  // TODO toastify back here
+
   if (error.response) {
     console.log(error.response.data);
   }

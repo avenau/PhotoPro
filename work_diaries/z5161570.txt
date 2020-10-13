@@ -1,12 +1,18 @@
----------------- Week 1 ---------------- 
+---------------- Week 1 ----------------
 Group formed and decided on PhotoPro for the project.
 I created the Jira board.
 I wrote stories relating to contributor interactions with photos and make edits/comments to the other stories that have been created.
 I discussed with the team our options for a development stack and we decided on Flask, Angular, MongoDB and Python.
 For next week we are planning to have user stories completed and ready to be added to Jira.
 
----------------- Week 2 ---------------- 
+---------------- Week 2 ----------------
 I met with Joe and Allan and we did a quick review of the user stories and discussed some novelty features that could be added.
 I added all of the user stories and acceptance criteria that the team has written into Jira and created four epics to group these stories.
 We met in the lab and allocated tasks to be completed by next week. I will write up the background for the proposal and duplicate the user story text.
 I created as base example of integrating python flask with react and essentially created the basis for the project, expanding on Joe's previous creation. I also created a video walkthrough of this creation for the team.
+
+---------------- Week 2 ----------------
+I wrote the background section, copied all of the user story text, and explained the novelty features for the proposal.
+Joe and I assisted in storyboarding but this was mainly completed by Allan, Aven and Joanne.
+I made some minor adjustments to the base example I created last week and added that to the repo as our starting point.
+In the lab we planned our first sprint and brainstormed our new novelty feature.
