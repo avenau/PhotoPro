@@ -108,14 +108,8 @@ def login():
 
 @app.route('/accountregistration', methods=['POST'])
 def account_registration():
-    # TODO Access to XMLHttpRequest at 'http://localhost:8001/accountregistration' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
     # ======= Backend validation =======
     # As front end checks could be bypassed
-    # Backend check on password 8 characters
-    # Backend check on email
-    # First name
-    # Last name
-
     email = request.form.get("email")
     val_reg.valid_email(mongo,email)
 
@@ -127,6 +121,9 @@ def account_registration():
 
     password = request.form.get("password")
     val_reg.valid_pass(password)
+
+    location = request.form.get("location")
+    val_reg.valid_location(location)
 
     # Register a new account
     # Get all form values
@@ -152,7 +149,8 @@ def account_registration():
                         'privLName':  privLastName,
                         'privEmail': privEmail,
                         'aboutMe': aboutMe,
-                        'DOB': DOB
+                        'DOB': DOB,
+                        'location': location
                         }
     )
 
