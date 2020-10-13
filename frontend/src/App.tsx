@@ -3,42 +3,39 @@ import {
   BrowserRouter as Router,
   RouteComponentProps,
   Switch,
-  Link
+  Link,
+  Route,
 } from "react-router-dom";
 import "./App.css";
 import "./axios";
 import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
+import ExamplePageAuth from "./pages/Examples/ExamplePageAuth";
 import AnonRoute from "./components/AnonRoute/AnonRoute";
-import LoginPage from "./pages/LoginPage"
-import DummyFeed from './DummyFeed'
+import LoginPage from "./pages/LoginPage";
+import DummyFeed from "./DummyFeed";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
+import ProfilePage from "./pages/ProfilePage";
 import Register from "./pages/Register";
-
-import "bootstrap/dist/css/bootstrap.min.css";
+import DoesNotExistPage from "./pages/DoesNotExistPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
-
 
 function App() {
   return (
     <Router>
       <Switch>
-        <AnonRoute exact path="/login" render={(props) => {
-          return <LoginPage {...props} />;
-        }}
-        />
         <AnonRoute
           exact
-          path="/"
-          component={HomePage}
+          path="/login"
+          render={(props) => {
+            return <LoginPage {...props} />;
+          }}
         />
-        <AnonRoute
-          exact
-          path="/register"
-          component={Register}
-        />
+        <AnonRoute exact path="/" component={HomePage} />
+        <AnonRoute exact path="/register" component={Register} />
         <AnonRoute
           exact
           path="/forgotpassword/request"
@@ -56,6 +53,12 @@ function App() {
             return <LoginPage {...props} />;
           }}
         />
+        <Route
+          exact
+          path="/forgotpassword/reset"
+          component={ResetPasswordPage}
+        />
+        <Route path="/user/:user_id" component={ProfilePage} />
         <ProtectedRoute path="/manage_account">
           <ManageAccount />
         </ProtectedRoute>
@@ -65,7 +68,7 @@ function App() {
         {/* TODO: Joe pls reroute this */}
         <ProtectedRoute path="/feed" component={DummyFeed} />
       </Switch>
-    </Router >
+    </Router>
   );
 }
 
