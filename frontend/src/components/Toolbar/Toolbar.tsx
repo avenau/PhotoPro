@@ -10,10 +10,10 @@ function Toolbar() {
   return (
     <Container>
       <Navbar bg="light">
-        <Navbar.Brand href="#home">PhotoPro</Navbar.Brand>
+        <Navbar.Brand href="/">PhotoPro</Navbar.Brand>
         <Nav className="mr-auto">
           <Nav.Item>
-            <Nav.Link  href="/createAccount">Create Account</Nav.Link>
+            <Nav.Link  href="/register">Create Account</Nav.Link>
           </Nav.Item>
           <Nav.Item>
             <Nav.Link href="/login">Login</Nav.Link>
