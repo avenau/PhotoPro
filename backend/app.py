@@ -140,7 +140,7 @@ def account_registration():
     print(firstName,lastName, email, nickname, password, privFName, privLastName,privEmail)
 
     # Insert account details into collection called 'user'
-    mongo.db.user.insert({'fname': firstName,
+    mongo.db.users.insert({'fname': firstName,
                         'lname': lastName,
                         'email': email,
                         'nickname': nickname,

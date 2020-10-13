@@ -14,7 +14,7 @@ def valid_email(mongo, email):
         raise EmailError('Invalid email')
 
     # Check if already registered
-    if mongo.db.user.find({'email': email}).count() > 0:
+    if mongo.db.users.find({'email': email}).count() > 0:
         raise EmailError('Already registered with this email')
     
     return True
