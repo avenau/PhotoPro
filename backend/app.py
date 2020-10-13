@@ -5,11 +5,13 @@ from flask import Flask, request, redirect, url_for
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
+# import jwt
 from flask_bcrypt import Bcrypt
 from showdown.get_images import get_images
 from welcome.contributors import get_popular_contributors_images
 from welcome.popular_images import get_popular_images
 import password_reset as password_reset
+import validate_registration as val_reg
 
 app = Flask(__name__, static_url_path='/static')
 CORS(app)
@@ -134,23 +136,26 @@ def login():
 
 @app.route('/accountregistration', methods=['POST'])
 def account_registration():
-
-    # TODO
     # ======= Backend validation =======
-    # As front end checks could be avoided
-    # Make a helper function for backend validation too
-    # Backend check on password 10 characters
-    # Backend check on email
-    # First name
-    # Last name
+    # As front end checks could be bypassed
+    email = request.form.get("email")
+    val_reg.valid_email(mongo, email)
+
+    firstName = request.form.get("firstName")
+    val_reg.valid_name(firstName)
+
+    lastName = request.form.get("lastName")
+    val_reg.valid_name(lastName)
+
+    password = request.form.get("password")
+    val_reg.valid_pass(password)
+
+    location = request.form.get("location")
+    val_reg.valid_location(location)
 
     # Register a new account
     # Get all form values
-    firstName = request.form.get("firstName")
-    lastName = request.form.get("lastName")
     nickname = request.form.get("nickname")
-    password = request.form.get("password")
-    email = request.form.get("email")
     privFName = request.form.get("privFName")
     privLastName = request.form.get("privLastName")
     privEmail = request.form.get("privEmail")
@@ -164,19 +169,19 @@ def account_registration():
           privFName, privLastName, privEmail)
 
     # Insert account details into collection called 'user'
-    mongo.db.user.insert({'fname': firstName,
-                          'lname': lastName,
-                          'email': email,
-                          'nickname': nickname,
-                          'password': hashedPassword,
-                          'privFName': privFName,
-                          'privLName':  privLastName,
-                          'privEmail': privEmail,
-                          'aboutMe': aboutMe,
-                          'DOB': DOB
-                          }
-                         )
-
+    mongo.db.users.insert({'fname': firstName,
+                           'lname': lastName,
+                           'email': email,
+                           'nickname': nickname,
+                           'password': hashedPassword,
+                           'privFName': privFName,
+                           'privLName':  privLastName,
+                           'privEmail': privEmail,
+                           'aboutMe': aboutMe,
+                           'DOB': DOB,
+                           'location': location
+                           }
+                          )
     return redirect(url_for('login'))
 
 
