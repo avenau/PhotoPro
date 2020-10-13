@@ -3,10 +3,11 @@ import { Image } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import { PencilSquare } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
+import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
 
 interface Props {
-  photo: string;
+  photo?: string;
   header: boolean;
   current_user: boolean;
   showEdit: boolean;
@@ -56,7 +57,10 @@ export default class UserHeader extends React.Component<Props> {
     return (
       <div className="user-container">
         <div className="cropper">
-          <Image src={this.props.photo} className="image" />
+          <Image
+            src={this.props.photo !== undefined ? this.props.photo : profilePic}
+            className="image"
+          />
         </div>
         <div className="text-container">
           {this.props.header ? (

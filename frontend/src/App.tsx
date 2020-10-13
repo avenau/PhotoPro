@@ -11,8 +11,6 @@ import { AuthProvider } from "./AuthContext";
 import "./axios";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
-import ExamplePage from "./pages/Examples/ExamplePage";
-import ExamplePage2 from "./pages/Examples/ExamplePage2";
 import ExamplePageAuth from "./pages/Examples/ExamplePageAuth";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
