@@ -16,7 +16,9 @@ import ExamplePage2 from "./pages/Examples/ExamplePage2";
 import ExamplePageAuth from "./pages/Examples/ExamplePageAuth";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
+import ProfilePage from "./pages/ProfilePage";
 import Register from "./pages/Register";
+import DoesNotExistPage from "./pages/DoesNotExistPage";
 
 function App() {
   /**
@@ -46,14 +48,11 @@ function App() {
               return <ExampleLoginPage {...props} setAuth={setAuth} />;
             }}
           />
-          <Route
-            exact
-            path="/"
-            component={HomePage}
-          />
+          <Route exact path="/" component={HomePage} />
           <Route exact path="/register" component={Register} />
           <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
 
+          {/* forgot password routes should be anon routes */}
           <Route
             exact
             path="/forgotpassword/request"
@@ -64,6 +63,7 @@ function App() {
             path="/forgotpassword/reset"
             component={ResetPasswordPage}
           />
+          <Route path="/user/:user_id" component={ProfilePage} />
           {/* EXAMPLE LOGIN/REGISTER ROUTES BELOW */}
           {/* <Route
             exact
@@ -86,6 +86,7 @@ function App() {
           <ProtectedRoute path="/channel/:channel_id" component={ChannelPage} />
           <ProtectedRoute path="/search/:query_str" component={SearchPage} />
           <ProtectedRoute path="/search" component={SearchPage} /> */}
+          <Route path="*" component={DoesNotExistPage} />
         </Switch>
       </Router>
     </AuthProvider>

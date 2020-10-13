@@ -44,7 +44,7 @@ def password_reset_reset(email, reset_code, new_password, mongo):
     """
     if(valid_reset_code(email, reset_code)):
         try:
-            mongo.db.user.update_one({"email": email}, {"$set":{"password": new_password}})
+            mongo.db.users.update_one({"email": email}, {"$set":{"password": new_password}})
         except Exception:
             print("Errors... :-(")
             print (traceback.format_exc())
@@ -59,5 +59,6 @@ def valid_reset_code(email, reset_code):
     return False
 
 def remove_code(email, reset_code):
-    reset_codes.remove({"email": email, "reset_code": reset_code})
+    if (reset_codes.count({"email": email, "reset_code": reset_code}) > 0):
+        reset_codes.remove({"email": email, "reset_code": reset_code})
 
