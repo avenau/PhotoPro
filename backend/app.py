@@ -7,7 +7,8 @@ from flask_mail import Mail
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from showdown.get_images import get_images
-from welcome.get_contributors import get_popular_contributors_images
+from welcome.contributors import get_popular_contributors_images
+from welcome.popular_images import get_popular_images
 import password_reset as password_reset
 
 app = Flask(__name__, static_url_path='/static')
@@ -175,11 +176,19 @@ def get_showdown_images():
 
 # Returns the two showdown images for the day
 @app.route('/welcome/getPopularContributors', methods=['GET'])
-def get_contributors():
+def welcome_get_contributors():
     images = get_popular_contributors_images()
     return dumps({
         # Returning a tuple
         'contributors': images
+    })
+
+
+@app.route('/welcome/getPopularImages', methods=['GET'])
+def welcome_get_popular_images():
+    images = get_popular_images()
+    return dumps({
+        'popular_images': images
     })
 
 

@@ -1,15 +1,36 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import {
   Container,
   Row,
   Col,
   Image
 } from 'react-bootstrap';
-import logo from '../../logo.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
-class PopularImages extends Component {
+class PopularImages extends Component<any, any> {
+  constructor(props: any) {
+    super(props)
+
+    this.state = {
+      popularImages: []
+    }
+
+    this.getPopularImagesPaths();
+  }
+
+  getPopularImagesPaths() {
+    axios.get('/welcome/getPopularImages')
+      .then(res => {
+        const images = res.data.popular_images;
+        this.setState({popularImages: images});
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }
+
   render() {
     return(
       <div>
@@ -20,15 +41,11 @@ class PopularImages extends Component {
         </Container>
         <Container>
           <Row>
+            { this.state.popularImages.map((image: string) =>
             <Col>
-              <Image src={ logo }/>
+              <Image src={image} fluid/>
             </Col>
-            <Col>
-              <Image src={ logo }/>
-            </Col>
-            <Col>
-              <Image src={ logo }/>
-            </Col>
+            )}
           </Row>
         </Container>
       </div>

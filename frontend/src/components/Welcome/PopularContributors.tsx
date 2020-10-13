@@ -23,7 +23,6 @@ class PopularContributors extends Component<any, any> {
         const contributors = res.data.contributors;
         this.setState({contributors:contributors});
       })
-
   }
 
 
