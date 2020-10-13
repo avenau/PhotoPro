@@ -33,3 +33,10 @@ class PasswordError(HTTPException):
     '''
     code = 400
     message = 'No message specified'
+
+class LocationError(HTTPException):
+    '''
+    PasswordError: Error with the email given
+    '''
+    code = 400
+    message = 'No message specified'
