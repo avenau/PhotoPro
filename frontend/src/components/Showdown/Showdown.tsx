@@ -4,11 +4,28 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
+import axios from 'axios';
 import image1 from '../../static/apple.png'
 import image2 from '../../static/banana.png'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-class Showdown extends Component {
+class Showdown extends Component<any, any> {
+  constructor(props: any) {
+    super(props)
+    this.state = {
+      imagePaths: []
+    }
+    this.getStandupImagePaths();
+  }
+
+  getStandupImagePaths() {
+    axios.get('/showdown/images')
+      .then(res => {
+        const imagePaths = res.data;
+        this.setState({ imagePaths });
+      })
+  }
+
   render() {
     return (
       <Container className="p-3">
@@ -18,11 +35,11 @@ class Showdown extends Component {
         <Container className="p-2">
           <Row>
             <Col>
-              <Image src={ image1 } fluid/>
+              <Image src={ this.state.imagePaths.path_one } fluid/>
             </Col>
             <Col xs={2}> <h3> VS </h3> </Col>
             <Col>
-              <Image src={ image2 } fluid/>
+              <Image src={ this.state.imagePaths.path_one } fluid/>
             </Col>
           </Row>
           <Row>

@@ -1,15 +1,16 @@
-import json
-from json import dumps
+import os
+from json import dumps, loads
 
 from flask import Flask, request, redirect, url_for
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
+from showdown.get_images import get_images
 
 import password_reset as password_reset
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 CORS(app)
 
 
@@ -40,7 +41,8 @@ app.config.update(
     MAIL_PORT=465,
     MAIL_USE_SSL=True,
     MAIL_USERNAME="photopro.jajac@gmail.com",
-    MAIL_PASSWORD="photoprodemopassword"
+    MAIL_PASSWORD="photoprodemopassword",
+    PORT_NUMBER=os.getenv("BACKEND_PORT")
 )
 
 # Create BCrypt object to hash and salt passwords
@@ -60,7 +62,7 @@ def basic():
 def send_data():
     errors = []
     # results = {}
-    data = json.loads(request.data.decode())
+    data = loads(request.data.decode())
     first_name = data["name"]
     colour = data["colour"]
     try:
@@ -160,5 +162,15 @@ def account_registration():
     return redirect(url_for('login'))
 
 
+# Returns the two showdown images
+@app.route('/showdown/images', methods=['GET'])
+def get_showdown_images():
+    images = get_images()
+    return dumps({
+        'path_one': images[0],
+        'path_two': images[1]
+    })
+
+
 if __name__ == '__main__':
-    app.run(port=8001, debug=True)
+    app.run(port=app.config["PORT_NUMBER"], debug=True)
