@@ -4,25 +4,40 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
-import image1 from '../../static/apple.png'
-import image2 from '../../static/banana.png'
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-class Showdown extends Component {
+class Showdown extends Component<any, any> {
+  constructor(props: any) {
+    super(props)
+    this.state = {
+      imagePaths: []
+    }
+    this.getStandupImagePaths();
+  }
+
+  getStandupImagePaths() {
+    axios.get('/showdown/getImages')
+      .then(res => {
+        const imagePaths = res.data;
+        this.setState({ imagePaths });
+      })
+  }
+
   render() {
     return (
       <Container className="p-3">
         <Row>
-          <h3>Today's PHOTO SHOWDOWN</h3>
+          <h3 style={{"textAlign": "center"}}>Today's PHOTO SHOWDOWN</h3>
         </Row>
         <Container className="p-2">
           <Row>
             <Col>
-              <Image src={ image1 } fluid/>
+              <Image src={ this.state.imagePaths.path_one } fluid/>
             </Col>
             <Col xs={2}> <h3> VS </h3> </Col>
             <Col>
-              <Image src={ image2 } fluid/>
+              <Image src={ this.state.imagePaths.path_two } fluid/>
             </Col>
           </Row>
           <Row>
