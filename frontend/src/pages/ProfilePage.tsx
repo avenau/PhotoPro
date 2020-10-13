@@ -1,10 +1,11 @@
+import axios from "axios";
 import React from "react";
 import { Dropdown } from "react-bootstrap";
-import { PencilSquare } from "react-bootstrap-icons";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { Link, RouteComponentProps } from "react-router-dom";
-import BaseList from "../components/ProfileLists/BaseList";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import { RouteComponentProps } from "react-router-dom";
 import AlbumList from "../components/ProfileLists/AlbumList";
 import CollectionList from "../components/ProfileLists/CollectionList";
 import FollowingList from "../components/ProfileLists/FollowingList";
@@ -16,41 +17,41 @@ import "./Profile.scss";
 interface Props extends RouteComponentProps {}
 
 interface State {
-  key: string;
+  name: string;
+  nickname: string;
+  location: string;
+  email: string;
+  user_id: string;
+  dne: boolean;
 }
 
 export default class ProfilePage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+    const params = this.props.match.params;
+    const user_id = Object.values(params)[0] as string;
     this.state = {
-      key: "showcase",
+      name: "",
+      nickname: "",
+      location: "",
+      email: "",
+      user_id: user_id,
+      dne: false,
     };
-  }
-  /** Return edit button if current user */
-  private createEditButton() {
-    let val = false;
-    if (val) {
-      return;
-    }
-    return (
-      <Link to="/manageaccount">
-        <PencilSquare size="2rem" color="#343a40" />
-      </Link>
-    );
   }
   /** Return add button if current user */
   private createAddButton() {
-    let val = false;
-    if (val) {
-      return;
-    }
     // TODO Edit these links when the pages exist
     return (
       <Dropdown>
         <Dropdown.Toggle
           variant="outline-dark"
           id="dropdown-custom-components"
-          style={{ fontSize: "16pt", padding: "0rem 0.3rem" }}
+          style={{
+            fontSize: "18pt",
+            padding: "0rem 0.2rem",
+            lineHeight: "20pt",
+          }}
         >
           <span>+</span>
         </Dropdown.Toggle>
@@ -84,16 +85,70 @@ export default class ProfilePage extends React.Component<Props, State> {
     );
   }
 
-  render() {
-    const params = this.props.match.params;
-    const user_id = Object.values(params)[0];
-    console.log(user_id);
+  private getUserDetails(u_id: string) {
+    axios
+      .get(`/profiledetails?u_id=${u_id}`)
+      .then((r) => {
+        let newState = this.state as any;
+        Object.entries(r.data).forEach((item) => {
+          newState[item[0]] = item[1];
+        });
+        this.setState(newState);
+      })
+      .catch(() => {
+        let newState = this.state as any;
+        newState.dne = true;
+        this.setState(newState);
+      });
+  }
 
+  private redirect() {
+    this.props.history.goBack();
+  }
+
+  componentDidMount() {
+    this.getUserDetails(this.state.user_id);
+  }
+
+  render() {
+    const u_id = localStorage.getItem("u_id");
+    const current_user = this.state.user_id === u_id;
     return (
       <>
+        <Modal
+          backdrop="static"
+          show={this.state.dne}
+          onHide={() => this.redirect()}
+          animation={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>User Not Found</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            <p>
+              The user you were looking for could not be found, please try again
+              later.
+            </p>
+          </Modal.Body>
+
+          <Modal.Footer>
+            <Button variant="primary" onClick={() => this.redirect()}>
+              Go Back
+            </Button>
+          </Modal.Footer>
+        </Modal>
         <Toolbar />
-        <UserHeader />
-        {this.createEditButton()}
+        <UserHeader
+          current_user={current_user}
+          showEdit
+          header
+          name={this.state.name}
+          nickname={this.state.nickname}
+          location={this.state.location}
+          email={this.state.email}
+        />
+        <br />
         <Tabs
           defaultActiveKey="showcase"
           id="uncontrolled-tab-example"
@@ -108,10 +163,18 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Tab eventKey="collections" title="Collections">
             <CollectionList />
           </Tab>
-          <Tab eventKey="following" title="Following">
-            <FollowingList />
-          </Tab>
-          <Tab title={this.createAddButton()} tabClassName="no-border"></Tab>
+          {current_user ? (
+            <Tab eventKey="following" title="Following">
+              <FollowingList />
+            </Tab>
+          ) : (
+            <></>
+          )}
+          {current_user ? (
+            <Tab title={this.createAddButton()} tabClassName="no-border"></Tab>
+          ) : (
+            <></>
+          )}
         </Tabs>
       </>
     );

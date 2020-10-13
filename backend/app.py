@@ -8,6 +8,8 @@ from flask_cors import CORS
 from flask_mail import Mail, Message
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
+from bson.objectid import ObjectId
+from Error import UserDNE
 
 import password_reset as password_reset
 
@@ -21,6 +23,7 @@ def defaultHandler(err):
         "code": err.code,
         "name": "System Error",
         "message": err.description,
+        "show_toast": err.toast
     })
     response.content_type = 'application/json'
     return response
@@ -28,8 +31,8 @@ def defaultHandler(err):
 app.register_error_handler(Exception, defaultHandler)
 
 # Mongo setup, connect to the db
-app.config["MONGO_URI"] = "mongodb://localhost:27017/angular-flask-muckaround"
-# app.config["MONGO_URI"] = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
+# app.config["MONGO_URI"] = "mongodb://localhost:27017/angular-flask-muckaround"
+app.config["MONGO_URI"] = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
 mongo = PyMongo(app)
 
 # Creating email server
@@ -78,7 +81,7 @@ def auth_password_reset_request():
     Given an email address, if the user is a registered user, semd an email
     with a link that they can access temporarily to change their password
     """
-    email = request.values.get("email")
+    email = request.form.get("email")
 
     msg = password_reset.password_reset_request(email)
     mail = Mail(app)
@@ -150,6 +153,20 @@ def account_registration():
     )
 
     return redirect(url_for('login'))
+
+@app.route('/profiledetails', methods=['GET'])
+def profile_details():
+    u_id = request.args.get("u_id")
+    try:
+        details = mongo.db.users.find_one({"_id" : ObjectId(u_id)})
+    except:
+        raise UserDNE
+    return dumps({
+        "name": details["fname"] + details["lname"],
+        "nickname": details["nickname"],
+        "location": details["location"],
+        "email": details["email"]
+    })
 
 
 if __name__ == '__main__':

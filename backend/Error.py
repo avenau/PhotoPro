@@ -12,6 +12,15 @@ class AccessError(HTTPException):
     '''
     code = 400
     message = 'No message specified'
+    toast = True
+
+class UserDNE(HTTPException):
+    '''
+    UserDNE: Error when user does not exist
+    '''
+    code = 400
+    message = 'No message specified'
+    toast = False
 
 class ValueError(HTTPException):
     '''
@@ -19,3 +28,5 @@ class ValueError(HTTPException):
     '''
     code = 400
     message = 'No message specified'
+    toast = True
+
