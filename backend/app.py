@@ -80,6 +80,22 @@ def send_data():
     })
 
 
+@app.route('/login', methods=['POST'])
+def process_login():
+    email = request.form.get("email")
+    password = request.form.get("password")
+    token = ""
+    user = mongo.db.users.find_one({"email": email, "password": password})
+    # TODO: set the token properly with jwt
+    if user is not None:
+        token = email
+
+    return {
+        "email": email,
+        "token": token
+    }
+
+
 @app.route('/passwordreset/request', methods=['POST'])
 def auth_password_reset_request():
     """
