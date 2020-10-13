@@ -5,7 +5,7 @@ import Container from 'react-bootstrap/Container'
 import axios from "axios";
 import ValidatePassword from "../components/AccountManagement/ValidatePassword";
 import Dropdown from "react-bootstrap/Dropdown"
-
+import Toolbar from "../components/Toolbar/Toolbar"
 export default function Register() {
     const [validateFeedback, setFeedback] = useState(false)
 
@@ -82,7 +82,10 @@ export default function Register() {
     // Location
 
     return (
+        <>
+        <Toolbar/>
         <Container>
+        <br/>
         <Form noValidate validated={validateFeedback} onSubmit={handleSubmit}>
             <Form.Group>
                 <Form.Label>First name</Form.Label>
@@ -127,5 +130,6 @@ export default function Register() {
             <Button disabled={!validPassword} type='submit'>Submit</Button>
         </Form>
         </Container>
+        </>
     )
 }

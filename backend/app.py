@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from flask_pymongo import PyMongo
-import jwt
+# import jwt
 from flask_bcrypt import Bcrypt
 
 import password_reset as password_reset
@@ -29,8 +29,8 @@ def defaultHandler(err):
 app.register_error_handler(Exception, defaultHandler)
 
 # Mongo setup, connect to the db
-# app.config["MONGO_URI"] = "mongodb://localhost:27017/angular-flask-muckaround"
-app.config["MONGO_URI"] = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
+app.config["MONGO_URI"] = "mongodb://localhost:27017/angular-flask-muckaround"
+# app.config["MONGO_URI"] = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
 mongo = PyMongo(app)
 
 # Creating email server
@@ -168,7 +168,7 @@ def account_registration():
                         'location': location
                         }
     )
-
+    print('hello')
     return redirect(url_for('login'))
 
 
