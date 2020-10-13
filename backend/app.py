@@ -7,7 +7,7 @@ from flask_mail import Mail
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from showdown.get_images import get_images
-
+from welcome.get_contributors import get_popular_contributors_images
 import password_reset as password_reset
 
 app = Flask(__name__, static_url_path='/static')
@@ -49,6 +49,7 @@ app.config.update(
 bcrypt = Bcrypt(app)
 
 
+# Test route
 @app.route('/', methods=['GET'])
 # @make_pretty
 def basic():
@@ -162,8 +163,8 @@ def account_registration():
     return redirect(url_for('login'))
 
 
-# Returns the two showdown images
-@app.route('/showdown/images', methods=['GET'])
+# Returns the two showdown images for the day
+@app.route('/showdown/getImages', methods=['GET'])
 def get_showdown_images():
     images = get_images()
     return dumps({
@@ -172,5 +173,15 @@ def get_showdown_images():
     })
 
 
+# Returns the two showdown images for the day
+@app.route('/welcome/getPopularContributors', methods=['GET'])
+def get_contributors():
+    images = get_popular_contributors_images()
+    return dumps({
+        # Returning a tuple
+        'contributors': images
+    })
+
+
 if __name__ == '__main__':
-    app.run(port=app.config["PORT_NUMBER"], debug=True)
+    app.run(debug=True)
