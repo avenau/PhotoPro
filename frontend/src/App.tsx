@@ -28,30 +28,31 @@ function App() {
   return (
       <Router>
         <Switch>
-          <AnonRoute exact path="/" component={HomePage}/>
           <AnonRoute exact path="/login" render={(props) => {
               return <LoginPage {...props} />;
             }}
           />
-          <Route
+          <AnonRoute
             exact
             path="/"
             component={HomePage}
           />
-          <Route exact path="/register" component={Register} />
-          <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
-
-          <Route
+          <AnonRoute 
+            exact 
+            path="/register" 
+            component={Register} 
+          />
+          <AnonRoute
             exact
             path="/forgotpassword/request"
             component={ForgotPasswordPage}
           />
-          <Route
+          <AnonRoute
             exact
             path="/forgotpassword/reset"
             component={ResetPasswordPage}
           />
-          <Route
+          <AnonRoute
             exact
             path="/login"
             render={(props: RouteComponentProps) => {

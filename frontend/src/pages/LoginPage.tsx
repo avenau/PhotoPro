@@ -10,7 +10,7 @@ import Toolbar from "../components/Toolbar/Toolbar";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {RouteChildrenProps} from "react-router-dom";
 
-export default class Login extends React.Component <RouteChildrenProps, any> {
+export default class LoginPage extends React.Component <RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
     super(props);
     this.state = {
