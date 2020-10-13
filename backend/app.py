@@ -99,6 +99,7 @@ def process_login():
     if bcrypt.check_password_hash(hashedPassword, password):
         u_id = user["_id"]
         token = email
+        print(str(u_id))
         
 
     return {
@@ -231,7 +232,7 @@ def manage_account():
             if (value == ""):
                 continue
             change_userdb = {"$set": { key: value } }
-            mongo.db.user.update_one(find_userdb, change_userdb)    
+            mongo.db.users.update_one(find_userdb, change_userdb)    
         
     except Exception:
         print("Errors... :-(")
@@ -252,8 +253,10 @@ def password_check():
     data = request.form.to_dict()
     print(data)
     current_user = data['u_id']
-    current_password = mongo.db.user.find_one({"_id":ObjectId(current_user)})['password']
-    if (current_password == data['password']):
+    current_password = mongo.db.users.find_one({"_id":ObjectId(current_user)})['password']
+    
+    # TODO: set the token properly with jwt
+    if bcrypt.check_password_hash(current_password, data['password']):
         data['password'] = "true"
     else:
         data['password'] = "false"
@@ -269,15 +272,20 @@ def get_user():
     data = request.form.to_dict()
     #print(data)
     current_uid = data['u_id']
-    current_user = mongo.db.user.find_one({"_id":ObjectId(current_uid)})
+    #print("U_ID")
+    #print(type(current_uid))
+    #print(current_uid)
+    current_user = mongo.db.users.find_one({"_id" : ObjectId(current_uid)})
+
+    #print("PRINT CURRENT USER")
     #print(current_user)
     data['fname'] = current_user['fname']
     data['lname'] = current_user['lname']
     data['email'] = current_user['email']
     data['nickname'] = current_user['nickname']
-    data['dob'] = current_user['birth_date']
-    data['location'] = current_user['country']
-    data['about_me'] = current_user['about_me']
+    data['dob'] = current_user['DOB']
+    data['location'] = current_user['location']
+    data['about_me'] = current_user['aboutMe']
 
     return data
 

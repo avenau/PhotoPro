@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./ManageAccount.scss";
 import { useHistory, useLocation } from "react-router-dom";
 import Axios from "axios";
+import Toolbar from "../../components/Toolbar/Toolbar";
 
 
 export default function ManageConfirmation() {
@@ -56,7 +57,7 @@ export default function ManageConfirmation() {
                     //This will lead to profile page when the page is done
                     //Just using home as a filler
                     history.push({
-                        pathname: '/home',
+                        pathname: '/user/:user_id',
                     })
                 } else {
                     setFeedback("The password you entered is incorrect!");
@@ -65,21 +66,24 @@ export default function ManageConfirmation() {
     }
 
     return (
-        <div className="ManageConfirmation" >
-            <p>Are you sure you want to make these changes?</p>
+        <div>
+            <Toolbar />
+            <div className="ManageConfirmation" >
 
-            <Form onSubmit={(e) => checkPassword(e)}>
-                <Form.Group controlId="passwordForm">
-                    <Form.Label>Current Password</Form.Label>
-                    <Form.Control required type="password" placeholder="Enter Your Password" name="password" onChange={(e) => handleChange(e)} />
-                    <Form.Text id="passwordFeedback">
-                        {passwordFeedback}
-                    </Form.Text>
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Save Change
+                <p>Are you sure you want to make these changes?</p>
+                <Form onSubmit={(e) => checkPassword(e)}>
+                    <Form.Group controlId="passwordForm">
+                        <Form.Label>Current Password</Form.Label>
+                        <Form.Control required type="password" placeholder="Enter Your Password" name="password" onChange={(e) => handleChange(e)} />
+                        <Form.Text id="passwordFeedback">
+                            {passwordFeedback}
+                        </Form.Text>
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                        Save Change
                 </Button>
-            </Form>
-        </div >
+                </Form>
+            </div >
+        </div>
     );
 }
