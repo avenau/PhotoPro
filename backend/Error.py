@@ -6,6 +6,7 @@ ValueError: Error with the content given
 
 from werkzeug.exceptions import HTTPException
 
+
 class AccessError(HTTPException):
     '''
     AccessError: Error when user cannot access an item
@@ -22,6 +23,7 @@ class UserDNE(HTTPException):
     message = 'No message specified'
     toast = False
 
+
 class ValueError(HTTPException):
     '''
     ValueError: Error with the content given
@@ -30,3 +32,27 @@ class ValueError(HTTPException):
     message = 'No message specified'
     toast = True
 
+
+class EmailError(HTTPException):
+    '''
+    EmailError: Error with the email given
+    '''
+    code = 400
+    message = 'No message specified'
+    toast = True
+
+class PasswordError(HTTPException):
+    '''
+    PasswordError: Error with the email given
+    '''
+    code = 400
+    message = 'No message specified'
+    toast = True
+
+class LocationError(HTTPException):
+    '''
+    PasswordError: Error with the email given
+    '''
+    code = 400
+    message = 'No message specified'
+    toast = True
