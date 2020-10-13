@@ -56,8 +56,9 @@ export default function ManageConfirmation() {
                     updateDB(event, response.data.u_id);
                     //This will lead to profile page when the page is done
                     //Just using home as a filler
+                    const user_id = localStorage.getItem('u_id')
                     history.push({
-                        pathname: '/user/:user_id',
+                        pathname: '/user/'.concat(response.data.u_id),
                     })
                 } else {
                     setFeedback("The password you entered is incorrect!");
