@@ -75,7 +75,7 @@ def send_data():
     try:
         mongo.db.people.insert_one({"name": first_name,
                                     "colour": colour})
-    except PyMongo.errors.InvalidOperation:
+    except:
         print("Errors... :-(")
         errors.append("Couldn't get text")
 
@@ -87,16 +87,22 @@ def send_data():
 
 @app.route('/login', methods=['POST'])
 def process_login():
+    print("called")
     email = request.form.get("email")
     password = request.form.get("password")
+    u_id = ""
     token = ""
-    user = mongo.db.users.find_one({"email": email, "password": password})
+    user = mongo.db.users.find_one({"email": email})
+    hashedPassword = user["password"]
+    
     # TODO: set the token properly with jwt
-    if user is not None:
+    if bcrypt.check_password_hash(hashedPassword, password):
+        u_id = user["_id"]
         token = email
+        
 
     return {
-        "email": email,
+        "u_id": str(u_id),
         "token": token
     }
 
@@ -129,13 +135,6 @@ def auth_passwordreset_reset():
         password_reset.password_reset_reset(email, reset_code,
                                             hashedPassword, mongo)
     )
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    print('In login')
-    return dumps({})
-
 
 @app.route('/accountregistration', methods=['POST'])
 def account_registration():
@@ -220,7 +219,7 @@ def welcome_get_popular_images():
 def manage_account():
     errors = []
     results = {}
-    data = json.loads(request.data.decode())
+    data = loads(request.data.decode())
     print(type(data))
     #Need Something to Check if current logged in account exist in database
     #I am assuming user_id is stored in localStorage
@@ -284,4 +283,4 @@ def get_user():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=8001, debug=True)
