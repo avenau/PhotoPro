@@ -1,6 +1,5 @@
 import React from "react";
-import { Redirect, Route, RouteProps, RouteChildrenProps } from "react-router-dom";
-import AuthContext from "../../AuthContext";
+import { Redirect, Route, RouteProps } from "react-router-dom";
 
 
 /**

@@ -1,6 +1,5 @@
 import React from "react";
 import { Redirect, Route, RouteProps } from "react-router-dom";
-import AuthContext from "../../AuthContext";
 
 /**
  * Get the token value from localStorage, if it exists then continue.
