@@ -73,7 +73,7 @@ export default class LoginPage extends React.Component <RouteChildrenProps, any>
           <Row>
             <Col>
               {/* TODO: change href */}
-              <a href="/recover">Forgot your password? Click here.</a>
+              <a href="/forgotpassword/request">Forgot your password? Click here.</a>
             </Col>
             <Col>
             </Col>
