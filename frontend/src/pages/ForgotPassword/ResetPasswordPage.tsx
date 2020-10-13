@@ -5,6 +5,7 @@ import axios from "axios";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import "./ForgotPasswordPage.scss";
 import { Redirect, RouteComponentProps } from "react-router-dom";
+import ValidatePassword from "../../components/AccountManagement/ValidatePassword";
 
 interface Props extends RouteComponentProps {}
 
@@ -12,6 +13,7 @@ interface State {
   code?: string;
   newPassword?: string;
   email?: string;
+  validPass?: boolean;
 }
 
 type LocState = {
@@ -21,14 +23,21 @@ type LocState = {
 export default class ForgotPasswordPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { email: (this.props.location.state as LocState).email };
+    this.state = {
+      email: "",
+      validPass: false,
+    };
   }
   private handleSubmit(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
     let code = this.state.code;
     let password = this.state.newPassword;
     let email = this.state.email;
-    // TODO Do password check stuff before sending this off - from Joanne's part
+    // TODO replace with toast in axios
+    if (!this.state.validPass) {
+      alert("Passwords Don't Match");
+      return;
+    }
     axios
       .post("/passwordreset/reset", {
         reset_code: code,
@@ -36,15 +45,12 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
         email,
       })
       .then((r) => {
-        if (r.status !== 200) {
-          throw new Error();
-        }
         this.props.history.push("/login");
       })
       .catch((e) => {
-        console.log(e);
+        console.log("e:", e);
         // TODO replace with toast in axios
-        alert(e.message);
+        alert("Invalid Reset Code");
       });
   }
 
@@ -68,6 +74,12 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
       .catch(() => {
         alert("Failed to send");
       });
+  }
+
+  componentDidMount() {
+    if (this.props.location.state instanceof Object) {
+      this.setState({ email: (this.props.location.state as LocState).email });
+    }
   }
 
   render() {
@@ -95,8 +107,14 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
               }
             />
           </Form.Group>
-          {/* Include Joanne's password component here */}
-          {/* <Password /> */}
+          <ValidatePassword
+            setPassword={(password) => {
+              this.setState({ newPassword: password });
+            }}
+            validPass={(valid) => {
+              this.setState({ validPass: valid });
+            }}
+          />
           <Button variant="primary" type="submit">
             Submit
           </Button>{" "}
