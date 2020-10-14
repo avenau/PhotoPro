@@ -38,7 +38,7 @@ app.register_error_handler(Exception, defaultHandler)
 # Mongo setup, connect to the db
 local_db = "mongodb://localhost:27017/angular-flask-muckaround"
 remote_db = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
-app.config["MONGO_URI"] = local_db
+app.config["MONGO_URI"] = remote_db
 mongo = PyMongo(app)
 
 # Creating email server
@@ -100,7 +100,6 @@ def process_login():
         u_id = user["_id"]
         token = email
         
-
     return {
         "u_id": str(u_id),
         "token": token
