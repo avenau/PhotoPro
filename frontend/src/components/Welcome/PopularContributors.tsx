@@ -14,6 +14,9 @@ class PopularContributors extends Component<any, any> {
     this.state = {
       contributors: []
     }
+  }
+
+  componentDidMount() {
     this.getPopularContributorsPaths();
   }
 
@@ -41,8 +44,8 @@ class PopularContributors extends Component<any, any> {
             of images returned
           */}
           <Row>
-            { this.state.contributors.map((contributor: string) =>
-            <Col>
+            { this.state.contributors.map((contributor: string, index: any) =>
+            <Col key={index}>
               <Image src={contributor} fluid/>
             </Col>
             )}
