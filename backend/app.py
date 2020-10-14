@@ -5,7 +5,6 @@ from flask import Flask, request, redirect, url_for
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
-# import jwt
 from flask_bcrypt import Bcrypt
 from showdown.get_images import get_images
 from welcome.contributors import get_popular_contributors_images
@@ -16,6 +15,7 @@ import traceback
 
 import password_reset as password_reset
 import validate_registration as val_reg
+import token_functions
 
 app = Flask(__name__, static_url_path='/static')
 CORS(app)
@@ -84,10 +84,17 @@ def send_data():
         'colour': colour
     })
 
+@app.route('/verifytoken', methods=['POST'])
+def verify_token():
+    token = request.form.get("token")
+    valid = token_functions.verify_token(token)
+    print(valid)
+    return {
+        "valid": valid
+    }
 
 @app.route('/login', methods=['POST'])
 def process_login():
-    print("called")
     email = request.form.get("email")
     password = request.form.get("password")
     u_id = ""
@@ -98,8 +105,7 @@ def process_login():
     # TODO: set the token properly with jwt
     if bcrypt.check_password_hash(hashedPassword, password):
         u_id = user["_id"]
-        token = email
-        
+        token = token_functions.create_token(str(u_id))
 
     return {
         "u_id": str(u_id),

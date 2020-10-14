@@ -30,7 +30,7 @@ export default class LoginPage extends React.Component <RouteChildrenProps, any>
         console.log("then");
         const data = response.data;
         localStorage.setItem("token", data.token);
-        localStorage.setItem("u_id", data.email);
+        localStorage.setItem("u_id", data.u_id);
         this.props.history.push("/feed");
     });
   }
