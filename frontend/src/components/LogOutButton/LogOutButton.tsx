@@ -1,5 +1,6 @@
 import React from "react";
-import Button from "react-bootstrap/Button"
+import Button from "react-bootstrap/Button";
+import Nav from 'react-bootstrap/Nav';
 import {Redirect} from "react-router-dom";
 
 
@@ -13,11 +14,11 @@ export default function LogOutButton () {
   }
 
   return (
-    <Button variant="primary" 
+    <Nav.Link
       onClick={() => {
         setLoggedOut(true);
       }}>
         Log Out
-    </Button>
+    </Nav.Link>
   )
 }
