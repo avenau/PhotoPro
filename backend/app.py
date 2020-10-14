@@ -7,7 +7,7 @@ from flask_mail import Mail
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from bson.objectid import ObjectId
-from Error import UserDNE
+from Error import UserDNE, EmailError, PasswordError
 from showdown.get_images import get_images
 from welcome.contributors import get_popular_contributors_images
 from welcome.popular_images import get_popular_images
@@ -100,15 +100,23 @@ def verify_token():
 def process_login():
     email = request.form.get("email")
     password = request.form.get("password")
-    u_id = ""
-    token = ""
+    if email == "":
+        raise EmailError("Please enter an email address.")
+    if password == "":
+        raise PasswordError("Please enter a password.")
+
     user = mongo.db.users.find_one({"email": email})
+    if not user:
+        raise EmailError("That email isn't registered.")
     hashedPassword = user["password"]
 
-    # TODO: set the token properly with jwt
+    u_id = ""
+    token = ""
     if bcrypt.check_password_hash(hashedPassword, password):
         u_id = user["_id"]
         token = token_functions.create_token(str(u_id))
+    else:
+        raise PasswordError("That password is incorrect.")
 
     return {
         "u_id": str(u_id),
