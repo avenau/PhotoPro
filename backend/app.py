@@ -6,6 +6,8 @@ from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
+from bson.objectid import ObjectId
+from Error import UserDNE
 from showdown.get_images import get_images
 from welcome.contributors import get_popular_contributors_images
 from welcome.popular_images import get_popular_images
@@ -28,6 +30,7 @@ def defaultHandler(err):
         "code": err.code,
         "name": "System Error",
         "message": err.description,
+        "show_toast": err.toast
     })
     response.content_type = 'application/json'
     return response
@@ -101,7 +104,7 @@ def process_login():
     token = ""
     user = mongo.db.users.find_one({"email": email})
     hashedPassword = user["password"]
-    
+
     # TODO: set the token properly with jwt
     if bcrypt.check_password_hash(hashedPassword, password):
         u_id = user["_id"]
@@ -119,7 +122,7 @@ def auth_password_reset_request():
     Given an email address, if the user is a registered user, semd an email
     with a link that they can access temporarily to change their password
     """
-    email = request.values.get("email")
+    email = request.form.get("email")
 
     msg = password_reset.password_reset_request(email)
     mail = Mail(app)
@@ -192,6 +195,20 @@ def account_registration():
                           )
     return redirect(url_for('login'))
 
+@app.route('/profiledetails', methods=['GET'])
+def profile_details():
+    u_id = request.args.get("u_id")
+    try:
+        details = mongo.db.users.find_one({"_id" : ObjectId(u_id)})
+    except:
+        raise UserDNE
+    return dumps({
+        "name": f"{details['fname']} {details['lname']}",
+        "nickname": details["nickname"],
+        "location": details["location"],
+        "email": details["email"]
+    })
+
 
 # Returns the two showdown images for the day
 @app.route('/showdown/getImages', methods=['GET'])
@@ -220,7 +237,7 @@ def welcome_get_popular_images():
         'popular_images': images
     })
     return dumps({})
-    
+
 @app.route('/manage_account/success', methods=['GET', 'POST'])
 def manage_account():
     errors = []
@@ -237,15 +254,15 @@ def manage_account():
             if (value == ""):
                 continue
             change_userdb = {"$set": { key: value } }
-            mongo.db.user.update_one(find_userdb, change_userdb)    
-        
+            mongo.db.users.update_one(find_userdb, change_userdb)
+
     except Exception:
         print("Errors... :-(")
         print (traceback.format_exc())
         errors.append("Couldn't get text")
 
     return dumps(data)
-    
+
 @app.route('/manage_account/confirm', methods=['GET', 'POST'])
 def password_check():
     errors = []
@@ -254,19 +271,21 @@ def password_check():
     #Need Something to Check if current logged in account exist in database
     #I am assuming user_id is stored in localStorage
     #Hard coded this part, this part should check what the logged in user object_id is
-    
+
     data = request.form.to_dict()
     print(data)
     current_user = data['u_id']
-    current_password = mongo.db.user.find_one({"_id":ObjectId(current_user)})['password']
-    if (current_password == data['password']):
+    current_password = mongo.db.users.find_one({"_id":ObjectId(current_user)})['password']
+
+    # TODO: set the token properly with jwt
+    if bcrypt.check_password_hash(current_password, data['password']):
         data['password'] = "true"
     else:
         data['password'] = "false"
     print(data)
 
     return data
-    
+
 @app.route('/get_user_info', methods=['GET', 'POST'])
 def get_user():
     errors = []
@@ -275,15 +294,20 @@ def get_user():
     data = request.form.to_dict()
     #print(data)
     current_uid = data['u_id']
-    current_user = mongo.db.user.find_one({"_id":ObjectId(current_uid)})
+    #print("U_ID")
+    #print(type(current_uid))
+    #print(current_uid)
+    current_user = mongo.db.users.find_one({"_id" : ObjectId(current_uid)})
+
+    #print("PRINT CURRENT USER")
     #print(current_user)
     data['fname'] = current_user['fname']
     data['lname'] = current_user['lname']
     data['email'] = current_user['email']
     data['nickname'] = current_user['nickname']
-    data['dob'] = current_user['birth_date']
-    data['location'] = current_user['country']
-    data['about_me'] = current_user['about_me']
+    data['dob'] = current_user['DOB']
+    data['location'] = current_user['location']
+    data['about_me'] = current_user['aboutMe']
 
     return data
 

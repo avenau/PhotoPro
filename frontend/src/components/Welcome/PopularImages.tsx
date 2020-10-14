@@ -12,11 +12,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 class PopularImages extends Component<any, any> {
   constructor(props: any) {
     super(props)
-
     this.state = {
       popularImages: []
     }
+  }
 
+  componentDidMount() {
     this.getPopularImagesPaths();
   }
 
@@ -32,6 +33,7 @@ class PopularImages extends Component<any, any> {
   }
 
   render() {
+    //this.getPopularImagesPaths();
     return(
       <div>
         <Container>
@@ -41,8 +43,8 @@ class PopularImages extends Component<any, any> {
         </Container>
         <Container>
           <Row>
-            { this.state.popularImages.map((image: string) =>
-            <Col>
+            { this.state.popularImages.map((image: string, index: any) =>
+            <Col key={index}>
               <Image src={image} fluid/>
             </Col>
             )}

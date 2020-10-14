@@ -1,0 +1,20 @@
+.user-container {
+  align-items: center;
+  display: flex;
+  .text-container {
+    margin-right: 30px;
+  }
+  .cropper {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+    justify-content: center;
+    display: flex;
+    margin-right: 10px;
+    .image {
+      height: 100%;
+      width: auto;
+    }
+  }
+}
