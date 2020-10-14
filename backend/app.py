@@ -198,7 +198,7 @@ def profile_details():
     except:
         raise UserDNE
     return dumps({
-        "name": details["fname"] + details["lname"],
+        "name": f"{details['fname']} {details['lname']}",
         "nickname": details["nickname"],
         "location": details["location"],
         "email": details["email"]
