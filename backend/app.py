@@ -251,7 +251,7 @@ def manage_account():
     try:
         find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
-            if (value == ""):
+            if (value == "" or key == "u_id"):
                 continue
             change_userdb = {"$set": { key: value } }
             mongo.db.users.update_one(find_userdb, change_userdb)
@@ -307,7 +307,7 @@ def get_user():
     data['nickname'] = current_user['nickname']
     data['dob'] = current_user['DOB']
     data['location'] = current_user['location']
-    data['about_me'] = current_user['aboutMe']
+    data['aboutMe'] = current_user['aboutMe']
 
     return data
 
