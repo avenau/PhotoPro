@@ -8,9 +8,9 @@ import Col from "react-bootstrap/Col";
 import axios from "axios";
 import Toolbar from "../components/Toolbar/Toolbar";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {RouteChildrenProps} from "react-router-dom";
+import { RouteChildrenProps } from "react-router-dom";
 
-export default class LoginPage extends React.Component <RouteChildrenProps, any> {
+export default class LoginPage extends React.Component<RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
     super(props);
     this.state = {
@@ -30,9 +30,9 @@ export default class LoginPage extends React.Component <RouteChildrenProps, any>
         console.log("then");
         const data = response.data;
         localStorage.setItem("token", data.token);
-        localStorage.setItem("u_id", data.email);
+        localStorage.setItem("u_id", data.u_id);
         this.props.history.push("/feed");
-    });
+      });
   }
 
   handleChange(event: any) {
@@ -43,48 +43,48 @@ export default class LoginPage extends React.Component <RouteChildrenProps, any>
   render() {
     return (
       <div className="loginPage">
-      <Toolbar />
-      <Container>
-        <Jumbotron>
-          <h1>Log In to PhotoPro</h1>
-          <p>by JAJAC</p>
-        </Jumbotron>
-        <Form onSubmit={(e) => this.handleSubmit(e)}>
-          <Form.Group as={Row} controlId="email">
-            <Col xs={3}>
-              <Form.Label>
-                Email
+        <Toolbar />
+        <Container>
+          <Jumbotron>
+            <h1>Log In to PhotoPro</h1>
+            <p>by JAJAC</p>
+          </Jumbotron>
+          <Form onSubmit={(e) => this.handleSubmit(e)}>
+            <Form.Group as={Row} controlId="email">
+              <Col xs={3}>
+                <Form.Label>
+                  Email
               </Form.Label>
-            </Col>
-            <Col>
-              <Form.Control type="email" placeholder="Enter Email" onChange={(e) => this.handleChange(e)} />
-            </Col>
-          </Form.Group>
-          <Form.Group as={Row} controlId="password">
-            <Col xs={3}>
-              <Form.Label>
-                Password
+              </Col>
+              <Col>
+                <Form.Control type="email" placeholder="Enter Email" onChange={(e) => this.handleChange(e)} />
+              </Col>
+            </Form.Group>
+            <Form.Group as={Row} controlId="password">
+              <Col xs={3}>
+                <Form.Label>
+                  Password
               </Form.Label>
-            </Col>
-            <Col>
-              <Form.Control type="password" placeholder="Enter Password" onChange={(e) => this.handleChange(e)}/>
-            </Col>
-          </Form.Group>
-          <Row>
-            <Col>
-              {/* TODO: change href */}
-              <a href="/forgotpassword/request">Forgot your password? Click here.</a>
-            </Col>
-            <Col>
-            </Col>
-            <Col>
-              <Button variant="primary" type="submit" size="lg">
-                Log In
+              </Col>
+              <Col>
+                <Form.Control type="password" placeholder="Enter Password" onChange={(e) => this.handleChange(e)} />
+              </Col>
+            </Form.Group>
+            <Row>
+              <Col>
+                {/* TODO: change href */}
+                <a href="/forgotpassword/request">Forgot your password? Click here.</a>
+              </Col>
+              <Col>
+              </Col>
+              <Col>
+                <Button variant="primary" type="submit" size="lg">
+                  Log In
               </Button>
-            </Col>
-          </Row>
-        </Form>
-      </Container>
+              </Col>
+            </Row>
+          </Form>
+        </Container>
       </div>
     );
   }

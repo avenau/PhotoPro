@@ -1,6 +1,6 @@
 import React from "react";
-import { Redirect, Route, RouteProps, RouteChildrenProps } from "react-router-dom";
-import AuthContext from "../../AuthContext";
+import { Redirect, Route, RouteProps } from "react-router-dom";
+import axios from "axios"
 
 
 /**
@@ -8,19 +8,22 @@ import AuthContext from "../../AuthContext";
  * as log in, sign up, and the default landing page.
  */
 export default function AnonRoute(props: RouteProps) {
-  /**
- * Get the token value from localStorage, if it exists then continue.
- * If it did not exist then the user should be redirected to login.
- *
- * TODO
- * Could be a good idea to check whether the token is valid with the backend
- * rather than just checking its existence
- */
   const token = localStorage.getItem("token") !== null ? localStorage.getItem("token") : "";
-  if (token) {
-    return <Redirect to="/feed" />;
+  const [loading, setLoading] = React.useState(true); 
+  const [valid, setValid] = React.useState(false);
+
+  axios.post('/verifytoken', {token})
+    .then((response: any) => {
+      if (response.data.valid)
+        setValid(true);
+        setLoading(false);
+    });
+
+  if (loading) {
+    return <div>Loading...</div>
   }
-  return <Route {...props} />;
+
+  return valid ? <Redirect to="/feed" /> : <Route {...props} />;
 }
 
 
