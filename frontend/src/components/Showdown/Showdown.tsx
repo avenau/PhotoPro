@@ -13,6 +13,10 @@ class Showdown extends Component<any, any> {
     this.state = {
       imagePaths: []
     }
+
+  }
+
+  componentDidMount() {
     this.getStandupImagePaths();
   }
 

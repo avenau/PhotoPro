@@ -45,6 +45,7 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
         email,
       })
       .then((r) => {
+        // TODO intermediate confirmation page
         this.props.history.push("/login");
       })
       .catch((e) => {

@@ -2,7 +2,6 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import Form from 'react-bootstrap/Form';
 import Search from '../Search/Search';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -18,10 +17,11 @@ function Toolbar() {
           <Nav.Item>
             <Nav.Link href="/login">Login</Nav.Link>
           </Nav.Item>
+          <Nav.Item>
+            <Search />
+          </Nav.Item>
         </Nav>
-        <Form inline>
-          <Search />
-        </Form>
+
       </Navbar>
     </Container>
   );

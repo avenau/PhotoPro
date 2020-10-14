@@ -1,21 +1,29 @@
 import React from "react";
 import { Redirect, Route, RouteProps } from "react-router-dom";
+import axios from "axios"
 
 /**
- * Get the token value from localStorage, if it exists then continue.
+ * Get the token value from localStorage, check validity with back end
+ * then continue.
  * If it did not exist then the user should be redirected to login.
- *
- * TODO
- * Could be a good idea to check whether the token is valid with the backend
- * rather than just checking its existence
  */
 function ProtectedRoute(props: RouteProps) {
   const token = localStorage.getItem("token") !== null ? localStorage.getItem("token") : "";
-  console.log(token);
-  if (!token) {
-    return <Redirect to="/login" />;
+  const [loading, setLoading] = React.useState(true); 
+  const [valid, setValid] = React.useState(false);
+
+  axios.post('/verifytoken', {token})
+    .then((response: any) => {
+      if (response.data.valid)
+        setValid(true);
+        setLoading(false);
+    });
+
+  if (loading) {
+    return <div>Loading...</div>
   }
-  return <Route {...props} />;
+
+  return valid ? <Route {...props} /> : <Redirect to="/login" />;
 }
 
 export default ProtectedRoute;

@@ -11,8 +11,8 @@ class Search extends Component {
       <Container fluid>
         <Form>
           <Form.Control placeholder="Search" className="mr-sm-2"/>
-          <Button variant="outline-success">Search</Button>
         </Form>
+        <Button variant="outline-success">Search</Button>
       </Container>
     );
   }
