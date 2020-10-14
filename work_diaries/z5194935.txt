@@ -19,3 +19,9 @@ __Week 4__
 - Worked on JAJAC-63:
   - Implemented frontend design
   - Demoed to group
+
+__Week 5__
+
+- Worked on JAJAC-63
+  - Fixed bugs in Toolbar
+  - Added backend components
