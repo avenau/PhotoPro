@@ -14,7 +14,7 @@ import Toolbar from "../components/Toolbar/Toolbar";
 import UserHeader from "../components/UserHeader/UserHeader";
 import "./Profile.scss";
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps { }
 
 interface State {
   name: string;
@@ -168,13 +168,13 @@ export default class ProfilePage extends React.Component<Props, State> {
               <FollowingList />
             </Tab>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
           {current_user ? (
             <Tab title={this.createAddButton()} tabClassName="no-border"></Tab>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
         </Tabs>
       </>
     );
