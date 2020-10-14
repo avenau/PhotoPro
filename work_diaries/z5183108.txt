@@ -66,3 +66,24 @@ Read more documentation!!! Be more patient.
 
 NEXT
 Continue working on account creation and connect to backend.
+
+=======================Week 4 (Wed 7 Oct - Wed 14 Oct)=======================
+
+We continued working on our sprint. I finished my account creation page, which also involved uploading
+data to the databse. Joe worked on the photo feed. Allan worked on login/out of accounts (tokens). Aven 
+on manage account. Coen on recovering password and profile.
+
+PLANNED
+Finish account creation. Photo feed, login, logout, profile, recover password. (Front end only)
+
+FINISHED
+Finish account creation. All of the above features, preliminary version of front end.
+
+CHALLENGES
+Git! And React Router.
+
+REFLECTION
+Be more engaged in listening during meetings (esp. about tokens and user management)
+
+NEXT
+Next sprint to be determined.
