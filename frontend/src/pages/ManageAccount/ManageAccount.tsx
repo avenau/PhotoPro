@@ -41,7 +41,7 @@ export default function ManageAccount() {
                 setNickname(response.data.nickname);
                 setDob(new Date(response.data.dob).toLocaleDateString('en-US'));
                 setLocation(response.data.location);
-                setAbout(response.data.about_me);
+                setAbout(response.data.aboutMe);
 
             })
     }
