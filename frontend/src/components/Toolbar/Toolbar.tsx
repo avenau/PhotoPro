@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -10,8 +11,20 @@ import {Redirect} from "react-router-dom";
 
 
 function IsLoggedIn(props: any) {
-  let token = props.token;
-  return token == null ? <LoggedOut/> : <LoggedIn/>;
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [uId, setUId] = React.useState('No User');
+
+  // Make sure if token is null we send an empty string
+  let token = props.token == null ? "" : props.token;
+  axios.post('/verifytoken', {token})
+    .then((response: any) => {
+      if (response.data.valid){
+        setLoggedIn(true);
+        let u_id = localStorage.getItem('u_id');
+        setUId(u_id == null ? '' : u_id);
+      }
+    });
+  return loggedIn == true ? <LoggedIn user={uId}/> : <LoggedOut/>;
 }
 
 
