@@ -2,6 +2,7 @@ import jwt
 from jwt.exceptions import DecodeError
 from jwt.exceptions import InvalidTokenError
 from jwt.exceptions import InvalidSignatureError
+from Error import ToastError
 
 secret = "imnotsurewhattomakethis"
 
@@ -22,12 +23,12 @@ def verify_token(token):
         u_id = jwt.decode(token, secret)
     except DecodeError:
         print("Token failed validation")
-        raise DecodeError
+        raise ToastError("Token failed validation")
     except InvalidTokenError:
         print("Token failed validation")
-        raise InvalidTokenError
+        raise ToastError("Token failed validation")
     except InvalidSignatureError:
         print("Invalid signature" + secret)
-        raise InvalidSignatureError
+        raise ToastError("Invalid secret")
 
     return u_id

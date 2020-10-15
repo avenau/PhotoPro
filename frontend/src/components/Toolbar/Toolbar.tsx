@@ -13,15 +13,16 @@ import {Redirect} from "react-router-dom";
 function IsLoggedIn(props: any) {
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [uId, setUId] = React.useState('No User');
+  console.log(props.token);
+  let token = props.token;
 
-  // Make sure if token is null we send an empty string
-  let token = props.token == null ? "" : props.token;
-  axios.post('/verifytoken', {token})
+  axios.post('/verifytoken', {token: props.token})
     .then((response: any) => {
       if (response.data.valid){
         setLoggedIn(true);
         let u_id = localStorage.getItem('u_id');
         setUId(u_id == null ? '' : u_id);
+        console.log("logged in");
       }
     });
   return loggedIn == true ? <LoggedIn user={uId}/> : <LoggedOut/>;
@@ -30,6 +31,9 @@ function IsLoggedIn(props: any) {
 
 function Toolbar() {
     let token = localStorage.getItem('token');
+    // Convert to empty string if null token
+    token = token == null ? '' : token
+
     return (
       <Container>
         <Navbar bg="light">

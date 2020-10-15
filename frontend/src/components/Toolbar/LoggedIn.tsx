@@ -11,7 +11,12 @@ function LoggedIn(props: any) {
   return (
     <Nav>
       <Nav.Item>
-        <Nav.Link href={redirect}>{u_id}</Nav.Link>
+        <Nav.Link
+          onClick={()=> {
+            return <Redirect to={redirect}/>
+          }}>
+          {props.user}
+        </Nav.Link>
       </Nav.Item>
       <Nav.Item>
         <Nav.Link
@@ -23,12 +28,7 @@ function LoggedIn(props: any) {
           >Logout</Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link
-          onClick={()=> {
-            return <Redirect to={redirect}/>
-          }}>
-          {props.user}
-        </Nav.Link>
+
       </Nav.Item>
     </Nav>
   );
