@@ -21,3 +21,11 @@ In the lab we planned our first sprint and brainstormed our new novelty feature.
 I began working on JAJAC-16
 I set up frontend routing for different pages
 I set up default backend connections through axios
+
+---------------- Week 5 ----------------
+I completed JAJAC-16.
+I completed JAJAC-19.
+I set up the transfer of errors between backend and frontend services.
+I demonstrated the Forgot password and profile page aspects in demo A.
+I worked with the team to complete our first retrospective.
+I worked with the team to plan sprint 2.
