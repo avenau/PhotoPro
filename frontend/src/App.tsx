@@ -66,7 +66,7 @@ function App() {
           <ManageConfirmation />
         </ProtectedRoute>
         {/* TODO: Joe pls reroute this */}
-        <ProtectedRoute path="/feed" component={DummyFeed} />
+        <ProtectedRoute path="/feed" component={HomePage} />
       </Switch>
     </Router>
   );
