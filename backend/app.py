@@ -206,7 +206,7 @@ def account_registration():
                            'location': location
                            }
                           )
-    return redirect(url_for('login'))
+    return dumps({})
 
 
 @app.route('/profiledetails', methods=['GET'])

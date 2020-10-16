@@ -4,9 +4,11 @@ import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container'
 import axios from "axios";
 import ValidatePassword from "../components/AccountManagement/ValidatePassword";
-import Dropdown from "react-bootstrap/Dropdown"
 import Toolbar from "../components/Toolbar/Toolbar"
-export default function Register() {
+import {RouteChildrenProps} from "react-router-dom";
+
+
+export default function Register(props: RouteChildrenProps) {
     const [validateFeedback, setFeedback] = useState(false)
 
     // Implicitly validates that values are strings
@@ -38,48 +40,46 @@ export default function Register() {
     const year: number = now.getFullYear()
     const today = year + '-' + month + '-' + day
 
+
+    // History
+    // let history = useHistory()
+
     const countries = ['Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua & Deps', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Rep', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Congo {Democratic Rep}', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland Republic', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea North', 'Korea South', 'Kosovo', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar, {Burma}', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russian Federation', 'Rwanda', 'St Kitts & Nevis', 'St Lucia', 'Saint Vincent & the Grenadines', 'Samoa', 'San Marino', 'Sao Tome & Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tonga', 'Trinidad & Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe']
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-            console.log('false')
-      } else {
-          // Check if email is already registered for photopro
+        event.preventDefault();
+        event.stopPropagation();
 
-          // All inputs are valid
-          axios.post('/accountregistration', 
-            {firstName: firstName,
-            lastName: lastName,
-            email: email,
-            nickname: nickname,
-            password: password,
-            privFName: privFName,
-            privLastName: privLastName,
-            privEmail: privEmail,
-            aboutMe: aboutMe,
-            DOB: DOB,
-            location: location
-            })
-            .then((r) => {
-                if(r.status !== 200) {
-                    throw new Error()
-                }
-                console.log('Success')
-            })
-            . catch((e) => {
-                console.log('==========Error occured==========')
-                console.log(e)
-                console.log('=================================')
-            })
-      }
-      setFeedback(true)
-    };
-
-    // TODO
-    // Location
+        axios.post('/accountregistration', 
+                {firstName: firstName,
+                lastName: lastName,
+                email: email,
+                nickname: nickname,
+                password: password,
+                privFName: privFName,
+                privLastName: privLastName,
+                privEmail: privEmail,
+                aboutMe: aboutMe,
+                DOB: DOB,
+                location: location
+                })
+                .then((r) => {
+                    if(r.status !== 200) {
+                        console.log('Here');
+                        throw new Error();
+                    }
+                    console.log('Success');
+                    props.history.push('/login');
+                    // history.push({pathname:"/login"})
+                })
+                . catch((e) => {
+                    console.log('==========Error occured==========');
+                    console.log(e);
+                    console.log('=================================');
+                })
+                setFeedback(true)
+            }
 
     return (
         <>
@@ -116,7 +116,6 @@ export default function Register() {
                 <Form.Label>Date of birth</Form.Label>
                 <Form.Control type="date" placeholder="Birthday" max={today} onChange={e => setDOB(e.target.value)} />
                 <Form.Text className="text-muted">Optional. This will NOT be displayed on your profile.</Form.Text>
-            
             </Form.Group>
             <Form.Group>
                 <Form.Label>Location</Form.Label>
@@ -131,5 +130,6 @@ export default function Register() {
         </Form>
         </Container>
         </>
-    )
+    );
 }
+
