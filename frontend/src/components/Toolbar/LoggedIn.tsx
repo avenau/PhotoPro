@@ -6,15 +6,13 @@ import {Redirect} from "react-router-dom";
 function LoggedIn(props: any) {
 
   let u_id = localStorage.getItem('u_id');
-  let redirect = '/user/:' + u_id;
+  let redirect = '/user/' + u_id;
 
   return (
     <Nav>
       <Nav.Item>
         <Nav.Link
-          onClick={()=> {
-            return <Redirect to={redirect}/>
-          }}>
+          href={redirect}>
           {props.user}
         </Nav.Link>
       </Nav.Item>
