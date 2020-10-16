@@ -12,6 +12,7 @@ from showdown.get_images import get_images
 from welcome.contributors import get_popular_contributors_images
 from welcome.popular_images import get_popular_images
 from profile_details import get_user_details
+import upload_photo
 import traceback
 
 import password_reset as password_reset
@@ -231,7 +232,7 @@ def get_showdown_images():
 
 
 # Returns the two showdown images for the day
-@app.route('/welcome/getPopularContributors', methods=['GET'])
+@app.route('/welcome/popularcontributors', methods=['GET'])
 def welcome_get_contributors():
     images = get_popular_contributors_images()
     return dumps({
@@ -249,7 +250,7 @@ def welcome_get_popular_images():
     return dumps({})
 
 
-@app.route('/userDetailsWithToken', methods=['GET'])
+@app.route('/userdetails', methods=['GET'])
 def user_info_with_token():
     '''
     GET request to get user details using a token
@@ -258,13 +259,18 @@ def user_info_with_token():
     '''
     token = request.args.get('token')
     u_id = token_functions.verify_token(token)
+    if u_id == None:
+        return {}
     user = get_user_details(u_id['u_id'], mongo)
     # JSON Doesn't like ObjectId format
     return dumps({
         'fname': user['fname'],
         'lname': user['lname'],
+        'email': user['email'],
         'nickname': user['nickname'],
-        'email': user['email']
+        'DOB': user['DOB'],
+        'location': user['location'],
+        'aboutMe': user['aboutMe']
     })
 
 
@@ -331,6 +337,15 @@ def get_user():
     data['aboutMe'] = current_user['aboutMe']
 
     return data
+
+@app.route('/user/profile/uploadphoto', methods=['POST'])
+def upload_photo():
+    user = token_functions.verify_token(request.form.get('token'))
+    uploadPhoto.user_profiles_uploadphoto(user, request.form.get('img_url'),
+                                          int(request.form.get('x_start')),
+                                          int(request.form.get('y_start')),
+                                          int(request.form.get('x_start')),
+                                          int(request.form.get('y_end')))
 
 
 if __name__ == '__main__':

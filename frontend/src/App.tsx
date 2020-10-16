@@ -14,7 +14,6 @@ import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
 import ExamplePageAuth from "./pages/Examples/ExamplePageAuth";
 import AnonRoute from "./components/AnonRoute/AnonRoute";
 import LoginPage from "./pages/LoginPage";
-import DummyFeed from "./DummyFeed";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";

@@ -21,7 +21,12 @@ class PopularContributors extends Component<any, any> {
   }
 
   getPopularContributorsPaths() {
-    axios.get('/welcome/getPopularContributors')
+    let token = localStorage.getItem('token');
+    axios.get('/welcome/popularcontributors', {
+        params: {
+          token: token
+        }
+      })
       .then(res => {
         const contributors = res.data.contributors;
         this.setState({contributors:contributors});

@@ -17,7 +17,7 @@ function IsLoggedIn(props: any) {
     .then((res: any) => {
       if (res.data.valid){
         setLoggedIn(true);
-        axios.get('/userDetailsWithToken', { params: { token: props.token}})
+        axios.get('/userdetails', { params: { token: props.token}})
           .then((res: any) => {
             setUsername(res.data.nickname);
           });
