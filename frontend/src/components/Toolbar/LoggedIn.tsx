@@ -12,6 +12,24 @@ function LoggedIn(props: any) {
     <Nav>
       <Nav.Item>
         <Nav.Link
+          href={'/feed'}>
+          Your Feed
+        </Nav.Link>
+      </Nav.Item>
+      <Nav.Item>
+        <Nav.Link
+          href={'/purchases'}>
+          Purchases
+        </Nav.Link>
+      </Nav.Item>
+      <Nav.Item>
+        <Nav.Link
+          href={'/notifications'}>
+          Notifications
+        </Nav.Link>
+      </Nav.Item>
+      <Nav.Item>
+        <Nav.Link
           href={redirect}>
           {props.user}
         </Nav.Link>
