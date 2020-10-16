@@ -67,26 +67,6 @@ def basic():
     })
 
 
-@app.route('/start', methods=['GET', 'POST'])
-def send_data():
-    errors = []
-    # results = {}
-    data = loads(request.data.decode())
-    first_name = data["name"]
-    colour = data["colour"]
-    try:
-        mongo.db.people.insert_one({"name": first_name,
-                                    "colour": colour})
-    except:
-        print("Errors... :-(")
-        errors.append("Couldn't get text")
-
-    return dumps({
-        'first_name': first_name,
-        'colour': colour
-    })
-
-
 # Should this be using a GET request?
 @app.route('/verifytoken', methods=['POST'])
 def verify_token():
