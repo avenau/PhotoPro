@@ -7,25 +7,23 @@ import Search from '../Search/Search';
 import LoggedIn from './LoggedIn';
 import LoggedOut from './LoggedOut';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Redirect} from "react-router-dom";
 
 
 function IsLoggedIn(props: any) {
   const [loggedIn, setLoggedIn] = React.useState(false);
-  const [uId, setUId] = React.useState('No User');
-  console.log(props.token);
-  let token = props.token;
+  const [username, setUsername] = React.useState('');
 
   axios.post('/verifytoken', {token: props.token})
-    .then((response: any) => {
-      if (response.data.valid){
+    .then((res: any) => {
+      if (res.data.valid){
         setLoggedIn(true);
-        let u_id = localStorage.getItem('u_id');
-        setUId(u_id == null ? '' : u_id);
-        console.log("logged in");
+        axios.get('/userDetailsWithToken', { params: { token: props.token}})
+          .then((res: any) => {
+            setUsername(res.data.nickname);
+          });
       }
     });
-  return loggedIn == true ? <LoggedIn user={uId}/> : <LoggedOut/>;
+  return loggedIn === true ? <LoggedIn user={username}/> : <LoggedOut/>;
 }
 
 

@@ -7,12 +7,12 @@ from flask_mail import Mail
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from bson.objectid import ObjectId
-from Error import UserDNE, EmailError, PasswordError
+from Error import EmailError, PasswordError
 from showdown.get_images import get_images
 from welcome.contributors import get_popular_contributors_images
 from welcome.popular_images import get_popular_images
 #Added BSON library, needed for ObjectId data type
-from bson.objectid import ObjectId
+from profile_details import get_user_details
 import traceback
 
 import password_reset as password_reset
@@ -87,14 +87,18 @@ def send_data():
         'colour': colour
     })
 
+
+# Should this be using a GET request?
 @app.route('/verifytoken', methods=['POST'])
 def verify_token():
-    token = request.form.get("token")
-    valid = token_functions.verify_token(token)
-    print(valid)
+    token = request.form.get('token')
+    if token == '' or token is None:
+        return {"valid": False}
+    token_functions.verify_token(token)
     return {
-        "valid": valid
+        "valid": True
     }
+
 
 @app.route('/login', methods=['POST'])
 def process_login():
@@ -153,6 +157,7 @@ def auth_passwordreset_reset():
                                             hashedPassword, mongo)
     )
 
+
 @app.route('/accountregistration', methods=['POST'])
 def account_registration():
     # ======= Backend validation =======
@@ -203,13 +208,11 @@ def account_registration():
                           )
     return redirect(url_for('login'))
 
+
 @app.route('/profiledetails', methods=['GET'])
 def profile_details():
-    u_id = request.args.get("u_id")
-    try:
-        details = mongo.db.users.find_one({"_id" : ObjectId(u_id)})
-    except:
-        raise UserDNE
+    details = get_user_details(request.args.get("u_id"), mongo)
+
     return dumps({
         "name": f"{details['fname']} {details['lname']}",
         "nickname": details["nickname"],
@@ -246,15 +249,35 @@ def welcome_get_popular_images():
     })
     return dumps({})
 
+
+@app.route('/userDetailsWithToken', methods=['GET'])
+def user_info_with_token():
+    '''
+    GET request to get user details using a token
+    @param token(string): The token passed as a GET parameter
+    @return user{fname, lname, nickname, email}
+    '''
+    token = request.args.get('token')
+    u_id = token_functions.verify_token(token)
+    user = get_user_details(u_id['u_id'], mongo)
+    # JSON Doesn't like ObjectId format
+    return dumps({
+        'fname': user['fname'],
+        'lname': user['lname'],
+        'nickname': user['nickname'],
+        'email': user['email']
+    })
+
+
 @app.route('/manage_account/success', methods=['GET', 'POST'])
 def manage_account():
     errors = []
     results = {}
     data = loads(request.data.decode())
     print(type(data))
-    #Need Something to Check if current logged in account exist in database
-    #I am assuming user_id is stored in localStorage
-    #Hard coded this part, this part should check what the logged in user object_id is
+    # Need Something to Check if current logged in account exist in database
+    # I am assuming user_id is stored in localStorage
+    # Hard coded this part, this part should check what the logged in user object_id is
     current_user = data['u_id']
     try:
         find_userdb = {"_id": ObjectId(current_user)}
@@ -271,14 +294,15 @@ def manage_account():
 
     return dumps(data)
 
+
 @app.route('/manage_account/confirm', methods=['GET', 'POST'])
 def password_check():
     errors = []
     results = {}
-    #data = json.loads(request.data.decode())
-    #Need Something to Check if current logged in account exist in database
-    #I am assuming user_id is stored in localStorage
-    #Hard coded this part, this part should check what the logged in user object_id is
+    # data = json.loads(request.data.decode())
+    # Need Something to Check if current logged in account exist in database
+    # I am assuming user_id is stored in localStorage
+    # Hard coded this part, this part should check what the logged in user object_id is
 
     data = request.form.to_dict()
     print(data)
@@ -294,12 +318,11 @@ def password_check():
 
     return data
 
+
 @app.route('/get_user_info', methods=['GET', 'POST'])
 def get_user():
-    errors = []
-    results = {}
-   # print('In get_user_info')
     data = request.form.to_dict()
+    u_id = verify_token(token)
     #print(data)
     current_uid = data['u_id']
     #print("U_ID")
