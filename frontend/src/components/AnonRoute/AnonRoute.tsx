@@ -2,12 +2,12 @@ import React from "react";
 import { Redirect, Route, RouteProps } from "react-router-dom";
 import axios from "axios"
 
+
 /**
- * Get the token value from localStorage, check validity with back end
- * then continue.
- * If it did not exist then the user should be redirected to login.
+ * Route component to redirect logged in users away from "anon user" pages such 
+ * as log in, sign up, and the default landing page.
  */
-function ProtectedRoute(props: RouteProps) {
+export default function AnonRoute(props: RouteProps) {
   const token = localStorage.getItem("token") !== null ? localStorage.getItem("token") : "";
   const [loading, setLoading] = React.useState(true); 
   const [valid, setValid] = React.useState(false);
@@ -23,7 +23,7 @@ function ProtectedRoute(props: RouteProps) {
     return <div>Loading...</div>
   }
 
-  return valid ? <Route {...props} /> : <Redirect to="/login" />;
+  return valid ? <Redirect to="/feed" /> : <Route {...props} />;
 }
 
-export default ProtectedRoute;
+
