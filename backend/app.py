@@ -68,9 +68,9 @@ def basic():
 
 
 # Should this be using a GET request?
-@app.route('/verifytoken', methods=['POST'])
+@app.route('/verifytoken', methods=['GET'])
 def verify_token():
-    token = request.form.get('token')
+    token = request.args.get('token')
     if token == '' or token is None:
         return {"valid": False}
     token_functions.verify_token(token)
