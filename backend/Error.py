@@ -66,5 +66,5 @@ class TokenError(HTTPException):
     TokenError: When something went wrong with the Token
     '''
     code = 500
-    message = 'Token is invalid'
+    message = 'No message specified'
     toast = True
