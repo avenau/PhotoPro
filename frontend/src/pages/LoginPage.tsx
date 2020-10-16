@@ -75,7 +75,6 @@ export default class LoginPage extends React.Component<RouteChildrenProps, any> 
             </Form.Group>
             <Row>
               <Col>
-                {/* TODO: change href */}
                 <a href="/forgotpassword/request">Forgot your password? Click here.</a>
               </Col>
               <Col>
