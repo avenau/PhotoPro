@@ -21,7 +21,8 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
             */
             hasPickedPhoto: false,
             imagePreview: null,
-            extensionMessage: ""
+            // File extension error message string
+            extErrMsg: ""
         };
     }
 
@@ -32,24 +33,28 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
     handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
       const path = event.target.value;
       const fileExtension = path.substr(path.length - 4);
-      // If file is not accepted, remove "Upload" button and display error msg
+      // If no file, or file removed
+      // Else if file is not accepted, remove "Upload" button and display error msg
       // Else display image preview and "Upload" button
-      if (fileExtension != ".jpg" &&
+      if (path == "") {
+        this.setState({hasPickedPhoto: false});
+        this.setState({extErrMsg: ""});
+      } else if (fileExtension != ".jpg" &&
                 fileExtension != ".png" &&
                 fileExtension != ".svg" &&
                 fileExtension != ".raw") {
         this.setState({hasPickedPhoto: false});
-        this.setState({extensionMessage: "Sorry, we only support .jpg, .png, .svg, and .raw images."});
+        this.setState({extErrMsg: "Sorry, we only support .jpg, .png, .svg, and .raw images."});
         this.setState({imagePreview: null});
         event.target.value = "";
       } else {
-        this.setState({extensionMessage: ""});
         this.setState({hasPickedPhoto: true});
+        this.setState({extErrMsg: ""});
         // Set image preview
         // Source: https://stackoverflow.com/questions/4459379/preview-an-image-before-it-is-uploaded
         event.target.files instanceof FileList ?
         this.setState({imagePreview: URL.createObjectURL(event.target.files[0])}) : 
-        this.setState({extensionMessage: "This should never happen."});
+        this.setState({extErrMsg: "This should never happen."});
       }
     }
 
@@ -79,12 +84,14 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.handleFileChange(e)}
                       />
                     </Form.Group>
-                    <p style={{color: 'red'}}>{this.state.extensionMessage}</p>
-                    <Col xs={4}>
-                      <Image id="imagePreview" src={this.state.imagePreview} thumbnail/> 
-                    </Col>
+                    <p style={{color: 'red'}}>{this.state.extErrMsg}</p>
                     {this.state.hasPickedPhoto ? (
-                      <Button className="mt-5" type="submit">Upload Photo</Button>
+                      <div>
+                      <Col xs={6}>
+                        <Image thumbnail id="imagePreview" src={this.state.imagePreview}/>
+                      </Col>
+                      <Button className="mt-2" type="submit">Upload Photo</Button>
+                      </div>
                     ) : (
                       <></>
                     )}
