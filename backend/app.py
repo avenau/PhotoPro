@@ -1,7 +1,7 @@
 import os
 from json import dumps, loads
 
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
@@ -11,7 +11,6 @@ from Error import EmailError, PasswordError
 from showdown.get_images import get_images
 from welcome.contributors import get_popular_contributors_images
 from welcome.popular_images import get_popular_images
-#Added BSON library, needed for ObjectId data type
 from profile_details import get_user_details
 import traceback
 
@@ -272,24 +271,24 @@ def user_info_with_token():
 @app.route('/manage_account/success', methods=['GET', 'POST'])
 def manage_account():
     errors = []
-    results = {}
     data = loads(request.data.decode())
     print(type(data))
     # Need Something to Check if current logged in account exist in database
     # I am assuming user_id is stored in localStorage
-    # Hard coded this part, this part should check what the logged in user object_id is
+    # Hard coded this part, this part should check what the logged in
+    # user object_id is
     current_user = data['u_id']
     try:
         find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
             if (value == "" or key == "u_id"):
                 continue
-            change_userdb = {"$set": { key: value } }
+            change_userdb = {"$set": {key: value}}
             mongo.db.users.update_one(find_userdb, change_userdb)
 
     except Exception:
         print("Errors... :-(")
-        print (traceback.format_exc())
+        print(traceback.format_exc())
         errors.append("Couldn't get text")
 
     return dumps(data)
@@ -297,17 +296,16 @@ def manage_account():
 
 @app.route('/manage_account/confirm', methods=['GET', 'POST'])
 def password_check():
-    errors = []
-    results = {}
     # data = json.loads(request.data.decode())
     # Need Something to Check if current logged in account exist in database
     # I am assuming user_id is stored in localStorage
-    # Hard coded this part, this part should check what the logged in user object_id is
+    # Hard coded this part, this part should check what
+    # the logged in user object_id is
 
     data = request.form.to_dict()
     print(data)
     current_user = data['u_id']
-    current_password = mongo.db.users.find_one({"_id":ObjectId(current_user)})['password']
+    current_password = mongo.db.users.find_one({"_id": ObjectId(current_user)})['password']
 
     # TODO: set the token properly with jwt
     if bcrypt.check_password_hash(current_password, data['password']):
@@ -322,16 +320,8 @@ def password_check():
 @app.route('/get_user_info', methods=['GET', 'POST'])
 def get_user():
     data = request.form.to_dict()
-    u_id = verify_token(token)
-    #print(data)
     current_uid = data['u_id']
-    #print("U_ID")
-    #print(type(current_uid))
-    #print(current_uid)
-    current_user = mongo.db.users.find_one({"_id" : ObjectId(current_uid)})
-
-    #print("PRINT CURRENT USER")
-    #print(current_user)
+    current_user = mongo.db.users.find_one({"_id": ObjectId(current_uid)})
     data['fname'] = current_user['fname']
     data['lname'] = current_user['lname']
     data['email'] = current_user['email']
