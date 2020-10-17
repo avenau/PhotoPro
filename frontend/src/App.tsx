@@ -10,11 +10,8 @@ import "./App.css";
 import "./axios";
 import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
-import ExamplePageAuth from "./pages/Examples/ExamplePageAuth";
 import AnonRoute from "./components/AnonRoute/AnonRoute";
 import LoginPage from "./pages/LoginPage";
-import DummyFeed from "./DummyFeed";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -65,8 +62,8 @@ function App() {
         <ProtectedRoute path="/manage_confirmation">
           <ManageConfirmation />
         </ProtectedRoute>
-        {/* TODO: Joe pls reroute this */}
-        <ProtectedRoute path="/feed" component={DummyFeed} />
+        <ProtectedRoute path="/feed" component={HomePage} />
+        <Route path="*" component={DoesNotExistPage} />
       </Switch>
     </Router>
   );
