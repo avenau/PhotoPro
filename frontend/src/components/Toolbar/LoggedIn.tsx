@@ -1,8 +1,8 @@
 import React from 'react';
 import Nav from 'react-bootstrap/Nav';
 import IToolbarProps from './IToolbarProps';
+import {Redirect} from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Redirect} from "react-router-dom";
 
 function LoggedIn(props: IToolbarProps) {
 
@@ -13,7 +13,10 @@ function LoggedIn(props: IToolbarProps) {
   return (
     <Nav>
       <Nav.Item>
-        <Redirect to="/feed"/>
+        <Nav.Link
+          href={'/feed'}>
+          Feed
+        </Nav.Link>
       </Nav.Item>
       <Nav.Item>
         <Nav.Link

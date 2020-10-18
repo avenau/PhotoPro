@@ -10,54 +10,49 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 
 class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
-  constructor(props:IToolbarProps) {
-    super(props);
-    this.getToken = this.getToken.bind(this);
-    this.state = {
-      isLoggedIn: false
-    }
-  }
-
-  getToken(){
-    let token = localStorage.getItem('token');
-    if (token == null) {
-      this.setState({isLoggedIn: false});
-      return '';
-    } else {
-      this.setState({isLoggedIn: true});
-      return token;
-    }
-  }
-
-  getUsername(){
-    axios.get('/userdetails', {
+  /*
+    async/await function forces the browser to wait for
+    the axios.get request to return
+  */
+  async getUsername(token:any){
+    const res = await axios.get('/userdetails', {
       params: {
-        token: this.getToken()
+        token: token
       }
     })
-    .then((res) => {
-      return res.data.nickname;
-    });
-    return '';
+    return await res.data;
   }
 
-  WhichToolbar(props: IToolbarProps) {
-    console.log(props.isLoggedIn);
-    if(props.isLoggedIn){
-      return <LoggedIn username={this.getUsername()}/>
-    } else {
-      return <LoggedOut />
+  constructor(props:IToolbarProps) {
+    super(props);
+    let token = (!localStorage.getItem('token')) ? '' : localStorage.getItem('token');
+    if (!token)
+      token = '';
+
+    this.state = {
+      username: '',
+      token: token,
     }
   }
 
+  componentDidMount() {
+    if (this.state.token != ''){
+      this.getUsername(this.state.token)
+      .then((res) => {
+        this.setState({username: res.nickname})
+      });
+    }
+  }
 
   render() {
+    let username = this.state.username;
+    const tool = username == '' ? <LoggedOut/> : <LoggedIn username={username}/>
     return (
       <Container>
         <Navbar bg="light">
           <Navbar.Brand href="/">PhotoPro</Navbar.Brand>
           <Nav className="mr-auto">
-            <this.WhichToolbar isLoggedIn={this.state.isLoggedIn}/>
+            {tool}
             <Nav.Item>
               <Search />
             </Nav.Item>
