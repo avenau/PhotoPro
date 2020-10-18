@@ -9,6 +9,7 @@ import Col from "react-bootstrap/Col"
 import Dropdown from "react-bootstrap/Dropdown"
 import Toolbar from "../../components/Toolbar/Toolbar"
 import { RouteChildrenProps } from "react-router-dom";
+import { runInThisContext } from "vm";
 
 
 export default class UploadPage extends React.Component<RouteChildrenProps, any> {
@@ -19,7 +20,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
             price: 0,
             tags: "",
             tagsList: [],
-            tagButtons: [<Button key="1">tag1</Button>,<Button key="2">tag2</Button>],
+            tagButtons: [],
             /* Whether the user has selected a photo yet.
             *  Used to display "Upload Photo" button.
             */
@@ -59,7 +60,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
     }
 
     setTagsList(tags: string) {
-      const tagsList = tags.split(" ");
+      const tagsList = tags.trim().split(" ");
       console.log(tagsList);
       this.setState({tagsList: tagsList});
     }
@@ -92,8 +93,9 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       // Else if file is not accepted, remove "Upload" button and display error msg
       // Else (i.e. good file) display image preview and "Upload" button
       if (path === "") {
-        this.setState({hasPickedPhoto: false});
-        this.setState({fileErrMsg: ""});
+        this.setState({
+          hasPickedPhoto: false,
+          fileErrMsg: ""});
       } else if (fileExtension !== ".jpg" &&
                 fileExtension !== ".png" &&
                 fileExtension !== ".svg" &&
@@ -106,9 +108,11 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         this.deactivateUploadButton();
         event.target.value = "";
       } else {
-        this.setState({hasPickedPhoto: true});
+        this.setState({
+          hasPickedPhoto: true,
+          fileErrMsg: ""
+        });
         this.activateUploadButton();
-        this.setState({fileErrMsg: ""});
         // Set image preview
         // Source: https://stackoverflow.com/questions/4459379/preview-an-image-before-it-is-uploaded
         event.target.files instanceof FileList ?
@@ -127,41 +131,32 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       btn?.setAttribute("disabled", "true");
     }
 
-    deleteTag(event: any) {
-      const btn = document.getElementById(event.target.id);
-      btn?.remove();
+    deleteTag(event: React.MouseEvent<HTMLElement, MouseEvent>) {
+      const target = event.target as HTMLElement;
+      target.remove();
+      
     }
 
-    // refreshTagButtons() {
-    //   // const newTagButtons = this.state.tagButtons.concat([<Button>NewButton</Button>])
-    //   // this.setState({tagButtons: newTagButtons});
-    //   this.state.tagsList.forEach((tag: string) => {
-    //     const newTagButton = (<button 
-    //                            key={tag} 
-    //                            id={"tag-"+tag} 
-    //                            onClick={(e)=>this.deleteTag(e)}
-    //                          >
-    //                            {tag}
-    //                          </button>);
-    //     console.log("before");
-    //     console.log(this.state.tagButtons);
-    //     const newTagButtons = this.state.tagButtons.concat([newTagButton]);
-    //     this.setState({tagButtons: newTagButtons});
-    //     console.log("after");
-    //     console.log(this.state.tagButtons);
-    //     // this.setState({tagButtons: this.state.tagButtons.push(newTagButton)})
-    //   })
-    //   console.log(this.state.tagsList);
-    //   console.log(this.state.tagButtons);
-    // }
+    clearTagInput() {
+      const tagInput = document.getElementById("tags") as HTMLInputElement;
+      tagInput.value = "";
+    }
 
-    // createTagButtons() {
-    //   const ret = this.state.tagsList.map((tag: string) =>
-    //       <Button key={tag} id={"tag-"+tag} onClick={(e)=>this.deleteTag(e)}>{tag}</Button>
-    //     );
-    //   console.log(ret);
-    //   return <p>{ret}</p>;
-    // }
+    refreshTagButtons() {
+      const newTagButtons = this.state.tagsList.map((tag: string) => {
+        return  <Button 
+                  key={tag} 
+                  id={tag} 
+                  onClick={(e)=>this.deleteTag(e)}
+                >
+                  {tag}
+                </Button>
+      });
+      this.setState({tagsList: []});
+      const updatedTagButtons = this.state.tagButtons.concat(newTagButtons);
+      this.setState({tagButtons: updatedTagButtons});
+      this.clearTagInput();
+    }
 
     render() {
         return (
@@ -204,14 +199,14 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                         </Form.Control>
                       </Col>
                       <Button 
-                        // onClick={this.refreshTagButtons.bind(this)}
+                        onClick={this.refreshTagButtons.bind(this)}
                       >
                         Add Tags
                       </Button>
                     </Row>
                     <Form.Text className="text-muted tagsInfo">
                       You can include 1 to 10 keywords. Keywords should describe the main aspects of your photo.
-                      <p>Detected keywords (click keyword to delete): {this.state.tagButtons}</p>
+                      <p>{this.state.tagButtons.length} Detected keywords (click keyword to delete): {this.state.tagButtons}</p>
                       <p className="error">{this.state.tagsErrMsg}</p>
                     </Form.Text>
                   </Form.Group>
