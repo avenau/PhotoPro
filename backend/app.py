@@ -237,7 +237,8 @@ def profile_details():
 
     Returns
     {
-        fname + lname,
+        fname,
+        lname,
         nickname,
         location,
         email
@@ -247,7 +248,8 @@ def profile_details():
     details = get_user_details(request.args.get("u_id"), mongo)
 
     return dumps({
-        "name": f"{details['fname']} {details['lname']}",
+        "fname": details["fname"],
+        "lname": details["lname"],
         "nickname": details["nickname"],
         "location": details["location"],
         "email": details["email"]
