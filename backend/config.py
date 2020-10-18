@@ -12,11 +12,11 @@ remote_db = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flas
 class Config(object):
     TESTING = True
     DEBUG = True
-    MAIL_SERVER='smtp.gmail.com',
-    MAIL_PORT=465,
-    MAIL_USE_SSL=True,
-    MAIL_USERNAME="photopro.jajac@gmail.com",
-    MAIL_PASSWORD="photoprodemopassword",
+    MAIL_SERVER='smtp.gmail.com'
+    MAIL_PORT=465
+    MAIL_USE_SSL=True
+    MAIL_USERNAME="photopro.jajac@gmail.com"
+    MAIL_PASSWORD="photoprodemopassword"
     PORT_NUMBER=os.getenv("BACKEND_PORT")
     MAIL_SUPPRESS_SEND = False
 
@@ -25,11 +25,11 @@ class DevelopmentConfig(Config):
     TESTING = True
     DEBUG = True
 
-    
+
 class ProductionConfig ():
     DEBUG = False
     TESTING = False
-    MONGO_URI = remote_db 
+    MONGO_URI = remote_db
 
 
 def defaultHandler(err):
