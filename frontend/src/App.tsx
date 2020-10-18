@@ -22,7 +22,7 @@ import Register from "./pages/Register";
 import DoesNotExistPage from "./pages/DoesNotExistPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
-import UploadPage from "./pages/UploadPage";
+import UploadPage from "./pages/UploadPage/UploadPage";
 
 function App() {
   return (
