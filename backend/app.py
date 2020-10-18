@@ -5,6 +5,7 @@ Handle requests to and fro server and web app client
 """
 from flask import Flask, request
 from flask_cors import CORS
+from flask_mail import Mail
 from flask_pymongo import PyMongo
 from config import DevelopmentConfig, defaultHandler
 import traceback
@@ -22,9 +23,9 @@ import lib.validate_registration as val_reg
 import lib.token_functions as token_functions
 
 app = Flask(__name__, static_url_path='/static')
-CORS(app)
 app.config.from_object(DevelopmentConfig)
 app.register_error_handler(Exception, defaultHandler)
+CORS(app)
 mongo = PyMongo(app)
 # Create BCrypt object to hash and salt passwords
 bcrypt = Bcrypt(app)
@@ -58,7 +59,11 @@ def verify_token():
     {valid : bool}
         Whether the token is valid or not
     """
-    token = request.args.get('token')
+    if request.method == 'GET':
+        token = request.args.get('token')
+    else:
+        token = request.form.get('token')
+    
     if token == '' or token is None:
         return {"valid": False}
     token_functions.verify_token(token)

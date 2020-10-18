@@ -4,7 +4,6 @@ Configure flask app settings using config pattern
 """
 import os
 from json import dumps
-from flask_mail import Mail
 
 # Mongo setup, connect to the db
 local_db = "mongodb://localhost:27017/angular-flask-muckaround"
@@ -19,12 +18,14 @@ class Config(object):
     MAIL_USERNAME="photopro.jajac@gmail.com",
     MAIL_PASSWORD="photoprodemopassword",
     PORT_NUMBER=os.getenv("BACKEND_PORT")
+    MAIL_SUPPRESS_SEND = False
 
 class DevelopmentConfig(Config):
     MONGO_URI = local_db
     TESTING = True
     DEBUG = True
 
+    
 class ProductionConfig ():
     DEBUG = False
     TESTING = False
