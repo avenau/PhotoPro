@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router,
   RouteComponentProps,
   Switch,
-  Link,
   Route,
 } from 'react-router-dom';
 import './App.css';

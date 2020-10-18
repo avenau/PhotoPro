@@ -23,7 +23,7 @@ module.exports = {
     'no-use-before-define': 'off',
     'import/extensions': 'off',
     'react/jsx-filename-extension': [1, { extensions: ['.tsx', '.jsx'] }],
-    'react/destructuring-assignment': [2, 'never'],
+    'react/destructuring-assignment': 'off',
     'react/jsx-props-no-spreading': 'off',
   },
   settings: {

@@ -1,9 +1,11 @@
 import React from 'react';
 import Nav from 'react-bootstrap/Nav';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Redirect } from 'react-router-dom';
+import IToolbarProps from './IToolbarProps';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function LoggedIn(props: any) {
+function LoggedIn(props: IToolbarProps) {
+  const { username } = props;
   const u_id = localStorage.getItem('u_id');
   const redirect = `/user/${u_id}`;
 
@@ -13,7 +15,7 @@ function LoggedIn(props: any) {
         <Nav.Link
           href="/feed"
         >
-          Your Feed
+          Feed
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
@@ -34,7 +36,7 @@ function LoggedIn(props: any) {
         <Nav.Link
           href={redirect}
         >
-          {props.user}
+          {username}
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
