@@ -1,18 +1,18 @@
-import axios from "axios";
-import React from "react";
-import { Dropdown } from "react-bootstrap";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import { RouteComponentProps } from "react-router-dom";
-import AlbumList from "../components/ProfileLists/AlbumList";
-import CollectionList from "../components/ProfileLists/CollectionList";
-import FollowingList from "../components/ProfileLists/FollowingList";
-import PhotoList from "../components/ProfileLists/PhotoList";
-import Toolbar from "../components/Toolbar/Toolbar";
-import UserHeader from "../components/UserHeader/UserHeader";
-import "./Profile.scss";
+import axios from 'axios';
+import React from 'react';
+import { Dropdown } from 'react-bootstrap';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import { RouteComponentProps } from 'react-router-dom';
+import AlbumList from '../components/ProfileLists/AlbumList';
+import CollectionList from '../components/ProfileLists/CollectionList';
+import FollowingList from '../components/ProfileLists/FollowingList';
+import PhotoList from '../components/ProfileLists/PhotoList';
+import Toolbar from '../components/Toolbar/Toolbar';
+import UserHeader from '../components/UserHeader/UserHeader';
+import './Profile.scss';
 
 interface Props extends RouteComponentProps {}
 
@@ -29,18 +29,19 @@ interface State {
 export default class ProfilePage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    const params = this.props.match.params;
+    const { params } = this.props.match;
     const user_id = Object.values(params)[0] as string;
     this.state = {
-      fname: "",
-      lname: "",
-      nickname: "",
-      location: "",
-      email: "",
-      user_id: user_id,
+      fname: '',
+      lname: '',
+      nickname: '',
+      location: '',
+      email: '',
+      user_id,
       dne: false,
     };
   }
+
   /** Return add button if current user */
   private createAddButton() {
     // TODO Edit these links when the pages exist
@@ -50,9 +51,9 @@ export default class ProfilePage extends React.Component<Props, State> {
           variant="outline-dark"
           id="dropdown-custom-components"
           style={{
-            fontSize: "18pt",
-            padding: "0rem 0.2rem",
-            lineHeight: "20pt",
+            fontSize: '18pt',
+            padding: '0rem 0.2rem',
+            lineHeight: '20pt',
           }}
         >
           <span>+</span>
@@ -61,7 +62,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert("Navigating to new photo");
+              alert('Navigating to new photo');
             }}
           >
             Upload Photo
@@ -69,7 +70,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert("Navigating to new album");
+              alert('Navigating to new album');
             }}
           >
             Create an Album
@@ -77,7 +78,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert("Navigating to new collection");
+              alert('Navigating to new collection');
             }}
           >
             Create a Collection
@@ -91,14 +92,14 @@ export default class ProfilePage extends React.Component<Props, State> {
     axios
       .get(`/profiledetails?u_id=${u_id}`)
       .then((r) => {
-        let newState = this.state as any;
+        const newState = this.state as any;
         Object.entries(r.data).forEach((item) => {
           newState[item[0]] = item[1];
         });
         this.setState(newState);
       })
       .catch(() => {
-        let newState = this.state as any;
+        const newState = this.state as any;
         newState.dne = true;
         this.setState(newState);
       });
@@ -113,7 +114,7 @@ export default class ProfilePage extends React.Component<Props, State> {
   }
 
   render() {
-    const u_id = localStorage.getItem("u_id");
+    const u_id = localStorage.getItem('u_id');
     const current_user = this.state.user_id === u_id;
     return (
       <>
@@ -173,7 +174,7 @@ export default class ProfilePage extends React.Component<Props, State> {
             <></>
           )}
           {current_user ? (
-            <Tab title={this.createAddButton()} tabClassName="no-border"></Tab>
+            <Tab title={this.createAddButton()} tabClassName="no-border" />
           ) : (
             <></>
           )}

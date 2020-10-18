@@ -8,18 +8,18 @@ import PopularImages from '../components/Welcome/PopularImages';
 import WelcomeHeader from '../components/Welcome/WelcomeHeader';
 
 class WelcomePage extends React.Component<IToolbarProps, IToolbarState> {
-  constructor(props:IToolbarProps){
+  constructor(props:IToolbarProps) {
     super(props);
     this.state = {
       isLoggedIn: props.isLoggedIn,
-    }
+    };
   }
 
   render() {
-    const isLoggedIn = this.state.isLoggedIn;
+    const { isLoggedIn } = this.state;
     return (
-      <div className = "HomePage">
-        <Toolbar isLoggedIn{...isLoggedIn}/>
+      <div className="HomePage">
+        <Toolbar isLoggedIn {...isLoggedIn} />
         <WelcomeHeader />
         <Showdown />
         <PopularContributors />
