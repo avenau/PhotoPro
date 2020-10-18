@@ -12,11 +12,12 @@ import traceback
 from json import dumps, loads
 from flask_bcrypt import Bcrypt
 from bson.objectid import ObjectId
-from lib.Error import EmailError, PasswordError
 from lib.showdown.get_images import get_images
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
 from lib.profile_details import get_user_details
+from lib.token_decorator import validate_token
+from lib.validate_login import login
 
 import lib.password_reset as password_reset
 import lib.validate_registration as val_reg
@@ -27,7 +28,6 @@ app.config.from_object(DevelopmentConfig)
 app.register_error_handler(Exception, defaultHandler)
 CORS(app)
 mongo = PyMongo(app)
-# Create BCrypt object to hash and salt passwords
 bcrypt = Bcrypt(app)
 
 
@@ -42,9 +42,6 @@ def basic():
         'colour': "test"
     })
 
-# TODO standardise either post or get
-# Should this be using a GET request?
-# Missing post, still have components using post
 @app.route('/verifytoken', methods=['GET','POST'])
 def verify_token():
     """
@@ -89,28 +86,8 @@ def process_login():
     """
     email = request.form.get("email")
     password = request.form.get("password")
-    if email == "":
-        raise EmailError("Please enter an email address.")
-    if password == "":
-        raise PasswordError("Please enter a password.")
 
-    user = mongo.db.users.find_one({"email": email})
-    if not user:
-        raise EmailError("That email isn't registered.")
-    hashedPassword = user["password"]
-
-    u_id = ""
-    token = ""
-    if bcrypt.check_password_hash(hashedPassword, password):
-        u_id = user["_id"]
-        token = token_functions.create_token(str(u_id))
-    else:
-        raise PasswordError("That password is incorrect.")
-
-    return {
-        "u_id": str(u_id),
-        "token": token
-    }
+    return login(mongo, bcrypt, email, password)
 
 
 @app.route('/passwordreset/request', methods=['POST'])
@@ -168,59 +145,35 @@ def account_registration():
     """
     Description
     -----------
+    Register new user
 
     Parameters
     ----------
+    'fname': str,
+    'lname': str,
+    'email': str,
+    'nickname': str,
+    'password': str,
+    'privFName': str,
+    'privLName':  str,
+    'privEmail': str,
+    'aboutMe': str,
+    'DOB': str,
+    'location': str
 
     Returns
     -------
+    None
     """
-    # ======= Backend validation =======
-    # As front end checks could be bypassed
-    email = request.form.get("email")
-    val_reg.valid_email(mongo, email)
-
-    firstName = request.form.get("firstName")
-    val_reg.valid_name(firstName)
-
-    lastName = request.form.get("lastName")
-    val_reg.valid_name(lastName)
-
-    password = request.form.get("password")
-    val_reg.valid_pass(password)
-
-    location = request.form.get("location")
-    val_reg.valid_location(location)
-
-    # Register a new account
-    # Get all form values
-    nickname = request.form.get("nickname")
-    privFName = request.form.get("privFName")
-    privLastName = request.form.get("privLastName")
-    privEmail = request.form.get("privEmail")
-    aboutMe = request.form.get("aboutMe")
-    DOB = request.form.get('DOB')
+    new_user = request.form.to_dict()
+    val_reg.valid_registration(mongo, new_user)
 
     # Make some hashbrowns
-    hashedPassword = bcrypt.generate_password_hash(password)
-
-    print(firstName, lastName, email, nickname, password,
-          privFName, privLastName, privEmail)
+    hashedPassword = bcrypt.generate_password_hash(new_user["password"])
+    new_user["password"] = hashedPassword
 
     # Insert account details into collection called 'user'
-    mongo.db.users.insert({'fname': firstName,
-                           'lname': lastName,
-                           'email': email,
-                           'nickname': nickname,
-                           'password': hashedPassword,
-                           'privFName': privFName,
-                           'privLName':  privLastName,
-                           'privEmail': privEmail,
-                           'aboutMe': aboutMe,
-                           'DOB': DOB,
-                           'location': location
-                           }
-                          )
+    mongo.db.users.insert(new_user)
     return dumps({})
 
 
@@ -465,6 +418,27 @@ def upload_photo():
     Returns
     -------
     """
+
+
+'''
+---------------
+- Test Routes -
+---------------
+'''
+
+
+@app.route('/testdecorator', methods=['GET'])
+@validate_token
+def test_decorator():
+    '''
+    Testing decorator for validating token
+    Use this decorator to verify the token is
+    valid and matches the secret
+    '''
+    print("YAY")
+    return dumps({
+        "success": "success"
+    })
 
 
 if __name__ == '__main__':

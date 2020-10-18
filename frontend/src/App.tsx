@@ -1,23 +1,23 @@
-import React from 'react';
+import React from "react";
 import {
   BrowserRouter as Router,
   RouteComponentProps,
   Switch,
   Route,
-} from 'react-router-dom';
-import './App.css';
-import './axios';
-import HomePage from './pages/HomePage';
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
-import AnonRoute from './components/AnonRoute/AnonRoute';
-import LoginPage from './pages/LoginPage';
-import ForgotPasswordPage from './pages/ForgotPassword/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ForgotPassword/ResetPasswordPage';
-import ProfilePage from './pages/ProfilePage';
-import Register from './pages/Register';
-import DoesNotExistPage from './pages/DoesNotExistPage';
-import ManageAccount from './pages/ManageAccount/ManageAccount';
-import ManageConfirmation from './pages/ManageAccount/ManageConfirmation';
+} from "react-router-dom";
+import "./App.css";
+import "./axios";
+import HomePage from "./pages/HomePage";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import AnonRoute from "./components/AnonRoute/AnonRoute";
+import LoginPage from "./pages/LoginPage";
+import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
+import ProfilePage from "./pages/ProfilePage";
+import Register from "./pages/Register";
+import DoesNotExistPage from "./pages/DoesNotExistPage";
+import ManageAccount from "./pages/ManageAccount/ManageAccount";
+import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 
 function App() {
   return (
