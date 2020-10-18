@@ -1,51 +1,54 @@
 import React from 'react';
 import Nav from 'react-bootstrap/Nav';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Redirect} from "react-router-dom";
+import { Redirect } from 'react-router-dom';
 
 function LoggedIn(props: any) {
-
-  let u_id = localStorage.getItem('u_id');
-  let redirect = '/user/' + u_id;
+  const u_id = localStorage.getItem('u_id');
+  const redirect = `/user/${u_id}`;
 
   return (
     <Nav>
       <Nav.Item>
         <Nav.Link
-          href={'/feed'}>
+          href="/feed"
+        >
           Your Feed
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
         <Nav.Link
-          href={'/purchases'}>
+          href="/purchases"
+        >
           Purchases
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
         <Nav.Link
-          href={'/notifications'}>
+          href="/notifications"
+        >
           Notifications
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
         <Nav.Link
-          href={redirect}>
+          href={redirect}
+        >
           {props.user}
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
         <Nav.Link
-          href='/'
+          href="/"
           onClick={() => {
             localStorage.removeItem('token');
             localStorage.removeItem('u_id');
           }}
-          >Logout</Nav.Link>
+        >
+          Logout
+        </Nav.Link>
       </Nav.Item>
-      <Nav.Item>
-
-      </Nav.Item>
+      <Nav.Item />
     </Nav>
   );
 }

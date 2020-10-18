@@ -115,3 +115,7 @@ The project can be run in development mode `npm start`, in this mode npm will wa
 ### Storybook
 
 I have added another evironment where components can be tested using storybook. In this mode components are tested individually which can be useful for testing mnay combinations of inputs all at once. To run this environment use `npm run storybook`.
+
+### Linting
+
+eslint is added and runs on a slight modification to the [Airbnb style guide](https://github.com/airbnb/javascript/tree/master/react). From inside the frontend directory run the following command to lint the project `npx eslint --ext .tsx src/ -f html -o linting.html`. Additionally, quick changes such as spacing and trailing commas etc can be automatically fixed by eslint by adding `--fix` to the above command.

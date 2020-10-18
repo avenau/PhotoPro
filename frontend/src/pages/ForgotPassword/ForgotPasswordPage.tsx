@@ -1,10 +1,10 @@
-import React from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import axios from "axios";
-import Jumbotron from "react-bootstrap/Jumbotron";
-import "./ForgotPasswordPage.scss";
-import { RouteChildrenProps } from "react-router-dom";
+import React from 'react';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import axios from 'axios';
+import Jumbotron from 'react-bootstrap/Jumbotron';
+import './ForgotPasswordPage.scss';
+import { RouteChildrenProps } from 'react-router-dom';
 
 interface Props extends RouteChildrenProps {}
 
@@ -17,17 +17,18 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
     super(props);
     this.state = {};
   }
+
   private handleSubmit(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
-    let email = this.state.email;
+    const { email } = this.state;
     axios
-      .post("/passwordreset/request", { email })
+      .post('/passwordreset/request', { email })
       .then((r) => {
         if (r.status !== 200) {
           throw new Error();
         }
         this.props.history.push({
-          pathname: "/forgotpassword/reset",
+          pathname: '/forgotpassword/reset',
           state: { email },
         });
       })
@@ -36,7 +37,7 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
 
   private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     event.preventDefault();
-    const name = event.target.name;
+    const { name } = event.target;
     this.setState({ [name]: event.target.value });
   }
 
@@ -56,9 +57,7 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
               type="email"
               placeholder="Email Address"
               name="email"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                this.handleChange(e)
-              }
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.handleChange(e)}
             />
           </Form.Group>
           <Button variant="primary" type="submit">

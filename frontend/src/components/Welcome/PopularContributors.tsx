@@ -4,16 +4,16 @@ import {
   Container,
   Row,
   Col,
-  Image
+  Image,
 } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 class PopularContributors extends Component<any, any> {
   constructor(props: any) {
-    super(props)
+    super(props);
     this.state = {
-      contributors: []
-    }
+      contributors: [],
+    };
   }
 
   componentDidMount() {
@@ -21,21 +21,20 @@ class PopularContributors extends Component<any, any> {
   }
 
   getPopularContributorsPaths() {
-    let token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
     axios.get('/welcome/popularcontributors', {
-        params: {
-          token: token
-        }
-      })
-      .then(res => {
-        const contributors = res.data.contributors;
-        this.setState({contributors:contributors});
-      })
+      params: {
+        token,
+      },
+    })
+      .then((res) => {
+        const { contributors } = res.data;
+        this.setState({ contributors });
+      });
   }
 
-
   render() {
-    return(
+    return (
       <div>
         <Container>
           <Row>
@@ -49,11 +48,11 @@ class PopularContributors extends Component<any, any> {
             of images returned
           */}
           <Row>
-            { this.state.contributors.map((contributor: string, index: any) =>
-            <Col key={index}>
-              <Image src={contributor} fluid/>
-            </Col>
-            )}
+            { this.state.contributors.map((contributor: string, index: any) => (
+              <Col key={index}>
+                <Image src={contributor} fluid />
+              </Col>
+            ))}
           </Row>
         </Container>
       </div>

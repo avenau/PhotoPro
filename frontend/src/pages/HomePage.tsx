@@ -7,14 +7,14 @@ import WelcomeHeader from '../components/Welcome/WelcomeHeader';
 
 function WelcomePage() {
   return (
-    <div className = "HomePage">
+    <div className="HomePage">
       <Toolbar />
       <WelcomeHeader />
       <Showdown />
       <PopularContributors />
       <PopularImages />
     </div>
-  )
+  );
 }
 
 export default WelcomePage;
