@@ -309,7 +309,7 @@ def user_info_with_token():
         'aboutMe': user['aboutMe']
     })
 
-
+# TODO Move this to a separate file?
 @app.route('/manage_account/success', methods=['GET', 'POST'])
 def manage_account():
     """
