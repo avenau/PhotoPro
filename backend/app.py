@@ -1,114 +1,106 @@
-import os
-from json import dumps, loads
-
-from flask import Flask, request, redirect, url_for
+"""
+Backend main file
+Handle requests to and fro server and web app client
+ - Team JAJAC :)
+"""
+from flask import Flask, request
 from flask_cors import CORS
-from flask_mail import Mail
 from flask_pymongo import PyMongo
+from config import DevelopmentConfig, defaultHandler
+import traceback
+from json import dumps, loads
 from flask_bcrypt import Bcrypt
 from bson.objectid import ObjectId
-from Error import UserDNE
-from showdown.get_images import get_images
-from welcome.contributors import get_popular_contributors_images
-from welcome.popular_images import get_popular_images
-#Added BSON library, needed for ObjectId data type
-from bson.objectid import ObjectId
-import traceback
+from lib.Error import EmailError, PasswordError
+from lib.showdown.get_images import get_images
+from lib.welcome.contributors import get_popular_contributors_images
+from lib.welcome.popular_images import get_popular_images
+from lib.profile_details import get_user_details
 
-import password_reset as password_reset
-import validate_registration as val_reg
-import token_functions
+import lib.password_reset as password_reset
+import lib.validate_registration as val_reg
+import lib.token_functions as token_functions
 
 app = Flask(__name__, static_url_path='/static')
 CORS(app)
-
-
-def defaultHandler(err):
-    print(err)
-    response = err.get_response()
-    response.data = dumps({
-        "code": err.code,
-        "name": "System Error",
-        "message": err.description,
-        "show_toast": err.toast
-    })
-    response.content_type = 'application/json'
-    return response
-
-
+app.config.from_object(DevelopmentConfig)
 app.register_error_handler(Exception, defaultHandler)
-
-# Mongo setup, connect to the db
-local_db = "mongodb://localhost:27017/angular-flask-muckaround"
-remote_db = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
-app.config["MONGO_URI"] = remote_db
 mongo = PyMongo(app)
-
-# Creating email server
-app.config.update(
-    MAIL_SERVER='smtp.gmail.com',
-    MAIL_PORT=465,
-    MAIL_USE_SSL=True,
-    MAIL_USERNAME="photopro.jajac@gmail.com",
-    MAIL_PASSWORD="photoprodemopassword",
-    PORT_NUMBER=os.getenv("BACKEND_PORT")
-)
-
 # Create BCrypt object to hash and salt passwords
 bcrypt = Bcrypt(app)
 
 
 # Test route
 @app.route('/', methods=['GET'])
-# @make_pretty
 def basic():
+    """
+    Test route
+    """
     return dumps({
         'first_name': "test",
         'colour': "test"
     })
 
-
-@app.route('/start', methods=['GET', 'POST'])
-def send_data():
-    errors = []
-    # results = {}
-    data = loads(request.data.decode())
-    first_name = data["name"]
-    colour = data["colour"]
-    try:
-        mongo.db.people.insert_one({"name": first_name,
-                                    "colour": colour})
-    except:
-        print("Errors... :-(")
-        errors.append("Couldn't get text")
-
-    return dumps({
-        'first_name': first_name,
-        'colour': colour
-    })
-
-@app.route('/verifytoken', methods=['POST'])
+# TODO standardise either post or get
+# Should this be using a GET request?
+# Missing post, still have components using post
+@app.route('/verifytoken', methods=['GET','POST'])
 def verify_token():
-    token = request.form.get("token")
-    valid = token_functions.verify_token(token)
-    print(valid)
+    """
+    Verify that the token matches the secret
+    Parameters
+    ---------
+    token : str
+        The token of the current user
+
+    Returns
+    -------
+    {valid : bool}
+        Whether the token is valid or not
+    """
+    token = request.args.get('token')
+    if token == '' or token is None:
+        return {"valid": False}
+    token_functions.verify_token(token)
     return {
-        "valid": valid
+        "valid": True
     }
+
 
 @app.route('/login', methods=['POST'])
 def process_login():
+    """
+    Logs into the system
+    Parameters
+    ----------
+    email: str
+    password : str
+
+    Returns
+    -------
+    {token : str,
+     u_id : str}
+
+    """
     email = request.form.get("email")
     password = request.form.get("password")
-    u_id = ""
-    token = ""
+    if email == "":
+        raise EmailError("Please enter an email address.")
+    if password == "":
+        raise PasswordError("Please enter a password.")
+
     user = mongo.db.users.find_one({"email": email})
+    if not user:
+        raise EmailError("That email isn't registered.")
     hashedPassword = user["password"]
 
-    # TODO: set the token properly with jwt
+    u_id = ""
+    token = ""
     if bcrypt.check_password_hash(hashedPassword, password):
         u_id = user["_id"]
         token = token_functions.create_token(str(u_id))
+    else:
+        raise PasswordError("That password is incorrect.")
 
     return {
         "u_id": str(u_id),
@@ -119,8 +111,16 @@ def process_login():
 @app.route('/passwordreset/request', methods=['POST'])
 def auth_password_reset_request():
     """
-    Given an email address, if the user is a registered user, semd an email
+    Given an email address, if the user is a registered user, send an email
     with a link that they can access temporarily to change their password
+
+    Parameters
+    ----------
+    email : str
+
+    Returns
+    -------
+    {}
     """
     email = request.form.get("email")
 
@@ -133,7 +133,19 @@ def auth_password_reset_request():
 
 @app.route('/passwordreset/reset', methods=['POST'])
 def auth_passwordreset_reset():
-    """ Given a reset code, change user's password """
+    """
+    Given a reset code, change user's password
+
+    Parameters
+    ----------
+    email : str
+    reset_code : str
+    new_password : str
+
+    Returns
+    -------
+    {}
+    """
 
     email = request.form.get("email")
     reset_code = request.form.get("reset_code")
@@ -145,8 +157,19 @@ def auth_passwordreset_reset():
                                             hashedPassword, mongo)
     )
 
+
 @app.route('/accountregistration', methods=['POST'])
 def account_registration():
+    """
+    Description
+    -----------
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
     # ======= Backend validation =======
     # As front end checks could be bypassed
     email = request.form.get("email")
@@ -195,13 +218,29 @@ def account_registration():
                           )
     return dumps({})
 
+
 @app.route('/profiledetails', methods=['GET'])
 def profile_details():
-    u_id = request.args.get("u_id")
-    try:
-        details = mongo.db.users.find_one({"_id" : ObjectId(u_id)})
-    except:
-        raise UserDNE
+    """
+    Description
+    -----------
+    Get all details of a user's details for their profile page
+
+    Parameters
+    ----------
+    token : str
+
+    Returns
+    {
+        fname + lname,
+        nickname,
+        location,
+        email
+    }
+    -------
+    """
+    details = get_user_details(request.args.get("u_id"), mongo)
+
     return dumps({
         "name": f"{details['fname']} {details['lname']}",
         "nickname": details["nickname"],
@@ -213,6 +252,19 @@ def profile_details():
 # Returns the two showdown images for the day
 @app.route('/showdown/getImages', methods=['GET'])
 def get_showdown_images():
+    """
+    Description
+    -----------
+    Get the two showdown images for the current showdown
+
+    Parameters
+    ----------
+    N/A
+
+    Returns
+    -------
+    {path_one, path_two}
+    """
     images = get_images()
     return dumps({
         'path_one': images[0],
@@ -221,8 +273,22 @@ def get_showdown_images():
 
 
 # Returns the two showdown images for the day
-@app.route('/welcome/getPopularContributors', methods=['GET'])
+@app.route('/welcome/popularcontributors', methods=['GET'])
 def welcome_get_contributors():
+    """
+    Description
+    -----------
+    Get some popular contributor profile images
+
+    Parameters
+    ----------
+    N/A
+
+    Returns
+    -------
+    {contributors: tup}
+        tuple of contributors paths
+    """
     images = get_popular_contributors_images()
     return dumps({
         # Returning a tuple
@@ -232,50 +298,119 @@ def welcome_get_contributors():
 
 @app.route('/welcome/getPopularImages', methods=['GET'])
 def welcome_get_popular_images():
+    """
+    Description
+    -----------
+    Get paths of popular images
+
+    Parameters
+    ----------
+    N/A
+
+    Returns
+    -------
+    {popular_images: tup}
+        tuple of image paths
+    """
     images = get_popular_images()
     return dumps({
         'popular_images': images
     })
-    return dumps({})
+
+
+@app.route('/userdetails', methods=['GET'])
+def user_info_with_token():
+    """
+    Description
+    -----------
+    GET request to get user details using a token
+
+    Parameters
+    ----------
+    token : string
+
+    Returns
+    -------
+    {fname:str, lname:str, nickname:str,
+     email:str, DOB:str, location:str, aboutMe:str}
+
+    """
+    token = request.args.get('token')
+    if token == '':
+        return {}
+    u_id = token_functions.verify_token(token)
+    user = get_user_details(u_id['u_id'], mongo)
+    # JSON Doesn't like ObjectId format
+    return dumps({
+        'fname': user['fname'],
+        'lname': user['lname'],
+        'email': user['email'],
+        'nickname': user['nickname'],
+        'DOB': user['DOB'],
+        'location': user['location'],
+        'aboutMe': user['aboutMe']
+    })
+
 
 @app.route('/manage_account/success', methods=['GET', 'POST'])
 def manage_account():
+    """
+    Description
+    -----------
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
     errors = []
-    results = {}
     data = loads(request.data.decode())
     print(type(data))
-    #Need Something to Check if current logged in account exist in database
-    #I am assuming user_id is stored in localStorage
-    #Hard coded this part, this part should check what the logged in user object_id is
+    # Need Something to Check if current logged in account exist in database
+    # I am assuming user_id is stored in localStorage
+    # Hard coded this part, this part should check what the logged in
+    # user object_id is
     current_user = data['u_id']
     try:
         find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
-            if (value == ""):
+            if (value == "" or key == "u_id"):
                 continue
-            change_userdb = {"$set": { key: value } }
+            change_userdb = {"$set": {key: value}}
             mongo.db.users.update_one(find_userdb, change_userdb)
 
+    # TODO: Catching too general using Exception. Replace with e.g. ValueError
     except Exception:
         print("Errors... :-(")
-        print (traceback.format_exc())
+        print(traceback.format_exc())
         errors.append("Couldn't get text")
 
     return dumps(data)
 
+
 @app.route('/manage_account/confirm', methods=['GET', 'POST'])
 def password_check():
-    errors = []
-    results = {}
-    #data = json.loads(request.data.decode())
-    #Need Something to Check if current logged in account exist in database
-    #I am assuming user_id is stored in localStorage
-    #Hard coded this part, this part should check what the logged in user object_id is
+    """
+    Description
+    -----------
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
+    # data = json.loads(request.data.decode())
+    # Need Something to Check if current logged in account exist in database
+    # I am assuming user_id is stored in localStorage
+    # Hard coded this part, this part should check what
+    # the logged in user object_id is
 
     data = request.form.to_dict()
-    print(data)
     current_user = data['u_id']
-    current_password = mongo.db.users.find_one({"_id":ObjectId(current_user)})['password']
+    user_object = mongo.db.users.find_one({"_id": ObjectId(current_user)})
+    current_password = user_object['password']
 
     # TODO: set the token properly with jwt
     if bcrypt.check_password_hash(current_password, data['password']):
@@ -286,30 +421,45 @@ def password_check():
 
     return data
 
+
 @app.route('/get_user_info', methods=['GET', 'POST'])
 def get_user():
-    errors = []
-    results = {}
-   # print('In get_user_info')
-    data = request.form.to_dict()
-    #print(data)
-    current_uid = data['u_id']
-    #print("U_ID")
-    #print(type(current_uid))
-    #print(current_uid)
-    current_user = mongo.db.users.find_one({"_id" : ObjectId(current_uid)})
+    """
+    Description
+    -----------
 
-    #print("PRINT CURRENT USER")
-    #print(current_user)
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
+    data = request.form.to_dict()
+    current_uid = data['u_id']
+    current_user = mongo.db.users.find_one({"_id": ObjectId(current_uid)})
     data['fname'] = current_user['fname']
     data['lname'] = current_user['lname']
     data['email'] = current_user['email']
     data['nickname'] = current_user['nickname']
     data['dob'] = current_user['DOB']
     data['location'] = current_user['location']
-    data['about_me'] = current_user['aboutMe']
+    data['aboutMe'] = current_user['aboutMe']
 
     return data
+
+
+@app.route('/user/profile/uploadphoto', methods=['POST'])
+def upload_photo():
+    """
+    Description
+    -----------
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
 
 
 if __name__ == '__main__':

@@ -1,11 +1,9 @@
 '''
 Validate inputs of the user
 '''
-from Error import EmailError
-from Error import PasswordError
-from Error import LocationError
+from lib.Error import EmailError, PasswordError, LocationError
 import re
-from countries_list import countries
+from lib.countries_list import countries
 
 
 def valid_email(mongo, email):
