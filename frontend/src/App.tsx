@@ -22,6 +22,7 @@ import Register from "./pages/Register";
 import DoesNotExistPage from "./pages/DoesNotExistPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
+import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 
 function App() {
   return (
@@ -67,6 +68,8 @@ function App() {
         </ProtectedRoute>
         {/* TODO: Joe pls reroute this */}
         <ProtectedRoute path="/feed" component={DummyFeed} />
+        {/*<ProtectedRoute path="/photo/:photo_id" component={DummyFeed} />*/}
+        <ProtectedRoute path="/photo" component={PhotoDetails} />
       </Switch>
     </Router>
   );
