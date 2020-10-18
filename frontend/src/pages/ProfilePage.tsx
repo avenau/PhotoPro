@@ -14,10 +14,11 @@ import Toolbar from "../components/Toolbar/Toolbar";
 import UserHeader from "../components/UserHeader/UserHeader";
 import "./Profile.scss";
 
-interface Props extends RouteComponentProps { }
+interface Props extends RouteComponentProps {}
 
 interface State {
-  name: string;
+  fname: string;
+  lname: string;
   nickname: string;
   location: string;
   email: string;
@@ -31,7 +32,8 @@ export default class ProfilePage extends React.Component<Props, State> {
     const params = this.props.match.params;
     const user_id = Object.values(params)[0] as string;
     this.state = {
-      name: "",
+      fname: "",
+      lname: "",
       nickname: "",
       location: "",
       email: "",
@@ -143,7 +145,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           current_user={current_user}
           showEdit
           header
-          name={this.state.name}
+          name={`${this.state.fname} ${this.state.lname}`}
           nickname={this.state.nickname}
           location={this.state.location}
           email={this.state.email}
@@ -168,13 +170,13 @@ export default class ProfilePage extends React.Component<Props, State> {
               <FollowingList />
             </Tab>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
           {current_user ? (
             <Tab title={this.createAddButton()} tabClassName="no-border"></Tab>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
         </Tabs>
       </>
     );
