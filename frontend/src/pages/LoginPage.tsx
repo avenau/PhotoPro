@@ -15,8 +15,13 @@ export default class LoginPage extends React.Component<RouteChildrenProps, any> 
     super(props);
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      isLoggedIn: false
     };
+  }
+
+  handleLoginClick() {
+    this.setState({isLoggedIn: true});
   }
 
   handleSubmit(e: React.FormEvent<HTMLElement>) {
@@ -31,6 +36,8 @@ export default class LoginPage extends React.Component<RouteChildrenProps, any> 
         const data = response.data;
         localStorage.setItem("token", data.token);
         localStorage.setItem("u_id", data.u_id);
+        this.handleLoginClick();
+        console.log("isLoggedInState: " + this.state.isLoggedIn);
         this.props.history.push("/feed");
       })
       .catch((e) => {
@@ -46,7 +53,7 @@ export default class LoginPage extends React.Component<RouteChildrenProps, any> 
   render() {
     return (
       <div className="loginPage">
-        <Toolbar />
+        <Toolbar isLoggedIn={this.state.isLoggedIn}/>
         <Container>
           <Jumbotron>
             <h1>Log In to PhotoPro</h1>
@@ -92,4 +99,3 @@ export default class LoginPage extends React.Component<RouteChildrenProps, any> 
     );
   }
 }
-

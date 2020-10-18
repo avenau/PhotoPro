@@ -1,48 +1,71 @@
 import React from "react";
 import axios from "axios";
-import Container from "react-bootstrap/Container";
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
+import {Nav, Container, Navbar} from "react-bootstrap";
 import Search from "../Search/Search";
-import LoggedIn from "./LoggedIn";
-import LoggedOut from "./LoggedOut";
+import LoggedIn from './LoggedIn';
+import LoggedOut from './LoggedOut';
+import IToolbarProps from './IToolbarProps';
+import IToolbarState from './IToolbarState';
 import "bootstrap/dist/css/bootstrap.min.css";
 
-function IsLoggedIn(props: any) {
-  const [loggedIn, setLoggedIn] = React.useState(false);
-  const [username, setUsername] = React.useState("");
 
-  axios.post('/verifytoken', {token: props.token})
-    .then((res: any) => {
-      if (res.data.valid){
-        setLoggedIn(true);
-        axios.get('/userdetails', { params: { token: props.token}})
-          .then((res: any) => {
-            setUsername(res.data.nickname);
-          });
+class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
+  constructor(props:IToolbarProps) {
+    super(props);
+    this.getToken = this.getToken.bind(this);
+    this.state = {
+      isLoggedIn: false
+    }
+  }
+
+  getToken(){
+    let token = localStorage.getItem('token');
+    if (token == null) {
+      this.setState({isLoggedIn: false});
+      return '';
+    } else {
+      this.setState({isLoggedIn: true});
+      return token;
+    }
+  }
+
+  getUsername(){
+    axios.get('/userdetails', {
+      params: {
+        token: this.getToken()
       }
+    })
+    .then((res) => {
+      return res.data.nickname;
     });
-  return loggedIn === true ? <LoggedIn user={username}/> : <LoggedOut/>;
-}
+    return '';
+  }
 
-function Toolbar() {
-  let token = localStorage.getItem("token");
-  // Convert to empty string if null token
-  token = token == null ? "" : token;
+  WhichToolbar(props: IToolbarProps) {
+    console.log(props.isLoggedIn);
+    if(props.isLoggedIn){
+      return <LoggedIn username={this.getUsername()}/>
+    } else {
+      return <LoggedOut />
+    }
+  }
 
-  return (
-    <Container>
-      <Navbar bg="light">
-        <Navbar.Brand href="/">PhotoPro</Navbar.Brand>
-        <Nav className="mr-auto">
-          <IsLoggedIn token={token} />
-          <Nav.Item>
-            <Search />
-          </Nav.Item>
-        </Nav>
-      </Navbar>
-    </Container>
-  );
+
+  render() {
+    return (
+      <Container>
+        <Navbar bg="light">
+          <Navbar.Brand href="/">PhotoPro</Navbar.Brand>
+          <Nav className="mr-auto">
+            <this.WhichToolbar isLoggedIn={this.state.isLoggedIn}/>
+            <Nav.Item>
+              <Search />
+            </Nav.Item>
+          </Nav>
+        </Navbar>
+      </Container>
+    );
+  }
 }
 
 export default Toolbar;
