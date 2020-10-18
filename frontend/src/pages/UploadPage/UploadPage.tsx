@@ -19,6 +19,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
             price: 0,
             tags: "",
             tagsList: [],
+            tagButtons: [<Button key="1">tag1</Button>,<Button key="2">tag2</Button>],
             /* Whether the user has selected a photo yet.
             *  Used to display "Upload Photo" button.
             */
@@ -40,16 +41,20 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
     setTitleErrMsg(title: string) {
       if (title.length > 40) { 
         this.setState({titleErrMsg: "Please keep your title under 40 characters to be concise. Consider adding more keywords instead."});
+        this.deactivateUploadButton();
       } else {
         this.setState({titleErrMsg: ""});
+        this.activateUploadButton();
       }
     }
 
     setPriceErrMsg(price: Number) {
       if (!Number.isInteger(price)) { 
         this.setState({priceErrMsg: "Please enter a whole number."});
+        this.deactivateUploadButton();
       } else {
         this.setState({priceErrMsg: ""});
+        this.activateUploadButton();
       }
     }
 
@@ -64,15 +69,15 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       const val = event.target.value;
       this.setState({ [id]: val });
 
-      if (id == "title") {
+      if (id === "title") {
         this.setTitleErrMsg(val);
       }
 
-      if (id == "price") {
+      if (id === "price") {
         this.setPriceErrMsg(Number(val));
       }
 
-      if (id == "tags") {
+      if (id === "tags") {
         this.setTagsList(val);
       }
 
@@ -86,19 +91,23 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       // If no file, or file removed, remove "Upload" button and remove error msg
       // Else if file is not accepted, remove "Upload" button and display error msg
       // Else (i.e. good file) display image preview and "Upload" button
-      if (path == "") {
+      if (path === "") {
         this.setState({hasPickedPhoto: false});
         this.setState({fileErrMsg: ""});
-      } else if (fileExtension != ".jpg" &&
-                fileExtension != ".png" &&
-                fileExtension != ".svg" &&
-                fileExtension != ".raw") {
-        this.setState({hasPickedPhoto: false});
-        this.setState({fileErrMsg: "Sorry, we only support .jpg, .png, .svg, and .raw images."});
-        this.setState({imagePreview: null});
+      } else if (fileExtension !== ".jpg" &&
+                fileExtension !== ".png" &&
+                fileExtension !== ".svg" &&
+                fileExtension !== ".raw") {
+        this.setState({
+          hasPickedPhoto: false,
+          fileErrMsg: "Sorry, we only support .jpg, .png, .svg, and .raw images at the moment.",
+          imagePreview: null
+        });
+        this.deactivateUploadButton();
         event.target.value = "";
       } else {
         this.setState({hasPickedPhoto: true});
+        this.activateUploadButton();
         this.setState({fileErrMsg: ""});
         // Set image preview
         // Source: https://stackoverflow.com/questions/4459379/preview-an-image-before-it-is-uploaded
@@ -107,6 +116,52 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         this.setState({fileErrMsg: "This should never happen."});
       }
     }
+
+    activateUploadButton() {
+      const btn = document.getElementById("uploadButton");
+      btn?.removeAttribute("disabled");
+    }
+
+    deactivateUploadButton() {
+      const btn = document.getElementById("uploadButton");
+      btn?.setAttribute("disabled", "true");
+    }
+
+    deleteTag(event: any) {
+      const btn = document.getElementById(event.target.id);
+      btn?.remove();
+    }
+
+    // refreshTagButtons() {
+    //   // const newTagButtons = this.state.tagButtons.concat([<Button>NewButton</Button>])
+    //   // this.setState({tagButtons: newTagButtons});
+    //   this.state.tagsList.forEach((tag: string) => {
+    //     const newTagButton = (<button 
+    //                            key={tag} 
+    //                            id={"tag-"+tag} 
+    //                            onClick={(e)=>this.deleteTag(e)}
+    //                          >
+    //                            {tag}
+    //                          </button>);
+    //     console.log("before");
+    //     console.log(this.state.tagButtons);
+    //     const newTagButtons = this.state.tagButtons.concat([newTagButton]);
+    //     this.setState({tagButtons: newTagButtons});
+    //     console.log("after");
+    //     console.log(this.state.tagButtons);
+    //     // this.setState({tagButtons: this.state.tagButtons.push(newTagButton)})
+    //   })
+    //   console.log(this.state.tagsList);
+    //   console.log(this.state.tagButtons);
+    // }
+
+    // createTagButtons() {
+    //   const ret = this.state.tagsList.map((tag: string) =>
+    //       <Button key={tag} id={"tag-"+tag} onClick={(e)=>this.deleteTag(e)}>{tag}</Button>
+    //     );
+    //   console.log(ret);
+    //   return <p>{ret}</p>;
+    // }
 
     render() {
         return (
@@ -121,8 +176,11 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                       onChange={(e) => this.handleInputChange(e)}
                     >
                     </Form.Control>
+                    <Form.Text className="text-muted titleInfo">
+                      Title must be between 1 and 40 characters long. 
+                      <p className="error">{this.state.titleErrMsg}</p>
+                    </Form.Text>
                   </Form.Group>
-                  <p className="error">{this.state.titleErrMsg}</p>
                   <Form.Group controlId="price">
                     <Form.Label>Photo Price in Credits</Form.Label>
                     <Form.Control 
@@ -130,23 +188,42 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                       onChange={(e) => this.handleInputChange(e)}
                     >
                     </Form.Control>
+                    <Form.Text className="text-muted priceInfo">
+                      Price must be a positive whole number, or 0 if you'd like to release your photo for free. 
+                      <p className="error">{this.state.priceErrMsg}</p>
+                    </Form.Text>
                   </Form.Group>
-                  <p className="error">{this.state.priceErrMsg}</p>
                   <Form.Group controlId="tags">
-                    <Form.Label>Space-separated keywords, e.g. "cat dog mouse"</Form.Label>
-                    <Form.Control 
-                      type="text"
-                      onChange={(e) => this.handleInputChange(e)}
-                    >
-                    </Form.Control>
+                    <Form.Label>Space-separated keywords, e.g. "cat dog mouse". Click "Add Tags" to detect your keywords.</Form.Label>
+                    <Row>
+                      <Col xs={9}>
+                        <Form.Control 
+                          type="text"
+                          onChange={(e) => this.handleInputChange(e)}
+                        >
+                        </Form.Control>
+                      </Col>
+                      <Button 
+                        // onClick={this.refreshTagButtons.bind(this)}
+                      >
+                        Add Tags
+                      </Button>
+                    </Row>
+                    <Form.Text className="text-muted tagsInfo">
+                      You can include 1 to 10 keywords. Keywords should describe the main aspects of your photo.
+                      <p>Detected keywords (click keyword to delete): {this.state.tagButtons}</p>
+                      <p className="error">{this.state.tagsErrMsg}</p>
+                    </Form.Text>
                   </Form.Group>
-                  <p>Detected keywords: {this.state.tagsList.toString()}</p>
                   <Form.Group>
                     <Form.File 
                       id="photo" 
-                      label="Select A Photo (.jpg, .png, .svg, or .raw)" 
+                      label="Select A Photo" 
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.handleFileChange(e)}
                     />
+                    <Form.Text className="text-muted">
+                      We accept .jpg, .png, .svg, and .raw images.
+                    </Form.Text>
                   </Form.Group>
                   <p className="error">{this.state.fileErrMsg}</p>
                   {this.state.hasPickedPhoto ? (
@@ -169,7 +246,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                       </Dropdown>
                     </Col>
                     </Row>
-                    <Button className="mt-2" type="submit">Upload Photo</Button>
+                    <Button id="uploadButton" className="mt-2" type="submit">Upload Photo</Button>
                     </div>
                   ) : (
                     <></>
