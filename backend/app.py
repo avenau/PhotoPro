@@ -17,6 +17,7 @@ from showdown.get_images import get_images
 from welcome.contributors import get_popular_contributors_images
 from welcome.popular_images import get_popular_images
 from profile_details import get_user_details
+from token_decorator import validate_token
 
 import password_reset
 import validate_registration as val_reg
@@ -505,6 +506,27 @@ def upload_photo():
     Returns
     -------
     """
+
+
+'''
+---------------
+- Test Routes -
+---------------
+'''
+
+
+@app.route('/testdecorator', methods=['GET'])
+@validate_token
+def test_decorator():
+    '''
+    Testing decorator for validating token
+    Use this decorator to verify the token is
+    valid and matches the secret
+    '''
+    print("YAY")
+    return dumps({
+        "success": "success"
+    })
 
 
 if __name__ == '__main__':
