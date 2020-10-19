@@ -3,18 +3,14 @@ import {
   BrowserRouter as Router,
   RouteComponentProps,
   Switch,
-  Link,
   Route,
 } from "react-router-dom";
 import "./App.css";
 import "./axios";
 import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
-import ExamplePageAuth from "./pages/Examples/ExamplePageAuth";
 import AnonRoute from "./components/AnonRoute/AnonRoute";
 import LoginPage from "./pages/LoginPage";
-import DummyFeed from "./DummyFeed";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -31,9 +27,7 @@ function App() {
         <AnonRoute
           exact
           path="/login"
-          render={(props) => {
-            return <LoginPage {...props} />;
-          }}
+          render={(props) => <LoginPage {...props} />}
         />
         <AnonRoute exact path="/" component={HomePage} />
         <AnonRoute exact path="/register" component={Register} />
@@ -50,9 +44,7 @@ function App() {
         <AnonRoute
           exact
           path="/login"
-          render={(props: RouteComponentProps) => {
-            return <LoginPage {...props} />;
-          }}
+          render={(props: RouteComponentProps) => <LoginPage {...props} />}
         />
         <Route
           exact
@@ -71,8 +63,8 @@ function App() {
         <ProtectedRoute path="/manage_confirmation">
           <ManageConfirmation />
         </ProtectedRoute>
-        {/* TODO: Joe pls reroute this */}
-        <ProtectedRoute path="/feed" component={DummyFeed} />
+        <ProtectedRoute path="/feed" component={HomePage} />
+        <Route path="*" component={DoesNotExistPage} />
       </Switch>
     </Router>
   );

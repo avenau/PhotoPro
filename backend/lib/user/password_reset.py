@@ -1,5 +1,5 @@
 from flask_mail import Message
-from Error import ValueError
+from lib.Error import ValueError
 from threading import Timer
 from hashlib import md5
 from random import random

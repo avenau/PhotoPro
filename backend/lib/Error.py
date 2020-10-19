@@ -15,6 +15,7 @@ class AccessError(HTTPException):
     message = 'No message specified'
     toast = True
 
+
 class UserDNE(HTTPException):
     '''
     UserDNE: Error when user does not exist
@@ -41,6 +42,7 @@ class EmailError(HTTPException):
     message = 'No message specified'
     toast = True
 
+
 class PasswordError(HTTPException):
     '''
     PasswordError: Error with the email given
@@ -49,10 +51,20 @@ class PasswordError(HTTPException):
     message = 'No message specified'
     toast = True
 
+
 class LocationError(HTTPException):
     '''
     PasswordError: Error with the email given
     '''
     code = 400
+    message = 'No message specified'
+    toast = True
+
+
+class TokenError(HTTPException):
+    '''
+    TokenError: When something went wrong with the Token
+    '''
+    code = 500
     message = 'No message specified'
     toast = True

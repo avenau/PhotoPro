@@ -10,7 +10,7 @@ class Search extends Component {
     return (
       <Container fluid>
         <Form>
-          <Form.Control placeholder="Search" className="mr-sm-2"/>
+          <Form.Control placeholder="Search" className="mr-sm-2" />
         </Form>
         <Button variant="outline-success">Search</Button>
       </Container>
@@ -18,4 +18,4 @@ class Search extends Component {
   }
 }
 
-export default Search
+export default Search;
