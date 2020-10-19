@@ -22,6 +22,7 @@ module.exports = {
     "react/prefer-stateless-function": "off",
     "no-use-before-define": "off",
     "react/jsx-one-expression-per-line": "off",
+    "react/static-property-placement": "off",
   },
   settings: {
     "import/resolver": "typescript", // this loads <rootdir>/tsconfig.json to eslint
