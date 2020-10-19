@@ -119,17 +119,17 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
 
     activateUploadButton() {
       const btn = document.getElementById("uploadButton");
-      btn?.removeAttribute("disabled");
+      return btn?.removeAttribute("disabled");
     }
 
     deactivateUploadButton() {
       const btn = document.getElementById("uploadButton");
-      btn?.setAttribute("disabled", "true");
+      return btn?.setAttribute("disabled", "true");
     }
 
     deleteTag(event: any) {
       const btn = document.getElementById(event.target.id);
-      btn?.remove();
+      return btn?.remove();
     }
 
     // refreshTagButtons() {
