@@ -1,10 +1,10 @@
-import React from 'react';
-import { Image } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import { PencilSquare } from 'react-bootstrap-icons';
-import { Link } from 'react-router-dom';
-import profilePic from '../../static/profile-pic.png';
-import './UserHeader.scss';
+import React from "react";
+import { Image } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import { PencilSquare } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
+import profilePic from "../../static/profile-pic.png";
+import "./UserHeader.scss";
 
 interface Props {
   photo?: string;
@@ -69,10 +69,7 @@ export default class UserHeader extends React.Component<Props> {
             <h4>{this.props.name}</h4>
           )}
           <div>{this.props.nickname}</div>
-          <div>
-            Based in
-            {this.props.location}
-          </div>
+          <div>Based in {this.props.location}</div>
           <div>{this.props.email}</div>
         </div>
         {this.getEditButton()}
