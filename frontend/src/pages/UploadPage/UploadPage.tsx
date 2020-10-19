@@ -17,16 +17,14 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       this.state = {
         title: "",
         price: 0,
-        // 'tags' is the current state of the 'tags' input field
+        /**  'tags' is the current state of the 'tags' input field */
         tags: "",
-        /* 'tagsList' is the current list of tags attached to the photo, 
-        * which will eventaully be sent to the back end
-        **/
+        /** 'tagsList' is the current list of tags attached to the photo, 
+             which will eventaully be sent to the back end */
         tagsList: [],
         tagButtons: [],
-        /* Whether the user has selected a photo yet.
-        *  Used to display "Upload Photo" button.
-        */
+        /** Whether the user has selected a photo yet.
+            Used to display "Upload Photo" button. */
         hasPickedPhoto: false,
         imagePreview: null,
         albumsToAddTo: [],
@@ -37,7 +35,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       };
     }
     
-    // TODO:
+    // TODO: axios post request
     handleSubmit(event: React.FormEvent<HTMLElement>) {
       event.preventDefault();
       if (this.state.tagsList.length < 1) {
@@ -56,7 +54,6 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       }
     }
 
-    // TODO: do not allow negative prices
     setPriceErrMsg(price: Number) {
       if (!Number.isInteger(price)) { 
         this.setState({priceErrMsg: "Please enter a whole number."});
@@ -87,12 +84,11 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       if (id === "tags") {
         this.setState({tagsErrMsg: ""});
       }
-      console.log("--DEBUG--")
-      console.log(this.state);
     }
 
-    handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
+    handleTagEnterPress(event: React.KeyboardEvent<HTMLInputElement>) {
       if (event.key === "Enter") {
+        event.preventDefault();
         this.handleAddTags();
       }
     }
@@ -153,8 +149,11 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
     deleteTag(event: React.MouseEvent<HTMLElement, MouseEvent>) {
       event.preventDefault();
       const target = event.target as HTMLElement;
-      const tagName = target.id;
-      this.deleteTagFromTagsList(tagName);
+      const tagToDelete = target.id;
+      const tagsListAfterDeletion = this.state.tagsList.filter((tag: string) => {
+        return tag !== tagToDelete;
+      });
+      this.setState({tagsList: tagsListAfterDeletion}, this.refreshTagButtons);
     }
 
     stateTagsToList() {
@@ -216,7 +215,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
 
     checkTagsAreAlphaNumeric(tagsToAdd: string[]) {
       tagsToAdd.forEach((tag: string, index: number) => {
-        if (!tag.match(/^[a-z0-9]+$/)) {
+        if (!tag.match(/^[a-z0-9]+$/i)) {
           tagsToAdd.splice(index, 1);
           this.setState({tagsErrMsg: "Please only include letters and numbers in your keywords."});
         }
@@ -272,7 +271,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                         <Form.Control 
                           type="text"
                           onChange={(e) => this.handleInputChange(e)}
-                          onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => this.handleKeyPress(e)}
+                          onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => this.handleTagEnterPress(e)}
                         >
                         </Form.Control>
                       </Col>
