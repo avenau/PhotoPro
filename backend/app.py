@@ -19,6 +19,7 @@ from lib.welcome.popular_images import get_popular_images
 from lib.profile_details import get_user_details
 from lib.token_decorator import validate_token
 from lib.validate_login import login
+from lib.validate_photo_details import validate_photo
 import lib.password_reset as password_reset
 import lib.validate_registration as val_reg
 import lib.token_functions as token_functions
@@ -406,8 +407,8 @@ def get_user():
     return data
 
 
-@app.route('/user/profile/uploadphoto', methods=['POST'])
-def upload_photo():
+@app.route('/user/profile/uploadphoto/details', methods=['POST'])
+def upload_photo_details():
     """
     Description
     -----------
@@ -418,13 +419,24 @@ def upload_photo():
     price: str,
     tagsList: [],
     albumsToAddTo: [],
+    photo: str
     Returns
     -------
     None
     """
+    # TODO unravel albums and tags into list
+    validate_photo(request.form.to_dict())
+    tags = request.form.getlist('tagsList[]')
+    print([json.loads(tag) for tag in tags])
+    print(request.form.to_dict())
+    # Then add to database and get unique id to send through photo
+    return dumps({})
 
-
-
+# TODO having trouble sending photo 
+@app.route('/user/profile/uploadphoto', methods=['POST'])
+def upload_photo():
+    print(request.form.get('photo'))
+    return dumps({})
 
 '''
 ---------------
