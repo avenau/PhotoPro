@@ -9,7 +9,6 @@ import Col from "react-bootstrap/Col"
 import Dropdown from "react-bootstrap/Dropdown"
 import Toolbar from "../../components/Toolbar/Toolbar"
 import { RouteChildrenProps } from "react-router-dom";
-import { runInThisContext } from "vm";
 
 
 export default class UploadPage extends React.Component<RouteChildrenProps, any> {
@@ -59,11 +58,11 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       }
     }
 
-    setTagsList(tags: string) {
-      const tagsList = tags.trim().split(" ");
-      console.log(tagsList);
-      this.setState({tagsList: tagsList});
-    }
+    // setTagsList() {
+    //   const tagsList = this.state.tags.trim().split(" ");
+    //   console.log(tagsList);
+    //   this.setState({tagsList: tagsList});
+    // }
 
     handleInputChange(event: any) {
       const id = event.target.id;
@@ -79,7 +78,8 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       }
 
       if (id === "tags") {
-        this.setTagsList(val);
+        console.log("nothing");
+        // this.setTagsList();
       }
 
       this.setState({tagsErrMsg: ""})
@@ -131,19 +131,21 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       btn?.setAttribute("disabled", "true");
     }
 
+    // TODO: remove the tag from this.state.tagsList and this.state.tagButtons
     deleteTag(event: React.MouseEvent<HTMLElement, MouseEvent>) {
       const target = event.target as HTMLElement;
+      const tagName = target.id;
       target.remove();
-      
     }
 
-    clearTagInput() {
-      const tagInput = document.getElementById("tags") as HTMLInputElement;
-      tagInput.value = "";
+    tagsToList(tags: string) {
+      const tagsList = tags.trim().split(" ");
+      console.log(tagsList);
+      return tagsList;
     }
 
-    refreshTagButtons() {
-      const newTagButtons = this.state.tagsList.map((tag: string) => {
+    updateTagButtons(newTagsList: string[]) {
+      const newTagButtons = newTagsList.map((tag: string) => {
         return  <Button 
                   key={tag} 
                   id={tag} 
@@ -152,9 +154,26 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                   {tag}
                 </Button>
       });
-      this.setState({tagsList: []});
       const updatedTagButtons = this.state.tagButtons.concat(newTagButtons);
       this.setState({tagButtons: updatedTagButtons});
+    }
+
+    updateTagsList(newTagsList: string[]) {
+      const updatedTagsList = this.state.tagsList.concat(newTagsList);
+      this.setState({tagsList: updatedTagsList});
+    }
+
+    clearTagInput() {
+      const tagInput = document.getElementById("tags") as HTMLInputElement;
+      tagInput.value = "";
+      this.setState({tags: ""})
+    }
+
+    // TODO: fix empty spaces being added as empty buttons
+    handleAddTags() {
+      const newTagsList = this.tagsToList(this.state.tags);
+      this.updateTagButtons(newTagsList);
+      this.updateTagsList(newTagsList);
       this.clearTagInput();
     }
 
@@ -199,7 +218,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                         </Form.Control>
                       </Col>
                       <Button 
-                        onClick={this.refreshTagButtons.bind(this)}
+                        onClick={this.handleAddTags.bind(this)}
                       >
                         Add Tags
                       </Button>
