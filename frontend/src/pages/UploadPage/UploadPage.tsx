@@ -13,25 +13,29 @@ import { RouteChildrenProps } from "react-router-dom";
 
 export default class UploadPage extends React.Component<RouteChildrenProps, any> {
     constructor(props: RouteChildrenProps) {
-        super(props);
-        this.state = {
-            title: "",
-            price: 0,
-            tags: "",
-            tagsList: [],
-            tagButtons: [],
-            /* Whether the user has selected a photo yet.
-            *  Used to display "Upload Photo" button.
-            */
-            hasPickedPhoto: false,
-            imagePreview: null,
-            albumsToAddTo: [],
-            titleErrMsg: "",
-            priceErrMsg: "",
-            tagsErrMsg: "",
-            // File extension error message string
-            fileErrMsg: ""
-        };
+      super(props);
+      this.state = {
+        title: "",
+        price: 0,
+        // 'tags' is the current state of the 'tags' input field
+        tags: "",
+        /* 'tagsList' is the current list of tags attached to the photo, 
+        * which will eventaully be sent to the back end
+        **/
+        tagsList: [],
+        tagButtons: [],
+        /* Whether the user has selected a photo yet.
+        *  Used to display "Upload Photo" button.
+        */
+        hasPickedPhoto: false,
+        imagePreview: null,
+        albumsToAddTo: [],
+        titleErrMsg: "",
+        priceErrMsg: "",
+        tagsErrMsg: "",
+        // File extension error message string
+        fileErrMsg: ""
+      };
     }
 
     handleSubmit(event: React.FormEvent<HTMLElement>) {
@@ -53,17 +57,14 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       if (!Number.isInteger(price)) { 
         this.setState({priceErrMsg: "Please enter a whole number."});
         this.deactivateUploadButton();
+      } else if (price < 0) {
+        this.setState({priceErrMsg: "Please enter a positive number."});
+        this.deactivateUploadButton();
       } else {
         this.setState({priceErrMsg: ""});
         this.activateUploadButton();
       }
     }
-
-    // setTagsList() {
-    //   const tagsList = this.state.tags.trim().split(" ");
-    //   console.log(tagsList);
-    //   this.setState({tagsList: tagsList});
-    // }
 
     handleInputChange(event: any) {
       const id = event.target.id;
@@ -132,31 +133,31 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       btn?.setAttribute("disabled", "true");
     }
 
-    deleteTagFromTagsList(tag: string) {
-      // TODO:
-      return;
-    }
-
-    deleteTagFromTagButtons(tag: string) {
-      // TODO:
-      return;
+    deleteTagFromTagsList(tagToDelete: string) {
+      const tagsListAfterDeletion = this.state.tagsList.filter((tag: string) => {
+        return tag !== tagToDelete;
+      });
+      this.setState({tagsList: tagsListAfterDeletion}, this.refreshTagButtons);
     }
 
     // TODO: remove the tag from this.state.tagsList and this.state.tagButtons
     deleteTag(event: React.MouseEvent<HTMLElement, MouseEvent>) {
       const target = event.target as HTMLElement;
       const tagName = target.id;
-      target.remove();
+      // target.remove();
+      this.deleteTagFromTagsList(tagName);
     }
 
-    tagsToList(tags: string) {
-      const tagsList = tags.trim().split(" ");
+    stateTagsToList() {
+      const tagsList = this.state.tags.trim().split(" ").filter(Boolean);
       console.log(tagsList);
       return tagsList;
     }
 
-    updateTagButtons(newTagsList: string[]) {
-      const newTagButtons = newTagsList.map((tag: string) => {
+    refreshTagButtons() {
+      console.log("A");
+      console.log(this.state.tagsList);
+      const newTagButtons = this.state.tagsList.map((tag: string) => {
         return  <Button 
                   key={tag} 
                   id={tag} 
@@ -165,13 +166,12 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                   {tag}
                 </Button>
       });
-      const updatedTagButtons = this.state.tagButtons.concat(newTagButtons);
-      this.setState({tagButtons: updatedTagButtons});
+      this.setState({tagButtons: newTagButtons}, this.clearTagInput);
     }
 
-    updateTagsList(newTagsList: string[]) {
-      const updatedTagsList = this.state.tagsList.concat(newTagsList);
-      this.setState({tagsList: updatedTagsList});
+    async updateTagsList(tagsToAdd: string[]) {
+      const updatedTagsList = this.state.tagsList.concat(tagsToAdd);
+      this.setState({tagsList: updatedTagsList}, this.refreshTagButtons);
     }
 
     clearTagInput() {
@@ -180,15 +180,12 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       this.setState({tags: ""})
     }
 
-    // TODO: fix empty spaces being added as empty buttons
     // TODO: do not allow duplicate tags to be added
     // TODO: only allow alphanumeric tags
     // TODO: enforce 1 <= ntags <= 10
     handleAddTags() {
-      const newTagsList = this.tagsToList(this.state.tags);
-      this.updateTagButtons(newTagsList);
-      this.updateTagsList(newTagsList);
-      this.clearTagInput();
+      const tagsToAdd = this.stateTagsToList();
+      this.updateTagsList(tagsToAdd);
     }
 
     render() {
@@ -239,7 +236,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                     </Row>
                     <Form.Text className="text-muted tagsInfo">
                       You can include 1 to 10 keywords. Keywords should describe the main aspects of your photo.
-                      <p>{this.state.tagButtons.length} Detected keywords (click keyword to delete): {this.state.tagButtons}</p>
+                      <p>{this.state.tagsList.length} Detected keywords (click keyword to delete): {this.state.tagButtons}</p>
                       <p className="error">{this.state.tagsErrMsg}</p>
                     </Form.Text>
                   </Form.Group>
@@ -247,6 +244,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                     <Form.File 
                       id="photo" 
                       label="Select A Photo" 
+                      accept=".jpg, .png, .svg, .raw"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.handleFileChange(e)}
                     />
                     <Form.Text className="text-muted">
