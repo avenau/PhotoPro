@@ -16,12 +16,12 @@ from bson.objectid import ObjectId
 from lib.showdown.get_images import get_images
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
-from lib.profile.profile_details import get_user_details
-from lib.user.token_decorator import validate_token
-from lib.user.validate_login import login
-import lib.user.password_reset as password_reset
-import lib.user.validate_registration as val_reg
-import lib.user.token_functions as token_functions
+from lib.profile_details import get_user_details
+from lib.token_decorator import validate_token
+from lib.validate_login import login
+import lib.password_reset as password_reset
+import lib.validate_registration as val_reg
+import lib.token_functions as token_functions
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object(DevelopmentConfig)
