@@ -23,6 +23,8 @@ module.exports = {
     "no-use-before-define": "off",
     "react/jsx-one-expression-per-line": "off",
     "react/static-property-placement": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
   },
   settings: {
     "import/resolver": "typescript", // this loads <rootdir>/tsconfig.json to eslint

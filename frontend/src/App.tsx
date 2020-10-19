@@ -22,7 +22,7 @@ import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 
 function App() {
   return (
-    <Router>
+    <Router forceRefresh>
       <Switch>
         <AnonRoute
           exact
