@@ -25,7 +25,6 @@ class Search extends Component<Props, State> {
 
   private handleSubmit(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
-    console.log(this.state.q);
     const query = encodeURI(this.state.q);
     this.props.history.push(`/search/${this.props.type}?q=${query}`);
   }
@@ -33,12 +32,7 @@ class Search extends Component<Props, State> {
   private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     event.preventDefault();
     const { name } = event.target;
-    const newState = {} as State & { [index: string]: string };
-    Object.assign(newState, this.state);
-    newState[name] = event.target.value;
-
-    // { [name]: event.target.value }
-    this.setState(newState);
+    this.setState({ [name]: event.target.value } as Pick<State, keyof State>);
   }
 
   render() {
