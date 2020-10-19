@@ -48,6 +48,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       }
     }
 
+    // TODO: do not allow negative prices
     setPriceErrMsg(price: Number) {
       if (!Number.isInteger(price)) { 
         this.setState({priceErrMsg: "Please enter a whole number."});
@@ -131,6 +132,16 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       btn?.setAttribute("disabled", "true");
     }
 
+    deleteTagFromTagsList(tag: string) {
+      // TODO:
+      return;
+    }
+
+    deleteTagFromTagButtons(tag: string) {
+      // TODO:
+      return;
+    }
+
     // TODO: remove the tag from this.state.tagsList and this.state.tagButtons
     deleteTag(event: React.MouseEvent<HTMLElement, MouseEvent>) {
       const target = event.target as HTMLElement;
@@ -170,6 +181,9 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
     }
 
     // TODO: fix empty spaces being added as empty buttons
+    // TODO: do not allow duplicate tags to be added
+    // TODO: only allow alphanumeric tags
+    // TODO: enforce 1 <= ntags <= 10
     handleAddTags() {
       const newTagsList = this.tagsToList(this.state.tags);
       this.updateTagButtons(newTagsList);
