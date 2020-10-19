@@ -3,25 +3,27 @@ Backend main file
 Handle requests to and fro server and web app client
  - Team JAJAC :)
 """
+import traceback
+from json import dumps, loads
+
+from bson.objectid import ObjectId
 from flask import Flask, request
+from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
-from config import DevelopmentConfig, defaultHandler
-import traceback
-from json import dumps, loads
-from flask_bcrypt import Bcrypt
-from bson.objectid import ObjectId
-from lib.showdown.get_images import get_images
-from lib.welcome.contributors import get_popular_contributors_images
-from lib.welcome.popular_images import get_popular_images
-from lib.profile_details import get_user_details
-from lib.token_decorator import validate_token
-from lib.validate_login import login
 
 import lib.password_reset as password_reset
-import lib.validate_registration as val_reg
 import lib.token_functions as token_functions
+import lib.validate_registration as val_reg
+from config import DevelopmentConfig, defaultHandler
+from lib.profile_details import get_user_details
+from lib.search.user_search import user_search
+from lib.showdown.get_images import get_images
+from lib.token_decorator import validate_token
+from lib.validate_login import login
+from lib.welcome.contributors import get_popular_contributors_images
+from lib.welcome.popular_images import get_popular_images
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object(DevelopmentConfig)
@@ -60,7 +62,7 @@ def verify_token():
         token = request.args.get('token')
     else:
         token = request.form.get('token')
-    
+
     if token == '' or token is None:
         return {"valid": False}
     token_functions.verify_token(token)
@@ -190,7 +192,8 @@ def profile_details():
 
     Returns
     {
-        fname + lname,
+        fname,
+        lname,
         nickname,
         location,
         email
@@ -200,7 +203,8 @@ def profile_details():
     details = get_user_details(request.args.get("u_id"), mongo)
 
     return dumps({
-        "name": f"{details['fname']} {details['lname']}",
+        "fname": details['fname'],
+        "lname": details['lname'],
         "nickname": details["nickname"],
         "location": details["location"],
         "email": details["email"]
@@ -418,6 +422,42 @@ def upload_photo():
     Returns
     -------
     """
+
+
+'''
+---------------
+- Search Routes -
+---------------
+'''
+
+@app.route('/search/user', methods=['GET'])
+def search_user():
+    """
+    Description
+    -----------
+    GET request to return many user details based on a query
+
+    Parameters
+    ----------
+    query : string
+    offset : int
+    limit : int
+
+    Returns
+    -------
+    {
+        fname: str,
+        lname: str,
+        nickname: str,
+        email: str,
+        location: str,
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_search(data, mongo))
 
 
 '''
