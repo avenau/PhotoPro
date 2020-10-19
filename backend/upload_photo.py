@@ -7,7 +7,6 @@ import base64
 from PIL import Image
 
 
-
 def create_thumbnail(image_path):
     '''
     Create the thumbnail using PIL
@@ -32,7 +31,24 @@ def upload_user_photo(user, image_path):
     # thumbnail = create_thumbnail(image_path)
     with open(image_path, "rb") as image_file:
         # convert to base64
-        thumbnail = base64.b64encode(image_file.read()).decode('utf-8')
+        data = image_file.read()
+        thumbnail = base64.b64encode(data)
     # attach to the user
     user['profile_pic'] = thumbnail
     return user
+
+
+if __name__ == '__main__':
+    html = '''
+    <img src = "data:image/png;
+    base64,
+    '''
+    user = {
+        'profile_pic': None
+    }
+    user = upload_user_photo(user, 'static/contributor2.png')
+    binary = user['profile_pic']
+    html = html + binary + '" />'
+    f = open('img.html', 'a')
+    f.write(html)
+    f.close()
