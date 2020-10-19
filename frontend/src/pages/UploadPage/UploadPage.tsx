@@ -33,13 +33,17 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         titleErrMsg: "",
         priceErrMsg: "",
         tagsErrMsg: "",
-        // File extension error message string
         fileErrMsg: ""
       };
     }
-
+    
+    // TODO:
     handleSubmit(event: React.FormEvent<HTMLElement>) {
-      return;
+      event.preventDefault();
+      if (this.state.tagsList.length < 1) {
+        this.setState({tagsErrMsg: "Please enter at least one keyword before uploading."});
+        return;
+      }
     }
 
     setTitleErrMsg(title: string) {
@@ -67,6 +71,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
     }
 
     handleInputChange(event: any) {
+      event.preventDefault();
       const id = event.target.id;
       const val = event.target.value;
       this.setState({ [id]: val });
@@ -80,15 +85,20 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       }
 
       if (id === "tags") {
-        console.log("nothing");
-        // this.setTagsList();
+        this.setState({tagsErrMsg: ""});
       }
-
-      this.setState({tagsErrMsg: ""})
+      console.log("--DEBUG--")
       console.log(this.state);
     }
 
+    handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
+      if (event.key === "Enter") {
+        this.handleAddTags();
+      }
+    }
+
     handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+      event.preventDefault();
       const path = event.target.value;
       const fileExtension = path.substr(path.length - 4);
       // If no file, or file removed, remove "Upload" button and remove error msg
@@ -140,11 +150,10 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       this.setState({tagsList: tagsListAfterDeletion}, this.refreshTagButtons);
     }
 
-    // TODO: remove the tag from this.state.tagsList and this.state.tagButtons
     deleteTag(event: React.MouseEvent<HTMLElement, MouseEvent>) {
+      event.preventDefault();
       const target = event.target as HTMLElement;
       const tagName = target.id;
-      // target.remove();
       this.deleteTagFromTagsList(tagName);
     }
 
@@ -169,8 +178,22 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       this.setState({tagButtons: newTagButtons}, this.clearTagInput);
     }
 
-    async updateTagsList(tagsToAdd: string[]) {
-      const updatedTagsList = this.state.tagsList.concat(tagsToAdd);
+    updateTagsList(tagsToAdd: string[]) {
+      // Remove tags from tagsToAdd which already exist in tagsList to avoid duplicate tags
+      this.state.tagsList.forEach((tag: string) => {
+        const matchIndex = tagsToAdd.indexOf(tag);
+        if (matchIndex !== -1) {
+          tagsToAdd.splice(matchIndex, 1);
+        }
+      });
+      let updatedTagsList = this.state.tagsList.concat(tagsToAdd);
+
+      // Allow 10 keywords maximum per photo
+      if (updatedTagsList.length > 10) {
+        updatedTagsList = updatedTagsList.slice(0,10);
+        this.setState({tagsErrMsg: "You are allowed a maximum of 10 keywords."})
+      }
+
       this.setState({tagsList: updatedTagsList}, this.refreshTagButtons);
     }
 
@@ -180,12 +203,33 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       this.setState({tags: ""})
     }
 
-    // TODO: do not allow duplicate tags to be added
-    // TODO: only allow alphanumeric tags
-    // TODO: enforce 1 <= ntags <= 10
     handleAddTags() {
       const tagsToAdd = this.stateTagsToList();
-      this.updateTagsList(tagsToAdd);
+      // Remove dups
+      const tagsToAddWithoutDups = tagsToAdd.filter((tag: string, index: Number) => tagsToAdd.indexOf(tag) === index);
+      // Remove non-alphanumeric
+      this.checkTagsAreAlphaNumeric(tagsToAddWithoutDups);
+      // Remove tags which are > 20 characters long
+      this.checkTagsAreWithinLength(tagsToAddWithoutDups);
+      this.updateTagsList(tagsToAddWithoutDups);
+    }
+
+    checkTagsAreAlphaNumeric(tagsToAdd: string[]) {
+      tagsToAdd.forEach((tag: string, index: number) => {
+        if (!tag.match(/^[a-z0-9]+$/)) {
+          tagsToAdd.splice(index, 1);
+          this.setState({tagsErrMsg: "Please only include letters and numbers in your keywords."});
+        }
+      });
+    }
+
+    checkTagsAreWithinLength(tagsToAdd: string[]) {
+      tagsToAdd.forEach((tag: string, index: number) => {
+        if (tag.length > 20) {
+          tagsToAdd.splice(index, 1);
+          this.setState({tagsErrMsg: "Please keep each keyword under 20 characters long."})
+        }
+      });
     }
 
     render() {
@@ -197,10 +241,12 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                   <Form.Group controlId="title">
                     <Form.Label>Photo Title</Form.Label>
                     <Form.Control 
+                      required
                       type="text" 
                       onChange={(e) => this.handleInputChange(e)}
                     >
                     </Form.Control>
+                    <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                     <Form.Text className="text-muted titleInfo">
                       Title must be between 1 and 40 characters long. 
                       <p className="error">{this.state.titleErrMsg}</p>
@@ -209,6 +255,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                   <Form.Group controlId="price">
                     <Form.Label>Photo Price in Credits</Form.Label>
                     <Form.Control 
+                      required
                       type="number"
                       onChange={(e) => this.handleInputChange(e)}
                     >
@@ -225,6 +272,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                         <Form.Control 
                           type="text"
                           onChange={(e) => this.handleInputChange(e)}
+                          onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => this.handleKeyPress(e)}
                         >
                         </Form.Control>
                       </Col>
@@ -249,9 +297,9 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                     />
                     <Form.Text className="text-muted">
                       We accept .jpg, .png, .svg, and .raw images.
+                      <p className="error">{this.state.fileErrMsg}</p>
                     </Form.Text>
                   </Form.Group>
-                  <p className="error">{this.state.fileErrMsg}</p>
                   {this.state.hasPickedPhoto ? (
                     <div>
                     <Row>
