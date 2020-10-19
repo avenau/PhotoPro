@@ -19,6 +19,9 @@ module.exports = {
     "react/jsx-filename-extension": [1, { extensions: [".tsx", ".jsx"] }],
     "react/destructuring-assignment": "off",
     "react/jsx-props-no-spreading": "off",
+    "react/prefer-stateless-function": "off",
+    "no-use-before-define": "off",
+    "react/jsx-one-expression-per-line": "off",
   },
   settings: {
     "import/resolver": "typescript", // this loads <rootdir>/tsconfig.json to eslint

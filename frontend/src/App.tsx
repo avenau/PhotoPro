@@ -14,6 +14,7 @@ import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
+import SearchPage from "./pages/SearchPage";
 import Register from "./pages/Register";
 import DoesNotExistPage from "./pages/DoesNotExistPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
@@ -51,6 +52,7 @@ function App() {
           component={ResetPasswordPage}
         />
         <Route path="/user/:user_id" component={ProfilePage} />
+        <Route path="/search/:type" component={SearchPage} />
         <ProtectedRoute path="/manage_account">
           <ManageAccount />
         </ProtectedRoute>
