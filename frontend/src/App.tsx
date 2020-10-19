@@ -18,6 +18,7 @@ import Register from "./pages/Register";
 import DoesNotExistPage from "./pages/DoesNotExistPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
+import UploadPage from "./pages/UploadPage/UploadPage";
 
 function App() {
   return (
@@ -51,6 +52,11 @@ function App() {
           component={ResetPasswordPage}
         />
         <Route path="/user/:user_id" component={ProfilePage} />
+        <ProtectedRoute 
+          exact 
+          path="/upload" 
+          component={UploadPage}  
+        />
         <ProtectedRoute path="/manage_account">
           <ManageAccount />
         </ProtectedRoute>
