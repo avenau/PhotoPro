@@ -15,8 +15,9 @@ from bson.objectid import ObjectId
 from lib.showdown.get_images import get_images
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
-from lib.profile_details import get_user_details
+from lib.profile.profile_details import get_user_details
 from lib.token_decorator import validate_token
+from lib.profile.upload_photo import update_user_thumbnail
 from lib.validate_login import login
 
 import lib.password_reset as password_reset
@@ -407,6 +408,7 @@ def get_user():
 
 
 @app.route('/user/profile/uploadphoto', methods=['POST'])
+@validate_token
 def upload_photo():
     """
     Description
@@ -414,10 +416,26 @@ def upload_photo():
 
     Parameters
     ----------
+    img_path : string
+        e.g. http://imagesite.com/img.png
+    token : string
 
     Returns
     -------
+    {}
     """
+    '''
+    TODO
+    u_id = token_functions.verify_token(token)
+    user = get_user_details(u_id['u_id'], mongo)
+    '''
+    token = request.form.get('token')
+    img_path = request.form.get('img_path')
+    b64 = update_user_thumbnail(img_path)
+    # Update the database...
+    return dumps({
+        'success': 'True'
+    })
 
 
 '''
