@@ -2,7 +2,7 @@ import jwt
 from jwt.exceptions import DecodeError
 from jwt.exceptions import InvalidTokenError
 from jwt.exceptions import InvalidSignatureError
-from Error import TokenError
+from lib.Error import TokenError
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
 

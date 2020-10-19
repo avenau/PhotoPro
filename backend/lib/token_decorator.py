@@ -4,8 +4,8 @@ Token related decorators
 from functools import wraps
 import jwt
 from flask import request
-from token_functions import secret
-from Error import TokenError
+from lib.token_functions import secret
+from lib.Error import TokenError
 from jwt.exceptions import DecodeError
 from jwt.exceptions import InvalidTokenError
 from jwt.exceptions import InvalidSignatureError

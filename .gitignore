@@ -21,7 +21,8 @@ coverage.xml
 .pytest_cache/
 
 # Environments
-.env
+# ignore .env in production but use it here for demo purposes
+# .env
 .venv
 env/
 venv/
@@ -56,7 +57,7 @@ package-lock.json
 *.scss.map
 
 # dotenv environment variables file
-.env
+# .env
 .env.test
 .env.local
 .env.development.local
