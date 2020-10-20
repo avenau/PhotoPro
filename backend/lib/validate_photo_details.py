@@ -30,11 +30,10 @@ def validate_price(price):
 def validate_tags(tags):
     """
     Check 10 or fewer tags
-    @param tags: list[str]
+    @param tags: json str
     @return True or error
     """
-    # Convert to python dictionary
-    tags = json.loads(tags)
+
     if len(tags) > 10:
         raise ValueError("Cannot contain more than 10 tags")
 
@@ -47,7 +46,7 @@ def validate_tags(tags):
 def validate_title(title):
     """
     Check title is not empty
-    @param title: str
+    @param title: json str
     @return True or error
     """
     if title is None or len(title) < 1 or len(title) > 40:
@@ -56,12 +55,33 @@ def validate_title(title):
     return True
 
 def validate_album(albums):
-    # Convert to python dictionary
-    albums = json.loads(albums)
-    print(albums)
-    print(len(albums))
     for i in albums:
         if i is None or i == "":
             raise ValueError("Cannot be empty or None")
 
     return True
+
+def reformat_lists(photo_details):
+    photo_details = lower_tags(photo_details)
+    photo_details = convert_album_list(photo_details)
+
+    return photo_details
+def lower_tags(photo_details):
+    tags = photo_details["tagsList"]
+    if type(tags) is not list:
+        tags = json.loads(tags)
+
+    photo_details.pop("tagsList")
+    tags = [i.lower() for i in tags]
+    photo_details.update({"tagsList": tags})
+    return photo_details
+
+def convert_album_list(photo_details):
+    """
+    Convert JSON album list to python
+    """
+    albums = photo_details["albumsToAddTo"]
+    if type(albums) is not list:
+        albums = json.loads(albums)
+    photo_details["albumsToAddTo"] = albums
+    return photo_details
