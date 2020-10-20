@@ -30,6 +30,7 @@ export default function Register(props: RouteChildrenProps) {
   // Optional values
   const [aboutMe, setAboutMe] = useState('');
   const [DOB, setDOB] = useState('');
+  const [profilePic, setProfilePic] = useState('');
 
   // Get today's date for max DOB
   const now = new Date();
@@ -58,6 +59,7 @@ export default function Register(props: RouteChildrenProps) {
         aboutMe,
         DOB,
         location,
+        profilePic,
       })
       .then((r) => {
         if (r.status !== 200) {
@@ -105,6 +107,10 @@ export default function Register(props: RouteChildrenProps) {
           <Form.Group>
             <Form.Label>About me</Form.Label>
             <Form.Control type="text" placeholder="Optional" onChange={(e) => setAboutMe(e.target.value)} />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Profile Picture</Form.Label>
+            <Form.Control type="text" placeholder="Optional" onChange={(e) => setProfilePic(e.target.value)} />
           </Form.Group>
           <Form.Group>
             <Form.Label>Date of birth</Form.Label>

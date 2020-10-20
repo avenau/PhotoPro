@@ -101,7 +101,7 @@ def update_user_thumbnail(url_path):
     '''
     file_path = './temp'
     thumbnail_file_path = file_path + '.thumbnail'
-    size = (90, 90)
+    size = (150, 150)
     file_type = ''
 
     response_content_type = get_image_from_url(url_path, file_path)
