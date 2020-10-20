@@ -1,7 +1,7 @@
 """
 Validate photo details
 """
-from Error import ValueError
+from lib.Error import ValueError
 import json
 def validate_photo(details):
     validate_price(details["price"])
