@@ -24,6 +24,7 @@ from lib.token_decorator import validate_token
 from lib.validate_login import login
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
+from lib.photo_details import get_photo_details
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object(DevelopmentConfig)
@@ -463,6 +464,52 @@ def search_user():
     data["limit"] = int(data["limit"])
 
     return dumps(user_search(data, mongo))
+    
+@app.route('/photo_details', methods=['GET'])
+def photo_details():
+#TODO: Should return photos and comments as well
+# Add to API list
+    """
+    Description
+    -----------
+    GET request to retrieve information for a photo
+
+    Parameters
+    ----------
+    query : string
+
+    Returns
+    -------
+    {
+        title: str,
+        numLikes: number,
+        datePosted: Date,
+        tagsList: str[],
+        nickname: str (Artist's Nickname)
+        email: str
+        u_id: str, (Artist of the photo)
+    }
+    """
+    photo_id = request.args.get("p_id")
+    artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
+    print("APPP TEST!")
+    print(artist)
+    print(artist['nickname'])
+    photo_details = get_photo_details(photo_id, mongo)
+    p_id_string = str(artist['_id'])
+    print(photo_details['tagsList'])
+    
+    #TODO: Find out how to send dates over
+    #"posted": photo_details["posted"],
+      
+    return dumps({
+        "u_id": p_id_string,
+        "title": photo_details['title'],
+        "likes": photo_details["likes"],
+        "tagsList": photo_details["tagsList"],
+        "nickname": artist['nickname'],
+        "email": artist['email'],
+    })
 
 
 '''

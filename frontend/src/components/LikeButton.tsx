@@ -5,15 +5,17 @@ import { Button } from "react-bootstrap";
 interface LikeProps {
     u_id: string;
     p_id: string;
+    likeCount: number;
 }
 
 export default function LikeButton(props: LikeProps) {
-    const [likeCount, setCount] = useState(0);
+    const [likeCount, setCount] = useState(props.likeCount);
     const [likeStatus, setStatus] = useState('light');
     const updateLike = (event: React.MouseEvent, count: number, status: string) => {
         if (event) {
             event.preventDefault();
         }
+        console.log(count);
         if (status != "light") {
             setCount(count - 1);
             setStatus('light');
