@@ -33,7 +33,8 @@ def validate_tags(tags):
     @param tags: list[str]
     @return True or error
     """
-    print(len(tags))
+    # Convert to python dictionary
+    tags = json.loads(tags)
     if len(tags) > 10:
         raise ValueError("Cannot contain more than 10 tags")
 
@@ -54,8 +55,12 @@ def validate_title(title):
 
     return True
 
-def validate_album(album):
-    for i in album:
+def validate_album(albums):
+    # Convert to python dictionary
+    albums = json.loads(albums)
+    print(albums)
+    print(len(albums))
+    for i in albums:
         if i is None or i == "":
             raise ValueError("Cannot be empty or None")
 
