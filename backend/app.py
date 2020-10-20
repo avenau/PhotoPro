@@ -23,6 +23,7 @@ from lib.validate_photo_details import validate_photo
 import lib.password_reset as password_reset
 import lib.validate_registration as val_reg
 import lib.token_functions as token_functions
+import datetime
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object(DevelopmentConfig)
@@ -423,13 +424,19 @@ def upload_photo_details():
     -------
     None
     """
-    # TODO unravel albums and tags into list
-    validate_photo(request.form.to_dict())
-    tags = request.form.getlist('tagsList[]')
-    print(tags)
-    print([json.loads(tag) for tag in tags])
-    print(request.form.to_dict())
-    # Then add to database and get unique id to send through photo
+    photo_details = request.form.to_dict()
+    validate_photo(photo_details)
+    default = {
+        "discount": 0.0,
+        "posted": datetime.datetime.now(),
+        "user": "temp user",
+        "likes": 0,
+        "comments": ["insert comment objects", "comment1", "comment2"],
+        "won": False
+    }
+    photo_details.update(default)
+    print(photo_details)
+    mongo.db.photos.insert(photo_details)
     return dumps({})
 
 # TODO having trouble sending photo 

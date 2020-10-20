@@ -2,10 +2,12 @@
 Validate photo details
 """
 from lib.Error import ValueError
+import json
 def validate_photo(details):
     validate_price(details["price"])
     validate_title(details["title"])
-
+    validate_album(details["albumsToAddTo"])
+    validate_tags(details["tagsList"])
 def validate_price(price):
     """
     @param price: int
@@ -27,15 +29,13 @@ def validate_tags(tags):
     @param tags: list[str]
     @return True or error
     """
-    if type(tags) != list:
-        raise ValueError("Expecting list of tags")
-    else:
-        if len(tags) > 10:
-            raise ValueError("Cannot contain more than 10 tags")
+    
+    if len(tags) > 10:
+        raise ValueError("Cannot contain more than 10 tags")
 
-        for i in tags:
-            if i is None or i == "":
-                raise ValueError("Cannot be empty or None")
+    for i in tags:
+        if i is None or i == "":
+            raise ValueError("Cannot be empty or None")
 
     return True
 

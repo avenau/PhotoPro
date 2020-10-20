@@ -12,7 +12,6 @@ import { RouteChildrenProps } from "react-router-dom";
 import axios from 'axios';
 import fs from 'fs'
 
-
 export default class UploadPage extends React.Component<RouteChildrenProps, any> {
     constructor(props: RouteChildrenProps) {
       super(props);
@@ -49,8 +48,8 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
     axios.post("/user/profile/uploadphoto/details", {
       title: this.state.title,
       price: this.state.price,
-      tagsList: this.state.tagsList,
-      albumsToAddTo: this.state.albumsToAddTo,
+      tagsList: JSON.stringify(this.state.tagsList),
+      albumsToAddTo: JSON.stringify(this.state.albumsToAddTo),
     })
     .then((response:any) => {
       const instance = axios.create({
