@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ManageAccount.scss';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -9,10 +9,10 @@ interface ConfirmationProps {
   inputStates: Map<string, any>;
 }
 
-export default function ManageConfirmation(props: { location: any; inputStates: any; }) {
+export default function ManageConfirmation(props: ConfirmationProps) {
   //const location = useLocation();
-  console.log("Prop Test");
-  console.log(props);
+  //console.log("Prop Test");
+  //console.log(props);
   const history = useHistory();
   let inputPassword = '';
   const [passwordFeedback, setFeedback] = useState('');
@@ -33,7 +33,7 @@ export default function ManageConfirmation(props: { location: any; inputStates: 
     if (event) {
       event.preventDefault();
     }
-    const stateMap = props.location.state;
+    const stateMap = props.inputStates;
 
     stateMap.set('u_id', localStorage.getItem('u_id'));
     // console.log(stateMap);
@@ -68,12 +68,15 @@ export default function ManageConfirmation(props: { location: any; inputStates: 
       });
   }
 
-  return (
-    <div>
-      <Toolbar />
-      <div className="ManageConfirmation">
+  const [showModal, setShow] = useState(false);
+  const openModal = () => setShow(true);
+  const closeModal = () => setShow(false);
 
-        <p>Are you sure you want to make these changes?</p>
+  return (
+    <div className="ManageConfirmation">
+
+      <p>Are you sure you want to make these changes?</p>
+      <Modal show={showModal} onHide={closeModal}>
         <Form onSubmit={(e) => checkPassword(e)}>
           <Form.Group controlId="passwordForm">
             <Form.Label>Current Password</Form.Label>
@@ -85,8 +88,11 @@ export default function ManageConfirmation(props: { location: any; inputStates: 
           <Button variant="primary" type="submit">
             Save Change
           </Button>
+          <Button variant="primary" onClick={closeModal}>
+            Cancel
+          </Button>
         </Form>
-      </div>
+      </Modal>
     </div>
   );
 }
