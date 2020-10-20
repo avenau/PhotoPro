@@ -1,6 +1,11 @@
 .PhotoComments {
     align-items: center;
     display: flex;
-    width: 20%;
+    justify-content: center;
     margin: auto;
+}
+
+.commentButton{
+    position: absolute;
+    bottom: 10px;
 }
