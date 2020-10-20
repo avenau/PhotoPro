@@ -353,8 +353,13 @@ def manage_account():
         for key, value in data.items():
             if (value == "" or key == "u_id"):
                 continue
-            change_userdb = {"$set": {key: value}}
-            mongo.db.users.update_one(find_userdb, change_userdb)
+            if (key == "password"):
+                hashedPassword = bcrypt.generate_password_hash(value)
+                mongo.db.users.update_one(find_userdb, {"$set": {key: hashedPassword}})
+                
+            else:                
+                change_userdb = {"$set": {key: value}}
+                mongo.db.users.update_one(find_userdb, change_userdb)
 
     # TODO: Catching too general using Exception. Replace with e.g. ValueError
     except Exception:

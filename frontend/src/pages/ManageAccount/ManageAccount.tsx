@@ -96,7 +96,7 @@ export default function ManageAccount() {
 
           <Form.Group controlId="retypePasswordForm">
             <Form.Label>Confirm New Password</Form.Label>
-            <Form.Control type="password" placeholder="Confirm New Password" onChange={(e) => handleChange(e)} />
+            <Form.Control type="password" placeholder="Confirm New Password" />
           </Form.Group>
 
           <Form.Group controlId="dobForm">
@@ -106,7 +106,7 @@ export default function ManageAccount() {
 
           <Form.Group controlId="locationForm">
             <Form.Label>Select a Country</Form.Label>
-            <Form.Control as="select" name="country" onChange={(e) => handleChange(e)}>
+            <Form.Control as="select" name="location" onChange={(e) => handleChange(e)}>
               {/* <option disabled>{location}</option> */}
               <option>Australia</option>
               <option>United States</option>

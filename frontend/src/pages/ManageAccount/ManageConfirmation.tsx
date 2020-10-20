@@ -31,7 +31,7 @@ export default function ManageConfirmation() {
     const stateMap = location.state as Map<string, any>;
 
     stateMap.set('u_id', localStorage.getItem('u_id'));
-    console.log(stateMap);
+    // console.log(stateMap);
     console.log(JSON.stringify(mapToObject(stateMap)));
     fetch('http://localhost:8001/manage_account/success', {
       method: 'POST',

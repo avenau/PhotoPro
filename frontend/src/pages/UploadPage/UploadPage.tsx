@@ -19,7 +19,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         price: 0,
         /**  'tags' is the current state of the 'tags' input field */
         tags: "",
-        /** 'tagsList' is the current list of tags attached to the photo, 
+        /** 'tagsList' is the current list of tags attached to the photo,
              which will eventaully be sent to the back end */
         tagsList: [],
         tagButtons: [],
@@ -34,7 +34,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         fileErrMsg: ""
       };
     }
-    
+
     // TODO: axios post request
     handleSubmit(event: React.FormEvent<HTMLElement>) {
       event.preventDefault();
@@ -45,7 +45,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
     }
 
     setTitleErrMsg(title: string) {
-      if (title.length > 40) { 
+      if (title.length > 40) {
         this.setState({titleErrMsg: "Please keep your title under 40 characters to be concise. Consider adding more keywords instead."});
         this.deactivateUploadButton();
       } else {
@@ -55,7 +55,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
     }
 
     setPriceErrMsg(price: Number) {
-      if (!Number.isInteger(price)) { 
+      if (!Number.isInteger(price)) {
         this.setState({priceErrMsg: "Please enter a whole number."});
         this.deactivateUploadButton();
       } else if (price < 0) {
@@ -123,20 +123,24 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         this.activateUploadButton();
         // Set image preview
         // Source: https://stackoverflow.com/questions/4459379/preview-an-image-before-it-is-uploaded
-        event.target.files instanceof FileList ?
-        this.setState({imagePreview: URL.createObjectURL(event.target.files[0])}) : 
-        this.setState({fileErrMsg: "This should never happen."});
+        if (event.target.files instanceof FileList) {
+          this.setState({imagePreview: URL.createObjectURL(event.target.files[0])})
+        } else {
+          this.setState({fileErrMsg: "This should never happen."});
+        }
       }
     }
 
-    activateUploadButton() {
+    activateUploadButton(){
       const btn = document.getElementById("uploadButton");
-      btn?.removeAttribute("disabled");
+      if (btn !== null)
+        btn.removeAttribute("disabled");
     }
 
-    deactivateUploadButton() {
+    deactivateUploadButton(){
       const btn = document.getElementById("uploadButton");
-      btn?.setAttribute("disabled", "true");
+      if (btn !== null)
+        btn.setAttribute("disabled", "true");
     }
 
     deleteTagFromTagsList(tagToDelete: string) {
@@ -166,9 +170,9 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       console.log("A");
       console.log(this.state.tagsList);
       const newTagButtons = this.state.tagsList.map((tag: string) => {
-        return  <Button 
-                  key={tag} 
-                  id={tag} 
+        return  <Button
+                  key={tag}
+                  id={tag}
                   onClick={(e)=>this.deleteTag(e)}
                 >
                   {tag}
@@ -239,28 +243,28 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                 <Form onSubmit={(e)=>this.handleSubmit(e)}>
                   <Form.Group controlId="title">
                     <Form.Label>Photo Title</Form.Label>
-                    <Form.Control 
+                    <Form.Control
                       required
-                      type="text" 
+                      type="text"
                       onChange={(e) => this.handleInputChange(e)}
                     >
                     </Form.Control>
                     <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                     <Form.Text className="text-muted titleInfo">
-                      Title must be between 1 and 40 characters long. 
+                      Title must be between 1 and 40 characters long.
                       <p className="error">{this.state.titleErrMsg}</p>
                     </Form.Text>
                   </Form.Group>
                   <Form.Group controlId="price">
                     <Form.Label>Photo Price in Credits</Form.Label>
-                    <Form.Control 
+                    <Form.Control
                       required
                       type="number"
                       onChange={(e) => this.handleInputChange(e)}
                     >
                     </Form.Control>
                     <Form.Text className="text-muted priceInfo">
-                      Price must be a positive whole number, or 0 if you'd like to release your photo for free. 
+                      Price must be a positive whole number, or 0 if you'd like to release your photo for free.
                       <p className="error">{this.state.priceErrMsg}</p>
                     </Form.Text>
                   </Form.Group>
@@ -268,14 +272,14 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                     <Form.Label>Space-separated keywords, e.g. "cat dog mouse". Click "Add Tags" to detect your keywords.</Form.Label>
                     <Row>
                       <Col xs={9}>
-                        <Form.Control 
+                        <Form.Control
                           type="text"
                           onChange={(e) => this.handleInputChange(e)}
                           onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => this.handleTagEnterPress(e)}
                         >
                         </Form.Control>
                       </Col>
-                      <Button 
+                      <Button
                         onClick={this.handleAddTags.bind(this)}
                       >
                         Add Tags
@@ -288,9 +292,9 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                     </Form.Text>
                   </Form.Group>
                   <Form.Group>
-                    <Form.File 
-                      id="photo" 
-                      label="Select A Photo" 
+                    <Form.File
+                      id="photo"
+                      label="Select A Photo"
                       accept=".jpg, .png, .svg, .raw"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.handleFileChange(e)}
                     />
