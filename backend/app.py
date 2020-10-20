@@ -3,26 +3,32 @@ Backend main file
 Handle requests to and fro server and web app client
  - Team JAJAC :)
 """
+# Pip functions
+import traceback
+from json import dumps, loads
+from bson.objectid import ObjectId
 from flask import Flask, request
+from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
-from config import DevelopmentConfig, defaultHandler
-import traceback
-from json import dumps, loads
-from flask_bcrypt import Bcrypt
-from bson.objectid import ObjectId
+
+# JAJAC made functions
+import lib.password_reset as password_reset
+import lib.token_functions as token_functions
+import lib.validate_registration as val_reg
 from lib.showdown.get_images import get_images
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
 from lib.profile.profile_details import get_user_details
-from lib.token_decorator import validate_token
 from lib.profile.upload_photo import update_user_thumbnail
+from lib.search.user_search import user_search
+from lib.token_decorator import validate_token
 from lib.validate_login import login
+from lib import db
 
-import lib.password_reset as password_reset
-import lib.validate_registration as val_reg
-import lib.token_functions as token_functions
+# Config
+from config import DevelopmentConfig, defaultHandler
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object(DevelopmentConfig)
@@ -43,7 +49,8 @@ def basic():
         'colour': "test"
     })
 
-@app.route('/verifytoken', methods=['GET','POST'])
+
+@app.route('/verifytoken', methods=['GET', 'POST'])
 def verify_token():
     """
     Verify that the token matches the secret
@@ -61,7 +68,7 @@ def verify_token():
         token = request.args.get('token')
     else:
         token = request.form.get('token')
-    
+
     if token == '' or token is None:
         return {"valid": False}
     token_functions.verify_token(token)
@@ -133,11 +140,11 @@ def auth_passwordreset_reset():
     email = request.form.get("email")
     reset_code = request.form.get("reset_code")
     new_password = request.form.get("new_password")
-    hashedPassword = bcrypt.generate_password_hash(new_password)
+    hashed_password = bcrypt.generate_password_hash(new_password)
 
     return dumps(
         password_reset.password_reset_reset(email, reset_code,
-                                            hashedPassword, mongo)
+                                            hashed_password, mongo)
     )
 
 
@@ -170,8 +177,8 @@ def account_registration():
     val_reg.valid_registration(mongo, new_user)
 
     # Make some hashbrowns
-    hashedPassword = bcrypt.generate_password_hash(new_user["password"])
-    new_user["password"] = hashedPassword
+    hashed_password = bcrypt.generate_password_hash(new_user["password"])
+    new_user["password"] = hashed_password
 
     # Insert account details into collection called 'user'
     mongo.db.users.insert(new_user)
@@ -191,7 +198,8 @@ def profile_details():
 
     Returns
     {
-        fname + lname,
+        fname,
+        lname,
         nickname,
         location,
         email
@@ -201,7 +209,8 @@ def profile_details():
     details = get_user_details(request.args.get("u_id"), mongo)
 
     return dumps({
-        "name": f"{details['fname']} {details['lname']}",
+        "fname": details['fname'],
+        "lname": details['lname'],
         "nickname": details["nickname"],
         "location": details["location"],
         "email": details["email"]
@@ -309,6 +318,7 @@ def user_info_with_token():
         'location': user['location'],
         'aboutMe': user['aboutMe']
     })
+
 
 # TODO Move this to a separate file?
 @app.route('/manage_account/success', methods=['GET', 'POST'])
@@ -426,16 +436,54 @@ def upload_photo():
     """
     '''
     TODO
-    u_id = token_functions.verify_token(token)
-    user = get_user_details(u_id['u_id'], mongo)
     '''
     token = request.form.get('token')
     img_path = request.form.get('img_path')
     b64 = update_user_thumbnail(img_path)
+    u_id = token_functions.verify_token(token)
+    db.update_user(mongo, u_id, 'profile_pic', b64)
     # Update the database...
     return dumps({
         'success': 'True'
     })
+
+
+
+'''
+---------------
+- Search Routes -
+---------------
+'''
+
+
+@app.route('/search/user', methods=['GET'])
+def search_user():
+    """
+    Description
+    -----------
+    GET request to return many user details based on a query
+
+    Parameters
+    ----------
+    query : string
+    offset : int
+    limit : int
+
+    Returns
+    -------
+    {
+        fname: str,
+        lname: str,
+        nickname: str,
+        email: str,
+        location: str,
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_search(data, mongo))
 
 
 '''

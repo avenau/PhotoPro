@@ -37,13 +37,20 @@ def verify_token(token):
     '''
     try:
         res = jwt.decode(token, secret)
+    except InvalidSignatureError:
+        print("Invalid signature" + secret)
+        raise TokenError("Invalid secret")
     except DecodeError:
         print("Token failed validation")
         raise TokenError("Token failed validation")
     except InvalidTokenError:
         print("Token failed validation")
         raise TokenError("Token failed validation")
-    except InvalidSignatureError:
-        print("Invalid signature" + secret)
-        raise TokenError("Invalid secret")
     return res
+
+
+def get_uid(token):
+    '''
+    Return the u_id string from the token
+    '''
+    return verify_token(token)['u_id']
