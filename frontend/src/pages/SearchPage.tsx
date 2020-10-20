@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
 import { RouteComponentProps } from "react-router-dom";
-import InfiniteScroll from "react-infinite-scroll-component";
+import InfiniteScroll from "react-infinite-scroller";
+import Spinner from "react-bootstrap/Spinner";
 import Toolbar from "../components/Toolbar/Toolbar";
 import UserHeader from "../components/UserHeader/UserHeader";
 import "./SearchPage.scss";
@@ -25,16 +26,12 @@ export default class ProfilePage extends React.Component<Props, State> {
     const match = this.props.location.search.match(/q=([^&]*)/);
     this.state = {
       search: match !== undefined ? match?.[1]! : "",
-      limit: 6,
+      limit: 5,
       offset: 0,
       profiles: [],
       type,
       atEnd: false,
     };
-  }
-
-  componentDidMount() {
-    this.getProfiles();
   }
 
   private getProfiles() {
@@ -61,9 +58,16 @@ export default class ProfilePage extends React.Component<Props, State> {
         <div style={{ display: "flex", justifyContent: "center" }}>
           <InfiniteScroll
             hasMore={!this.state.atEnd}
-            next={() => this.getProfiles()}
-            loader={<div>Loading...</div>}
-            dataLength={this.state.profiles.length}
+            loadMore={() => this.getProfiles()}
+            loader={
+              <Spinner
+                animation="border"
+                role="status"
+                style={{ display: "block", margin: "auto" }}
+              >
+                <span className="sr-only">Loading...</span>
+              </Spinner>
+            }
           >
             {this.state.profiles.map((profile) => (
               <div
@@ -77,6 +81,7 @@ export default class ProfilePage extends React.Component<Props, State> {
                 <UserHeader
                   style={{ marginTop: "100px" }}
                   name={`${profile.fname} ${profile.lname}`}
+                  // currentUser={profile.id === localStorage.getItem("u_id")}
                   {...profile}
                 />
               </div>

@@ -1,8 +1,13 @@
 .user-container {
   align-items: center;
   display: flex;
+  min-width: fit-content;
   .text-container {
+    flex-grow: 1;
     margin-right: 30px;
+  }
+  .button-container {
+    margin-right: auto;
   }
   .cropper {
     border-radius: 50%;
