@@ -10,6 +10,7 @@ import Dropdown from "react-bootstrap/Dropdown"
 import Toolbar from "../../components/Toolbar/Toolbar"
 import { RouteChildrenProps } from "react-router-dom";
 import axios from 'axios';
+import fs from 'fs'
 
 
 export default class UploadPage extends React.Component<RouteChildrenProps, any> {
@@ -52,14 +53,18 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       albumsToAddTo: this.state.albumsToAddTo,
     })
     .then((response:any) => {
+      const instance = axios.create({
+        baseURL: 'http://localhost:8001/',
+        timeout: 1000,
+        headers: {'Content-Type': 'multipart/form-data'}
+      });
       alert('Successfully uploaded photo details. Now sending photo...')
-      const {data} = response
-      const photo_id = data.id
-      const config = {headers: {'Content-Type': 'multipart/form-data'}}
-      axios.post("/user/profile/uploadphoto", {
-        photo: this.state.photo,
-        photo_id: photo_id
-      }, config)
+      // const {data} = response
+      // const photo_id = data.id      
+      // const config = {headers: {'Content-Type': 'multipart/form-data'}}
+      const form_data = new FormData()
+      form_data.append("image", this.state.photo[0])
+      instance.post("/user/profile/uploadphoto", form_data)
       .then((response: any) => {
         console.log('Uploaded photo')
       })
@@ -70,7 +75,6 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
     .catch((e) => {
       console.log(e)
     })
-
     }
 
     setTitleErrMsg(title: string) {

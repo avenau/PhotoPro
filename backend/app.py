@@ -419,7 +419,6 @@ def upload_photo_details():
     price: str,
     tagsList: [],
     albumsToAddTo: [],
-    photo: str
     Returns
     -------
     None
@@ -427,6 +426,7 @@ def upload_photo_details():
     # TODO unravel albums and tags into list
     validate_photo(request.form.to_dict())
     tags = request.form.getlist('tagsList[]')
+    print(tags)
     print([json.loads(tag) for tag in tags])
     print(request.form.to_dict())
     # Then add to database and get unique id to send through photo
@@ -435,7 +435,7 @@ def upload_photo_details():
 # TODO having trouble sending photo 
 @app.route('/user/profile/uploadphoto', methods=['POST'])
 def upload_photo():
-    print(request.form.get('photo'))
+    print(request.form)
     return dumps({})
 
 '''
