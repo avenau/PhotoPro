@@ -430,16 +430,14 @@ def upload_photo_details():
     validate_photo(photo_details)
 
     base64Str = photo_details['photo']
-    print(base64Str[:20])
     base64Str += "==="
     fileName = photo_details['title'] + photo_details['extension']
-    imgData = base64.b64decode(base64Str)
-    # with open('log.txt', 'wb') as log:
-    #     log.write(base64Str.encode())
-    with open(fileName, 'wb') as f:
+    imgData = base64.b64decode(base64Str.split(',')[1])
+
+    # This currently creates image files in /backend/images directory
+    with open('./backend/images/' + fileName, 'wb') as f:
         f.write(imgData)
-    print("written")
-    
+
     default = {
         "discount": 0.0,
         "posted": datetime.datetime.now(),
@@ -449,10 +447,7 @@ def upload_photo_details():
         "won": False
     }
     photo_details.update(default)
-    # print(photo_details)
     mongo.db.photos.insert_one(photo_details)
-    print(photo_details['title'])
-    print(photo_details['extension'])
     return dumps({
         "success": "success"
     })
