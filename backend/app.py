@@ -180,6 +180,9 @@ def account_registration():
     hashed_password = bcrypt.generate_password_hash(new_user["password"])
     new_user["password"] = hashed_password
 
+    # Create an empty string for profilePic for now
+    new_user['profilePic'] = ''
+
     # Insert account details into collection called 'user'
     mongo.db.users.insert(new_user)
     return dumps({})
@@ -213,7 +216,8 @@ def profile_details():
         "lname": details['lname'],
         "nickname": details["nickname"],
         "location": details["location"],
-        "email": details["email"]
+        "email": details["email"],
+        "profilePic": details["profilePic"]
     })
 
 
@@ -318,7 +322,8 @@ def user_info_with_token():
         'nickname': user['nickname'],
         'DOB': user['DOB'],
         'location': user['location'],
-        'aboutMe': user['aboutMe']
+        'aboutMe': user['aboutMe'],
+        'profilePic': user['profilePic']
     })
 
 
@@ -441,11 +446,9 @@ def upload_photo():
     '''
     token = request.form.get('token')
     img_path = request.form.get('img_path')
-    print("Token is", token)
-    print("img_path is", img_path)
-    b64 = update_user_thumbnail(img_path)
+    thumbnail_and_filetype = update_user_thumbnail(img_path)
     u_id = token_functions.get_uid(token)
-    db.update_user(mongo, u_id, 'profile_pic', b64)
+    db.update_user(mongo, u_id, 'profilePic', thumbnail_and_filetype)
     # Update the database...
     return dumps({
         'success': 'True'

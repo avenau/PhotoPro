@@ -7,7 +7,7 @@ import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
 
 interface Props {
-  photo?: string;
+  profilePic?: string;
   header: boolean;
   currentUser: boolean;
   showEdit: boolean;
@@ -68,12 +68,32 @@ export default class UserHeader extends React.Component<Props> {
     );
   }
 
+  private getPic(){
+    // Get filetype
+
+    if (this.props.profilePic === ''){
+      return profilePic;
+    }
+    if (this.props.profilePic !== undefined){
+      // base64 of the tuple profilePic
+      const b64 = `${this.props.profilePic[0]}`;
+      const header = "data:image/"
+      // Filetype of the tuple profilePic
+      const filetype = `${this.props.profilePic[1]}`;
+      const footer = ";base64, ";
+      const ret = header.concat(filetype.concat(footer.concat(b64)));
+
+      return ret;
+    }
+    return profilePic;
+  }
+
   render() {
     return (
       <div className="user-container">
         <div className="cropper">
           <Image
-            src={this.props.photo !== undefined ? this.props.photo : profilePic}
+            src={this.getPic()}
             className="image"
           />
         </div>

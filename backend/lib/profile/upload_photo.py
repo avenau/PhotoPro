@@ -66,10 +66,7 @@ def write_to_html(html_file_path, b64):
 
 def determine_file_type(response_content_type):
     '''
-    TODO:
-        - determine the file type based on final 3 chars
-        OR
-        - determine based on the http requests response
+    Determine the file type based on the return of the request
     '''
     res = ''
     if response_content_type == 'image/png':
@@ -112,10 +109,7 @@ def update_user_thumbnail(url_path):
     thumbnail_file_path = create_thumbnail(file_path, size, file_type)
     b64 = convert_to_base64(thumbnail_file_path)
     cleanup_files([file_path, thumbnail_file_path])
-    return b64
-    # store in the database?
-    # user['profile_pic'] = b64
-    # return user
+    return (b64, file_type)
 
 
 def test_thumbnail_functions():
