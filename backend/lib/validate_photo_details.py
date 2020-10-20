@@ -33,7 +33,7 @@ def validate_tags(tags):
     @param tags: list[str]
     @return True or error
     """
-    
+    print(len(tags))
     if len(tags) > 10:
         raise ValueError("Cannot contain more than 10 tags")
 

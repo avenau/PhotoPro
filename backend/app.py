@@ -425,6 +425,7 @@ def upload_photo_details():
     None
     """
     photo_details = request.form.to_dict()
+    print(photo_details)
     validate_photo(photo_details)
     default = {
         "discount": 0.0,

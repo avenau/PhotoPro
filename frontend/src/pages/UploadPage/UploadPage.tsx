@@ -37,6 +37,18 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         fileErrMsg: ""
       };
     }
+
+    setPhoto() {
+      return new Promise((resolve, reject) => {
+        const fileInput = document.getElementById("photo") as HTMLInputElement;
+        if (fileInput.files && fileInput.files[0]) {
+          const reader = new FileReader();
+          reader.readAsDataURL(fileInput.files[0]);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = err => reject(err);
+        }
+      });
+    }
     
     handleSubmit(event: React.FormEvent<HTMLElement>) {
       event.preventDefault();
@@ -44,6 +56,10 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         this.setState({tagsErrMsg: "Please enter at least one keyword before uploading."});
         return;
       }
+      const photo = this.setPhoto()
+        .then((response) => {
+          console.log(response);
+        })
     // const config = {headers: {'Content-Type': 'multipart/form-data'}}
     axios.post("/user/profile/uploadphoto/details", {
       title: this.state.title,
