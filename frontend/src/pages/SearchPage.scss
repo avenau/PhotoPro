@@ -6,6 +6,7 @@
     transition: box-shadow 0.2s linear;
     cursor: pointer;
     scale: 1000%;
+    border-radius: 20px;
   }
   &:active {
     border: red;

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ManageAccount.scss';
 
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import Axios from 'axios';
 import Toolbar from '../../components/Toolbar/Toolbar';
+import ManageConfirmation from './ManageConfirmation';
 
 /*
 TODO
@@ -14,13 +15,11 @@ List all the changes that the user is making on the confirmation page
 */
 
 export default function ManageAccount() {
-  const location = useLocation();
   const history = useHistory();
   const [inputState, setInput] = useState(new Map());
   const updateInput = (key: string, value: any) => {
     setInput(inputState.set(key, value));
   };
-  const place = 'place';
 
   const [fname, setFname] = useState('');
   const [lname, setLname] = useState('');
@@ -44,25 +43,84 @@ export default function ManageAccount() {
         setAbout(response.data.aboutMe);
       });
   };
-  getUserInfo();
-  // console.log(userInfo);
-  // console.log(userInfo.)
 
-  function handleSubmit(event: React.FormEvent<HTMLElement>) {
-    if (event) {
-      event.preventDefault();
-    }
-    console.log(inputState);
-    history.push({
-      pathname: '/manage_confirmation',
-      state: inputState,
-    });
-  }
+  getUserInfo();
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const { name } = event.target;
     updateInput(name, event.target.value);
   }
+
+  function handleSubmit(event: React.FormEvent<HTMLElement>) {
+    if (event) {
+      event.preventDefault();
+    }
+  }
+
+
+
+
+  /* All of Modal Stuff below *************************************************
+  */
+
+  let inputPassword = '';
+  const [passwordFeedback, setFeedback] = useState('');
+
+  function mapToObject(map: Map<string, any>) {
+    const result = Object.create(null);
+    map.forEach((value: any, key: string) => {
+      if (value instanceof Map) {
+        result[key] = mapToObject(value);
+      } else {
+        result[key] = value;
+      }
+    });
+    return result;
+  }
+
+  function updateDB(event: React.FormEvent<HTMLElement>, u_id: string) {
+    if (event) {
+      event.preventDefault();
+    }
+    const stateMap = inputState;
+
+    stateMap.set('u_id', localStorage.getItem('u_id'));
+    // console.log(stateMap);
+    console.log(JSON.stringify(mapToObject(stateMap)));
+    fetch('http://localhost:8001/manage_account/success', {
+      method: 'POST',
+      body: JSON.stringify(mapToObject(stateMap)),
+    });
+  }
+
+  function handleChangeModal(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
+    inputPassword = event.target.value;
+  }
+
+  function checkPassword(event: React.FormEvent<HTMLElement>) {
+    if (event) {
+      event.preventDefault();
+    }
+    Axios.post('http://localhost:8001/manage_account/confirm', { password: inputPassword, u_id: localStorage.getItem('u_id') })
+      .then((response) => {
+        if (response.data.password == 'true') {
+          updateDB(event, response.data.u_id);
+          // This will lead to profile page when the page is done
+          // Just using home as a filler
+          const user_id = localStorage.getItem('u_id');
+          history.push({
+            pathname: '/user/'.concat(response.data.u_id),
+          });
+        } else {
+          setFeedback('The password you entered is incorrect!');
+        }
+      });
+  }
+
+
+  const [showModal, setShow] = useState(false);
+  const openModal = () => setShow(true);
+  const closeModal = () => setShow(false);
 
   return (
     <div>
@@ -119,12 +177,34 @@ export default function ManageAccount() {
             <Form.Label>About Me</Form.Label>
             <Form.Control placeholder={about_me} as="textarea" name="about_me" onChange={(e) => handleChange(e)} />
           </Form.Group>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" onClick={openModal}>
             Save
           </Button>
 
         </Form>
+
+        <div className="ManageConfirmation">
+          <Modal show={showModal} onHide={closeModal}>
+            <Modal.Header closeButton></Modal.Header>
+            <Form onSubmit={(e) => checkPassword(e)}>
+              <Form.Group controlId="passwordForm">
+                <Form.Label>Are you sure you want to make these changes?</Form.Label>
+                <Form.Control required type="password" placeholder="Enter Your Password" name="password" onChange={(e) => handleChangeModal(e)} />
+                <Form.Text id="passwordFeedback">
+                  {passwordFeedback}
+                </Form.Text>
+              </Form.Group>
+              <Button variant="primary" type="submit">
+                Save Change
+              </Button>
+              <Button variant="primary" onClick={closeModal}>
+                Cancel
+             </Button>
+            </Form>
+          </Modal>
+        </div>
       </div>
-    </div>
+
+    </div >
   );
 }

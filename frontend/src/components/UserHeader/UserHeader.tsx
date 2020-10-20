@@ -15,6 +15,7 @@ interface Props {
   nickname: string;
   location: string;
   email: string;
+  className: string;
 }
 
 export default class UserHeader extends React.Component<Props> {
@@ -22,6 +23,7 @@ export default class UserHeader extends React.Component<Props> {
     header: false,
     current_user: false,
     showEdit: false,
+    className: "",
   };
 
   /** Return edit button if current user */
@@ -90,7 +92,7 @@ export default class UserHeader extends React.Component<Props> {
 
   render() {
     return (
-      <div className="user-container">
+      <div className={`user-container ${this.props.className}`}>
         <div className="cropper">
           <Image
             src={this.getPic()}

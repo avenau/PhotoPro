@@ -154,6 +154,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           location={this.state.location}
           email={this.state.email}
           profilePic={this.state.profilePic}
+          className="user-header"
         />
         <br />
         <Tabs
