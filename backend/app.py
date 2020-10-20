@@ -1,77 +1,35 @@
 """
 Backend main file
+Handle requests to and fro server and web app client
+ - Team JAJAC :)
 """
-
-import os
 import traceback
 from json import dumps, loads
 
+from bson.objectid import ObjectId
 from flask import Flask, request
+from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
-from flask_bcrypt import Bcrypt
-from bson.objectid import ObjectId
-from Error import EmailError, PasswordError
-from showdown.get_images import get_images
-from welcome.contributors import get_popular_contributors_images
-from welcome.popular_images import get_popular_images
-from profile_details import get_user_details
-from token_decorator import validate_token
 
-import password_reset
-import validate_registration as val_reg
-import token_functions
+import lib.password_reset as password_reset
+import lib.token_functions as token_functions
+import lib.validate_registration as val_reg
+from config import DevelopmentConfig, defaultHandler
+from lib.profile_details import get_user_details
+from lib.search.user_search import user_search
+from lib.showdown.get_images import get_images
+from lib.token_decorator import validate_token
+from lib.validate_login import login
+from lib.welcome.contributors import get_popular_contributors_images
+from lib.welcome.popular_images import get_popular_images
 
 app = Flask(__name__, static_url_path='/static')
-CORS(app)
-
-
-def defaultHandler(err):
-    """
-    Description
-    -----------
-    Error Handler to pass messages to frontend
-
-    Parameters
-    ----------
-    TODO
-
-    Returns
-    -------
-    TODO
-    """
-    print(err)
-    response = err.get_response()
-    response.data = dumps({
-        "code": err.code,
-        "name": "System Error",
-        "message": err.description,
-        "show_toast": err.toast
-    })
-    response.content_type = 'application/json'
-    return response
-
-
+app.config.from_object(DevelopmentConfig)
 app.register_error_handler(Exception, defaultHandler)
-
-# Mongo setup, connect to the db
-local_db = "mongodb://localhost:27017/angular-flask-muckaround"
-remote_db = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
-app.config["MONGO_URI"] = remote_db
+CORS(app)
 mongo = PyMongo(app)
-
-# Creating email server
-app.config.update(
-    MAIL_SERVER='smtp.gmail.com',
-    MAIL_PORT=465,
-    MAIL_USE_SSL=True,
-    MAIL_USERNAME="photopro.jajac@gmail.com",
-    MAIL_PASSWORD="photoprodemopassword",
-    PORT_NUMBER=os.getenv("BACKEND_PORT")
-)
-
-# Create BCrypt object to hash and salt passwords
 bcrypt = Bcrypt(app)
 
 
@@ -86,9 +44,7 @@ def basic():
         'colour': "test"
     })
 
-
-# Should this be using a GET request?
-@app.route('/verifytoken', methods=['GET'])
+@app.route('/verifytoken', methods=['GET','POST'])
 def verify_token():
     """
     Verify that the token matches the secret
@@ -102,7 +58,11 @@ def verify_token():
     {valid : bool}
         Whether the token is valid or not
     """
-    token = request.args.get('token')
+    if request.method == 'GET':
+        token = request.args.get('token')
+    else:
+        token = request.form.get('token')
+
     if token == '' or token is None:
         return {"valid": False}
     token_functions.verify_token(token)
@@ -128,28 +88,8 @@ def process_login():
     """
     email = request.form.get("email")
     password = request.form.get("password")
-    if email == "":
-        raise EmailError("Please enter an email address.")
-    if password == "":
-        raise PasswordError("Please enter a password.")
 
-    user = mongo.db.users.find_one({"email": email})
-    if not user:
-        raise EmailError("That email isn't registered.")
-    hashedPassword = user["password"]
-
-    u_id = ""
-    token = ""
-    if bcrypt.check_password_hash(hashedPassword, password):
-        u_id = user["_id"]
-        token = token_functions.create_token(str(u_id))
-    else:
-        raise PasswordError("That password is incorrect.")
-
-    return {
-        "u_id": str(u_id),
-        "token": token
-    }
+    return login(mongo, bcrypt, email, password)
 
 
 @app.route('/passwordreset/request', methods=['POST'])
@@ -207,59 +147,35 @@ def account_registration():
     """
     Description
     -----------
+    Register new user
 
     Parameters
     ----------
+    'fname': str,
+    'lname': str,
+    'email': str,
+    'nickname': str,
+    'password': str,
+    'privFName': str,
+    'privLName':  str,
+    'privEmail': str,
+    'aboutMe': str,
+    'DOB': str,
+    'location': str
 
     Returns
     -------
+    None
     """
-    # ======= Backend validation =======
-    # As front end checks could be bypassed
-    email = request.form.get("email")
-    val_reg.valid_email(mongo, email)
-
-    firstName = request.form.get("firstName")
-    val_reg.valid_name(firstName)
-
-    lastName = request.form.get("lastName")
-    val_reg.valid_name(lastName)
-
-    password = request.form.get("password")
-    val_reg.valid_pass(password)
-
-    location = request.form.get("location")
-    val_reg.valid_location(location)
-
-    # Register a new account
-    # Get all form values
-    nickname = request.form.get("nickname")
-    privFName = request.form.get("privFName")
-    privLastName = request.form.get("privLastName")
-    privEmail = request.form.get("privEmail")
-    aboutMe = request.form.get("aboutMe")
-    DOB = request.form.get('DOB')
+    new_user = request.form.to_dict()
+    val_reg.valid_registration(mongo, new_user)
 
     # Make some hashbrowns
-    hashedPassword = bcrypt.generate_password_hash(password)
-
-    print(firstName, lastName, email, nickname, password,
-          privFName, privLastName, privEmail)
+    hashedPassword = bcrypt.generate_password_hash(new_user["password"])
+    new_user["password"] = hashedPassword
 
     # Insert account details into collection called 'user'
-    mongo.db.users.insert({'fname': firstName,
-                           'lname': lastName,
-                           'email': email,
-                           'nickname': nickname,
-                           'password': hashedPassword,
-                           'privFName': privFName,
-                           'privLName':  privLastName,
-                           'privEmail': privEmail,
-                           'aboutMe': aboutMe,
-                           'DOB': DOB,
-                           'location': location
-                           }
-                          )
+    mongo.db.users.insert(new_user)
     return dumps({})
 
 
@@ -287,8 +203,8 @@ def profile_details():
     details = get_user_details(request.args.get("u_id"), mongo)
 
     return dumps({
-        "fname": details["fname"],
-        "lname": details["lname"],
+        "fname": details['fname'],
+        "lname": details['lname'],
         "nickname": details["nickname"],
         "location": details["location"],
         "email": details["email"]
@@ -397,7 +313,7 @@ def user_info_with_token():
         'aboutMe': user['aboutMe']
     })
 
-
+# TODO Move this to a separate file?
 @app.route('/manage_account/success', methods=['GET', 'POST'])
 def manage_account():
     """
@@ -511,6 +427,42 @@ def upload_photo():
     Returns
     -------
     """
+
+
+'''
+---------------
+- Search Routes -
+---------------
+'''
+
+@app.route('/search/user', methods=['GET'])
+def search_user():
+    """
+    Description
+    -----------
+    GET request to return many user details based on a query
+
+    Parameters
+    ----------
+    query : string
+    offset : int
+    limit : int
+
+    Returns
+    -------
+    {
+        fname: str,
+        lname: str,
+        nickname: str,
+        email: str,
+        location: str,
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_search(data, mongo))
 
 
 '''
