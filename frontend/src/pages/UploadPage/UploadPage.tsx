@@ -10,7 +10,11 @@ import Dropdown from "react-bootstrap/Dropdown"
 import Toolbar from "../../components/Toolbar/Toolbar"
 import { RouteChildrenProps } from "react-router-dom";
 import axios from 'axios';
-import fs from 'fs'
+
+// Functional components
+import Title from "../../components/Photo/Title"
+import Price from "../../components/Photo/Price"
+import Tags from "../../components/Photo/Tags"
 
 export default class UploadPage extends React.Component<RouteChildrenProps, any> {
     constructor(props: RouteChildrenProps) {
@@ -36,6 +40,9 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         tagsErrMsg: "",
         fileErrMsg: ""
       };
+      this.setState = this.setState.bind(this);
+      this.activateUploadButton = this.activateUploadButton.bind(this)
+      this.deactivateUploadButton = this.deactivateUploadButton.bind(this)
     }
 
     setPhoto() {
@@ -77,55 +84,6 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
             console.log(err);
           });
         })
-    }
-
-    setTitleErrMsg(title: string) {
-      if (title.length > 40) { 
-        this.setState({titleErrMsg: "Please keep your title under 40 characters to be concise. Consider adding more keywords instead."});
-        this.deactivateUploadButton();
-      } else {
-        this.setState({titleErrMsg: ""});
-        this.activateUploadButton();
-      }
-    }
-
-    setPriceErrMsg(price: number) {
-      if (!Number.isInteger(price)) { 
-        this.setState({priceErrMsg: "Please enter a whole number."});
-        this.deactivateUploadButton();
-      } else if (price < 0) {
-        this.setState({priceErrMsg: "Please enter a positive number."});
-        this.deactivateUploadButton();
-      } else {
-        this.setState({priceErrMsg: ""});
-        this.activateUploadButton();
-      }
-    }
-
-    handleInputChange(event: any) {
-      event.preventDefault();
-      const id = event.target.id;
-      const val = event.target.value;
-      this.setState({ [id]: val });
-
-      if (id === "title") {
-        this.setTitleErrMsg(val);
-      }
-
-      if (id === "price") {
-        this.setPriceErrMsg(Number(val));
-      }
-
-      if (id === "tags") {
-        this.setState({tagsErrMsg: ""});
-      }
-    }
-
-    handleTagEnterPress(event: React.KeyboardEvent<HTMLInputElement>) {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        this.handleAddTags();
-      }
     }
 
     handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -177,98 +135,6 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       return btn?.setAttribute("disabled", "true");
     }
 
-    deleteTagFromTagsList(tagToDelete: string) {
-      const tagsListAfterDeletion = this.state.tagsList.filter((tag: string) => {
-        return tag !== tagToDelete;
-      });
-      this.setState({tagsList: tagsListAfterDeletion}, this.refreshTagButtons);
-    }
-
-    deleteTag(event: React.MouseEvent<HTMLElement, MouseEvent>) {
-      event.preventDefault();
-      const target = event.target as HTMLElement;
-      const tagToDelete = target.id;
-      const tagsListAfterDeletion = this.state.tagsList.filter((tag: string) => {
-        return tag !== tagToDelete;
-      });
-      this.setState({tagsList: tagsListAfterDeletion}, this.refreshTagButtons);
-    }
-
-    stateTagsToList() {
-      const tagsList = this.state.tags.trim().split(" ").filter(Boolean);
-      console.log(tagsList);
-      return tagsList;
-    }
-
-    refreshTagButtons() {
-      console.log("A");
-      console.log(this.state.tagsList);
-      const newTagButtons = this.state.tagsList.map((tag: string) => {
-        return  <Button 
-                  key={tag} 
-                  id={tag} 
-                  onClick={(e)=>this.deleteTag(e)}
-                >
-                  {tag}
-                </Button>
-      });
-      this.setState({tagButtons: newTagButtons}, this.clearTagInput);
-    }
-
-    updateTagsList(tagsToAdd: string[]) {
-      // Remove tags from tagsToAdd which already exist in tagsList to avoid duplicate tags
-      this.state.tagsList.forEach((tag: string) => {
-        const matchIndex = tagsToAdd.indexOf(tag);
-        if (matchIndex !== -1) {
-          tagsToAdd.splice(matchIndex, 1);
-        }
-      });
-      let updatedTagsList = this.state.tagsList.concat(tagsToAdd);
-
-      // Allow 10 keywords maximum per photo
-      if (updatedTagsList.length > 10) {
-        updatedTagsList = updatedTagsList.slice(0,10);
-        this.setState({tagsErrMsg: "You are allowed a maximum of 10 keywords."})
-      }
-
-      this.setState({tagsList: updatedTagsList}, this.refreshTagButtons);
-    }
-
-    clearTagInput() {
-      const tagInput = document.getElementById("tags") as HTMLInputElement;
-      tagInput.value = "";
-      this.setState({tags: ""})
-    }
-
-    handleAddTags() {
-      const tagsToAdd = this.stateTagsToList();
-      // Remove dups
-      const tagsToAddWithoutDups = tagsToAdd.filter((tag: string, index: Number) => tagsToAdd.indexOf(tag) === index);
-      // Remove non-alphanumeric
-      this.checkTagsAreAlphaNumeric(tagsToAddWithoutDups);
-      // Remove tags which are > 20 characters long
-      this.checkTagsAreWithinLength(tagsToAddWithoutDups);
-      this.updateTagsList(tagsToAddWithoutDups);
-    }
-
-    checkTagsAreAlphaNumeric(tagsToAdd: string[]) {
-      tagsToAdd.forEach((tag: string, index: number) => {
-        if (!tag.match(/^[a-z0-9]+$/i)) {
-          tagsToAdd.splice(index, 1);
-          this.setState({tagsErrMsg: "Please only include letters and numbers in your keywords."});
-        }
-      });
-    }
-
-    checkTagsAreWithinLength(tagsToAdd: string[]) {
-      tagsToAdd.forEach((tag: string, index: number) => {
-        if (tag.length > 20) {
-          tagsToAdd.splice(index, 1);
-          this.setState({tagsErrMsg: "Please keep each keyword under 20 characters long."})
-        }
-      });
-    }
-
     handleAlbums(event: any) {
       const options = event.target.options
       const albums = []
@@ -280,62 +146,49 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       this.setState({albumsToAddTo: albums})
       console.log(albums)
     }
+    // Set title variables from component changes
+    handleTitle = (titleList: any[]) => {
+      console.log(titleList)
+      this.setState({
+        title: titleList[0],
+        titleErrMsg: titleList[1]
+      })
+    }
+
+    handlePrice = (priceList: any[]) => {
+      this.setState({
+        price: priceList[0],
+        priceErrMsg: priceList[1]
+      })
+    }
+    setTagsList = (updateTag : any, funcTag: any) => {
+      this.setState(updateTag, funcTag)
+    }
+    handleTagsErr = (errMsg: string) => {
+      this.setState({tagsErrMsg: errMsg})
+    }
     render() {
         return (
             <div className="uploadPage">
               <Toolbar />
               <Container className="mt-5">
                 <Form onSubmit={(e)=>this.handleSubmit(e)}>
-                  <Form.Group controlId="title">
-                    <Form.Label>Photo Title</Form.Label>
-                    <Form.Control 
-                      required
-                      type="text" 
-                      onChange={(e) => this.handleInputChange(e)}
-                    >
-                    </Form.Control>
-                    <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                    <Form.Text className="text-muted titleInfo">
-                      Title must be between 1 and 40 characters long. 
-                      <p className="error">{this.state.titleErrMsg}</p>
-                    </Form.Text>
-                  </Form.Group>
-                  <Form.Group controlId="price">
-                    <Form.Label>Photo Price in Credits</Form.Label>
-                    <Form.Control 
-                      required
-                      type="number"
-                      onChange={(e) => this.handleInputChange(e)}
-                    >
-                    </Form.Control>
-                    <Form.Text className="text-muted priceInfo">
-                      Price must be a positive whole number, or 0 if you'd like to release your photo for free. 
-                      <p className="error">{this.state.priceErrMsg}</p>
-                    </Form.Text>
-                  </Form.Group>
-                  <Form.Group controlId="tags">
-                    <Form.Label>Space-separated keywords, e.g. "cat dog mouse". Click "Add Tags" to detect your keywords.</Form.Label>
-                    <Row>
-                      <Col xs={9}>
-                        <Form.Control 
-                          type="text"
-                          onChange={(e) => this.handleInputChange(e)}
-                          onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => this.handleTagEnterPress(e)}
-                        >
-                        </Form.Control>
-                      </Col>
-                      <Button 
-                        onClick={this.handleAddTags.bind(this)}
-                      >
-                        Add Tags
-                      </Button>
-                    </Row>
-                    <Form.Text className="text-muted tagsInfo">
-                      You can include 1 to 10 keywords. Keywords should describe the main aspects of your photo.
-                      <p>{this.state.tagsList.length} Detected keywords (click keyword to delete): {this.state.tagButtons}</p>
-                      <p className="error">{this.state.tagsErrMsg}</p>
-                    </Form.Text>
-                  </Form.Group>
+                  <Title 
+                    deactivateUploadButton={this.deactivateUploadButton}
+                    activateUploadButton={this.activateUploadButton}
+                    titleErrMsg= {this.state.titleErrMsg}
+                    onChange={this.handleTitle}/>
+                  <Price
+                    deactivateUploadButton={this.deactivateUploadButton}
+                    activateUploadButton={this.activateUploadButton}
+                    priceErrMsg={this.state.priceErrMsg}
+                    onChange={this.handlePrice}/>
+                  <Tags
+                    onChange={(tags:string) => this.setState({tags:tags})}
+                    tags = {this.state.tags}
+                    tagsList={this.state.tagsList}
+                    setTagsList={this.setTagsList}
+                    handleTagsErr={this.handleTagsErr}/>
                   <Form.Group>
                     <Form.File 
                       id="photo" 
