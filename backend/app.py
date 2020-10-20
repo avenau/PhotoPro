@@ -426,10 +426,12 @@ def upload_photo_details():
     None
     """
     photo_details = request.form.to_dict()
-    # print(photo_details)
+    photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
+
     base64Str = photo_details['photo']
-    # base64Str += "==="
+    print(base64Str[:20])
+    base64Str += "==="
     fileName = photo_details['title'] + photo_details['extension']
     imgData = base64.b64decode(base64Str)
     # with open('log.txt', 'wb') as log:
@@ -437,9 +439,7 @@ def upload_photo_details():
     with open(fileName, 'wb') as f:
         f.write(imgData)
     print("written")
-    photo_details = reformat_lists(photo_details)
-    validate_photo(photo_details)
-
+    
     default = {
         "discount": 0.0,
         "posted": datetime.datetime.now(),
