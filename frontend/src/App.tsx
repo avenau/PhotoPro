@@ -19,6 +19,7 @@ import Register from "./pages/Register";
 import DoesNotExistPage from "./pages/DoesNotExistPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
+import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import UploadPage from "./pages/UploadPage/UploadPage";
 
 function App() {
@@ -63,6 +64,8 @@ function App() {
         </ProtectedRoute>
         <ProtectedRoute path="/feed" component={HomePage} />
         <Route path="*" component={DoesNotExistPage} />
+        {/*<ProtectedRoute path="/photo/:photo_id" component={DummyFeed} />*/}
+        <ProtectedRoute path="/photo" component={PhotoDetails} />
       </Switch>
     </Router>
   );
