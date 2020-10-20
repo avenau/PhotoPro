@@ -5,9 +5,14 @@ import './ManageAccount.scss';
 import { useHistory, useLocation } from 'react-router-dom';
 import Axios from 'axios';
 import Toolbar from '../../components/Toolbar/Toolbar';
+interface ConfirmationProps {
+  inputStates: Map<string, any>;
+}
 
-export default function ManageConfirmation() {
-  const location = useLocation();
+export default function ManageConfirmation(props: { location: any; inputStates: any; }) {
+  //const location = useLocation();
+  console.log("Prop Test");
+  console.log(props);
   const history = useHistory();
   let inputPassword = '';
   const [passwordFeedback, setFeedback] = useState('');
@@ -28,7 +33,7 @@ export default function ManageConfirmation() {
     if (event) {
       event.preventDefault();
     }
-    const stateMap = location.state as Map<string, any>;
+    const stateMap = props.location.state;
 
     stateMap.set('u_id', localStorage.getItem('u_id'));
     // console.log(stateMap);

@@ -56,16 +56,13 @@ function App() {
         <Route path="/user/:user_id" component={ProfilePage} />
         <Route path="/search/:type" component={SearchPage} />
         <ProtectedRoute exact path="/upload" component={UploadPage} />
-        <ProtectedRoute path="/manage_account">
-          <ManageAccount />
-        </ProtectedRoute>
-        <ProtectedRoute path="/manage_confirmation">
-          <ManageConfirmation />
-        </ProtectedRoute>
-        <ProtectedRoute path="/feed" component={HomePage} />
+        <ProtectedRoute path="/manage_account" component={ManageAccount} />
+        <ProtectedRoute path="/manage_confirmation" component={ManageConfirmation} />
+        < ProtectedRoute path="/feed" component={HomePage} />
+        <ProtectedRoute path="/photo" component={PhotoDetails} />
         <Route path="*" component={DoesNotExistPage} />
         {/*<ProtectedRoute path="/photo/:photo_id" component={DummyFeed} />*/}
-        <ProtectedRoute path="/photo" component={PhotoDetails} />
+
       </Switch>
     </Router>
   );

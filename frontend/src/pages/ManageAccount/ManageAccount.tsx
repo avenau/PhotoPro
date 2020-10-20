@@ -6,6 +6,7 @@ import './ManageAccount.scss';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import Axios from 'axios';
 import Toolbar from '../../components/Toolbar/Toolbar';
+import ManageConfirmation from './ManageConfirmation';
 
 /*
 TODO
@@ -52,11 +53,13 @@ export default function ManageAccount() {
     if (event) {
       event.preventDefault();
     }
-    console.log(inputState);
-    history.push({
+    //console.log(inputState);
+
+    /*history.push({
       pathname: '/manage_confirmation',
       state: inputState,
-    });
+    });*/
+
   }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
@@ -119,12 +122,19 @@ export default function ManageAccount() {
             <Form.Label>About Me</Form.Label>
             <Form.Control placeholder={about_me} as="textarea" name="about_me" onChange={(e) => handleChange(e)} />
           </Form.Group>
-          <Button variant="primary" type="submit">
-            Save
+          <Link
+            to={{
+              pathname: "/manage_confirmation",
+              state: { fromDashboard: true }
+            }}>
+            <Button variant="primary" type="submit">
+              Save
           </Button>
+          </Link>
 
         </Form>
       </div>
+
     </div>
   );
 }
