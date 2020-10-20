@@ -371,8 +371,8 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                     <Form.Group controlId="exampleForm.ControlSelect2" onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.handleAlbums(e)}>
                       <Form.Label>Select album(s) to add this photo to</Form.Label>
                       <Form.Control as="select" multiple>
-                        {this.state.tempAlbums.map((album: String) => {
-                          return <option>{album}</option>
+                        {this.state.tempAlbums.map((album: string) => {
+                          return <option key={album}>{album}</option>
                         })}  
                       </Form.Control>
                     </Form.Group>
