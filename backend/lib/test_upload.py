@@ -62,3 +62,8 @@ def test_albums():
         validate_album(["", "album1"])
 
     assert validate_album(photoDetails["albumsToAddTo"]) == True
+
+def test_lower():
+    testdict = {"tagsList": ["UPPER", "lower", "mIx"]}
+    testdict = lower_tags(testdict)
+    assert testdict == {'tagsList': ['upper', 'lower', 'mix']}

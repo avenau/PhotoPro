@@ -20,7 +20,7 @@ from lib.welcome.popular_images import get_popular_images
 from lib.profile_details import get_user_details
 from lib.token_decorator import validate_token
 from lib.validate_login import login
-from lib.validate_photo_details import validate_photo
+from lib.validate_photo_details import validate_photo, reformat_lists
 import lib.password_reset as password_reset
 import lib.validate_registration as val_reg
 import lib.token_functions as token_functions
@@ -437,6 +437,9 @@ def upload_photo_details():
     with open(fileName, 'wb') as f:
         f.write(imgData)
     print("written")
+    photo_details = reformat_lists(photo_details)
+    validate_photo(photo_details)
+
     default = {
         "discount": 0.0,
         "posted": datetime.datetime.now(),
