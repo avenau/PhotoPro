@@ -1,13 +1,14 @@
 """
 Validate photo details
 """
-from lib.Error import ValueError
+from Error import ValueError
 import json
 def validate_photo(details):
     validate_price(details["price"])
     validate_title(details["title"])
     validate_album(details["albumsToAddTo"])
     validate_tags(details["tagsList"])
+
 def validate_price(price):
     """
     @param price: int
@@ -20,7 +21,10 @@ def validate_price(price):
             raise ValueError("Price cannot be empty")
         if price == None:
             raise ValueError("Empty object")
-
+        price = int(price)
+    if type(price) is int:
+        if price < 0:
+            raise ValueError("Price cannot be negative")
     return True
 
 def validate_tags(tags):
@@ -34,8 +38,8 @@ def validate_tags(tags):
         raise ValueError("Cannot contain more than 10 tags")
 
     for i in tags:
-        if i is None or i == "":
-            raise ValueError("Cannot be empty or None")
+        if i is None or len(i) < 1 or len(i) > 20:
+            raise ValueError("Tag must be between 1 and 20 characters")
 
     return True
 
@@ -45,8 +49,8 @@ def validate_title(title):
     @param title: str
     @return True or error
     """
-    if title is None or title == "":
-        raise ValueError("Cannot be empty or None")
+    if title is None or len(title) < 1 or len(title) > 40:
+        raise ValueError("Title must be between 1 and 40 characters")
 
     return True
 

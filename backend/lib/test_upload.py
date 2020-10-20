@@ -1,7 +1,7 @@
 import pytest
 from upload_photo import *
 from validate_photo_details import *
-from lib.Error import ValueError
+from Error import ValueError
 
 def photo():
     return {
@@ -20,6 +20,9 @@ def test_title():
     with pytest.raises(ValueError):
         validate_title(None)
 
+    with pytest.raises(ValueError):
+        validate_title("According to all known laws of aviation, there is no way a bee, should be able to fly.")
+
     assert validate_title(photoDetails["title"]) == True
 
 def test_price():
@@ -29,6 +32,9 @@ def test_price():
 
     with pytest.raises(ValueError):
         validate_price("")
+    
+    with pytest.raises(ValueError):
+        validate_price("-10")
 
     assert validate_price(photoDetails["price"]) == True
     assert validate_price(16) == True
@@ -39,6 +45,9 @@ def test_tags():
     # Maximum of 10 tags
     with pytest.raises(ValueError):
         validate_tags(["apple", "fruit", "nature", "adventure", "a", "b", "c", "d", "e", "f", "g"])
+
+    with pytest.raises(ValueError):
+        validate_tags(["appleappleappleappleappleappleappleapple"])
 
     # No empty tags
     with pytest.raises(ValueError):
