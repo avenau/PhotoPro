@@ -430,11 +430,14 @@ def upload_photo_details():
     base64Str = photo_details['photo']
     # base64Str += "==="
     fileName = photo_details['title'] + photo_details['extension']
-    imgData = base64.b64decode(base64Str)
+    imgData = base64.b64decode(base64Str.split(',')[1])
     # with open('log.txt', 'wb') as log:
     #     log.write(base64Str.encode())
-    with open(fileName, 'wb') as f:
+
+    # This currently creates image files in /backend/images directory
+    with open('./backend/images/' + fileName, 'wb') as f:
         f.write(imgData)
+
     print("written")
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
