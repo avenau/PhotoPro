@@ -428,7 +428,6 @@ def upload_photo_details():
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
 
-    
     default = {
         "discount": 0.0,
         "posted": datetime.datetime.now(),

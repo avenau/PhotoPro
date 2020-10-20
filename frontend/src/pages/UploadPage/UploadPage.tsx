@@ -37,6 +37,18 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         fileErrMsg: ""
       };
     }
+
+    setPhoto() {
+      return new Promise((resolve, reject) => {
+        const fileInput = document.getElementById("photo") as HTMLInputElement;
+        if (fileInput.files && fileInput.files[0]) {
+          const reader = new FileReader();
+          reader.readAsDataURL(fileInput.files[0]);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = err => reject(err);
+        }
+      });
+    }
     
     handleSubmit(event: React.FormEvent<HTMLElement>) {
       event.preventDefault();
@@ -44,6 +56,10 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         this.setState({tagsErrMsg: "Please enter at least one keyword before uploading."});
         return;
       }
+      const photo = this.setPhoto()
+        .then((response) => {
+          console.log(response);
+        })
     // const config = {headers: {'Content-Type': 'multipart/form-data'}}
     axios.post("/user/profile/uploadphoto/details", {
       title: this.state.title,
@@ -355,8 +371,8 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                     <Form.Group controlId="exampleForm.ControlSelect2" onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.handleAlbums(e)}>
                       <Form.Label>Select album(s) to add this photo to</Form.Label>
                       <Form.Control as="select" multiple>
-                        {this.state.tempAlbums.map((album: String) => {
-                          return <option>{album}</option>
+                        {this.state.tempAlbums.map((album: string) => {
+                          return <option key={album}>{album}</option>
                         })}  
                       </Form.Control>
                     </Form.Group>
