@@ -1,11 +1,12 @@
-import React from "react";
+import React from 'react';
 
 export default class ExamplePageAuth extends React.Component {
   private doLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("u_id");
-    window.location.pathname = "/login";
+    localStorage.removeItem('token');
+    localStorage.removeItem('u_id');
+    window.location.pathname = '/login';
   }
+
   render() {
     return (
       <>

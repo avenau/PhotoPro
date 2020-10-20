@@ -9,11 +9,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 class Showdown extends Component<any, any> {
   constructor(props: any) {
-    super(props)
+    super(props);
     this.state = {
-      imagePaths: []
-    }
-
+      imagePaths: [],
+    };
   }
 
   componentDidMount() {
@@ -22,34 +21,37 @@ class Showdown extends Component<any, any> {
 
   getStandupImagePaths() {
     axios.get('/showdown/getImages')
-      .then(res => {
+      .then((res) => {
         const imagePaths = res.data;
         this.setState({ imagePaths });
-      })
+      });
   }
 
   render() {
     return (
       <Container className="p-3">
         <Row>
-          <h3 style={{"textAlign": "center"}}>Today's PHOTO SHOWDOWN</h3>
+          <h3 style={{ textAlign: 'center' }}>Today's PHOTO SHOWDOWN</h3>
         </Row>
         <Container className="p-2">
           <Row>
             <Col>
-              <Image src={ this.state.imagePaths.path_one } fluid/>
+              <Image src={this.state.imagePaths.path_one} fluid />
             </Col>
-            <Col xs={2}> <h3> VS </h3> </Col>
+            <Col xs={2}>
+              {' '}
+              <h3> VS </h3>
+              {' '}
+            </Col>
             <Col>
-              <Image src={ this.state.imagePaths.path_two } fluid/>
+              <Image src={this.state.imagePaths.path_two} fluid />
             </Col>
           </Row>
           <Row>
             <Col>
               <Button variant="success">Apple</Button>
             </Col>
-            <Col xs={2}>
-            </Col>
+            <Col xs={2} />
             <Col>
               <Button variant="success">Banana</Button>
             </Col>

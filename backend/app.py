@@ -1,21 +1,25 @@
+"""
+Backend main file
+"""
+
 import os
+import traceback
 from json import dumps, loads
 
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from bson.objectid import ObjectId
-from Error import UserDNE, EmailError, PasswordError
+from Error import EmailError, PasswordError
 from showdown.get_images import get_images
 from welcome.contributors import get_popular_contributors_images
 from welcome.popular_images import get_popular_images
-#Added BSON library, needed for ObjectId data type
-from bson.objectid import ObjectId
-import traceback
+from profile_details import get_user_details
+from token_decorator import validate_token
 
-import password_reset as password_reset
+import password_reset
 import validate_registration as val_reg
 import token_functions
 
@@ -24,6 +28,19 @@ CORS(app)
 
 
 def defaultHandler(err):
+    """
+    Description
+    -----------
+    Error Handler to pass messages to frontend
+
+    Parameters
+    ----------
+    TODO
+
+    Returns
+    -------
+    TODO
+    """
     print(err)
     response = err.get_response()
     response.data = dumps({
@@ -60,44 +77,55 @@ bcrypt = Bcrypt(app)
 
 # Test route
 @app.route('/', methods=['GET'])
-# @make_pretty
 def basic():
+    """
+    Test route
+    """
     return dumps({
         'first_name': "test",
         'colour': "test"
     })
 
 
-@app.route('/start', methods=['GET', 'POST'])
-def send_data():
-    errors = []
-    # results = {}
-    data = loads(request.data.decode())
-    first_name = data["name"]
-    colour = data["colour"]
-    try:
-        mongo.db.people.insert_one({"name": first_name,
-                                    "colour": colour})
-    except:
-        print("Errors... :-(")
-        errors.append("Couldn't get text")
-
-    return dumps({
-        'first_name': first_name,
-        'colour': colour
-    })
-
-@app.route('/verifytoken', methods=['POST'])
+# Should this be using a GET request?
+@app.route('/verifytoken', methods=['GET'])
 def verify_token():
-    token = request.form.get("token")
-    valid = token_functions.verify_token(token)
-    print(valid)
+    """
+    Verify that the token matches the secret
+    Parameters
+    ---------
+    token : str
+        The token of the current user
+
+    Returns
+    -------
+    {valid : bool}
+        Whether the token is valid or not
+    """
+    token = request.args.get('token')
+    if token == '' or token is None:
+        return {"valid": False}
+    token_functions.verify_token(token)
     return {
-        "valid": valid
+        "valid": True
     }
+
 
 @app.route('/login', methods=['POST'])
 def process_login():
+    """
+    Logs into the system
+    Parameters
+    ----------
+    email: str
+    password : str
+
+    Returns
+    -------
+    {token : str,
+     u_id : str}
+
+    """
     email = request.form.get("email")
     password = request.form.get("password")
     if email == "":
@@ -127,8 +155,16 @@ def process_login():
 @app.route('/passwordreset/request', methods=['POST'])
 def auth_password_reset_request():
     """
-    Given an email address, if the user is a registered user, semd an email
+    Given an email address, if the user is a registered user, send an email
     with a link that they can access temporarily to change their password
+
+    Parameters
+    ----------
+    email : str
+
+    Returns
+    -------
+    {}
     """
     email = request.form.get("email")
 
@@ -141,7 +177,19 @@ def auth_password_reset_request():
 
 @app.route('/passwordreset/reset', methods=['POST'])
 def auth_passwordreset_reset():
-    """ Given a reset code, change user's password """
+    """
+    Given a reset code, change user's password
+
+    Parameters
+    ----------
+    email : str
+    reset_code : str
+    new_password : str
+
+    Returns
+    -------
+    {}
+    """
 
     email = request.form.get("email")
     reset_code = request.form.get("reset_code")
@@ -153,8 +201,19 @@ def auth_passwordreset_reset():
                                             hashedPassword, mongo)
     )
 
+
 @app.route('/accountregistration', methods=['POST'])
 def account_registration():
+    """
+    Description
+    -----------
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
     # ======= Backend validation =======
     # As front end checks could be bypassed
     email = request.form.get("email")
@@ -201,17 +260,35 @@ def account_registration():
                            'location': location
                            }
                           )
-    return redirect(url_for('login'))
+    return dumps({})
+
 
 @app.route('/profiledetails', methods=['GET'])
 def profile_details():
-    u_id = request.args.get("u_id")
-    try:
-        details = mongo.db.users.find_one({"_id" : ObjectId(u_id)})
-    except:
-        raise UserDNE
+    """
+    Description
+    -----------
+    Get all details of a user's details for their profile page
+
+    Parameters
+    ----------
+    token : str
+
+    Returns
+    {
+        fname,
+        lname,
+        nickname,
+        location,
+        email
+    }
+    -------
+    """
+    details = get_user_details(request.args.get("u_id"), mongo)
+
     return dumps({
-        "name": f"{details['fname']} {details['lname']}",
+        "fname": details["fname"],
+        "lname": details["lname"],
         "nickname": details["nickname"],
         "location": details["location"],
         "email": details["email"]
@@ -221,6 +298,19 @@ def profile_details():
 # Returns the two showdown images for the day
 @app.route('/showdown/getImages', methods=['GET'])
 def get_showdown_images():
+    """
+    Description
+    -----------
+    Get the two showdown images for the current showdown
+
+    Parameters
+    ----------
+    N/A
+
+    Returns
+    -------
+    {path_one, path_two}
+    """
     images = get_images()
     return dumps({
         'path_one': images[0],
@@ -229,8 +319,22 @@ def get_showdown_images():
 
 
 # Returns the two showdown images for the day
-@app.route('/welcome/getPopularContributors', methods=['GET'])
+@app.route('/welcome/popularcontributors', methods=['GET'])
 def welcome_get_contributors():
+    """
+    Description
+    -----------
+    Get some popular contributor profile images
+
+    Parameters
+    ----------
+    N/A
+
+    Returns
+    -------
+    {contributors: tup}
+        tuple of contributors paths
+    """
     images = get_popular_contributors_images()
     return dumps({
         # Returning a tuple
@@ -240,50 +344,124 @@ def welcome_get_contributors():
 
 @app.route('/welcome/getPopularImages', methods=['GET'])
 def welcome_get_popular_images():
+    """
+    Description
+    -----------
+    Get paths of popular images
+
+    Parameters
+    ----------
+    N/A
+
+    Returns
+    -------
+    {popular_images: tup}
+        tuple of image paths
+    """
     images = get_popular_images()
     return dumps({
         'popular_images': images
     })
-    return dumps({})
+
+
+@app.route('/userdetails', methods=['GET'])
+def user_info_with_token():
+    """
+    Description
+    -----------
+    GET request to get user details using a token
+
+    Parameters
+    ----------
+    token : string
+
+    Returns
+    -------
+    {fname:str, lname:str, nickname:str,
+     email:str, DOB:str, location:str, aboutMe:str}
+
+    """
+    token = request.args.get('token')
+    if token == '':
+        return {}
+    u_id = token_functions.verify_token(token)
+    user = get_user_details(u_id['u_id'], mongo)
+    # JSON Doesn't like ObjectId format
+    return dumps({
+        'fname': user['fname'],
+        'lname': user['lname'],
+        'email': user['email'],
+        'nickname': user['nickname'],
+        'DOB': user['DOB'],
+        'location': user['location'],
+        'aboutMe': user['aboutMe']
+    })
+
 
 @app.route('/manage_account/success', methods=['GET', 'POST'])
 def manage_account():
+    """
+    Description
+    -----------
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
     errors = []
-    results = {}
     data = loads(request.data.decode())
     print(type(data))
-    #Need Something to Check if current logged in account exist in database
-    #I am assuming user_id is stored in localStorage
-    #Hard coded this part, this part should check what the logged in user object_id is
+    # Need Something to Check if current logged in account exist in database
+    # I am assuming user_id is stored in localStorage
+    # Hard coded this part, this part should check what the logged in
+    # user object_id is
     current_user = data['u_id']
     try:
         find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
             if (value == "" or key == "u_id"):
                 continue
-            change_userdb = {"$set": { key: value } }
-            mongo.db.users.update_one(find_userdb, change_userdb)
+            if (key == "password"):
+                hashedPassword = bcrypt.generate_password_hash(value)
+                mongo.db.users.update_one(find_userdb, {"$set": {key: hashedPassword}})
+                
+            else:                
+                change_userdb = {"$set": {key: value}}
+                mongo.db.users.update_one(find_userdb, change_userdb)
 
+    # TODO: Catching too general using Exception. Replace with e.g. ValueError
     except Exception:
         print("Errors... :-(")
-        print (traceback.format_exc())
+        print(traceback.format_exc())
         errors.append("Couldn't get text")
 
     return dumps(data)
 
+
 @app.route('/manage_account/confirm', methods=['GET', 'POST'])
 def password_check():
-    errors = []
-    results = {}
-    #data = json.loads(request.data.decode())
-    #Need Something to Check if current logged in account exist in database
-    #I am assuming user_id is stored in localStorage
-    #Hard coded this part, this part should check what the logged in user object_id is
+    """
+    Description
+    -----------
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
+    # data = json.loads(request.data.decode())
+    # Need Something to Check if current logged in account exist in database
+    # I am assuming user_id is stored in localStorage
+    # Hard coded this part, this part should check what
+    # the logged in user object_id is
 
     data = request.form.to_dict()
-    print(data)
     current_user = data['u_id']
-    current_password = mongo.db.users.find_one({"_id":ObjectId(current_user)})['password']
+    user_object = mongo.db.users.find_one({"_id": ObjectId(current_user)})
+    current_password = user_object['password']
 
     # TODO: set the token properly with jwt
     if bcrypt.check_password_hash(current_password, data['password']):
@@ -294,21 +472,22 @@ def password_check():
 
     return data
 
+
 @app.route('/get_user_info', methods=['GET', 'POST'])
 def get_user():
-    errors = []
-    results = {}
-   # print('In get_user_info')
-    data = request.form.to_dict()
-    #print(data)
-    current_uid = data['u_id']
-    #print("U_ID")
-    #print(type(current_uid))
-    #print(current_uid)
-    current_user = mongo.db.users.find_one({"_id" : ObjectId(current_uid)})
+    """
+    Description
+    -----------
 
-    #print("PRINT CURRENT USER")
-    #print(current_user)
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
+    data = request.form.to_dict()
+    current_uid = data['u_id']
+    current_user = mongo.db.users.find_one({"_id": ObjectId(current_uid)})
     data['fname'] = current_user['fname']
     data['lname'] = current_user['lname']
     data['email'] = current_user['email']
@@ -318,6 +497,41 @@ def get_user():
     data['aboutMe'] = current_user['aboutMe']
 
     return data
+
+
+@app.route('/user/profile/uploadphoto', methods=['POST'])
+def upload_photo():
+    """
+    Description
+    -----------
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
+
+
+'''
+---------------
+- Test Routes -
+---------------
+'''
+
+
+@app.route('/testdecorator', methods=['GET'])
+@validate_token
+def test_decorator():
+    '''
+    Testing decorator for validating token
+    Use this decorator to verify the token is
+    valid and matches the secret
+    '''
+    print("YAY")
+    return dumps({
+        "success": "success"
+    })
 
 
 if __name__ == '__main__':
