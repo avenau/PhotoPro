@@ -10,6 +10,7 @@ from flask_pymongo import PyMongo
 from config import DevelopmentConfig, defaultHandler
 import traceback
 from json import dumps, loads
+import base64
 from flask_bcrypt import Bcrypt
 from bson.objectid import ObjectId
 
@@ -425,8 +426,17 @@ def upload_photo_details():
     None
     """
     photo_details = request.form.to_dict()
-    print(photo_details)
+    # print(photo_details)
     validate_photo(photo_details)
+    base64Str = photo_details['photo']
+    # base64Str += "==="
+    fileName = photo_details['title'] + photo_details['extension']
+    imgData = base64.b64decode(base64Str)
+    # with open('log.txt', 'wb') as log:
+    #     log.write(base64Str.encode())
+    with open(fileName, 'wb') as f:
+        f.write(imgData)
+    print("written")
     default = {
         "discount": 0.0,
         "posted": datetime.datetime.now(),
@@ -436,9 +446,13 @@ def upload_photo_details():
         "won": False
     }
     photo_details.update(default)
-    print(photo_details)
-    mongo.db.photos.insert(photo_details)
-    return dumps({})
+    # print(photo_details)
+    mongo.db.photos.insert_one(photo_details)
+    print(photo_details['title'])
+    print(photo_details['extension'])
+    return dumps({
+        "success": "success"
+    })
 
 # TODO having trouble sending photo 
 @app.route('/user/profile/uploadphoto', methods=['POST'])

@@ -58,8 +58,6 @@ def validate_title(title):
 def validate_album(albums):
     # Convert to python dictionary
     albums = json.loads(albums)
-    print(albums)
-    print(len(albums))
     for i in albums:
         if i is None or i == "":
             raise ValueError("Cannot be empty or None")

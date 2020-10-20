@@ -42,9 +42,12 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       return new Promise((resolve, reject) => {
         const fileInput = document.getElementById("photo") as HTMLInputElement;
         if (fileInput.files && fileInput.files[0]) {
+          const thePhotoFile = fileInput.files[0];
+          const photoFileName = thePhotoFile.name;
+          const photoExtension = photoFileName.substr(photoFileName.length - 4)
           const reader = new FileReader();
-          reader.readAsDataURL(fileInput.files[0]);
-          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(thePhotoFile);
+          reader.onload = () => resolve([reader.result, photoExtension]);
           reader.onerror = err => reject(err);
         }
       });
@@ -56,40 +59,24 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         this.setState({tagsErrMsg: "Please enter at least one keyword before uploading."});
         return;
       }
-      const photo = this.setPhoto()
-        .then((response) => {
+      this.setPhoto()
+        .then((response: any) => {
           console.log(response);
+          axios.post("/user/profile/uploadphoto/details", {
+            title: this.state.title,
+            price: this.state.price,
+            tagsList: JSON.stringify(this.state.tagsList),
+            albumsToAddTo: JSON.stringify(this.state.albumsToAddTo),
+            photo: response[0],
+            extension: response[1]
+          })
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
         })
-    // const config = {headers: {'Content-Type': 'multipart/form-data'}}
-    axios.post("/user/profile/uploadphoto/details", {
-      title: this.state.title,
-      price: this.state.price,
-      tagsList: JSON.stringify(this.state.tagsList),
-      albumsToAddTo: JSON.stringify(this.state.albumsToAddTo),
-    })
-    .then((response:any) => {
-      const instance = axios.create({
-        baseURL: 'http://localhost:8001/',
-        timeout: 1000,
-        headers: {'Content-Type': 'multipart/form-data'}
-      });
-      alert('Successfully uploaded photo details. Now sending photo...')
-      // const {data} = response
-      // const photo_id = data.id      
-      // const config = {headers: {'Content-Type': 'multipart/form-data'}}
-      const form_data = new FormData()
-      form_data.append("image", this.state.photo[0])
-      instance.post("/user/profile/uploadphoto", form_data)
-      .then((response: any) => {
-        console.log('Uploaded photo')
-      })
-      .catch((e) => {
-        console.log(e)
-      })
-    })
-    .catch((e) => {
-      console.log(e)
-    })
     }
 
     setTitleErrMsg(title: string) {
