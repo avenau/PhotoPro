@@ -13,6 +13,8 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-infinite-scroller": "^1.2.1",
     "@types/react-router-dom": "^5.1.6",
+    "@typescript-eslint/eslint-plugin": "^4.5.0",
+    "@typescript-eslint/parser": "^4.5.0",
     "axios": "^0.20.0",
     "bootstrap": "^4.5.2",
     "eslint-import-resolver-typescript": "^2.3.0",
@@ -36,9 +38,6 @@
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -59,8 +58,6 @@
     "@storybook/node-logger": "^6.0.22",
     "@storybook/preset-create-react-app": "^3.1.4",
     "@storybook/react": "^6.0.22",
-    "@typescript-eslint/eslint-plugin": "^4.4.1",
-    "@typescript-eslint/parser": "^4.4.1",
     "babel-loader": "^8.1.0",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.2.0",

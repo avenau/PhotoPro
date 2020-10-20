@@ -27,8 +27,12 @@ module.exports = {
     "jsx-a11y/click-events-have-key-events": "off",
     "class-methods-use-this": "off",
     "react/jsx-wrap-multilines": "off",
+    "react/sort-comp": "off",
   },
   settings: {
     "import/resolver": "typescript", // this loads <rootdir>/tsconfig.json to eslint
+    react: {
+      version: "detect",
+    },
   },
 };
