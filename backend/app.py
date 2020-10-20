@@ -305,9 +305,11 @@ def user_info_with_token():
     """
     token = request.args.get('token')
     if token == '':
+        print("token is an empty string")
         return {}
     u_id = token_functions.verify_token(token)
     user = get_user_details(u_id['u_id'], mongo)
+    print("User details are:", user)
     # JSON Doesn't like ObjectId format
     return dumps({
         'fname': user['fname'],
@@ -439,8 +441,10 @@ def upload_photo():
     '''
     token = request.form.get('token')
     img_path = request.form.get('img_path')
+    print("Token is", token)
+    print("img_path is", img_path)
     b64 = update_user_thumbnail(img_path)
-    u_id = token_functions.verify_token(token)
+    u_id = token_functions.get_uid(token)
     db.update_user(mongo, u_id, 'profile_pic', b64)
     # Update the database...
     return dumps({
