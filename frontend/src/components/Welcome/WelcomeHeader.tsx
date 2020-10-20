@@ -17,7 +17,7 @@ class WelcomeHeader extends Component {
           <Row>
             <Col sm={2}>
               <Row>
-                <p>Yesterday's Showdown Winner:</p>
+                <p>Yesterday&apos;s Showdown Winner:</p>
               </Row>
               <Row>
                 <Image src={logo} />

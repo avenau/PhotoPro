@@ -26,9 +26,6 @@ class PopularImages extends Component<any, any> {
         const images = res.data.popular_images;
         this.setState({ popularImages: images });
       })
-      .catch((err) => {
-        console.log(err);
-      });
   }
 
   render() {
