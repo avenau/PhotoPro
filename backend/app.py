@@ -427,7 +427,6 @@ def upload_photo_details():
     """
     photo_details = request.form.to_dict()
     # print(photo_details)
-    validate_photo(photo_details)
     base64Str = photo_details['photo']
     # base64Str += "==="
     fileName = photo_details['title'] + photo_details['extension']

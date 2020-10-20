@@ -6,11 +6,9 @@ import Button from "react-bootstrap/Button"
 import Image from "react-bootstrap/Image"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
-import Dropdown from "react-bootstrap/Dropdown"
 import Toolbar from "../../components/Toolbar/Toolbar"
 import { RouteChildrenProps } from "react-router-dom";
 import axios from 'axios';
-import fs from 'fs'
 
 export default class UploadPage extends React.Component<RouteChildrenProps, any> {
     constructor(props: RouteChildrenProps) {
