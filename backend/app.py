@@ -427,8 +427,6 @@ def upload_photo_details():
     """
     photo_details = request.form.to_dict()
     photo_details = reformat_lists(photo_details)
-    print("title=" + photo_details["title"])
-    print("price=" + photo_details["price"])
     validate_photo(photo_details)
 
     base64Str = photo_details['photo']
@@ -447,10 +445,10 @@ def upload_photo_details():
         "comments": ["insert comment objects", "comment1", "comment2"],
         "won": False
     }
+    photo_details.pop("photo")
     photo_details.update(default)
-    mongo.db.photos.insert_one(photo_details)
-    # print(photo_details['title'])
-    # print(photo_details['extension'])
+    mongo.db.photos.insert(photo_details)
+
     return dumps({
         "success": "success"
     })

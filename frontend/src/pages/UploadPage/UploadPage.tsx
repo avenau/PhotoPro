@@ -37,7 +37,6 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         photo: "",
         titleErrMsg: "",
         priceErrMsg: "",
-        tagsErrMsg: "",
         fileErrMsg: ""
       };
       this.setState = this.setState.bind(this);
@@ -161,12 +160,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
         priceErrMsg: priceList[1]
       })
     }
-    setTagsList = (updateTag : any, funcTag: any) => {
-      this.setState(updateTag, funcTag)
-    }
-    handleTagsErr = (errMsg: string) => {
-      this.setState({tagsErrMsg: errMsg})
-    }
+
     render() {
         return (
             <div className="uploadPage">
@@ -184,11 +178,8 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                     priceErrMsg={this.state.priceErrMsg}
                     onChange={this.handlePrice}/>
                   <Tags
-                    onChange={(tags:string) => this.setState({tags:tags})}
-                    tags = {this.state.tags}
                     tagsList={this.state.tagsList}
-                    setTagsList={this.setTagsList}
-                    handleTagsErr={this.handleTagsErr}/>
+                    setTagsList={(tagsList: any) => this.setState({tagsList: tagsList})}/>
                   <Form.Group>
                     <Form.File 
                       id="photo" 
