@@ -17,7 +17,7 @@ from flask_pymongo import PyMongo
 import lib.password_reset as password_reset
 import lib.token_functions as token_functions
 import lib.validate_registration as val_reg
-from lib.showdown.get_images import get_images
+from lib.showdown import get_images
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
 from lib.profile.profile_details import get_user_details
@@ -229,20 +229,19 @@ def get_showdown_images():
     -------
     {path_one, path_two}
     """
-    images = get_images()
+    images = get_images.get_showdown_competing_photos()
     return dumps({
         'path_one': images[0],
         'path_two': images[1]
     })
 
 
-# Returns the two showdown images for the day
-@app.route('/welcome/popularcontributors', methods=['GET'])
-def welcome_get_contributors():
+@app.route('/showdown/getwinner', methods=['GET'])
+def showdown_getwinner():
     """
     Description
     -----------
-    Get some popular contributor profile images
+    Get the winning photo from the last showdown
 
     Parameters
     ----------
@@ -250,8 +249,27 @@ def welcome_get_contributors():
 
     Returns
     -------
-    {contributors: tup}
-        tuple of contributors paths
+    CURRENTLY returns a static path
+    """
+    path = get_images.get_showdown_winner_image()
+    return dumps({'path': path})
+
+
+
+@app.route('/welcome/popularcontributors', methods=['GET'])
+def welcome_get_contributors():
+    """
+    Description
+    -----------
+    Get some contributor profile pictures
+
+    Parameters
+    ----------
+    N/A
+
+    Returns
+    -------
+    A list of images
     """
     images = get_popular_contributors_images()
     return dumps({
