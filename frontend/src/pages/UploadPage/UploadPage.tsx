@@ -6,7 +6,6 @@ import Button from "react-bootstrap/Button"
 import Image from "react-bootstrap/Image"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
-import Dropdown from "react-bootstrap/Dropdown"
 import Toolbar from "../../components/Toolbar/Toolbar"
 import { RouteChildrenProps } from "react-router-dom";
 import axios from 'axios';
@@ -67,13 +66,14 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
       }
       this.setPhoto()
         .then((response: any) => {
-          console.log(response);
-          axios.post("/user/profile/uploadphoto/details", {
+          axios.post("/user/profile/uploadphoto/", {
             title: this.state.title,
             price: this.state.price,
             tagsList: JSON.stringify(this.state.tagsList),
             albumsToAddTo: JSON.stringify(this.state.albumsToAddTo),
+            // The photo, encoded as a base64 string
             photo: response[0],
+            // The file extension e.g. ".jpg" or ".raw"
             extension: response[1]
           })
           .then((response) => {
