@@ -171,8 +171,9 @@ def account_registration():
     hashed_password = bcrypt.generate_password_hash(new_user["password"])
     new_user["password"] = hashed_password
 
-    # Create an empty string for profilePic for now
-    new_user['profilePic'] = ''
+    # Handle profile picture
+    if new_user.get('profilePic') is not None:
+        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
 
     # Insert account details into collection called 'user'
     mongo.db.users.insert(new_user)
