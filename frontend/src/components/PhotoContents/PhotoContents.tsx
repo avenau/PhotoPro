@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import BookmarkButton from "../BookmarkButton";
 import LikeButton from "../LikeButton";
 import "./PhotoContents.scss";
 import axios from "axios";
+
 
 interface ContentProps {
     photoId: string,
@@ -16,19 +17,37 @@ export default function PhotoContents(props: ContentProps) {
     const [email, setEmail] = useState('Artist Email');
     const [likes, setLikes] = useState(0);
     const [isLoaded, setLoad] = useState(false);
+    const [tags, setTags] = useState<string[]>([]);
+    const updateTags = (tag: string) => {
+        if (tag) {
+            setTags(tags => [...tags, tag]);
+        } else if (tag !== "") {
+            setTags(tags => [...tags, tag]);
+        }
+    }
 
-    async function getPhotoDetails(photoId: string) {
-        axios.get(`/photo_details?p_id=${photoId}`)
+
+    const getPhotoDetails = async (photoId: string) => {
+        await axios.get(`/photo_details?p_id=${photoId}`)
             .then((response) => {
                 console.log(response.data);
-                setTitle(response.data.title);
+
                 setNick(response.data.nickname);
                 setEmail(response.data.email);
                 setLikes(response.data.likes);
+                setTags(response.data.tagsList);
+                setTitle(response.data.title);
+                //console.log(tags);
                 setLoad(true);
             })
     }
-    getPhotoDetails(props.photoId);
+
+
+
+    useEffect(() => {
+        getPhotoDetails(props.photoId);
+    }, [titleName])
+
 
 
 
@@ -53,7 +72,11 @@ export default function PhotoContents(props: ContentProps) {
                             </Row>
                             <Row>
                                 <Button>Tags</Button>
+
                             </Row>
+                            {tags.map((tag) => (
+                                <Button variant="secondary"> {tag}</Button>
+                            ))}
                             <Row>
                                 by {nickname}
                             </Row>
