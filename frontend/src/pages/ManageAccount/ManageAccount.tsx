@@ -80,8 +80,7 @@ export default function ManageAccount() {
     const stateMap = inputState;
 
     stateMap.set('u_id', localStorage.getItem('u_id'));
-    console.log("Stringified JSON: " + JSON.stringify(mapToObject(stateMap)));
-    fetch('http://localhost:8001/manage_account/success', {
+    fetch('http://localhost:8001/manageaccount/success', {
       method: 'POST',
       body: JSON.stringify(mapToObject(stateMap)),
     })
@@ -90,9 +89,6 @@ export default function ManageAccount() {
         pathname: '/user/'.concat(u_id),
       })
     })
-    .catch((err) => {
-      console.log(err);
-    });
   }
 
   function handleChangeModal(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
@@ -100,14 +96,13 @@ export default function ManageAccount() {
   }
 
   function checkPassword(event: React.FormEvent<HTMLElement>) {
-    console.log("Reached Check Password");
     if (event) {
       event.preventDefault();
     }
 
-    Axios.post('http://localhost:8001/manage_account/confirm', { password: inputPassword, u_id: localStorage.getItem('u_id') })
+    Axios.post('http://localhost:8001/manageaccount/confirm', { password: inputPassword, u_id: localStorage.getItem('u_id') })
       .then((response) => {
-        if (response.data.password == 'true') {
+        if (response.data.password === 'true') {
           updateDB(event, response.data.u_id);
         } else {
           setFeedback('The password you entered is incorrect!');

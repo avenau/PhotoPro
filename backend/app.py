@@ -337,27 +337,39 @@ def user_info_with_token():
 
 
 # TODO Move this to a separate file?
-@app.route('/manage_account/success', methods=['POST'])
+@app.route('/manageaccount/success', methods=['POST'])
 def manage_account():
     """
     Description
     -----------
+    Takes a user object and updates key:value pairs in the database
 
     Parameters
     ----------
+    user:object
+
+    e.g.
+    user {
+        u_id: string,
+        password: string,
+        profilePic: string,
+        ...:...,
+    }
 
     Returns
     -------
+    {'success: boolean}
     """
-    errors = []
-    data = loads(request.data.decode())
-    # Need Something to Check if current logged in account exist in database
-    # I am assuming user_id is stored in localStorage
-    # Hard coded this part, this part should check what the logged in
-    # user object_id is
-    current_user = data['u_id']
-    print(data)
+    '''
+    Need Something to Check if current logged in account exist in database
+    I am assuming user_id is stored in localStorage
+    Hard coded this part, this part should check what the logged in
+    user object_id is
+    '''
+    success = False
     try:
+        data = loads(request.data.decode())
+        current_user = data['u_id']
         find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
             if (value == "" or key == "u_id"):
@@ -367,7 +379,7 @@ def manage_account():
                 mongo.db.users.update_one(find_userdb, {"$set": {
                                                             key:
                                                             hashed_password}})
-            if key == "profilePic":
+            elif key == "profilePic":
                 img_and_filetype = update_user_thumbnail(value)
                 mongo.db.users.update_one(find_userdb, {"$set": {
                                                             key:
@@ -376,16 +388,20 @@ def manage_account():
                 change_userdb = {"$set": {key: value}}
                 mongo.db.users.update_one(find_userdb, change_userdb)
 
+        success = True
+
     # TODO: Catching too general using Exception. Replace with e.g. ValueError
     except Exception:
         print("Errors... :-(")
         print(traceback.format_exc())
-        errors.append("Couldn't get text")
-
-    return dumps(data)
+        success = False
 
 
-@app.route('/manage_account/confirm', methods=['GET', 'POST'])
+    return dumps({'success': success})
+
+
+
+@app.route('/manageaccount/confirm', methods=['GET', 'POST'])
 def password_check():
     """
     Description
