@@ -1,26 +1,20 @@
 import React, { useState } from 'react';
 import Form from "react-bootstrap/Form"
 
-interface IPrice {
-    deactivateUploadButton: () => void;
-    activateUploadButton: () => void;
-    handlePrice: (arg0: string) => void;
-    priceErrMsg: React.ReactNode
-}
-
 export default function Price(props: any) {
+  const [priceErrMsg, setErrMsg] = useState("")
     function setPrice(price: number) {
-        var priceErrMsg = "Please enter a whole number."
         if (!Number.isInteger(price)) { 
           props.deactivateUploadButton();
+          setErrMsg("Please enter a whole number.")
         } else if (price < 0) {
-          priceErrMsg = "Please enter a positive number.";
           props.deactivateUploadButton();
+          setErrMsg("Please enter a positive number.")
         } else {
-          priceErrMsg = "";
           props.activateUploadButton();
+          setErrMsg("")
         }
-        props.onChange([price, priceErrMsg]);
+        props.onChange(price);
     }
     return(
         <>
@@ -30,7 +24,7 @@ export default function Price(props: any) {
             </Form.Control>
             <Form.Text className="text-muted priceInfo">
                 Price must be a positive whole number, or 0 if you'd like to release your photo for free. 
-                <p className="error">{props.priceErrMsg}</p>
+                <p className="error">{priceErrMsg}</p>
             </Form.Text>
         </Form.Group>
         </>

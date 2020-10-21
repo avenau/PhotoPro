@@ -1,5 +1,6 @@
 """
 Validate photo details
+TODO set new env variable for testing
 """
 from lib.Error import ValueError
 import json

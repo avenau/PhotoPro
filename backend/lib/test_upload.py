@@ -1,7 +1,7 @@
 import pytest
 from upload_photo import *
 from validate_photo_details import *
-from Error import ValueError
+from lib.Error import ValueError
 
 def photo():
     return {

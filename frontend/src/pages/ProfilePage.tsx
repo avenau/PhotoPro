@@ -1,18 +1,18 @@
-import axios from 'axios';
-import React from 'react';
-import { Dropdown } from 'react-bootstrap';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import { RouteComponentProps } from 'react-router-dom';
-import AlbumList from '../components/ProfileLists/AlbumList';
-import CollectionList from '../components/ProfileLists/CollectionList';
-import FollowingList from '../components/ProfileLists/FollowingList';
-import PhotoList from '../components/ProfileLists/PhotoList';
-import Toolbar from '../components/Toolbar/Toolbar';
-import UserHeader from '../components/UserHeader/UserHeader';
-import './Profile.scss';
+import axios from "axios";
+import React from "react";
+import { Dropdown } from "react-bootstrap";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import { RouteComponentProps } from "react-router-dom";
+import AlbumList from "../components/ProfileLists/AlbumList";
+import CollectionList from "../components/ProfileLists/CollectionList";
+import FollowingList from "../components/ProfileLists/FollowingList";
+import PhotoList from "../components/ProfileLists/PhotoList";
+import Toolbar from "../components/Toolbar/Toolbar";
+import UserHeader from "../components/UserHeader/UserHeader";
+import "./Profile.scss";
 
 interface Props extends RouteComponentProps {}
 
@@ -22,24 +22,47 @@ interface State {
   nickname: string;
   location: string;
   email: string;
-  user_id: string;
+  userId: string;
   dne: boolean;
+  profilePic: string;
 }
 
 export default class ProfilePage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const { params } = this.props.match;
-    const user_id = Object.values(params)[0] as string;
+    const userId = Object.values(params)[0] as string;
     this.state = {
-      fname: '',
-      lname: '',
-      nickname: '',
-      location: '',
-      email: '',
-      user_id,
+      fname: "",
+      lname: "",
+      nickname: "",
+      location: "",
+      email: "",
+      userId,
       dne: false,
+      profilePic: "",
     };
+  }
+
+  componentDidMount() {
+    this.getUserDetails(this.state.userId);
+  }
+
+  private getUserDetails(userId: string) {
+    axios
+      .get(`/profiledetails?u_id=${userId}`)
+      .then((r) => {
+        const newState = this.state as any;
+        Object.entries(r.data).forEach((item) => {
+          [, newState[item[0]]] = item;
+        });
+        this.setState(newState);
+      })
+      .catch(() => {
+        const newState = this.state as any;
+        newState.dne = true;
+        this.setState(newState);
+      });
   }
 
   /** Return add button if current user */
@@ -51,9 +74,9 @@ export default class ProfilePage extends React.Component<Props, State> {
           variant="outline-dark"
           id="dropdown-custom-components"
           style={{
-            fontSize: '18pt',
-            padding: '0rem 0.2rem',
-            lineHeight: '20pt',
+            fontSize: "18pt",
+            padding: "0rem 0.2rem",
+            lineHeight: "20pt",
           }}
         >
           <span>+</span>
@@ -62,7 +85,8 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert('Navigating to new photo');
+              alert("Navigating to new photo");
+              this.props.history.push("/temp");
             }}
           >
             Upload Photo
@@ -70,7 +94,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert('Navigating to new album');
+              alert("Navigating to new album");
             }}
           >
             Create an Album
@@ -78,7 +102,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert('Navigating to new collection');
+              alert("Navigating to new collection");
             }}
           >
             Create a Collection
@@ -88,34 +112,13 @@ export default class ProfilePage extends React.Component<Props, State> {
     );
   }
 
-  private getUserDetails(u_id: string) {
-    axios
-      .get(`/profiledetails?u_id=${u_id}`)
-      .then((r) => {
-        const newState = this.state as any;
-        Object.entries(r.data).forEach((item) => {
-          newState[item[0]] = item[1];
-        });
-        this.setState(newState);
-      })
-      .catch(() => {
-        const newState = this.state as any;
-        newState.dne = true;
-        this.setState(newState);
-      });
-  }
-
   private redirect() {
     this.props.history.goBack();
   }
 
-  componentDidMount() {
-    this.getUserDetails(this.state.user_id);
-  }
-
   render() {
-    const u_id = localStorage.getItem('u_id');
-    const current_user = this.state.user_id === u_id;
+    const userId = localStorage.getItem("u_id");
+    const currentUser = this.state.userId === userId;
     return (
       <>
         <Modal
@@ -143,13 +146,15 @@ export default class ProfilePage extends React.Component<Props, State> {
         </Modal>
         <Toolbar />
         <UserHeader
-          current_user={current_user}
+          currentUser={currentUser}
           showEdit
           header
           name={`${this.state.fname} ${this.state.lname}`}
           nickname={this.state.nickname}
           location={this.state.location}
           email={this.state.email}
+          profilePic={this.state.profilePic}
+          className="user-header"
         />
         <br />
         <Tabs
@@ -166,14 +171,14 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Tab eventKey="collections" title="Collections">
             <CollectionList />
           </Tab>
-          {current_user ? (
+          {currentUser ? (
             <Tab eventKey="following" title="Following">
               <FollowingList />
             </Tab>
           ) : (
             <></>
           )}
-          {current_user ? (
+          {currentUser ? (
             <Tab title={this.createAddButton()} tabClassName="no-border" />
           ) : (
             <></>

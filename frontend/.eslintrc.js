@@ -19,8 +19,20 @@ module.exports = {
     "react/jsx-filename-extension": [1, { extensions: [".tsx", ".jsx"] }],
     "react/destructuring-assignment": "off",
     "react/jsx-props-no-spreading": "off",
+    "react/prefer-stateless-function": "off",
+    "no-use-before-define": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/static-property-placement": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "class-methods-use-this": "off",
+    "react/jsx-wrap-multilines": "off",
+    "react/sort-comp": "off",
   },
   settings: {
     "import/resolver": "typescript", // this loads <rootdir>/tsconfig.json to eslint
+    react: {
+      version: "detect",
+    },
   },
 };

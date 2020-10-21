@@ -1,6 +1,4 @@
-// Originally written in UploadPage by Allan
-// Extracted as component by Joanne
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import Form from "react-bootstrap/Form"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
@@ -9,9 +7,8 @@ import Button from "react-bootstrap/Button"
 export default function Tags(props: any) {
     const [tagButtons, setTagButtons] = useState<JSX.Element[]>()
     const [tagInput, setTagInput] = useState("")
-    const [tagsErrMsg, setTagsErr] = useState("")
-  
-
+    const [tagsErrMsg, setTagsErr] = useState("Please enter at least one keyword before uploading.")
+    
     function clearTagInput() {
         const tagInput = document.getElementById("tags") as HTMLInputElement;
         tagInput.value = "";
@@ -21,14 +18,12 @@ export default function Tags(props: any) {
     function handleTagEnterPress(event: React.KeyboardEvent<HTMLInputElement>) {
         if (event.key === "Enter") {
           event.preventDefault();
-          console.log("here")
           handleAddTags();
         }
     }
 
     function stateTagsToList() {
         const tagsList = tagInput.trim().split(" ").filter(Boolean);
-        console.log(tagsList);
         return tagsList;
     }
 
@@ -37,7 +32,6 @@ export default function Tags(props: any) {
         // Remove dups
         const tagsToAddWithoutDups = tagsToAdd.filter((tag: string, index: Number) => tagsToAdd.indexOf(tag) === index);
         
-        console.log("tags to add", tagsToAddWithoutDups)
         // Remove non-alphanumeric
         checkTagsAreAlphaNumeric(tagsToAddWithoutDups);
         // Remove tags which are > 20 characters long
@@ -55,21 +49,16 @@ export default function Tags(props: any) {
   
     function deleteTag(event: React.MouseEvent<HTMLElement, MouseEvent>, updatedTagsList: string[]) {
         event.preventDefault();
-        console.log('in delete')
         const target = event.target as HTMLElement;
         const tagToDelete = target.id;
-        console.log('id', tagToDelete)
         const tagsListAfterDeletion = updatedTagsList.filter((tag: string) => {
           return tag !== tagToDelete;
         });
-        console.log("tags after deletion", tagsListAfterDeletion)
         props.setTagsList(tagsListAfterDeletion);
         refreshTagButtons(tagsListAfterDeletion)
     }
 
     function refreshTagButtons(updatedTagsList: string[]) {
-        console.log("A");
-        console.log("updatedlist", updatedTagsList);
         const newTagButtons = updatedTagsList.map((tag: string) => {
             return  <Button key={tag} id={tag} onClick={(e)=>deleteTag(e, updatedTagsList)}>
                         {tag}
@@ -80,6 +69,7 @@ export default function Tags(props: any) {
     }
   
     function updateTagsList(tagsToAdd: string[]) {
+        // Convert to lower case
         // Remove tags from tagsToAdd which already exist in tagsList to avoid duplicate tags
         props.tagsList.forEach((tag: string) => {
           const matchIndex = tagsToAdd.indexOf(tag);
@@ -88,11 +78,12 @@ export default function Tags(props: any) {
           }
         });
         let updatedTagsList = props.tagsList.concat(tagsToAdd);
-        console.log('in update', updatedTagsList)
         // Allow 10 keywords maximum per photo
         if (updatedTagsList.length > 10) {
           updatedTagsList = updatedTagsList.slice(0,10);
           setTagsErr("You are allowed a maximum of 10 keywords.")
+        } else if (updatedTagsList.length < 1) {
+          setTagsErr("Please enter at least one keyword before uploading.")
         }
   
         props.setTagsList(updatedTagsList);

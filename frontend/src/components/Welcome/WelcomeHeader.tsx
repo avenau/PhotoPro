@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import {
   Container,
   Jumbotron,
@@ -6,10 +7,29 @@ import {
   Col,
   Image,
 } from 'react-bootstrap';
-import logo from '../../logo.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-class WelcomeHeader extends Component {
+interface WelcomeHeaderState {
+    winnerPath: string
+}
+
+class WelcomeHeader extends Component<{}, WelcomeHeaderState> {
+  constructor(props:any){
+    super(props);
+    this.state = {
+      winnerPath: '',
+    }
+  }
+
+  componentDidMount(){
+      axios.get('/showdown/getwinner')
+      .then((res) => {
+        this.setState ({
+          winnerPath: res.data.path,
+        });
+      });
+  }
+
   render() {
     return (
       <div>
@@ -17,10 +37,10 @@ class WelcomeHeader extends Component {
           <Row>
             <Col sm={2}>
               <Row>
-                <p>Yesterday's Showdown Winner:</p>
+                <p>Yesterday&apos;s Showdown Winner:</p>
               </Row>
               <Row>
-                <Image src={logo} />
+                <Image src={this.state.winnerPath} />
               </Row>
             </Col>
             <Col sm={10}>

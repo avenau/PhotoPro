@@ -3,15 +3,16 @@ import Form from "react-bootstrap/Form"
 
 // Todo fix types
 export default function Title(props: any) {
+    const [titleErrMsg, setErrMsg] = useState("")
     function setTitle(title: string) {
-        var titleErrMsg = "Please keep your title under 40 characters to be concise. Consider adding more keywords instead."
         if (title.length > 40) { 
           props.deactivateUploadButton();
+          setErrMsg("Please keep your title under 40 characters to be concise. Consider adding more keywords instead.")
         } else {
-          titleErrMsg = ""
           props.activateUploadButton();
+          setErrMsg("")
         }
-        props.onChange([title, titleErrMsg])
+        props.onChange(title)
     }
     return (
         <>
@@ -21,7 +22,7 @@ export default function Title(props: any) {
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             <Form.Text className="text-muted titleInfo">
                 Title must be between 1 and 40 characters long. 
-                <p className="error">{props.titleErrMsg}</p>
+                <p className="error">{titleErrMsg}</p>
             </Form.Text>
         </Form.Group>
         </>
