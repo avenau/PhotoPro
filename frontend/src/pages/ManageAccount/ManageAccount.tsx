@@ -25,11 +25,12 @@ export default function ManageAccount() {
   const [email, setEmail] = useState('');
   const [nickname, setNickname] = useState('');
   const [dob, setDob] = useState('');
-  const [about_me, setAbout] = useState('');
+  const [aboutMe, setAbout] = useState('');
+  const [location, setLocation] = useState('');
 
   const getUserInfo = () => {
-    const user_id = localStorage.getItem('u_id');
-    Axios.post('http://localhost:8001/get_user_info', { u_id: user_id })
+    const userId = localStorage.getItem('u_id');
+    Axios.post('http://localhost:8001/get_user_info', { u_id: userId })
       .then((response) => {
         //  console.log(response.data.current_user);
         setFname(response.data.fname);
@@ -38,6 +39,7 @@ export default function ManageAccount() {
         setNickname(response.data.nickname);
         setDob(new Date(response.data.dob).toLocaleDateString('en-AU'));
         setAbout(response.data.aboutMe);
+        setLocation(response.data.location);
       });
   };
 
@@ -73,7 +75,7 @@ export default function ManageAccount() {
     return result;
   }
 
-  function updateDB(event: React.FormEvent<HTMLElement>, u_id: string) {
+  function updateDB(event: React.FormEvent<HTMLElement>, uid:string) {
     if (event) {
       event.preventDefault();
     }
@@ -86,7 +88,7 @@ export default function ManageAccount() {
     })
     .then(() => {
       history.push({
-        pathname: '/user/'.concat(u_id),
+        pathname: '/user/'.concat(uid),
       })
     })
   }
@@ -162,7 +164,7 @@ export default function ManageAccount() {
 
           <Form.Group controlId="locationForm">
             <Form.Label>Select a Country</Form.Label>
-            <Form.Control as="select" name="location" onChange={(e) => handleChange(e)}>
+            <Form.Control as="select" name="location" defaultValue={location} onChange={(e) => handleChange(e)}>
               {/* <option disabled>{location}</option> */}
               <option>Australia</option>
               <option>United States</option>
@@ -173,7 +175,7 @@ export default function ManageAccount() {
           </Form.Group>
           <Form.Group controlId="aboutMeForm">
             <Form.Label>About Me</Form.Label>
-            <Form.Control placeholder={about_me} as="textarea" name="about_me" onChange={(e) => handleChange(e)} />
+            <Form.Control placeholder={aboutMe} as="textarea" name="about_me" onChange={(e) => handleChange(e)} />
           </Form.Group>
           <Button variant="primary" type="submit" onClick={openModal}>
             Save
@@ -182,8 +184,8 @@ export default function ManageAccount() {
         </Form>
 
         <div className="ManageConfirmation">
-          {/* Added animation={false} due to bug in bootstrap-React
-            https://github.com/react-bootstrap/react-bootstrap/issues/5075*/}
+          { /* Added animation={false} due to bug in bootstrap-React
+            https://github.com/react-bootstrap/react-bootstrap/issues/5075 */ }
           <Modal show={showModal} onHide={closeModal} animation={false}>
             <Modal.Header closeButton></Modal.Header>
             <Form onSubmit={(e) => checkPassword(e)}>
@@ -199,12 +201,11 @@ export default function ManageAccount() {
               </Button>
               <Button variant="primary" onClick={closeModal}>
                 Cancel
-             </Button>
+              </Button>
             </Form>
           </Modal>
         </div>
       </div>
-
-    </div >
+    </div>
   );
 }

@@ -1,13 +1,12 @@
 import React from 'react';
 import Nav from 'react-bootstrap/Nav';
-import { Redirect } from 'react-router-dom';
 import IToolbarProps from './IToolbarProps';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function LoggedIn(props: IToolbarProps) {
   const { username } = props;
-  const u_id = localStorage.getItem('u_id');
-  const redirect = `/user/${u_id}`;
+  const uid = localStorage.getItem('u_id');
+  const redirect = `/user/${uid}`;
 
   return (
     <Nav>
