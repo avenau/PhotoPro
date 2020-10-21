@@ -44,35 +44,36 @@ export default function Register(props: RouteChildrenProps) {
     const form = event.currentTarget;
     event.preventDefault();
     event.stopPropagation();
-
-    axios.post('/accountregistration',
-      {
-        fname,
-        lname,
-        email,
-        nickname,
-        password,
-        privFName,
-        privLName,
-        privEmail,
-        aboutMe,
-        DOB,
-        location,
-      })
-      .then((r) => {
-        if (r.status !== 200) {
-          console.log('Here');
-          throw new Error();
-        }
-        console.log('Success');
-        props.history.push('/login');
-      })
-      . catch((e) => {
-        console.log('==========Error occured==========');
-        console.log(e);
-        console.log('=================================');
-      });
-    setFeedback(true);
+    if (form.checkValidity() === true) {
+      axios.post('/accountregistration',
+        {
+          fname,
+          lname,
+          email,
+          nickname,
+          password,
+          privFName,
+          privLName,
+          privEmail,
+          aboutMe,
+          DOB,
+          location,
+        })
+        .then((r) => {
+          if (r.status !== 200) {
+            console.log('Here');
+            throw new Error();
+          }
+          console.log('Success');
+          props.history.push('/login');
+        })
+        . catch((e) => {
+          console.log('==========Error occured==========');
+          console.log(e);
+          console.log('=================================');
+        });
+      setFeedback(true);
+    }
   };
 
   return (

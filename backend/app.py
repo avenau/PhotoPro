@@ -434,7 +434,6 @@ def upload_photo_details():
     validate_photo(photo_details)
 
     base64Str = photo_details['photo']
-    base64Str += "==="
 
     # Set image path to ./backend/images/'title.extension'
     folder = './backend/images/'
