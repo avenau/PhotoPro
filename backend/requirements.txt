@@ -1,4 +1,5 @@
 astroid==2.4.2
+attrs==20.2.0
 autoenv==1.0.0
 bcrypt==3.2.0
 blinker==1.4
@@ -13,6 +14,8 @@ Flask-Cors==3.0.9
 Flask-Mail==0.9.1
 Flask-PyMongo==2.3.0
 idna==2.10
+importlib-metadata==2.0.0
+iniconfig==1.1.1
 isort==5.6.1
 itsdangerous==1.1.0
 Jinja2==2.11.2
@@ -20,10 +23,17 @@ jwt==1.0.0
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
+packaging==20.4
+Pillow==8.0.0
+pkg-resources==0.0.0
+pluggy==0.13.1
+py==1.9.0
 pycparser==2.20
 PyJWT==1.7.1
 pylint==2.6.0
 pymongo==3.11.0
+pyparsing==2.4.7
+pytest==6.1.1
 python-dateutil==2.8.1
 python-dotenv==0.14.0
 requests==2.24.0
@@ -33,3 +43,4 @@ typed-ast==1.4.1
 urllib3==1.25.10
 Werkzeug==1.0.1
 wrapt==1.12.1
+zipp==3.3.1
