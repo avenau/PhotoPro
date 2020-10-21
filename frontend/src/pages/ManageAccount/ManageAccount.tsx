@@ -3,10 +3,9 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ManageAccount.scss';
 
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Axios from 'axios';
 import Toolbar from '../../components/Toolbar/Toolbar';
-import ManageConfirmation from './ManageConfirmation';
 
 /*
 TODO
@@ -26,7 +25,6 @@ export default function ManageAccount() {
   const [email, setEmail] = useState('');
   const [nickname, setNickname] = useState('');
   const [dob, setDob] = useState('');
-  const [current_location, setLocation] = useState('');
   const [about_me, setAbout] = useState('');
 
   const getUserInfo = () => {
@@ -39,7 +37,6 @@ export default function ManageAccount() {
         setEmail(response.data.email);
         setNickname(response.data.nickname);
         setDob(new Date(response.data.dob).toLocaleDateString('en-US'));
-        setLocation(response.data.location);
         setAbout(response.data.aboutMe);
       });
   };
@@ -85,11 +82,14 @@ export default function ManageAccount() {
     const stateMap = inputState;
 
     stateMap.set('u_id', localStorage.getItem('u_id'));
-    // console.log(stateMap);
-    console.log(JSON.stringify(mapToObject(stateMap)));
+    console.log("Stringified JSON: " + JSON.stringify(mapToObject(stateMap)));
     fetch('http://localhost:8001/manage_account/success', {
       method: 'POST',
       body: JSON.stringify(mapToObject(stateMap)),
+    }).then(() => {
+      history.push({
+        pathname: '/user/'.concat(u_id),
+      })
     });
   }
 
@@ -98,19 +98,15 @@ export default function ManageAccount() {
   }
 
   function checkPassword(event: React.FormEvent<HTMLElement>) {
+    console.log("Reached Check Password");
     if (event) {
       event.preventDefault();
     }
+
     Axios.post('http://localhost:8001/manage_account/confirm', { password: inputPassword, u_id: localStorage.getItem('u_id') })
       .then((response) => {
         if (response.data.password == 'true') {
           updateDB(event, response.data.u_id);
-          // This will lead to profile page when the page is done
-          // Just using home as a filler
-          const user_id = localStorage.getItem('u_id');
-          history.push({
-            pathname: '/user/'.concat(response.data.u_id),
-          });
         } else {
           setFeedback('The password you entered is incorrect!');
         }
@@ -184,7 +180,9 @@ export default function ManageAccount() {
         </Form>
 
         <div className="ManageConfirmation">
-          <Modal show={showModal} onHide={closeModal}>
+          {/* Added animation={false} due to bug in bootstrap-React
+            https://github.com/react-bootstrap/react-bootstrap/issues/5075*/}
+          <Modal show={showModal} onHide={closeModal} animation={false}>
             <Modal.Header closeButton></Modal.Header>
             <Form onSubmit={(e) => checkPassword(e)}>
               <Form.Group controlId="passwordForm">

@@ -40,17 +40,6 @@ mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 
 
-# Test route
-@app.route('/', methods=['GET'])
-def basic():
-    """
-    Test route
-    """
-    return dumps({
-        'first_name': "test",
-        'colour': "test"
-    })
-
 
 @app.route('/verifytoken', methods=['GET', 'POST'])
 def verify_token():
@@ -330,7 +319,7 @@ def user_info_with_token():
 
 
 # TODO Move this to a separate file?
-@app.route('/manage_account/success', methods=['GET', 'POST'])
+@app.route('/manage_account/success', methods=['POST'])
 def manage_account():
     """
     Description
@@ -565,6 +554,21 @@ def test_decorator():
     return dumps({
         "success": "success"
     })
+
+
+@app.route('/', methods=['GET'])
+def basic():
+    """
+    Basic Test route
+    """
+    arguments = {
+            'first_name': 'test',
+            'colour': 'test'
+            }
+    if request.args:
+        arguments = request.args
+    print(arguments)
+    return dumps(arguments)
 
 
 if __name__ == '__main__':
