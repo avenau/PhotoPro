@@ -14,9 +14,7 @@ PhotoPro was built using React, Python, Flask and MongoDB.
 
 For all others see `requirements.txt`
 
-# Frontend
-
-## Requirements
+## Frontend Requirements
 
 - npm
 
