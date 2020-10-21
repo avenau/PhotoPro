@@ -409,7 +409,7 @@ def get_user():
     return data
 
 
-@app.route('/user/profile/uploadphoto/details', methods=['POST'])
+@app.route('/user/profile/uploadphoto/', methods=['POST'])
 def upload_photo_details():
     """
     Description
