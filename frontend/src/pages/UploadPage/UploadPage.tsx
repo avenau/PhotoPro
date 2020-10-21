@@ -73,6 +73,8 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
           })
           .then((response) => {
             console.log(response);
+            const uid = localStorage.getItem('u_id');
+            this.props.history.push(`/user/${uid}`)
           })
           .catch((err) => {
             console.log(err);

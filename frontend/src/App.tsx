@@ -58,7 +58,7 @@ function App() {
         <ProtectedRoute exact path="/upload" component={UploadPage} />
         <ProtectedRoute path="/manage_account" component={ManageAccount} />
         <ProtectedRoute path="/manage_confirmation" component={ManageConfirmation} />
-        < ProtectedRoute path="/feed" component={HomePage} />
+        <ProtectedRoute path="/feed" component={HomePage} />
         <ProtectedRoute path="/photo/:photo_id" component={PhotoDetails} />
         <Route path="*" component={DoesNotExistPage} />
         {/*<ProtectedRoute path="/photo/:photo_id" component={DummyFeed} />*/}

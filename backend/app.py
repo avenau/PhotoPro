@@ -175,10 +175,12 @@ def account_registration():
     hashed_password = bcrypt.generate_password_hash(new_user["password"])
     new_user["password"] = hashed_password
 
-    # Handle profile picture
-    if new_user.get('profilePic') is not None:
+    # Handle profile pic
+    if new_user.get('profilePic') is None:
+        new_user['profilePic'] = ""
+    else:
         new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
-
+    
     # Insert account details into collection called 'user'
     mongo.db.users.insert(new_user)
     return dumps({})
@@ -463,8 +465,6 @@ def get_user():
 
     return data
 
-
-<<<<<<< HEAD
 @app.route('/user/uploadphoto', methods=['POST'])
 def upload_temp_photo():
     """
@@ -476,7 +476,6 @@ def upload_temp_photo():
 
     Parameters
     ----------
-<<<<<<< HEAD
     title: str,
     price: str,
     tagsList: [],
@@ -491,7 +490,6 @@ def upload_temp_photo():
     validate_photo(photo_details)
 
     base64Str = photo_details['photo']
-    base64Str += "==="
 
     # Set image path to ./backend/images/'title.extension'
     folder = './backend/images/'
@@ -525,7 +523,7 @@ def upload_temp_photo():
 @app.route('/user/profile/uploadphoto', methods=['POST'])
 @validate_token
 def upload_photo():
-"""
+    """
     Description
     -----------
     Parameters

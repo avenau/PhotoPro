@@ -86,7 +86,7 @@ export default class ProfilePage extends React.Component<Props, State> {
             as="button"
             onClick={() => {
               alert("Navigating to new photo");
-              this.props.history.push("/temp");
+              this.props.history.push("/upload");
             }}
           >
             Upload Photo
