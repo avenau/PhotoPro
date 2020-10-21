@@ -414,6 +414,9 @@ def upload_photo_details():
     """
     Description
     -----------
+    Accepts parameters related to a photo, verifies the parameters, 
+    creates a database entry for the photo and saves the photo file 
+    to backend/images.
 
     Parameters
     ----------
@@ -421,49 +424,45 @@ def upload_photo_details():
     price: str,
     tagsList: [],
     albumsToAddTo: [],
+    photo: str,
     Returns
     -------
     None
     """
     photo_details = request.form.to_dict()
-    # print(photo_details)
     base64Str = photo_details['photo']
-    # base64Str += "==="
+
+    # Set image path to ./backend/images/'title.extension'
+    folder = './backend/images/'
     fileName = photo_details['title'] + photo_details['extension']
+    path = folder + fileName
+
     imgData = base64.b64decode(base64Str.split(',')[1])
-    # with open('log.txt', 'wb') as log:
-    #     log.write(base64Str.encode())
 
     # This currently creates image files in /backend/images directory
-    with open('./backend/images/' + fileName, 'wb') as f:
+    with open(path, 'wb') as f:
         f.write(imgData)
 
-    print("written")
+    print("An image was written to " + path)
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
 
     default = {
         "discount": 0.0,
         "posted": datetime.datetime.now(),
-        "user": "temp user",
+        "user": "TODO",
         "likes": 0,
-        "comments": ["insert comment objects", "comment1", "comment2"],
-        "won": False
+        "comments": ["TODO"],
+        "won": "TODO",
+        "pathToImg": path
     }
     photo_details.update(default)
-    # print(photo_details)
+    photo_details.pop("photo")
+    photo_details.pop("extension")
     mongo.db.photos.insert_one(photo_details)
-    print(photo_details['title'])
-    print(photo_details['extension'])
     return dumps({
         "success": "success"
     })
-
-# TODO having trouble sending photo 
-@app.route('/user/profile/uploadphoto', methods=['POST'])
-def upload_photo():
-    print(request.form)
-    return dumps({})
 
 '''
 ---------------
