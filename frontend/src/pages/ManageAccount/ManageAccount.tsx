@@ -84,10 +84,14 @@ export default function ManageAccount() {
     fetch('http://localhost:8001/manage_account/success', {
       method: 'POST',
       body: JSON.stringify(mapToObject(stateMap)),
-    }).then(() => {
+    })
+    .then(() => {
       history.push({
         pathname: '/user/'.concat(u_id),
       })
+    })
+    .catch((err) => {
+      console.log(err);
     });
   }
 

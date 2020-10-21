@@ -10,12 +10,20 @@ import requests
 from PIL import Image
 
 
-def get_image_from_url(image_url, file_path):
+# Globals
+FILES = []
+FILE_PATH = './temp'
+THUMBNAIL_FILE_PATH = FILE_PATH + '.thumbnail'
+FILES.append(FILE_PATH)
+FILES.append(THUMBNAIL_FILE_PATH)
+
+
+def get_image_from_url(image_url):
     '''
     Download an image from a url
     '''
     resp = requests.get(image_url, stream=True)
-    local_file = open(file_path, 'wb')
+    local_file = open(FILE_PATH, 'wb')
     # Set decode_content value to True,
     file_type = resp.headers.get('Content-Type')
     # otherwise the downloaded image file's size will be zero.
@@ -34,10 +42,11 @@ def create_thumbnail(infile, size, file_type):
     outfile = os.path.splitext(infile)[0] + ".thumbnail"
     if infile != outfile:
         try:
-            with Image.open(infile) as im:
-                im.thumbnail(size)
-                im.save(outfile, file_type)
+            with Image.open(infile) as img:
+                img.thumbnail(size)
+                img.save(outfile, file_type)
         except OSError:
+            cleanup_files()
             print("cannot create thumbnail for", infile)
     return outfile
 
@@ -79,18 +88,19 @@ def determine_file_type(response_content_type):
         res = 'SVG'
     else:
         print("Image is not of correct format")
+        cleanup_files()
         raise ValueError("Image is not of correct format")
 
     return res
 
 
-def cleanup_files(files):
+def cleanup_files():
     '''
     Cleanup the temp files that are made
     '''
-    for file_path in files:
-        if os.path.exists(file_path):
-            os.remove(file_path)
+    for local_file_path in FILES:
+        if os.path.exists(local_file_path):
+            os.remove(local_file_path)
 
 
 def update_user_thumbnail(url_path):
@@ -99,38 +109,12 @@ def update_user_thumbnail(url_path):
     TODO:
         - store in the database or object
     '''
-    file_path = './temp'
-    thumbnail_file_path = file_path + '.thumbnail'
     size = (150, 150)
     file_type = ''
 
-    response_content_type = get_image_from_url(url_path, file_path)
+    response_content_type = get_image_from_url(url_path)
     file_type = determine_file_type(response_content_type)
-    thumbnail_file_path = create_thumbnail(file_path, size, file_type)
-    b64 = convert_to_base64(thumbnail_file_path)
-    cleanup_files([file_path, thumbnail_file_path])
+    create_thumbnail(FILE_PATH, size, file_type)
+    b64 = convert_to_base64(FILE_PATH)
+    cleanup_files()
     return (b64, file_type)
-
-
-def test_thumbnail_functions():
-    '''
-    Simple testing function
-    '''
-    # Static variables
-    size = (90, 90)
-    file_path = './img.png'
-    image_url = 'https://upload.wikimedia.org/wikipedia/commons/a/af/Tux.png'
-    file_type = ("JPEG", "PNG", "SVG")
-
-    get_image_from_url(image_url, file_path)
-    f = create_thumbnail(file_path, size, file_type[1])
-    b64 = convert_to_base64(f)
-    write_to_html('out.html', b64)
-
-
-def test_main_function():
-    '''
-    Tests the main update_user_thumbnail function
-    '''
-    path = 'https://upload.wikimedia.org/wikipedia/commons/a/af/Tux.png'
-    print(update_user_thumbnail(path))
