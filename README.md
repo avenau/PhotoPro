@@ -1,20 +1,11 @@
-# JAJAC Test CRUD App
+# JAJAC PhotoPro Capstone Project
 
-This is a basic CRUD application that uses React, Python, Flask and MongoDB.
+PhotoPro by JAJAC is a revolutionary new platform in the stock photography market.
+PhotoPro was built using React, Python, Flask and MongoDB.
 
-# Backend
-
-## Resources
-
-### PyMongo
-
-https://www.w3schools.com/python/python_mongodb_getstarted.asp
-
-### Virtual Environments
-
-https://docs.python.org/3/tutorial/venv.html
-
-## Requirements
+# Getting started 🚀
+---
+## Backend Requirements
 
 - python3
 - python3-venv
@@ -22,6 +13,78 @@ https://docs.python.org/3/tutorial/venv.html
 - Mongo Compass (optional)
 
 For all others see `requirements.txt`
+
+# Frontend
+
+## Requirements
+
+- npm
+
+All other dependencies are managed by npm in `frontend/package.json`
+
+
+## Running the project
+
+Activate virtual environment.
+
+`source backend/env/bin/activate`
+
+Start backend.
+
+`./start.sh`
+Note: Currently `start.sh` only runs the backend.
+To run the frontend do the following in a seperate terminal.
+See below for more details
+
+`cd frontend`
+
+When running for the first time, please install node package dependencies.
+
+`npm install`
+
+Start frontend.
+
+`npm start`
+
+Open your browser to http://localhost:3000 to jump onto PhotoPro :) 
+
+# Developer notes
+
+## Frontend
+---
+## Setup
+
+**Note all of the following occurs from inside frontend/ directory**
+
+To run this locally you will need to first install all of the required npm packages. You can do this by running `npm install`. This installation only needs to be run when new packages have been added, it is a good idea to run `npm install` whenever you pull a new branch to avoid confusing errors of package mismatch.
+
+To add a dependency you can use `npm add <package-name>`, this will install the new dependency and add it to `package.json` for everyone else to use.
+
+If you run any of the npm commands in the root directory please note that this will not work and these changes should be reverted.
+
+## Running the project
+
+**Note all of the following occurs from inside frontend/ directory**
+
+The project can be run in development mode `npm start`, in this mode npm will watch for changes and update the website as you update the code. To create a production build use `npm run build`, this will create all of the minified javascript and place it in the `build/` directory (please don't commit this).
+
+### Storybook
+
+I have added another evironment where components can be tested using storybook. In this mode components are tested individually which can be useful for testing mnay combinations of inputs all at once. To run this environment use `npm run storybook`.
+
+### Linting
+
+eslint is added and runs on a slight modification to the [Airbnb style guide](https://github.com/airbnb/javascript/tree/master/react). From inside the frontend directory run the following command to lint the project `npx eslint --ext .tsx src/ -f html -o linting.html`. Additionally, quick changes such as spacing and trailing commas etc can be automatically fixed by eslint by adding `--fix` to the above command.
+
+## Backend
+---
+### PyMongo
+
+https://www.w3schools.com/python/python_mongodb_getstarted.asp
+
+### Virtual Environments
+
+https://docs.python.org/3/tutorial/venv.html
 
 ## Setup
 
@@ -75,47 +138,13 @@ Saving this package to the list of requirements:
 
 `pip3 freeze > requirements.txt`
 
-## Running the project
+### Setting up Flask app environment
 
-`source env/bin/activate`
+The backend app settings can be configured in `config.py` in file path `backend/config.py`.
 
-`./start.sh`
-Note: Currently `start.sh` only runs the backend.
-To run the frontend do the following in a seperate terminal.
-See below for more details
+You can use either use the development or production configuration.
 
-`cd frontend`
+- Development: sets flask in testing mode and uploads information to the local mongo database.
+- Production: sets flask in production mode and uploads infomation to a remote server mongo database.
 
-`npm start`
-
-# Frontend
-
-## Requirements
-
-- npm
-
-All other dependencies are managed by npm in `frontend/package.json`
-
-## Setup
-
-**Note all of the following occurs from inside frontend/ directory**
-
-To run this locally you will need to first install all of the required npm packages. You can do this by running `npm install`. This installation only needs to be run when new packages have been added, it is a good idea to run `npm install` whenever you pull a new branch to avoid confusing errors of package mismatch.
-
-To add a dependency you can use `npm add <package-name>`, this will install the new dependency and add it to `package.json` for everyone else to use.
-
-If you run any of the npm commands in the root directory please note that this will not work and these changes should be reverted.
-
-## Running the project
-
-**Note all of the following occurs from inside frontend/ directory**
-
-The project can be run in development mode `npm start`, in this mode npm will watch for changes and update the website as you update the code. To create a production build use `npm run build`, this will create all of the minified javascript and place it in the `build/` directory (please don't commit this).
-
-### Storybook
-
-I have added another evironment where components can be tested using storybook. In this mode components are tested individually which can be useful for testing mnay combinations of inputs all at once. To run this environment use `npm run storybook`.
-
-### Linting
-
-eslint is added and runs on a slight modification to the [Airbnb style guide](https://github.com/airbnb/javascript/tree/master/react). From inside the frontend directory run the following command to lint the project `npx eslint --ext .tsx src/ -f html -o linting.html`. Additionally, quick changes such as spacing and trailing commas etc can be automatically fixed by eslint by adding `--fix` to the above command.
+Change the line `app.config.from_object({Configuration})` in `app.py`, replacing configuration to the configuration class you want Flask to adhere to.
