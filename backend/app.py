@@ -3,28 +3,38 @@ Backend main file
 Handle requests to and fro server and web app client
  - Team JAJAC :)
 """
+# Pip functions
+import traceback
+from json import dumps, loads
+from bson.objectid import ObjectId
 from flask import Flask, request
+from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
-from config import DevelopmentConfig, defaultHandler
-import traceback
-from json import dumps, loads
 import base64
-from flask_bcrypt import Bcrypt
-from bson.objectid import ObjectId
+import datetime
 
-from lib.showdown.get_images import get_images
+
+# JAJAC made functions
+from lib.showdown import get_images
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
-from lib.profile_details import get_user_details
+from lib.profile.profile_details import get_user_details
+from lib.profile.upload_photo import update_user_thumbnail
+from lib.search.user_search import user_search
 from lib.token_decorator import validate_token
 from lib.validate_login import login
 from lib.validate_photo_details import validate_photo, reformat_lists
 import lib.password_reset as password_reset
 import lib.validate_registration as val_reg
 import lib.token_functions as token_functions
-import datetime
+from lib import db
+from lib.photo_details import get_photo_details
+
+# Config
+from config import DevelopmentConfig, defaultHandler
+
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object(DevelopmentConfig)
@@ -34,18 +44,8 @@ mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 
 
-# Test route
-@app.route('/', methods=['GET'])
-def basic():
-    """
-    Test route
-    """
-    return dumps({
-        'first_name': "test",
-        'colour': "test"
-    })
 
-@app.route('/verifytoken', methods=['GET','POST'])
+@app.route('/verifytoken', methods=['GET', 'POST'])
 def verify_token():
     """
     Verify that the token matches the secret
@@ -63,7 +63,7 @@ def verify_token():
         token = request.args.get('token')
     else:
         token = request.form.get('token')
-    
+
     if token == '' or token is None:
         return {"valid": False}
     token_functions.verify_token(token)
@@ -135,11 +135,11 @@ def auth_passwordreset_reset():
     email = request.form.get("email")
     reset_code = request.form.get("reset_code")
     new_password = request.form.get("new_password")
-    hashedPassword = bcrypt.generate_password_hash(new_password)
+    hashed_password = bcrypt.generate_password_hash(new_password)
 
     return dumps(
         password_reset.password_reset_reset(email, reset_code,
-                                            hashedPassword, mongo)
+                                            hashed_password, mongo)
     )
 
 
@@ -172,8 +172,12 @@ def account_registration():
     val_reg.valid_registration(mongo, new_user)
 
     # Make some hashbrowns
-    hashedPassword = bcrypt.generate_password_hash(new_user["password"])
-    new_user["password"] = hashedPassword
+    hashed_password = bcrypt.generate_password_hash(new_user["password"])
+    new_user["password"] = hashed_password
+
+    # Handle profile picture
+    if new_user.get('profilePic') is not None:
+        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
 
     # Insert account details into collection called 'user'
     mongo.db.users.insert(new_user)
@@ -193,7 +197,8 @@ def profile_details():
 
     Returns
     {
-        fname + lname,
+        fname,
+        lname,
         nickname,
         location,
         email
@@ -203,10 +208,12 @@ def profile_details():
     details = get_user_details(request.args.get("u_id"), mongo)
 
     return dumps({
-        "name": f"{details['fname']} {details['lname']}",
+        "fname": details['fname'],
+        "lname": details['lname'],
         "nickname": details["nickname"],
         "location": details["location"],
-        "email": details["email"]
+        "email": details["email"],
+        "profilePic": details["profilePic"]
     })
 
 
@@ -226,20 +233,19 @@ def get_showdown_images():
     -------
     {path_one, path_two}
     """
-    images = get_images()
+    images = get_images.get_showdown_competing_photos()
     return dumps({
         'path_one': images[0],
         'path_two': images[1]
     })
 
 
-# Returns the two showdown images for the day
-@app.route('/welcome/popularcontributors', methods=['GET'])
-def welcome_get_contributors():
+@app.route('/showdown/getwinner', methods=['GET'])
+def showdown_getwinner():
     """
     Description
     -----------
-    Get some popular contributor profile images
+    Get the winning photo from the last showdown
 
     Parameters
     ----------
@@ -247,8 +253,27 @@ def welcome_get_contributors():
 
     Returns
     -------
-    {contributors: tup}
-        tuple of contributors paths
+    CURRENTLY returns a static path
+    """
+    path = get_images.get_showdown_winner_image()
+    return dumps({'path': path})
+
+
+
+@app.route('/welcome/popularcontributors', methods=['GET'])
+def welcome_get_contributors():
+    """
+    Description
+    -----------
+    Get some contributor profile pictures
+
+    Parameters
+    ----------
+    N/A
+
+    Returns
+    -------
+    A list of images
     """
     images = get_popular_contributors_images()
     return dumps({
@@ -298,6 +323,7 @@ def user_info_with_token():
     """
     token = request.args.get('token')
     if token == '':
+        print("token is an empty string")
         return {}
     u_id = token_functions.verify_token(token)
     user = get_user_details(u_id['u_id'], mongo)
@@ -309,48 +335,77 @@ def user_info_with_token():
         'nickname': user['nickname'],
         'DOB': user['DOB'],
         'location': user['location'],
-        'aboutMe': user['aboutMe']
+        'aboutMe': user['aboutMe'],
+        'profilePic': user['profilePic']
     })
 
+
 # TODO Move this to a separate file?
-@app.route('/manage_account/success', methods=['GET', 'POST'])
+@app.route('/manageaccount/success', methods=['POST'])
 def manage_account():
     """
     Description
     -----------
+    Takes a user object and updates key:value pairs in the database
 
     Parameters
     ----------
+    user:object
+
+    e.g.
+    user {
+        u_id: string,
+        password: string,
+        profilePic: string,
+        ...:...,
+    }
 
     Returns
     -------
+    {'success: boolean}
     """
-    errors = []
-    data = loads(request.data.decode())
-    print(type(data))
-    # Need Something to Check if current logged in account exist in database
-    # I am assuming user_id is stored in localStorage
-    # Hard coded this part, this part should check what the logged in
-    # user object_id is
-    current_user = data['u_id']
+    '''
+    Need Something to Check if current logged in account exist in database
+    I am assuming user_id is stored in localStorage
+    Hard coded this part, this part should check what the logged in
+    user object_id is
+    '''
+    success = False
     try:
+        data = loads(request.data.decode())
+        current_user = data['u_id']
         find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
             if (value == "" or key == "u_id"):
                 continue
-            change_userdb = {"$set": {key: value}}
-            mongo.db.users.update_one(find_userdb, change_userdb)
+            if key == "password":
+                hashed_password= bcrypt.generate_password_hash(value)
+                mongo.db.users.update_one(find_userdb, {"$set": {
+                                                            key:
+                                                            hashed_password}})
+            elif key == "profilePic":
+                img_and_filetype = update_user_thumbnail(value)
+                mongo.db.users.update_one(find_userdb, {"$set": {
+                                                            key:
+                                                            img_and_filetype}})
+            else:
+                change_userdb = {"$set": {key: value}}
+                mongo.db.users.update_one(find_userdb, change_userdb)
+
+        success = True
 
     # TODO: Catching too general using Exception. Replace with e.g. ValueError
     except Exception:
         print("Errors... :-(")
         print(traceback.format_exc())
-        errors.append("Couldn't get text")
-
-    return dumps(data)
+        success = False
 
 
-@app.route('/manage_account/confirm', methods=['GET', 'POST'])
+    return dumps({'success': success})
+
+
+
+@app.route('/manageaccount/confirm', methods=['GET', 'POST'])
 def password_check():
     """
     Description
@@ -409,6 +464,7 @@ def get_user():
     return data
 
 
+<<<<<<< HEAD
 @app.route('/user/uploadphoto', methods=['POST'])
 def upload_temp_photo():
     """
@@ -420,6 +476,7 @@ def upload_temp_photo():
 
     Parameters
     ----------
+<<<<<<< HEAD
     title: str,
     price: str,
     tagsList: [],
@@ -465,6 +522,118 @@ def upload_temp_photo():
     return dumps({
         "success": "success"
     })
+@app.route('/user/profile/uploadphoto', methods=['POST'])
+@validate_token
+def upload_photo():
+"""
+    Description
+    -----------
+    Parameters
+    ----------
+    img_path : string
+        e.g. http://imagesite.com/img.png
+    token : string
+    Returns
+    -------
+    {}
+    """
+    '''
+    TODO
+    '''
+    token = request.form.get('token')
+    img_path = request.form.get('img_path')
+    thumbnail_and_filetype = update_user_thumbnail(img_path)
+    u_id = token_functions.get_uid(token)
+    db.update_user(mongo, u_id, 'profilePic', thumbnail_and_filetype)
+    # Update the database...
+    return dumps({
+        'success': 'True'
+    })
+
+
+
+'''
+---------------
+- Search Routes -
+---------------
+'''
+
+
+@app.route('/search/user', methods=['GET'])
+def search_user():
+    """
+    Description
+    -----------
+    GET request to return many user details based on a query
+
+    Parameters
+    ----------
+    query : string
+    offset : int
+    limit : int
+
+    Returns
+    -------
+    {
+        fname: str,
+        lname: str,
+        nickname: str,
+        email: str,
+        location: str,
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_search(data, mongo))
+
+@app.route('/photo_details', methods=['GET'])
+def photo_details():
+#TODO: Should return photos and comments as well
+# Add to API list
+    """
+    Description
+    -----------
+    GET request to retrieve information for a photo
+
+    Parameters
+    ----------
+    query : string
+
+    Returns
+    -------
+    {
+        title: str,
+        numLikes: number,
+        datePosted: Date,
+        tagsList: str[],
+        nickname: str (Artist's Nickname)
+        email: str
+        u_id: str, (Artist of the photo)
+    }
+    """
+    photo_id = request.args.get("p_id")
+    artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
+    print("APPP TEST!")
+    print(artist)
+    print(artist['nickname'])
+    photo_details = get_photo_details(photo_id, mongo)
+    p_id_string = str(artist['_id'])
+    print(photo_details['tagsList'])
+
+    #TODO: Find out how to send dates over
+    #"posted": photo_details["posted"],
+
+    return dumps({
+        "u_id": p_id_string,
+        "title": photo_details['title'],
+        "likes": photo_details["likes"],
+        "tagsList": photo_details["tagsList"],
+        "nickname": artist['nickname'],
+        "email": artist['email'],
+    })
+
 
 '''
 ---------------
@@ -485,6 +654,21 @@ def test_decorator():
     return dumps({
         "success": "success"
     })
+
+
+@app.route('/', methods=['GET'])
+def basic():
+    """
+    Basic Test route
+    """
+    arguments = {
+            'first_name': 'test',
+            'colour': 'test'
+            }
+    if request.args:
+        arguments = request.args
+    print(arguments)
+    return dumps(arguments)
 
 
 if __name__ == '__main__':
