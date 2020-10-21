@@ -7,14 +7,15 @@ import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
 
 interface Props {
-  photo?: string;
+  profilePic?: string;
   header: boolean;
-  current_user: boolean;
+  currentUser: boolean;
   showEdit: boolean;
   name: string;
   nickname: string;
   location: string;
   email: string;
+  className: string;
 }
 
 export default class UserHeader extends React.Component<Props> {
@@ -22,12 +23,13 @@ export default class UserHeader extends React.Component<Props> {
     header: false,
     current_user: false,
     showEdit: false,
+    className: "",
   };
 
   /** Return edit button if current user */
   private getEditButton() {
-    if (!this.props.showEdit || !this.props.current_user) {
-      return;
+    if (!this.props.showEdit || !this.props.currentUser) {
+      return null;
     }
     return (
       <Link to="/manage_account" className="button-container">
@@ -38,27 +40,62 @@ export default class UserHeader extends React.Component<Props> {
 
   /** Return follow button if not current user */
   private getFollowButton() {
-    if (this.props.current_user) {
-      return;
+    if (this.props.currentUser) {
+      return null;
     }
 
-    let already_following = false;
-    if (already_following) {
+    const alreadyFollowing = false;
+    if (alreadyFollowing) {
       return (
-        <Button className="button-container" variant="outline-primary">
+        <Button
+          className="button-container"
+          variant="outline-primary"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           Following
         </Button>
       );
     }
-    return <Button className="button-container">Follow</Button>;
+    return (
+      <Button
+        className="button-container"
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        Follow
+      </Button>
+    );
+  }
+
+  private getPic(){
+    // Get filetype
+
+    if (this.props.profilePic === ''){
+      return profilePic;
+    }
+    if (this.props.profilePic !== undefined){
+      // base64 of the tuple profilePic
+      const b64 = `${this.props.profilePic[0]}`;
+      const header = "data:image/"
+      // Filetype of the tuple profilePic
+      const filetype = `${this.props.profilePic[1]}`;
+      const footer = ";base64, ";
+      const ret = header.concat(filetype.concat(footer.concat(b64)));
+
+      return ret;
+    }
+    return profilePic;
   }
 
   render() {
     return (
-      <div className="user-container">
+      <div className={`user-container ${this.props.className}`}>
         <div className="cropper">
           <Image
-            src={this.props.photo !== undefined ? this.props.photo : profilePic}
+            src={this.getPic()}
             className="image"
           />
         </div>
@@ -68,7 +105,7 @@ export default class UserHeader extends React.Component<Props> {
           ) : (
             <h4>{this.props.name}</h4>
           )}
-          <div>{this.props.nickname}</div>
+          <div>@{this.props.nickname}</div>
           <div>Based in {this.props.location}</div>
           <div>{this.props.email}</div>
         </div>

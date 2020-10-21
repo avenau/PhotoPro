@@ -1,50 +1,53 @@
-import React from 'react';
-import axios from 'axios';
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import Search from '../Search/Search';
-import LoggedIn from './LoggedIn';
-import LoggedOut from './LoggedOut';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React from "react";
+import axios from "axios";
+import { Nav, Navbar } from "react-bootstrap";
+import Search from "../Search/Search";
+import LoggedIn from "./LoggedIn";
+import LoggedOut from "./LoggedOut";
+import IToolbarProps from "./IToolbarProps";
+import IToolbarState from "./IToolbarState";
+import "bootstrap/dist/css/bootstrap.min.css";
 
+class Toolbar extends React.Component<IToolbarProps, IToolbarState> {
+  constructor(props: IToolbarProps) {
+    super(props);
+    let token = !localStorage.getItem("token")
+      ? ""
+      : localStorage.getItem("token");
+    if (!token) token = "";
 
-function IsLoggedIn(props: any) {
-  const [loggedIn, setLoggedIn] = React.useState(false);
-  const [username, setUsername] = React.useState('');
+    this.state = {
+      username: "",
+      token,
+    };
+  }
 
-  axios.post('/verifytoken', {token: props.token})
-    .then((res: any) => {
-      if (res.data.valid){
-        setLoggedIn(true);
-        axios.get('/userDetailsWithToken', { params: { token: props.token}})
-          .then((res: any) => {
-            setUsername(res.data.nickname);
-          });
-      }
-    });
-  return loggedIn === true ? <LoggedIn user={username}/> : <LoggedOut/>;
-}
+  componentDidMount() {
+    if (this.state.token !== "") {
+      axios
+        .get("/userdetails", {
+          params: {
+            token: this.state.token,
+          },
+        })
+        .then((res) => {
+          this.setState({ username: res.data.nickname });
+        });
+    }
+  }
 
-
-function Toolbar() {
-    let token = localStorage.getItem('token');
-    // Convert to empty string if null token
-    token = token == null ? '' : token
-
+  render() {
+    const { username } = this.state;
+    const tool =
+      username === "" ? <LoggedOut /> : <LoggedIn username={username} />;
     return (
-      <Container>
-        <Navbar bg="light">
-          <Navbar.Brand href="/">PhotoPro</Navbar.Brand>
-          <Nav className="mr-auto">
-            <IsLoggedIn token={token} />
-            <Nav.Item>
-              <Search />
-            </Nav.Item>
-          </Nav>
-        </Navbar>
-      </Container>
+      <Navbar bg="light">
+        <Navbar.Brand href="/">PhotoPro</Navbar.Brand>
+        <Nav className="mr-auto">{tool}</Nav>
+        <Search />
+      </Navbar>
     );
+  }
 }
 
 export default Toolbar;

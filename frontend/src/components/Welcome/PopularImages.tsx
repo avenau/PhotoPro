@@ -4,17 +4,16 @@ import {
   Container,
   Row,
   Col,
-  Image
+  Image,
 } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 class PopularImages extends Component<any, any> {
   constructor(props: any) {
-    super(props)
+    super(props);
     this.state = {
-      popularImages: []
-    }
+      popularImages: [],
+    };
   }
 
   componentDidMount() {
@@ -23,18 +22,15 @@ class PopularImages extends Component<any, any> {
 
   getPopularImagesPaths() {
     axios.get('/welcome/getPopularImages')
-      .then(res => {
+      .then((res) => {
         const images = res.data.popular_images;
-        this.setState({popularImages: images});
-      })
-      .catch(err => {
-        console.log(err);
+        this.setState({ popularImages: images });
       })
   }
 
   render() {
-    //this.getPopularImagesPaths();
-    return(
+    // this.getPopularImagesPaths();
+    return (
       <div>
         <Container>
           <Row>
@@ -43,11 +39,11 @@ class PopularImages extends Component<any, any> {
         </Container>
         <Container>
           <Row>
-            { this.state.popularImages.map((image: string, index: any) =>
-            <Col key={index}>
-              <Image src={image} fluid/>
-            </Col>
-            )}
+            { this.state.popularImages.map((image: string, index: any) => (
+              <Col key={index}>
+                <Image src={image} fluid />
+              </Col>
+            ))}
           </Row>
         </Container>
       </div>

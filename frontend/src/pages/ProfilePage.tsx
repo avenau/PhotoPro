@@ -14,31 +14,57 @@ import Toolbar from "../components/Toolbar/Toolbar";
 import UserHeader from "../components/UserHeader/UserHeader";
 import "./Profile.scss";
 
-interface Props extends RouteComponentProps { }
+interface Props extends RouteComponentProps {}
 
 interface State {
-  name: string;
+  fname: string;
+  lname: string;
   nickname: string;
   location: string;
   email: string;
-  user_id: string;
+  userId: string;
   dne: boolean;
+  profilePic: string;
 }
 
 export default class ProfilePage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    const params = this.props.match.params;
-    const user_id = Object.values(params)[0] as string;
+    const { params } = this.props.match;
+    const userId = Object.values(params)[0] as string;
     this.state = {
-      name: "",
+      fname: "",
+      lname: "",
       nickname: "",
       location: "",
       email: "",
-      user_id: user_id,
+      userId,
       dne: false,
+      profilePic: "",
     };
   }
+
+  componentDidMount() {
+    this.getUserDetails(this.state.userId);
+  }
+
+  private getUserDetails(userId: string) {
+    axios
+      .get(`/profiledetails?u_id=${userId}`)
+      .then((r) => {
+        const newState = this.state as any;
+        Object.entries(r.data).forEach((item) => {
+          [, newState[item[0]]] = item;
+        });
+        this.setState(newState);
+      })
+      .catch(() => {
+        const newState = this.state as any;
+        newState.dne = true;
+        this.setState(newState);
+      });
+  }
+
   /** Return add button if current user */
   private createAddButton() {
     // TODO Edit these links when the pages exist
@@ -60,6 +86,7 @@ export default class ProfilePage extends React.Component<Props, State> {
             as="button"
             onClick={() => {
               alert("Navigating to new photo");
+              this.props.history.push("/temp");
             }}
           >
             Upload Photo
@@ -85,34 +112,13 @@ export default class ProfilePage extends React.Component<Props, State> {
     );
   }
 
-  private getUserDetails(u_id: string) {
-    axios
-      .get(`/profiledetails?u_id=${u_id}`)
-      .then((r) => {
-        let newState = this.state as any;
-        Object.entries(r.data).forEach((item) => {
-          newState[item[0]] = item[1];
-        });
-        this.setState(newState);
-      })
-      .catch(() => {
-        let newState = this.state as any;
-        newState.dne = true;
-        this.setState(newState);
-      });
-  }
-
   private redirect() {
     this.props.history.goBack();
   }
 
-  componentDidMount() {
-    this.getUserDetails(this.state.user_id);
-  }
-
   render() {
-    const u_id = localStorage.getItem("u_id");
-    const current_user = this.state.user_id === u_id;
+    const userId = localStorage.getItem("u_id");
+    const currentUser = this.state.userId === userId;
     return (
       <>
         <Modal
@@ -140,13 +146,15 @@ export default class ProfilePage extends React.Component<Props, State> {
         </Modal>
         <Toolbar />
         <UserHeader
-          current_user={current_user}
+          currentUser={currentUser}
           showEdit
           header
-          name={this.state.name}
+          name={`${this.state.fname} ${this.state.lname}`}
           nickname={this.state.nickname}
           location={this.state.location}
           email={this.state.email}
+          profilePic={this.state.profilePic}
+          className="user-header"
         />
         <br />
         <Tabs
@@ -163,18 +171,18 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Tab eventKey="collections" title="Collections">
             <CollectionList />
           </Tab>
-          {current_user ? (
+          {currentUser ? (
             <Tab eventKey="following" title="Following">
               <FollowingList />
             </Tab>
           ) : (
-              <></>
-            )}
-          {current_user ? (
-            <Tab title={this.createAddButton()} tabClassName="no-border"></Tab>
+            <></>
+          )}
+          {currentUser ? (
+            <Tab title={this.createAddButton()} tabClassName="no-border" />
           ) : (
-              <></>
-            )}
+            <></>
+          )}
         </Tabs>
       </>
     );
