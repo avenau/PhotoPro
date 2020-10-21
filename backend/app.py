@@ -409,11 +409,14 @@ def get_user():
     return data
 
 
-@app.route('/user/profile/uploadphoto/details', methods=['POST'])
+@app.route('/user/profile/uploadphoto/', methods=['POST'])
 def upload_photo_details():
     """
     Description
     -----------
+    Accepts parameters related to a photo, verifies the parameters, 
+    creates a database entry for the photo and saves the photo file 
+    to backend/images.
 
     Parameters
     ----------
@@ -421,6 +424,7 @@ def upload_photo_details():
     price: str,
     tagsList: [],
     albumsToAddTo: [],
+    photo: str,
     Returns
     -------
     None
@@ -431,32 +435,36 @@ def upload_photo_details():
 
     base64Str = photo_details['photo']
     base64Str += "==="
+
+    # Set image path to ./backend/images/'title.extension'
+    folder = './backend/images/'
     fileName = photo_details['title'] + photo_details['extension']
+    path = folder + fileName
+
     imgData = base64.b64decode(base64Str.split(',')[1])
 
     # This currently creates image files in /backend/images directory
-    with open('./backend/images/' + fileName, 'wb') as f:
+    with open(path, 'wb') as f:
         f.write(imgData)
+
+    print("An image was written to " + path)
 
     default = {
         "discount": 0.0,
         "posted": datetime.datetime.now(),
-        "user": "temp user",
+        "user": "TODO",
         "likes": 0,
-        "comments": ["insert comment objects", "comment1", "comment2"],
-        "won": False
+        "comments": ["TODO"],
+        "won": "TODO",
+        "pathToImg": path
     }
     photo_details.update(default)
+    photo_details.pop("photo")
+    photo_details.pop("extension")
     mongo.db.photos.insert_one(photo_details)
     return dumps({
         "success": "success"
     })
-
-# TODO having trouble sending photo 
-@app.route('/user/profile/uploadphoto', methods=['POST'])
-def upload_photo():
-    print(request.form)
-    return dumps({})
 
 '''
 ---------------
