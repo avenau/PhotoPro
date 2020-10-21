@@ -36,7 +36,7 @@ export default function ManageAccount() {
         setLname(response.data.lname);
         setEmail(response.data.email);
         setNickname(response.data.nickname);
-        setDob(new Date(response.data.dob).toLocaleDateString('en-US'));
+        setDob(new Date(response.data.dob).toLocaleDateString('en-AU'));
         setAbout(response.data.aboutMe);
       });
   };
@@ -53,8 +53,6 @@ export default function ManageAccount() {
       event.preventDefault();
     }
   }
-
-
 
 
   /* All of Modal Stuff below *************************************************
@@ -155,7 +153,12 @@ export default function ManageAccount() {
 
           <Form.Group controlId="dobForm">
             <Form.Label>Date of Birth</Form.Label>
-            <Form.Control type="date" name="birth_date" placeholder={dob} onChange={(e) => handleChange(e)} />
+            <Form.Control type="date" name="DOB" placeholder={dob} onChange={(e) => handleChange(e)} />
+          </Form.Group>
+
+          <Form.Group controlId="profilePicURL">
+            <Form.Label>Profile Picture URL</Form.Label>
+            <Form.Control type="text" name="profilePic" placeholder="Enter a URL" onChange={(e) => handleChange(e)} />
           </Form.Group>
 
           <Form.Group controlId="locationForm">

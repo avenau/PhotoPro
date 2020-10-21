@@ -304,7 +304,6 @@ def user_info_with_token():
         return {}
     u_id = token_functions.verify_token(token)
     user = get_user_details(u_id['u_id'], mongo)
-    print("User details are:", user)
     # JSON Doesn't like ObjectId format
     return dumps({
         'fname': user['fname'],
@@ -333,21 +332,27 @@ def manage_account():
     """
     errors = []
     data = loads(request.data.decode())
-    print(type(data))
     # Need Something to Check if current logged in account exist in database
     # I am assuming user_id is stored in localStorage
     # Hard coded this part, this part should check what the logged in
     # user object_id is
     current_user = data['u_id']
+    print(data)
     try:
         find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
             if (value == "" or key == "u_id"):
                 continue
-            if (key == "password"):
-                hashedPassword = bcrypt.generate_password_hash(value)
-                mongo.db.users.update_one(find_userdb, {"$set": {key: hashedPassword}})
-
+            if key == "password":
+                hashed_password= bcrypt.generate_password_hash(value)
+                mongo.db.users.update_one(find_userdb, {"$set": {
+                                                            key:
+                                                            hashed_password}})
+            if key == "profilePic":
+                img_and_filetype = update_user_thumbnail(value)
+                mongo.db.users.update_one(find_userdb, {"$set": {
+                                                            key:
+                                                            img_and_filetype}})
             else:
                 change_userdb = {"$set": {key: value}}
                 mongo.db.users.update_one(find_userdb, change_userdb)
