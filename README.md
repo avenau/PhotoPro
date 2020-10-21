@@ -4,7 +4,7 @@ PhotoPro by JAJAC is a revolutionary new platform in the stock photography marke
 PhotoPro was built using React, Python, Flask and MongoDB.
 
 # Getting started 🚀
----
+
 ## Backend Requirements
 
 - python3
@@ -51,7 +51,7 @@ Open your browser to http://localhost:3000 to jump onto PhotoPro :)
 # Developer notes
 
 ## Frontend
----
+
 ## Setup
 
 **Note all of the following occurs from inside frontend/ directory**
@@ -77,7 +77,7 @@ I have added another evironment where components can be tested using storybook. 
 eslint is added and runs on a slight modification to the [Airbnb style guide](https://github.com/airbnb/javascript/tree/master/react). From inside the frontend directory run the following command to lint the project `npx eslint --ext .tsx src/ -f html -o linting.html`. Additionally, quick changes such as spacing and trailing commas etc can be automatically fixed by eslint by adding `--fix` to the above command.
 
 ## Backend
----
+
 ### PyMongo
 
 https://www.w3schools.com/python/python_mongodb_getstarted.asp
