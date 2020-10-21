@@ -87,3 +87,28 @@ Be more engaged in listening during meetings (esp. about tokens and user managem
 
 NEXT
 Next sprint to be determined.
+
+=======================Week 5 (Wed 14 Oct - Wed 21 Oct)=======================
+
+PLANNED
+Add tags, add other metadata to photos, finish price edit on photos.
+
+FINISHED
+Separated app configuration settings to another file.
+Backend validation of photo values.
+Helped Allan with photo upload.
+Extracted upload page into separate components.
+
+CHALLENGES
+Extracting components.
+Configuring directory structure.
+
+REFLECTION
+I need to manage my time properly. Aim to finish most of the work by Monday at latest.
+
+NEXT
+Finish price edit story.
+Photo details edit.
+Price discount change.
+Fix directory structure.
+If time, work on watermarking.
