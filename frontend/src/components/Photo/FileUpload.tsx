@@ -24,6 +24,7 @@ export default function FileUpload(props: InterfaceFile ) {
             props.pickedPhoto(false)
         } else if (fileExtension !== ".jpg" &&
                   fileExtension !== ".png" &&
+                  fileExtension !== ".gif" &&
                   fileExtension !== ".svg" &&
                   fileExtension !== ".raw") {
             setErrMsg("Sorry, we only support .jpg, .png, .svg, and .raw images at the moment.")
