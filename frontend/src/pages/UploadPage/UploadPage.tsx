@@ -109,6 +109,8 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
               onChange={(price: number) => this.setState({ price: price })}
             />
             <Tags
+              deactivateUploadButton={this.deactivateUploadButton}
+              activateUploadButton={this.activateUploadButton}
               tagsList={this.state.tagsList}
               setTagsList={(tagsList: any) =>
                 this.setState({ tagsList: tagsList })
