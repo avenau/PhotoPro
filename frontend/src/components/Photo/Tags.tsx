@@ -23,7 +23,7 @@ export default function Tags(props: any) {
     }
 
     function stateTagsToList() {
-        const tagsList = tagInput.trim().split(" ").filter(Boolean);
+        const tagsList = tagInput.toLowerCase().trim().split(" ").filter(Boolean);
         return tagsList;
     }
 
