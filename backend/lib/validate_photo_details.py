@@ -7,7 +7,7 @@ import json
 def validate_photo(details):
     validate_price(details["price"])
     validate_title(details["title"])
-    validate_album(details["albumsToAddTo"])
+    validate_album(details["albums"])
     validate_tags(details["tagsList"])
 
 def validate_price(price):
@@ -81,8 +81,8 @@ def convert_album_list(photo_details):
     """
     Convert JSON album list to python
     """
-    albums = photo_details["albumsToAddTo"]
+    albums = photo_details["albums"]
     if type(albums) is not list:
         albums = json.loads(albums)
-    photo_details["albumsToAddTo"] = albums
+    photo_details["albums"] = albums
     return photo_details
