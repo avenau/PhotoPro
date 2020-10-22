@@ -60,6 +60,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       return;
     }
     this.setPhoto().then((response: any) => {
+      const token = localStorage.getItem("token");
       axios
         .post("/user/uploadphoto", {
           title: this.state.title,
@@ -70,6 +71,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
           photo: response[0],
           // The file extension e.g. ".jpg" or ".raw"
           extension: response[1],
+          token: token,
         })
         .then((response) => {
           console.log(response);

@@ -505,10 +505,11 @@ def upload_actual_photo():
 
     print("An image was written to " + path)
 
+    u_id = token_functions.get_uid(photo_details['token'])
     default = {
         "discount": 0.0,
         "posted": datetime.datetime.now(),
-        "user": "TODO",
+        "user": ObjectId(u_id),
         "likes": 0,
         "comments": ["TODO"],
         "won": "TODO",
