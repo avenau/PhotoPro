@@ -506,6 +506,7 @@ def upload_actual_photo():
     photo_details.update(default)
     photo_details.pop("photo")
     photo_details.pop("extension")
+    photo_details.pop("token")
     # Insert photo entry, except "path" attribute
     photo_entry = mongo.db.photos.insert_one(photo_details)
 
