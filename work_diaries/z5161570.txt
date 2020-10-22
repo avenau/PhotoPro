@@ -30,3 +30,7 @@ I demonstrated the Forgot password and profile page aspects in demo A.
 I worked with the team to complete our first retrospective.
 I worked with the team to plan sprint 2.
 I configured eslint for style checking on the frontend
+
+---------------- Week 6 ----------------
+I finished JAJAC-6, user search functionality
+I worked with the team to plan sprint 3.
