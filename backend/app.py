@@ -479,7 +479,7 @@ def upload_actual_photo():
     ----------
     title: str,
     price: str,
-    tagsList: [],
+    tags: [],
     albums: [],
     photo: str,
     Returns
@@ -621,7 +621,7 @@ def photo_details():
         title: str,
         numLikes: number,
         datePosted: Date,
-        tagsList: str[],
+        tags: str[],
         nickname: str (Artist's Nickname)
         email: str
         u_id: str, (Artist of the photo)
@@ -634,7 +634,7 @@ def photo_details():
     print(artist['nickname'])
     photo_details = get_photo_details(photo_id, mongo)
     p_id_string = str(artist['_id'])
-    print(photo_details['tagsList'])
+    print(photo_details['tags'])
 
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
@@ -643,7 +643,7 @@ def photo_details():
         "u_id": p_id_string,
         "title": photo_details['title'],
         "likes": photo_details["likes"],
-        "tagsList": photo_details["tagsList"],
+        "tags": photo_details["tags"],
         "nickname": artist['nickname'],
         "email": artist['email'],
     })

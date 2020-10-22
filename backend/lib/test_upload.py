@@ -7,7 +7,7 @@ def photo():
     return {
         "title": 'Example photo',
         "price": "15",
-        "tagsList": ["apple", "fruit", "nature", "adventure"],
+        "tags": ["apple", "fruit", "nature", "adventure"],
         "albumsToAddTo": ["fruit", "nature"]
     }
 
@@ -53,7 +53,7 @@ def test_tags():
     with pytest.raises(ValueError):
         validate_tags(["", "apple"])
 
-    assert validate_tags(photoDetails["tagsList"]) == True
+    assert validate_tags(photoDetails["tags"]) == True
 
 def test_albums():
     photoDetails = photo()
@@ -64,6 +64,6 @@ def test_albums():
     assert validate_album(photoDetails["albumsToAddTo"]) == True
 
 def test_lower():
-    testdict = {"tagsList": ["UPPER", "lower", "mIx"]}
+    testdict = {"tags": ["UPPER", "lower", "mIx"]}
     testdict = lower_tags(testdict)
-    assert testdict == {'tagsList': ['upper', 'lower', 'mix']}
+    assert testdict == {'tags': ['upper', 'lower', 'mix']}

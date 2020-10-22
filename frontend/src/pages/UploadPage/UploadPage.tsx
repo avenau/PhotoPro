@@ -65,7 +65,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
         .post("/user/uploadphoto", {
           title: this.state.title,
           price: this.state.price,
-          tagsList: JSON.stringify(this.state.tagsList),
+          tags: JSON.stringify(this.state.tagsList),
           albums: JSON.stringify(this.state.albums),
           // The photo, encoded as a base64 string
           photo: response[0],

@@ -5,7 +5,7 @@ from validate_photo_details import *
 photo_details = {
         "title": 'Example photo',
         "price": "15",
-        "tagsList": ["apple", "fruit", "nature", "adventure"],
+        "tags": ["apple", "fruit", "nature", "adventure"],
         "albumsToAddTo": ["fruit", "nature"]
     }
 
