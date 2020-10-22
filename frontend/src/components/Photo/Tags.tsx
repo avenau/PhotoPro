@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button"
 export default function Tags(props: any) {
     const [tagButtons, setTagButtons] = useState<JSX.Element[]>()
     const [tagInput, setTagInput] = useState("")
-    const [tagsErrMsg, setTagsErr] = useState("Please enter at least one keyword before uploading.")
+    const [tagsErrMsg, setTagsErr] = useState("Remember to add at least one keyword!")
     
     function clearTagInput() {
         const tagInput = document.getElementById("tags") as HTMLInputElement;
@@ -46,7 +46,7 @@ export default function Tags(props: any) {
         const tagsListAfterDeletion = updatedTagsList.filter((tag: string) => {
           return tag !== tagToDelete;
         });
-        props.setTagsList(tagsListAfterDeletion);
+        props.setTagsList(tagsListAfterDeletion, refreshTagsErr(tagsListAfterDeletion));
         refreshTagButtons(tagsListAfterDeletion)
     }
 
@@ -73,13 +73,20 @@ export default function Tags(props: any) {
         // Allow 10 keywords maximum per photo
         if (updatedTagsList.length > 10) {
           updatedTagsList = updatedTagsList.slice(0,10);
-          setTagsErr("You are allowed a maximum of 10 keywords.")
+          setTagsErr("You are allowed a maximum of 10 keywords.");
         } else if (updatedTagsList.length < 1) {
-          setTagsErr("Please enter at least one keyword before uploading.")
+          setTagsErr("Please enter at least one keyword before uploading.");
         }
   
-        props.setTagsList(updatedTagsList);
+        props.setTagsList(updatedTagsList, refreshTagsErr(updatedTagsList));
         refreshTagButtons(updatedTagsList);
+    }
+
+    function refreshTagsErr(tagsList: string[]) {
+      if (tagsList.length < 1)
+        setTagsErr("Please enter at least one keyword before uploading.");
+      else
+        setTagsErr("");
     }
  
     function checkTagsAreAlphaNumeric(tagsToAdd: string[]) {
