@@ -489,18 +489,18 @@ def upload_temp_photo():
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
 
-    base64Str = photo_details['photo']
+    base64_str = photo_details['photo']
 
     # Set image path to ./backend/images/'title.extension'
     folder = './backend/images/'
-    fileName = photo_details['title'] + photo_details['extension']
-    path = folder + fileName
+    file_name = photo_details['title'] + photo_details['extension']
+    path = folder + file_name
 
-    imgData = base64.b64decode(base64Str.split(',')[1])
+    img_data = base64.b64decode(base64_str.split(',')[1])
 
     # This currently creates image files in /backend/images directory
     with open(path, 'wb') as f:
-        f.write(imgData)
+        f.write(img_data)
 
     print("An image was written to " + path)
 

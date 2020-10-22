@@ -38,14 +38,6 @@ export default function Tags(props: any) {
         checkTagsAreWithinLength(tagsToAddWithoutDups);
         updateTagsList(tagsToAddWithoutDups);
     }
-
-    function deleteTagFromTagsList(tagToDelete: string) {
-        const tagsListAfterDeletion = props.tagsList.filter((tag: string) => {
-          return tag !== tagToDelete;
-        });
-        props.setTagsList(tagsListAfterDeletion);
-        refreshTagButtons(tagsListAfterDeletion)
-    }
   
     function deleteTag(event: React.MouseEvent<HTMLElement, MouseEvent>, updatedTagsList: string[]) {
         event.preventDefault();
@@ -60,9 +52,9 @@ export default function Tags(props: any) {
 
     function refreshTagButtons(updatedTagsList: string[]) {
         const newTagButtons = updatedTagsList.map((tag: string) => {
-            return  <Button key={tag} id={tag} onClick={(e)=>deleteTag(e, updatedTagsList)}>
+            return  <><Button key={tag} id={tag} onClick={(e)=>deleteTag(e, updatedTagsList)}>
                         {tag}
-                    </Button>
+                    </Button>{' '}</>
         });
         setTagButtons(newTagButtons)
         clearTagInput()
