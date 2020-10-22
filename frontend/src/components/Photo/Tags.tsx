@@ -52,9 +52,9 @@ export default function Tags(props: any) {
 
     function refreshTagButtons(updatedTagsList: string[]) {
         const newTagButtons = updatedTagsList.map((tag: string) => {
-            return  <><Button key={tag} id={tag} onClick={(e)=>deleteTag(e, updatedTagsList)}>
+            return  <span key={tag}><Button id={tag} onClick={(e)=>deleteTag(e, updatedTagsList)}>
                         {tag}
-                    </Button>{' '}</>
+                    </Button>{' '}</span>
         });
         setTagButtons(newTagButtons)
         clearTagInput()
@@ -116,7 +116,7 @@ export default function Tags(props: any) {
             </Row>
             <Form.Text className="text-muted tagsInfo">
                 You can include 1 to 10 keywords. Keywords should describe the main aspects of your photo.
-                <p>{props.tagsList.length} Detected keywords (click keyword to delete): {tagButtons}</p>
+                <p id="b">{props.tagsList.length} Detected keywords (click keyword to delete): {tagButtons}</p>
                 <p className="error">{tagsErrMsg}</p>
             </Form.Text>
         </Form.Group>
