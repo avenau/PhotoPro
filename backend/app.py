@@ -479,7 +479,7 @@ def upload_temp_photo():
     title: str,
     price: str,
     tagsList: [],
-    albumsToAddTo: [],
+    albums: [],
     photo: str,
     Returns
     -------

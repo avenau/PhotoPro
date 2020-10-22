@@ -30,7 +30,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
             Used to display "Upload Photo" button. */
         hasPickedPhoto: false,
         imagePreview: null,
-        albumsToAddTo: [],
+        albums: [],
         photo: "",
         photoElement: ""
       };
@@ -65,7 +65,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
             title: this.state.title,
             price: this.state.price,
             tagsList: JSON.stringify(this.state.tagsList),
-            albumsToAddTo: JSON.stringify(this.state.albumsToAddTo),
+            albums: JSON.stringify(this.state.albums),
             // The photo, encoded as a base64 string
             photo: response[0],
             // The file extension e.g. ".jpg" or ".raw"
@@ -123,7 +123,7 @@ export default class UploadPage extends React.Component<RouteChildrenProps, any>
                         <Image thumbnail id="imagePreview" src={this.state.imagePreview}/>
                     </Col>
                     <Col>
-                        <Album setAlbums={(albums:string[]) => {this.setState({albumsToAddTo: albums})}}/>
+                        <Album setAlbums={(albums:string[]) => {this.setState({albums: albums})}}/>
                         <Row>
                             <Col>
                             <Button> Create a new album</Button>
