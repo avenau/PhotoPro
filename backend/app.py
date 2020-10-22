@@ -467,7 +467,7 @@ def get_user():
 
 @app.route('/user/uploadphoto', methods=['POST'])
 @validate_token
-def upload_temp_photo():
+def upload_actual_photo():
     """
     Description
     -----------
