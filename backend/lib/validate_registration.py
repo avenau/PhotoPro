@@ -16,7 +16,6 @@ def valid_email(mongo, email):
     # Check if email is in valid format
     regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.][\w.]+$'
     if not re.search(regex, email):
-        print('heelo')
         raise EmailError('Invalid email')
 
     # Check if already registered
