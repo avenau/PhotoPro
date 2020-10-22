@@ -490,38 +490,51 @@ def upload_actual_photo():
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
 
+    # Get these values before popping them
     base64_str = photo_details['photo']
+    extension = photo_details['extension']
 
-    # Set image path to ./backend/images/'title.extension'
+    user_uid = token_functions.get_uid(photo_details['token'])
+    default = {
+        "discount": 0.0,
+        "posted": datetime.datetime.now(),
+        "user": ObjectId(user_uid),
+        "likes": 0,
+        "comments": ["TODO"],
+        "won": "TODO",
+    }
+    photo_details.update(default)
+    photo_details.pop("photo")
+    photo_details.pop("extension")
+    # Insert photo entry, except "path" attribute
+    photo_entry = mongo.db.photos.insert_one(photo_details)
+
+
+    photo_oid = photo_entry.inserted_id
+    name = str(photo_oid)
+
+    # Set image path to ./backend/images/'xxxxxx.extension'
     folder = './backend/images/'
-    file_name = photo_details['title'] + photo_details['extension']
+    file_name = name + extension
     path = folder + file_name
-
+    # Remove metadata from b64
     img_data = base64.b64decode(base64_str.split(',')[1])
 
-    # This currently creates image files in /backend/images directory
+    # Save image to /backend/images directory
     with open(path, 'wb') as f:
         f.write(img_data)
 
     print("An image was written to " + path)
 
-    u_id = token_functions.get_uid(photo_details['token'])
-    default = {
-        "discount": 0.0,
-        "posted": datetime.datetime.now(),
-        "user": ObjectId(u_id),
-        "likes": 0,
-        "comments": ["TODO"],
-        "won": "TODO",
-        "pathToImg": path
-    }
-    photo_details.update(default)
-    photo_details.pop("photo")
-    photo_details.pop("extension")
-    mongo.db.photos.insert_one(photo_details)
+    # Add "path" attribute to db entry
+    query = {"_id": ObjectId(name)}
+    set_path = {"$set": {"pathToImg": path}}
+    mongo.db.photos.update_one(query, set_path)
+    
     return dumps({
         "success": "success"
     })
+
 @app.route('/user/profile/uploadphoto', methods=['POST'])
 @validate_token
 def upload_photo():
