@@ -14,8 +14,13 @@ export default function FileUpload(props: InterfaceFile ) {
 
     function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
         event.preventDefault();
+
         const path = event.target.value;
-        const fileExtension = path.substr(path.length - 4);
+        const match = path.toLowerCase().match(/\.[^\.]*$/);
+        const fileExtension = match !== null ? match[0] : "";
+        if (!fileExtension) {
+            setErrMsg("Couldn't get file extension. Make sure your file is a .jpg, .png, ,.gif, .svg, or .raw.");
+        }
         // If no file, or file removed, remove "Upload" button and remove error msg
         // Else if file is not accepted, remove "Upload" button and display error msg
         // Else (i.e. good file) display image preview and "Upload" button
@@ -23,13 +28,14 @@ export default function FileUpload(props: InterfaceFile ) {
             setErrMsg("")
             props.pickedPhoto(false)
         } else if (fileExtension !== ".jpg" &&
+                  fileExtension !== ".jpeg" &&
                   fileExtension !== ".png" &&
                   fileExtension !== ".gif" &&
                   fileExtension !== ".svg" &&
                   fileExtension !== ".raw") {
-            setErrMsg("Sorry, we only support .jpg, .png, ,.gif, .svg, and .raw images at the moment.")
-            props.pickedPhoto(false)
-            props.onChange(null)
+            setErrMsg("Sorry, we only support .jpg, .png, ,.gif, .svg, and .raw images at the moment.");
+            props.pickedPhoto(false);
+            props.onChange(null);
             props.deactivateUploadButton();
             event.target.value = "";
         } else {
