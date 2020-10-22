@@ -1,15 +1,20 @@
 import React from "react";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
+import axios from "axios";
 
 interface LikeProps {
     u_id: string;
     p_id: string;
-    likeCount: number;
 }
 
+
+
+
+//TODO: Make Like Button Update Database
+//Get like count on its own
 export default function LikeButton(props: LikeProps) {
-    const [likeCount, setCount] = useState(props.likeCount);
+    const [likeCount, setCount] = useState(0);
     const [likeStatus, setStatus] = useState('light');
     const updateLike = (event: React.MouseEvent, count: number, status: string) => {
         if (event) {
@@ -24,6 +29,13 @@ export default function LikeButton(props: LikeProps) {
             setStatus('primary')
         }
         //Update Likes On Photos to backend
+    }
+
+    const getLikes = async (photoId: string) => {
+        await axios.get(`/photo_details?p_id=${photoId}`)
+            .then((response) => {
+                setCount(response.data.likes);
+            })
     }
 
 

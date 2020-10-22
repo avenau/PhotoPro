@@ -12,11 +12,11 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
+import base64
+import datetime
+
 
 # JAJAC made functions
-import lib.password_reset as password_reset
-import lib.token_functions as token_functions
-import lib.validate_registration as val_reg
 from lib.showdown import get_images
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
@@ -25,6 +25,10 @@ from lib.profile.upload_photo import update_user_thumbnail
 from lib.search.user_search import user_search
 from lib.token_decorator import validate_token
 from lib.validate_login import login
+from lib.validate_photo_details import validate_photo, reformat_lists
+import lib.password_reset as password_reset
+import lib.validate_registration as val_reg
+import lib.token_functions as token_functions
 from lib import db
 from lib.photo_details import get_photo_details
 
@@ -171,10 +175,12 @@ def account_registration():
     hashed_password = bcrypt.generate_password_hash(new_user["password"])
     new_user["password"] = hashed_password
 
-    # Handle profile picture
-    if new_user.get('profilePic') is not None:
+    # Handle profile pic
+    if new_user.get('profilePic') is None:
+        new_user['profilePic'] = ""
+    else:
         new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
-
+    
     # Insert account details into collection called 'user'
     mongo.db.users.insert(new_user)
     return dumps({})
@@ -459,6 +465,76 @@ def get_user():
 
     return data
 
+@app.route('/user/uploadphoto', methods=['POST'])
+@validate_token
+def upload_actual_photo():
+    """
+    Description
+    -----------
+    Accepts parameters related to a photo, verifies the parameters, 
+    creates a database entry for the photo and saves the photo file 
+    to backend/images.
+
+    Parameters
+    ----------
+    title: str,
+    price: str,
+    tags: [],
+    albums: [],
+    photo: str,
+    Returns
+    -------
+    None
+    """
+    photo_details = request.form.to_dict()
+    photo_details = reformat_lists(photo_details)
+    validate_photo(photo_details)
+
+    # Get these values before popping them
+    base64_str = photo_details['photo']
+    extension = photo_details['extension']
+
+    user_uid = token_functions.get_uid(photo_details['token'])
+    default = {
+        "discount": 0.0,
+        "posted": datetime.datetime.now(),
+        "user": ObjectId(user_uid),
+        "likes": 0,
+        "comments": ["TODO"],
+        "won": "TODO",
+    }
+    photo_details.update(default)
+    photo_details.pop("photo")
+    photo_details.pop("extension")
+    photo_details.pop("token")
+    # Insert photo entry, except "path" attribute
+    photo_entry = mongo.db.photos.insert_one(photo_details)
+
+
+    photo_oid = photo_entry.inserted_id
+    name = str(photo_oid)
+
+    # Set image path to ./backend/images/'xxxxxx.extension'
+    folder = './backend/images/'
+    file_name = name + extension
+    path = folder + file_name
+    # Remove metadata from b64
+    img_data = base64.b64decode(base64_str.split(',')[1])
+
+    # Save image to /backend/images directory
+    with open(path, 'wb') as f:
+        f.write(img_data)
+
+    print("An image was written to " + path)
+
+    # Add "path" attribute to db entry
+    query = {"_id": ObjectId(name)}
+    set_path = {"$set": {"pathToImg": path}}
+    mongo.db.photos.update_one(query, set_path)
+    
+    return dumps({
+        "success": "success"
+    })
 
 @app.route('/user/profile/uploadphoto', methods=['POST'])
 @validate_token
@@ -466,13 +542,11 @@ def upload_photo():
     """
     Description
     -----------
-
     Parameters
     ----------
     img_path : string
         e.g. http://imagesite.com/img.png
     token : string
-
     Returns
     -------
     {}
@@ -547,7 +621,7 @@ def photo_details():
         title: str,
         numLikes: number,
         datePosted: Date,
-        tagsList: str[],
+        tags: str[],
         nickname: str (Artist's Nickname)
         email: str
         u_id: str, (Artist of the photo)
@@ -560,7 +634,7 @@ def photo_details():
     print(artist['nickname'])
     photo_details = get_photo_details(photo_id, mongo)
     p_id_string = str(artist['_id'])
-    print(photo_details['tagsList'])
+    print(photo_details['tags'])
 
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
@@ -569,7 +643,7 @@ def photo_details():
         "u_id": p_id_string,
         "title": photo_details['title'],
         "likes": photo_details["likes"],
-        "tagsList": photo_details["tagsList"],
+        "tags": photo_details["tags"],
         "nickname": artist['nickname'],
         "email": artist['email'],
     })

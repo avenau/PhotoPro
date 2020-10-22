@@ -14,7 +14,7 @@ def valid_registration(mongo, new_user):
 
 def valid_email(mongo, email):
     # Check if email is in valid format
-    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.][\w.]+$'
+    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
     if not re.search(regex, email):
         raise EmailError('Invalid email')
 
