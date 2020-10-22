@@ -466,6 +466,7 @@ def get_user():
     return data
 
 @app.route('/user/uploadphoto', methods=['POST'])
+@validate_token
 def upload_temp_photo():
     """
     Description
