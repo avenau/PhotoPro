@@ -1,8 +1,9 @@
 """
-Login user 
+Login user
 """
 from lib.Error import EmailError, PasswordError
 from lib.token_functions import create_token
+
 
 def login(mongo, bcrypt, email, password):
     if email == "":
