@@ -72,3 +72,6 @@ package-lock.json
 
 # Optional eslint cache
 .eslintcache
+
+# Static images
+backend/images/
