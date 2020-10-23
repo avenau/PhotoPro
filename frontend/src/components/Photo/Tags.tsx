@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -10,6 +10,11 @@ export default function Tags(props: any) {
   const [tagsErrMsg, setTagsErr] = useState(
     "Remember to add at least one keyword!"
   );
+
+  useEffect(() => {
+    updateTagsList(props.tagsList)
+  }, []
+  )
 
   function clearTagInput() {
     const tagInput = document.getElementById("tags") as HTMLInputElement;

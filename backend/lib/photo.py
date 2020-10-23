@@ -4,12 +4,19 @@ Create and modify photos which are uploaded by a user
 """
 import base64
 import datetime
+from bson.objectid import ObjectId
 
-from lib.validate_photo_details import validate_photo, validate_photo_user
-import lib.token_functions
+
+from lib.validate_photo import validate_photo, validate_photo_user, reformat_lists
+import lib.token_functions as token_functions
 
 
 def create_photo_entry(mongo, photo_details):
+    """
+    Creates photo entry in photo collection and adds photo/post in the user collection
+
+    """
+
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
 
@@ -41,7 +48,10 @@ def create_photo_entry(mongo, photo_details):
     query = {"_id": ObjectId(name)}
     set_path = {"$set": {"pathToImg": path}}
     mongo.db.photos.update_one(query, set_path)
-
+    
+    posts = mongo.db.users.find({"_id": user_uid}, {"posts": 1})
+    posts.append(ObjectId(name))
+    mongo.db.users.update_one({"_id": user_uid, {"$set": {"posts": posts}})
     return {
         "success": "true"
     }
@@ -60,7 +70,7 @@ def process_photo(base64_str, name, extension):
     # Remove metadata from b64
     img_data = base64.b64decode(base64_str.split(',')[1])
 
-    save_photo_dir(img_data, name, extension)
+    path = save_photo_dir(img_data, name, extension)
 
     return path
 

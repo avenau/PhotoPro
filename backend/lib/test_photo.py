@@ -1,6 +1,6 @@
 import pytest
 from upload_photo import *
-from validate_photo_details import *
+from validate_photo import *
 from lib.Error import ValueError
 
 def photo():
@@ -11,7 +11,7 @@ def photo():
         "albumsToAddTo": ["fruit", "nature"]
     }
 
-# ========================== Tests ==========================
+# ========================== Test upload ==========================
 def test_title():
     photoDetails = photo()
     with pytest.raises(ValueError):

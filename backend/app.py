@@ -489,9 +489,9 @@ def upload_actual_photo():
     None
     """
     photo_details = request.form.to_dict()
-    return dumps(create_photo_entry(photo_details))
+    return dumps(create_photo_entry(mongo, photo_details))
 
-@app.route('/user/editphoto', methods=['PUT'])
+@app.route('/user/updatephoto', methods=['PUT'])
 @validate_token
 def update_photo():
     """
@@ -513,7 +513,7 @@ def update_photo():
 
     Returns
     -------
-    None
+    success or error
     """
     photo_details = request.form.to_dict()
     # Update either price, title, keywords or add discount
@@ -613,12 +613,9 @@ def photo_details():
     """
     photo_id = request.args.get("p_id")
     artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
-    print("APPP TEST!")
-    print(artist)
-    print(artist['nickname'])
     photo_details = get_photo_details(photo_id, mongo)
     p_id_string = str(artist['_id'])
-    print(photo_details['tagsList'])
+    print(photo_details['tags'])
 
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
@@ -627,7 +624,7 @@ def photo_details():
         "u_id": p_id_string,
         "title": photo_details['title'],
         "likes": photo_details["likes"],
-        "tagsList": photo_details["tagsList"],
+        "tags": photo_details["tags"],
         "nickname": artist['nickname'],
         "email": artist['email'],
     })
