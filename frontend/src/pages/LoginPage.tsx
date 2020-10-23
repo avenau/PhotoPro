@@ -42,7 +42,7 @@ export default class LoginPage extends React.Component<
         localStorage.setItem("nickname", data.nickname);
         this.handleLoginClick();
         console.log(`isLoggedInState: ${this.state.isLoggedIn}`);
-        this.props.history.push("/feed");
+        this.props.history.push("/");
       })
       .catch((e) => {
         console.log(e);

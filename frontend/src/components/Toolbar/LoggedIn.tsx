@@ -13,7 +13,7 @@ function LoggedIn(props: Props) {
   return (
     <Nav>
       <Nav.Item>
-        <Nav.Link href="/feed">Feed</Nav.Link>
+        <Nav.Link href="/">Feed</Nav.Link>
       </Nav.Item>
       <Nav.Item>
         <Nav.Link href="/purchases">Purchases</Nav.Link>
