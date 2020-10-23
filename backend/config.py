@@ -23,7 +23,7 @@ class Config(object):
 
 
 class DevelopmentConfig(Config):
-    MONGO_URI = local_db
+    MONGO_URI = remote_db
     TESTING = True
     DEBUG = True
 

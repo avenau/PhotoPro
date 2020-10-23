@@ -1,6 +1,6 @@
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
-from Error import TokenError
+from lib.Error import TokenError
 # Modified from profile_details
 
 
