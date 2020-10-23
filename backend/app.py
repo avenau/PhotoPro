@@ -25,7 +25,7 @@ from lib.profile.upload_photo import update_user_thumbnail
 from lib.search.user_search import user_search
 from lib.token_decorator import validate_token
 from lib.validate_login import login
-from lib.validate_photo_details import validate_photo, reformat_lists
+from lib.photo import create_photo_entry, update_photo_details
 import lib.password_reset as password_reset
 import lib.validate_registration as val_reg
 import lib.token_functions as token_functions
@@ -479,61 +479,46 @@ def upload_actual_photo():
     ----------
     title: str,
     price: str,
-    tagsList: [],
-    albums: [],
+    token: str,
+    tags: str[],
+    albums: str[],
     photo: str,
+    extension: str
     Returns
     -------
     None
     """
     photo_details = request.form.to_dict()
-    photo_details = reformat_lists(photo_details)
-    validate_photo(photo_details)
+    return dumps(create_photo_entry(photo_details))
 
-    # Get these values before popping them
-    base64_str = photo_details['photo']
-    extension = photo_details['extension']
+@app.route('/user/editphoto', methods=['PUT'])
+@validate_token
+def update_photo():
+    """
+    Description
+    -----------
+    Accepts parameters related to EDITING photo details, verifies the parameters, 
+    creates a database entry for the photo and saves the photo details 
+    to backend.
 
-    user_uid = token_functions.get_uid(photo_details['token'])
-    default = {
-        "discount": 0.0,
-        "posted": datetime.datetime.now(),
-        "user": ObjectId(user_uid),
-        "likes": 0,
-        "comments": ["TODO"],
-        "won": "TODO",
-    }
-    photo_details.update(default)
-    photo_details.pop("photo")
-    photo_details.pop("extension")
-    # Insert photo entry, except "path" attribute
-    photo_entry = mongo.db.photos.insert_one(photo_details)
+    Parameters
+    ----------
+    title: str,
+    price: str,
+    tags: str[],
+    albums: str[],
+    discount: str,
+    token: str,
+    photo: ObjectId
 
+    Returns
+    -------
+    None
+    """
+    photo_details = request.form.to_dict()
+    # Update either price, title, keywords or add discount
+    return dumps(update_photo_details(mongo, photo_details))
 
-    photo_oid = photo_entry.inserted_id
-    name = str(photo_oid)
-
-    # Set image path to ./backend/images/'xxxxxx.extension'
-    folder = './backend/images/'
-    file_name = name + extension
-    path = folder + file_name
-    # Remove metadata from b64
-    img_data = base64.b64decode(base64_str.split(',')[1])
-
-    # Save image to /backend/images directory
-    with open(path, 'wb') as f:
-        f.write(img_data)
-
-    print("An image was written to " + path)
-
-    # Add "path" attribute to db entry
-    query = {"_id": ObjectId(name)}
-    set_path = {"$set": {"pathToImg": path}}
-    mongo.db.photos.update_one(query, set_path)
-    
-    return dumps({
-        "success": "success"
-    })
 
 @app.route('/user/profile/uploadphoto', methods=['POST'])
 @validate_token

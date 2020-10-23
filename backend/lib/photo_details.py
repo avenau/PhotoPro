@@ -1,6 +1,7 @@
 from lib.Error import UserDNE, TokenError
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
+
 #Modified from profile_details
 def get_photo_details(p_id, mongo):
     '''

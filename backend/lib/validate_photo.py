@@ -4,11 +4,28 @@ TODO set new env variable for testing
 """
 from lib.Error import ValueError
 import json
+
+
 def validate_photo(details):
     validate_price(details["price"])
     validate_title(details["title"])
     validate_album(details["albums"])
     validate_tags(details["tagsList"])
+
+def validate_photo_user(mongo, photo, user_uid):
+    """
+    Check that user is authorised to modify the photo
+    @param photo: ObjectId
+    @param user_uid: ObjectId
+    @return True or error
+    """
+    photoOwner = mongo.db.photos.find({"_id": photo}, {"user": 1})
+    if photoOwner is not user_uid:
+        print("photo owner ", photoOwner)
+        print("user id ", user_uid)
+        raise ValueError("User " + user_uid + "is not the owner of" + "photo " + photo)
+
+    return True
 
 def validate_price(price):
     """
