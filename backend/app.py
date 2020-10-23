@@ -194,7 +194,7 @@ def profile_details():
 
     Parameters
     ----------
-    token : str
+    u_id : str
 
     Returns
     {
