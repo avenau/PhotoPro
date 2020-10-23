@@ -83,14 +83,17 @@ def process_login():
 
     Returns
     -------
-    {token : str,
-     u_id : str}
+    {
+        token : str,
+        u_id : str,
+        nickname : str
+    }
 
     """
     email = request.form.get("email")
     password = request.form.get("password")
 
-    return login(mongo, bcrypt, email, password)
+    return dumps(login(mongo, bcrypt, email, password))
 
 
 @app.route('/passwordreset/request', methods=['POST'])
