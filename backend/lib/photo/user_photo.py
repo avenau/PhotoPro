@@ -6,6 +6,7 @@ and validate photo details
 import base64
 from PIL import Image
 
+
 def create_thumbnail(image_path):
     '''
     Create the thumbnail using PIL
@@ -34,5 +35,3 @@ def upload_user_photo(user, image_path):
     # attach to the user
     user['profile_pic'] = thumbnail
     return user
-
-
