@@ -30,7 +30,8 @@ import lib.password_reset as password_reset
 import lib.validate_registration as val_reg
 import lib.token_functions as token_functions
 from lib import db
-from lib.photo_details import get_photo_details
+from lib.photo_details.photo_details import get_photo_details
+from lib.photo_details.photo_likes import is_photo_liked
 
 # Config
 from config import DevelopmentConfig, defaultHandler
@@ -613,7 +614,7 @@ def photo_details():
 
     Parameters
     ----------
-    query : string
+    p_id : string
 
     Returns
     -------
@@ -628,13 +629,12 @@ def photo_details():
     }
     """
     photo_id = request.args.get("p_id")
+    print("PRINT PHOTO ID")
+    print(photo_id)
+    
     artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
-    print("APPP TEST!")
-    print(artist)
-    print(artist['nickname'])
     photo_details = get_photo_details(photo_id, mongo)
     p_id_string = str(artist['_id'])
-    print(photo_details['tags'])
 
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
@@ -643,10 +643,36 @@ def photo_details():
         "u_id": p_id_string,
         "title": photo_details['title'],
         "likes": photo_details["likes"],
-        "tags": photo_details["tags"],
+        "tagsList": photo_details["tagsList"],
         "nickname": artist['nickname'],
         "email": artist['email'],
     })
+    
+@app.route('/photo_details/isLiked', methods=['GET'])
+def photo_liked():
+    """
+    Description
+    -----------
+    GET request to retrieve information for a photo
+
+    Parameters
+    ----------
+    p_id : string
+    u_id : string
+
+    Returns
+    -------
+    {
+        isLiked : boolean
+    }
+    """
+    photo_id = request.args.get("p_id")
+    user_id = request.args.get("u_id")
+    print("USER ID TEST")
+    print(user_id)
+    isLiked = is_photo_liked(photo_id, user_id, mongo)
+    return isLiked
+    
 
 
 '''

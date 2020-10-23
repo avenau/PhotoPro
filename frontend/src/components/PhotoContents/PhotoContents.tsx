@@ -18,6 +18,9 @@ export default function PhotoContents(props: ContentProps) {
     const [likes, setLikes] = useState(0);
     const [isLoaded, setLoad] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
+    //const [currentUser, setCurrentUser] = useState("Current User")
+    //TODO: Use Verify Tokens For this
+    const currentUser = localStorage.getItem('u_id') as string;
     const updateTags = (tag: string) => {
         if (tag) {
             setTags(tags => [...tags, tag]);
@@ -37,7 +40,6 @@ export default function PhotoContents(props: ContentProps) {
                 setLikes(response.data.likes);
                 setTags(response.data.tagsList);
                 setTitle(response.data.title);
-                //console.log(tags);
                 setLoad(true);
             })
     }
@@ -64,8 +66,8 @@ export default function PhotoContents(props: ContentProps) {
                         <Col className="Details">
                             <p>This is where all the rest of the buttons are at</p>
                             <Row className="RowOne">
-                                <LikeButton u_id="user_id" p_id="photo_id" likeCount={likes} />
-                                <BookmarkButton u_id="user_id" p_id="photo_id" />
+                                <LikeButton u_id={currentUser} p_id={props.photoId} />
+                                <BookmarkButton u_id={currentUser} p_id={props.photoId} />
                             </Row>
                             <Row>
                                 <Button>Download Picture</Button>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import axios from "axios";
@@ -16,6 +16,7 @@ interface LikeProps {
 export default function LikeButton(props: LikeProps) {
     const [likeCount, setCount] = useState(0);
     const [likeStatus, setStatus] = useState('light');
+    const [isLoaded, setLoad] = useState(false);
     const updateLike = (event: React.MouseEvent, count: number, status: string) => {
         if (event) {
             event.preventDefault();
@@ -31,10 +32,23 @@ export default function LikeButton(props: LikeProps) {
         //Update Likes On Photos to backend
     }
 
-    const getLikes = async (photoId: string) => {
+    const getLikeCount = async (photoId: string) => {
         await axios.get(`/photo_details?p_id=${photoId}`)
             .then((response) => {
                 setCount(response.data.likes);
+            })
+    }
+
+    useEffect(() => {
+        getLikeCount(props.p_id);
+        isLiked(props.p_id, props.u_id);
+        setLoad(true);
+    }, [isLoaded])
+
+    const isLiked = async (photoId: string, userId: string) => {
+        await axios.get(`/photo_details/isLiked?p_id=${photoId}&u_id=${userId}`)
+            .then((response) => {
+                setStatus(response.data.isLiked === "true" ? 'primary' : 'light');
             })
     }
 
