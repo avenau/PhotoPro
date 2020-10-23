@@ -10,7 +10,6 @@ PhotoPro was built using React, Python, Flask and MongoDB.
 - python3
 - python3-venv
 - mongodb
-- Mongo Compass (optional)
 
 For all others see `requirements.txt`
 
@@ -20,31 +19,23 @@ For all others see `requirements.txt`
 
 All other dependencies are managed by npm in `frontend/package.json`
 
-
 ## Running the project
 
-Activate virtual environment.
+With a fresh copy of the repo install all of the requirements and build the frontend.
 
-`source backend/env/bin/activate`
+`./prepare.sh`
 
-Start backend.
+After initially running the prepare script it does not need to be rerun unless changes are made to the code.
+
+Start the webservers.
 
 `./start.sh`
-Note: Currently `start.sh` only runs the backend.
-To run the frontend do the following in a seperate terminal.
-See below for more details
 
-`cd frontend`
+**Note: Currently `start.sh` does not deal with the image file system hosting**
 
-When running for the first time, please install node package dependencies.
+The website can be restarted with `./start.sh` without running `./prepare.sh` again after the initial run.
 
-`npm install`
-
-Start frontend.
-
-`npm start`
-
-Open your browser to http://localhost:3000 to jump onto PhotoPro :) 
+The start script can be run with the `-d` option to only run the backend server so frontend can be run in development mode.
 
 # Developer notes
 

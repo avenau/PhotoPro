@@ -11,8 +11,6 @@ remote_db = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flas
 
 
 class Config(object):
-    TESTING = True
-    DEBUG = True
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 465
     MAIL_USE_SSL = True
@@ -28,7 +26,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
 
-class ProductionConfig ():
+class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     MONGO_URI = remote_db
