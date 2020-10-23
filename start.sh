@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! [ $1 = "-d" ]
+if ! [ "$1" = "-d" ]
 then
   port_f=5001
   while [[ `netstat -taln | egrep $port_f` != "" ]]
@@ -21,7 +21,7 @@ do
   port_b=$((port_b + 1))
 done
 
-if [ $1 = "-d" ]
+if [ "$1" = "-d" ]
 then
   echo "var BACKEND_PORT = $port_b;" > frontend/public/config.js
 fi
