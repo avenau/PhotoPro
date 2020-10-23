@@ -38,6 +38,9 @@ node_modules/
 # production
 build/
 
+#linting
+linting.html
+
 # misc
 .vscode
 .DS_Store
