@@ -68,3 +68,12 @@ class TokenError(HTTPException):
     code = 500
     message = 'No message specified'
     toast = True
+
+
+class DatabaseError(HTTPException):
+    '''
+    DatabaseError: When something unexpected happens in the database
+    '''
+    code = 500
+    message = 'No message specified'
+    toast = True

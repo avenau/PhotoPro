@@ -73,3 +73,6 @@ package-lock.json
 node_modules/
 # Optional eslint cache
 .eslintcache
+
+# Static images
+backend/images/

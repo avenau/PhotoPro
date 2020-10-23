@@ -9,16 +9,18 @@ from json import dumps
 local_db = "mongodb://localhost:27017/angular-flask-muckaround"
 remote_db = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
 
+
 class Config(object):
     TESTING = True
     DEBUG = True
-    MAIL_SERVER='smtp.gmail.com'
-    MAIL_PORT=465
-    MAIL_USE_SSL=True
-    MAIL_USERNAME="photopro.jajac@gmail.com"
-    MAIL_PASSWORD="photoprodemopassword"
-    PORT_NUMBER=os.getenv("BACKEND_PORT")
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 465
+    MAIL_USE_SSL = True
+    MAIL_USERNAME = "photopro.jajac@gmail.com"
+    MAIL_PASSWORD = "photoprodemopassword"
+    PORT_NUMBER = os.getenv("BACKEND_PORT")
     MAIL_SUPPRESS_SEND = False
+
 
 class DevelopmentConfig(Config):
     MONGO_URI = local_db
