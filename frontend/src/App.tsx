@@ -21,16 +21,13 @@ import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import UploadPage from "./pages/UploadPage/UploadPage";
+import PurchasesPage from "./pages/PurchasesPage/PurchasesPage";
 
 function App() {
   return (
     <Router forceRefresh>
       <Switch>
-        <AnonRoute
-          exact
-          path="/login"
-          render={(props) => <LoginPage {...props} />}
-        />
+        <AnonRoute exact path="/login" component={LoginPage} />
         <AnonRoute exact path="/" component={HomePage} />
         <AnonRoute exact path="/register" component={Register} />
         <AnonRoute
@@ -43,11 +40,6 @@ function App() {
           path="/forgotpassword/reset"
           component={ResetPasswordPage}
         />
-        <AnonRoute
-          exact
-          path="/login"
-          render={(props: RouteComponentProps) => <LoginPage {...props} />}
-        />
         <Route
           exact
           path="/forgotpassword/reset"
@@ -55,14 +47,17 @@ function App() {
         />
         <Route path="/user/:user_id" component={ProfilePage} />
         <Route path="/search/:type" component={SearchPage} />
+        <ProtectedRoute exact path="/purchases" component={PurchasesPage} />
         <ProtectedRoute exact path="/upload" component={UploadPage} />
         <ProtectedRoute path="/manage_account" component={ManageAccount} />
-        <ProtectedRoute path="/manage_confirmation" component={ManageConfirmation} />
+        <ProtectedRoute
+          path="/manage_confirmation"
+          component={ManageConfirmation}
+        />
         <ProtectedRoute path="/feed" component={HomePage} />
         <ProtectedRoute path="/photo/:photo_id" component={PhotoDetails} />
         <Route path="*" component={DoesNotExistPage} />
         {/*<ProtectedRoute path="/photo/:photo_id" component={DummyFeed} />*/}
-
       </Switch>
     </Router>
   );
