@@ -40,7 +40,6 @@ mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 
 
-
 @app.route('/verifytoken', methods=['GET', 'POST'])
 def verify_token():
     """
@@ -610,6 +609,3 @@ def basic():
     print(arguments)
     return dumps(arguments)
 
-
-if __name__ == '__main__':
-    app.run(port=8001, debug=True)
