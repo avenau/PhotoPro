@@ -1,24 +1,83 @@
 '''
 Remove a photo from the database
+Checks to see if the user is a valid user to delete the photo
+Future Updates: Allow for admin users to delete a photo
+
+@author Jaczel
+@updated 23/10/2020
 '''
 
 from ..Error import DatabaseError
+import os
+
+PHOTO_DIRECTORY = ''
 
 
-def remove_photo(photos, identifier):
+def remove_photo(photos, u_id, identifier):
     '''
-    Main function
+    Description
+    -----------
+    Remove a photo from the database if the user is authorised
+
+    Parameters
+    ----------
+    photos: pymongo.collection
+    u_id: string
+    identifier: dictionary
+        e.g. {'title': 'Best jpeg'}
+
+    Returns
+    -------
+    True on Success, False otherwise
+
     '''
-    photo = remove_photo(photos, identifier)
+    # Get the photo object
+    try:
+        photo = get_photo(photos, identifier)
+    except DatabaseError:
+        print("Could not find photo", identifier)
+        raise DatabaseError("Could not find photo")
+
     if photo is None:
-        print("Couldn't find photo with identifier", identifier)
-        raise DatabaseError("Couldn't find photo with identifier", identifier)
+        print("Couldn't find photo", identifier)
+        # raise DatabaseError("Could not find photo", identifier)
+        return False
+    # Check the user is authorised to delete the photo
+    if not is_authorised(u_id, photo):
+        return False
 
-    if photos.count_documents(identifier) > 0:
-        raise DatabaseError("Document", identifier, "still exists.")
+    # Remove photo fromthe DatabaseError
+    if remove_photo_from_db(photos, identifier) is False:
+        print("Photo already deleted")
+    '''
+    TODO: Remove the photo from the directory structure
+    # Remove the photo from the file system
+    if remove_photo_from_directory(photo['pathToImg']) is not True:
+        raise FileExistsError("Couldn't find photo")
+    '''
+
+    # Return True on success
+    return True
 
 
-def find_photo(photos, identifier):
+def is_authorised(u_id, photo):
+    '''
+    Check the user is the owner of the photo
+    Future update: allow for admin access
+    '''
+    if u_id == str(photo['user']):
+        return True
+    return False
+
+
+def get_photo(photos, identifier):
+    '''
+    Return the photo object
+    '''
+    return photos.find_one(identifier)
+
+
+def remove_photo_from_db(photos, identifier):
     '''
     Description
     -----------
@@ -33,12 +92,38 @@ def find_photo(photos, identifier):
 
     Returns
     -------
-    Return a single photo on success, None or failure or multiple
+    Return True if one or more photos were modified
     '''
     try:
-        photo = photos.find_one_and_delete(identifier)
+        res = photos.update_one(identifier, {
+                                                '$set': {'deleted': True}
+                                               })
     except DatabaseError:
         print("Database find_one_and_delete failed")
         raise DatabaseError("Database find_one_and_delete failed")
 
-    return photo
+    print(res.modified_count)
+
+    return True if res.modified_count > 0 else False
+
+
+def remove_photo_from_directory(photo_path):
+    '''
+    Description
+    -----------
+    Remove the photo from the server
+
+    Parameters
+    ----------
+    photo_path: string
+
+    Returns
+    -------
+    True on success, otherwise False
+    '''
+    photo_path = PHOTO_DIRECTORY + photo_path
+    if os.path.exists(photo_path):
+        os.remove(photo_path)
+        return True
+
+    return False

@@ -31,6 +31,7 @@ import lib.validate_registration as val_reg
 import lib.token_functions as token_functions
 from lib import db
 from lib.photo_details import get_photo_details
+from lib.photo.remove_photo import remove_photo
 
 # Config
 from config import DevelopmentConfig, defaultHandler
@@ -509,7 +510,6 @@ def upload_actual_photo():
     # Insert photo entry, except "path" attribute
     photo_entry = mongo.db.photos.insert_one(photo_details)
 
-
     photo_oid = photo_entry.inserted_id
     name = str(photo_oid)
 
@@ -534,6 +534,39 @@ def upload_actual_photo():
     return dumps({
         "success": "success"
     })
+
+
+@app.route('/user/photos/removephoto', methods=['DELETE'])
+@validate_token
+def user_remove_photo():
+    '''
+    Description
+    -----------
+    Remove a photo that a user has uploaded
+
+    Parameters
+    ----------
+    token: str
+    imgId: str
+        Image's ObjectId
+
+    Returns
+    -------
+    {success: boolean(string)}
+    '''
+    token = request.args.get('token')
+    u_id = token_functions.get_uid(token)
+    img_id = request.args.get('imgId')
+    # Temporary identifier
+    identifier = {
+        '_id': ObjectId(img_id)
+    }
+    res = remove_photo(mongo.db.photos, u_id, identifier)
+    if res is True:
+        return dumps({'success': 'true'})
+    else:
+        return dumps({'success': 'false'})
+
 
 @app.route('/user/profile/uploadphoto', methods=['POST'])
 @validate_token
@@ -562,7 +595,6 @@ def upload_photo():
     return dumps({
         'success': 'True'
     })
-
 
 
 '''
@@ -601,10 +633,11 @@ def search_user():
 
     return dumps(user_search(data, mongo))
 
+
 @app.route('/photo_details', methods=['GET'])
 def photo_details():
-#TODO: Should return photos and comments as well
-# Add to API list
+    # TODO: Should return photos and comments as well
+    # Add to API list
     """
     Description
     -----------
