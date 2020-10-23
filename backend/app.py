@@ -465,6 +465,7 @@ def get_user():
 
     return data
 
+
 @app.route('/user/uploadphoto', methods=['POST'])
 @validate_token
 def upload_actual_photo():
@@ -502,6 +503,7 @@ def upload_actual_photo():
         "likes": 0,
         "comments": ["TODO"],
         "won": "TODO",
+        "deleted": False,
     }
     photo_details.update(default)
     photo_details.pop("photo")
