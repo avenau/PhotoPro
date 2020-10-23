@@ -21,7 +21,7 @@ import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import UploadPage from "./pages/UploadPage/UploadPage";
-import PurchasesPage from "./pages/PurchasesPage/PurchasesPage";
+import PurchasesPage from "./pages/Purchases/PurchasesPage";
 
 function App() {
   return (
