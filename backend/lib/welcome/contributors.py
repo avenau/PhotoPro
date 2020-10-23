@@ -1,9 +1,8 @@
 import os
+from port import BACKEND_PORT
 
-
-PORT = os.getenv("BACKEND_PORT")
 BACKEND_PATH = 'static/'
-FRONTEND_PATH = 'http://localhost:' + str(PORT) + '/static/'
+FRONTEND_PATH = 'http://localhost:' + str(BACKEND_PORT) + '/static/'
 
 
 def get_popular_contributors_images():
