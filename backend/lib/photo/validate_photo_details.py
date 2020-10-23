@@ -2,12 +2,14 @@
 Validate photo details
 """
 
+
 def validate_price(price):
     """
     @param price: int
     @return True or error
     """
-    pass 
+    pass
+
 
 def validate_tags(tags):
     """
@@ -16,6 +18,7 @@ def validate_tags(tags):
     @return True or error
     """
     pass
+
 
 def validate_title(title):
     """

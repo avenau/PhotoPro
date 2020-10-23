@@ -10,6 +10,7 @@ from jwt.exceptions import DecodeError
 from jwt.exceptions import InvalidTokenError
 from jwt.exceptions import InvalidSignatureError
 
+
 def validate_token(function):
     '''
     Description

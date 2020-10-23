@@ -5,12 +5,14 @@ from lib.Error import EmailError, PasswordError, LocationError
 import re
 from lib.countries_list import countries
 
+
 def valid_registration(mongo, new_user):
     valid_email(mongo, new_user["email"])
     valid_name(new_user["fname"])
     valid_name(new_user["lname"])
     valid_pass(new_user["password"])
     valid_location(new_user["location"])
+
 
 def valid_email(mongo, email):
     # Check if email is in valid format
@@ -24,16 +26,19 @@ def valid_email(mongo, email):
 
     return True
 
+
 def valid_name(name):
     if name is None:
         raise NameError('Cannot have no name')
     return True
 
+
 def valid_pass(password):
     if password is None:
         raise PasswordError('Empty password field')
     if len(password) < 8:
-        raise PasswordError('Password is too short. Must be more than 8 characters')
+        raise PasswordError('Password is too short. \
+                             Must be more than 8 characters')
     return True
 
 

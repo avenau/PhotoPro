@@ -44,7 +44,6 @@ mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 
 
-
 @app.route('/verifytoken', methods=['GET', 'POST'])
 def verify_token():
     """
@@ -180,7 +179,7 @@ def account_registration():
         new_user['profilePic'] = ""
     else:
         new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
-    
+
     # Insert account details into collection called 'user'
     mongo.db.users.insert(new_user)
     return dumps({})
@@ -471,8 +470,8 @@ def upload_actual_photo():
     """
     Description
     -----------
-    Accepts parameters related to a photo, verifies the parameters, 
-    creates a database entry for the photo and saves the photo file 
+    Accepts parameters related to a photo, verifies the parameters,
+    creates a database entry for the photo and saves the photo file
     to backend/images.
 
     Parameters
@@ -531,7 +530,7 @@ def upload_actual_photo():
     query = {"_id": ObjectId(name)}
     set_path = {"$set": {"pathToImg": path}}
     mongo.db.photos.update_one(query, set_path)
-    
+
     return dumps({
         "success": "success"
     })
