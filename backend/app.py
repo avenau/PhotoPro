@@ -195,7 +195,7 @@ def profile_details():
 
     Parameters
     ----------
-    token : str
+    u_id : str
 
     Returns
     {
@@ -718,6 +718,3 @@ def basic():
     print(arguments)
     return dumps(arguments)
 
-
-if __name__ == '__main__':
-    app.run(port=8001, debug=True)

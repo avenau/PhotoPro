@@ -70,7 +70,6 @@ package-lock.json
 # Pyre type checker
 .pyre/
 
-node_modules/
 # Optional eslint cache
 .eslintcache
 
