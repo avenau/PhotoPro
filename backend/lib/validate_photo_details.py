@@ -9,6 +9,7 @@ import json
 def validate_photo(details):
     validate_price(details["price"])
     validate_title(details["title"])
+    validate_extension(details["extension"])
     validate_album(details["albums"])
     validate_tags(details["tags"])
 
@@ -48,7 +49,6 @@ def validate_tags(tags):
 
     return True
 
-
 def validate_title(title):
     """
     Check title is not empty
@@ -65,6 +65,15 @@ def validate_album(albums):
     for i in albums:
         if i is None or i == "":
             raise ValueError("Cannot be empty or None")
+
+    return True
+
+
+def validate_extension(extension):
+    # Accepted extensions
+    exts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".raw"]
+    if extension not in exts:
+        raise ValueError("You attempted to upload a file type we don't accept.")
 
     return True
 
