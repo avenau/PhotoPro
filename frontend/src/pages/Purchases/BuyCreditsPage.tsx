@@ -17,13 +17,15 @@ const ALLANS_CURRENCY_API_KEY = "9c2b48254528496897f2c690960e967b";
 class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
     super(props);
-    this.paypalButton = React.createRef();
-    this.cardButton = React.createRef();
     this.state = {
-      credits: 0,
+      // Number of credits the user currently has
+      // Set by axios.get below
+      credits: null,
+      price: 0,
       priceMsg: "",
-      creditsInput: "",
+      ncredits: 0,
       creditsErrMsg: "",
+      location: "",
     };
   }
 
@@ -36,7 +38,32 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
         },
       })
       .then((res) => {
-        this.setState({ credits: res.data.credits });
+        this.setState({
+          credits: res.data.credits,
+          location: res.data.location,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  handleSubmit(e: React.FormEvent<HTMLElement>) {
+    if (e) {
+      e.preventDefault();
+    }
+    if (this.state.ncredits < 1) {
+      return;
+    }
+    const token = localStorage.getItem("token");
+    axios
+      .post("/purchases/buycredits", {
+        token: token,
+        ncredits: this.state.ncredits,
+      })
+      .then((response) => {
+        console.log(response);
+        this.props.history.push("/purchases");
       })
       .catch((err) => {
         console.log(err);
@@ -45,23 +72,59 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
 
   handleCreditsChange(e: any) {
     const ncredits = Number(e.target.value);
-    this.setState({ creditsInput: ncredits });
+    this.setState({ ncredits: ncredits }, this.setPrice);
     this.setCreditsErr(ncredits);
   }
 
-  deactivatePurchaseButtons() {
-    const paypalButton = document.getElementById("paypalButton");
+  setPrice() {
+    const price = Number(this.state.ncredits / 100).toFixed(2);
+    this.setState({ price: price }, this.setPriceMsg);
   }
 
-  activatePurchaseButtons() {}
+  setPriceMsg() {
+    this.setState({
+      priceMsg: "Price: " + this.state.price.toString() + " USD.",
+    });
+  }
+
+  deactivatePurchaseButtons() {
+    const paypalButton = document.getElementById("paypalButton") as HTMLElement;
+    const cardButton = document.getElementById("cardButton") as HTMLElement;
+    return [
+      paypalButton.setAttribute("disabled", "true"),
+      cardButton.setAttribute("disabled", "true"),
+    ];
+  }
+
+  activatePurchaseButtons() {
+    const paypalButton = document.getElementById("paypalButton") as HTMLElement;
+    const cardButton = document.getElementById("cardButton") as HTMLElement;
+    return [
+      paypalButton.removeAttribute("disabled"),
+      cardButton.removeAttribute("disabled"),
+    ];
+  }
+
+  returnGoogleURL() {
+    return (
+      "http://letmegooglethat.com/?q=+" +
+      this.state.price.toString() +
+      "+usd+to+" +
+      this.state.location +
+      "+currency"
+    );
+  }
 
   setCreditsErr(ncredits: number) {
     if (!Number.isInteger(ncredits)) {
       this.setState({ creditsErrMsg: "Please enter a whole number." });
+      this.deactivatePurchaseButtons();
     } else if (ncredits < 1) {
       this.setState({ creditsErrMsg: "Please enter a positive number." });
+      this.deactivatePurchaseButtons();
     } else {
       this.setState({ creditsErrMsg: "" });
+      this.activatePurchaseButtons();
     }
   }
 
@@ -80,7 +143,7 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
               </Jumbotron>
             </Col>
           </Row>
-          <Form>
+          <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Form.Group as={Row} controlId="credits">
               <Col xs={3}>
                 <Form.Label>Number of Credits:</Form.Label>
@@ -91,18 +154,28 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
                   onChange={(e) => this.handleCreditsChange(e)}
                 ></Form.Control>
                 <Form.Text className="text-muted">
-                  <p className="error">{this.state.creditsInput}</p>
+                  <p className="error">{this.state.creditsErrMsg}</p>
                 </Form.Text>
               </Col>
             </Form.Group>
             <Row id="buttonsRow" className="mt-5">
               <Col>
-                <Button ref={this.paypalButton} size="lg">
+                <p>{this.state.priceMsg}</p>
+                {this.state.priceMsg ? (
+                  <a href={this.returnGoogleURL()}>
+                    How much does this cost in my currency?
+                  </a>
+                ) : (
+                  <></>
+                )}
+              </Col>
+              <Col>
+                <Button id="paypalButton" type="submit" size="lg">
                   Pay with PayPal
                 </Button>
               </Col>
               <Col>
-                <Button id="cardButton" size="lg">
+                <Button id="cardButton" type="submit" size="lg">
                   Pay with Card
                 </Button>
               </Col>
