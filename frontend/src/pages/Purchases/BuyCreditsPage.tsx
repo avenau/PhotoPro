@@ -17,6 +17,8 @@ const ALLANS_CURRENCY_API_KEY = "9c2b48254528496897f2c690960e967b";
 class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
     super(props);
+    this.paypalButton = React.createRef();
+    this.cardButton = React.createRef();
     this.state = {
       credits: 0,
       priceMsg: "",
@@ -41,6 +43,28 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
       });
   }
 
+  handleCreditsChange(e: any) {
+    const ncredits = Number(e.target.value);
+    this.setState({ creditsInput: ncredits });
+    this.setCreditsErr(ncredits);
+  }
+
+  deactivatePurchaseButtons() {
+    const paypalButton = document.getElementById("paypalButton");
+  }
+
+  activatePurchaseButtons() {}
+
+  setCreditsErr(ncredits: number) {
+    if (!Number.isInteger(ncredits)) {
+      this.setState({ creditsErrMsg: "Please enter a whole number." });
+    } else if (ncredits < 1) {
+      this.setState({ creditsErrMsg: "Please enter a positive number." });
+    } else {
+      this.setState({ creditsErrMsg: "" });
+    }
+  }
+
   render() {
     return (
       <div className="buyCreditsPage">
@@ -62,18 +86,25 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
                 <Form.Label>Number of Credits:</Form.Label>
               </Col>
               <Col>
-                <Form.Control type="number"></Form.Control>
+                <Form.Control
+                  type="number"
+                  onChange={(e) => this.handleCreditsChange(e)}
+                ></Form.Control>
                 <Form.Text className="text-muted">
-                  <p className="error">Error here</p>
+                  <p className="error">{this.state.creditsInput}</p>
                 </Form.Text>
               </Col>
             </Form.Group>
             <Row id="buttonsRow" className="mt-5">
               <Col>
-                <Button size="lg">Pay with PayPal</Button>
+                <Button ref={this.paypalButton} size="lg">
+                  Pay with PayPal
+                </Button>
               </Col>
               <Col>
-                <Button size="lg">Pay with Card</Button>
+                <Button id="cardButton" size="lg">
+                  Pay with Card
+                </Button>
               </Col>
             </Row>
           </Form>
