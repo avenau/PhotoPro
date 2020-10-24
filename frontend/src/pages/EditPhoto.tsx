@@ -24,7 +24,6 @@ export default function EditPhoto(props: any) {
     const [modalSave, setModalSave] = useState(false)
     const [modalDelete, setModalDelete] = useState(false)
 
-    
 
     function handleSave(event: React.FormEvent<HTMLElement>) {
         event.preventDefault();
