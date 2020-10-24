@@ -37,13 +37,14 @@ def validate_price(price):
             raise ValueError("Cannot contain alphabet characters")
         if price == "":
             raise ValueError("Price cannot be empty")
-        if price == None:
+        if price is None:
             raise ValueError("Empty object")
         price = int(price)
     if type(price) is int:
         if price < 0:
             raise ValueError("Price cannot be negative")
     return True
+
 
 def validate_tags(tags):
     """
@@ -61,6 +62,7 @@ def validate_tags(tags):
 
     return True
 
+
 def validate_title(title):
     """
     Check title is not empty
@@ -72,6 +74,7 @@ def validate_title(title):
 
     return True
 
+
 def validate_album(albums):
     for i in albums:
         if i is None or i == "":
@@ -79,11 +82,14 @@ def validate_album(albums):
 
     return True
 
+
 def reformat_lists(photo_details):
     photo_details = lower_tags(photo_details)
     photo_details = convert_album_list(photo_details)
 
     return photo_details
+
+
 def lower_tags(photo_details):
     tags = photo_details["tags"]
     if type(tags) is not list:
@@ -93,6 +99,7 @@ def lower_tags(photo_details):
     tags = [i.lower() for i in tags]
     photo_details.update({"tags": tags})
     return photo_details
+
 
 def convert_album_list(photo_details):
     """

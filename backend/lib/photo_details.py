@@ -1,8 +1,9 @@
-from lib.Error import UserDNE, TokenError
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
+from lib.Error import TokenError
+# Modified from profile_details
 
-#Modified from profile_details
+
 def get_photo_details(p_id, mongo):
     '''
     Get the Photo information from mongo
@@ -10,7 +11,7 @@ def get_photo_details(p_id, mongo):
     @param mongo(object): The photo collection in Mongo
     @return photo(object): The photo document straight from Mongo
     '''
-    
+
     try:
         oid = ObjectId(p_id)
     except InvalidId:

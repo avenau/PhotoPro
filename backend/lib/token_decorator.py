@@ -10,6 +10,7 @@ from jwt.exceptions import DecodeError
 from jwt.exceptions import InvalidTokenError
 from jwt.exceptions import InvalidSignatureError
 
+
 def validate_token(function):
     '''
     Description
@@ -37,9 +38,12 @@ def validate_token(function):
             token = request.args.get('token')
         elif request.method == 'POST':
             token = request.form['token']
+        elif request.method == 'DELETE':
+            token = request.args.get('token')
         else:
-            print("@validate_token only supports GET and POST requests")
-            raise TokenError("@validate_token supports GET and POST requests")
+            print("@validate_token supports GET, POST and DELETE requests")
+            raise TokenError("@validate_token supports GET\
+                              , POST, DELETE requests")
 
         # Check that token is correct format
         if isinstance(token, str) is False:

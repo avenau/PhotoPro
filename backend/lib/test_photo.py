@@ -3,6 +3,7 @@ from upload_photo import *
 from validate_photo import *
 from lib.Error import ValueError
 
+
 def photo():
     return {
         "title": 'Example photo',
@@ -21,9 +22,11 @@ def test_title():
         validate_title(None)
 
     with pytest.raises(ValueError):
-        validate_title("According to all known laws of aviation, there is no way a bee, should be able to fly.")
+        validate_title("According to all known laws of aviation,\
+                        there is no way a bee, should be able to fly.")
 
-    assert validate_title(photoDetails["title"]) == True
+    assert validate_title(photoDetails["title"]) is True
+
 
 def test_price():
     photoDetails = photo()
@@ -32,19 +35,21 @@ def test_price():
 
     with pytest.raises(ValueError):
         validate_price("")
-    
+
     with pytest.raises(ValueError):
         validate_price("-10")
 
-    assert validate_price(photoDetails["price"]) == True
-    assert validate_price(16) == True
+    assert validate_price(photoDetails["price"]) is True
+    assert validate_price(16) is True
+
 
 def test_tags():
     photoDetails = photo()
 
     # Maximum of 10 tags
     with pytest.raises(ValueError):
-        validate_tags(["apple", "fruit", "nature", "adventure", "a", "b", "c", "d", "e", "f", "g"])
+        validate_tags(["apple", "fruit", "nature", "adventure",
+                       "a", "b", "c", "d", "e", "f", "g"])
 
     with pytest.raises(ValueError):
         validate_tags(["appleappleappleappleappleappleappleapple"])
@@ -61,7 +66,8 @@ def test_albums():
     with pytest.raises(ValueError):
         validate_album(["", "album1"])
 
-    assert validate_album(photoDetails["albumsToAddTo"]) == True
+    assert validate_album(photoDetails["albumsToAddTo"]) is True
+
 
 def test_lower():
     testdict = {"tags": ["UPPER", "lower", "mIx"]}
