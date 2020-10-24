@@ -65,11 +65,17 @@ def verify_token():
         token = request.form.get('token')
 
     if token == '' or token is None:
-        return {"valid": False}
-    token_functions.verify_token(token)
-    return {
-        "valid": True
-    }
+        return dumps({"valid": False})
+
+    try:
+        token_functions.verify_token(token)
+        return dumps({
+            "valid": True
+        })
+    except Exception:
+        return dumps({
+            "valid": False
+        })
 
 
 @app.route('/login', methods=['POST'])

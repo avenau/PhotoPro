@@ -22,24 +22,35 @@ interface Props {}
 
 interface State {
   valid: boolean;
+  loading: boolean;
 }
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const token = localStorage.getItem("token");
+    let loading = true;
     if (token !== null) {
       axios.get(`/verifytoken?token=${token}`).then((response: any) => {
-        if (response.data.valid) this.setState({ valid: true });
+        if (response.data.valid) {
+          this.setState({ valid: true, loading: false });
+        } else {
+          this.setState({ valid: false, loading: false });
+        }
       });
+    } else {
+      loading = false;
     }
 
     this.state = {
       valid: false,
+      loading,
     };
   }
 
   render() {
-    return (
+    return this.state.loading ? (
+      <div>Loading...</div>
+    ) : (
       <Router forceRefresh>
         <Switch>
           <AnonRoute
