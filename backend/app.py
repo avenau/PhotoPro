@@ -334,6 +334,7 @@ def user_info_with_token():
         'lname': user['lname'],
         'email': user['email'],
         'nickname': user['nickname'],
+        'credits': user['credits'],
         'DOB': user['DOB'],
         'location': user['location'],
         'aboutMe': user['aboutMe'],

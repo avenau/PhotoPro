@@ -10,9 +10,25 @@ import Col from "react-bootstrap/Col";
 import Toolbar from "../../components/Toolbar/Toolbar";
 import axios from "axios";
 
-class PurchasesPage extends React.Component<RouteChildrenProps, any> {
+class PurchasesPage extends React.Component<RouteChildrenProps> {
   constructor(props: RouteChildrenProps) {
     super(props);
+    this.state = {
+      credits: 0,
+    };
+  }
+
+  componentDidMount() {
+    const token = localStorage.getItem("token");
+    axios
+      .get("userdetails", {
+        params: {
+          token: token,
+        },
+      })
+      .then((res) => {
+        this.setState({ credits: res.data.credits });
+      });
   }
 
   render() {
