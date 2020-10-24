@@ -22,6 +22,7 @@ import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import UploadPage from "./pages/UploadPage/UploadPage";
 import PurchasesPage from "./pages/Purchases/PurchasesPage";
+import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
 
 function App() {
   return (
@@ -48,6 +49,11 @@ function App() {
         <Route path="/user/:user_id" component={ProfilePage} />
         <Route path="/search/:type" component={SearchPage} />
         <ProtectedRoute exact path="/purchases" component={PurchasesPage} />
+        <ProtectedRoute
+          exact
+          path="/purchases/buycredits"
+          component={BuyCreditsPage}
+        />
         <ProtectedRoute exact path="/upload" component={UploadPage} />
         <ProtectedRoute path="/manage_account" component={ManageAccount} />
         <ProtectedRoute

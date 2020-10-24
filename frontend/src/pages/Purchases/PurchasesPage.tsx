@@ -9,8 +9,9 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Toolbar from "../../components/Toolbar/Toolbar";
 import axios from "axios";
+import "./PurchasesPage.css";
 
-class PurchasesPage extends React.Component<RouteChildrenProps> {
+class PurchasesPage extends React.Component<RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
     super(props);
     this.state = {
@@ -21,13 +22,16 @@ class PurchasesPage extends React.Component<RouteChildrenProps> {
   componentDidMount() {
     const token = localStorage.getItem("token");
     axios
-      .get("userdetails", {
+      .get("/userdetails", {
         params: {
           token: token,
         },
       })
       .then((res) => {
         this.setState({ credits: res.data.credits });
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
 
@@ -39,7 +43,7 @@ class PurchasesPage extends React.Component<RouteChildrenProps> {
           <Row className="align-items-center">
             <Col xs={9}>
               <Jumbotron>
-                <h1>You have x Credits.</h1>
+                <h1>You have {this.state.credits} Credits.</h1>
                 <p>You need more.</p>
                 <Button href="/purchases/buycredits" size="lg">
                   Buy Credits
@@ -56,7 +60,11 @@ class PurchasesPage extends React.Component<RouteChildrenProps> {
               </Button>
             </Col>
           </Row>
+          <Row id="purchasesHeading">
+            <h1>Your Purchases</h1>
+          </Row>
           <Tabs
+            as={Row}
             defaultActiveKey="photos"
             id="uncontrolled-tab-example"
             transition={false}
