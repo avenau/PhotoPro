@@ -25,7 +25,7 @@ from lib.profile.upload_photo import update_user_thumbnail
 from lib.search.user_search import user_search
 from lib.token_decorator import validate_token
 from lib.validate_login import login
-from lib.photo import create_photo_entry, update_photo_details
+from lib.photo_edit import create_photo_entry, update_photo_details
 import lib.password_reset as password_reset
 import lib.validate_registration as val_reg
 import lib.token_functions as token_functions
