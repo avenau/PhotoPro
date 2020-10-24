@@ -18,7 +18,7 @@ import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 
-interface Props {}
+interface Props { }
 
 interface State {
   valid: boolean;
@@ -74,6 +74,11 @@ class App extends React.Component<Props, State> {
           />
           <Route path="/user/:user_id" component={ProfilePage} />
           <Route path="/search/:type" component={SearchPage} />
+          <Route
+            valid={this.state.valid}
+            path="/photo/:photo_id"
+            component={PhotoDetails}
+          />
           <ProtectedRoute
             valid={this.state.valid}
             exact
@@ -91,11 +96,6 @@ class App extends React.Component<Props, State> {
             exact
             path="/manage_confirmation"
             component={ManageConfirmation}
-          />
-          <ProtectedRoute
-            valid={this.state.valid}
-            path="/photo/:photo_id"
-            component={PhotoDetails}
           />
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}
