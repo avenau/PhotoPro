@@ -181,6 +181,10 @@ def account_registration():
     else:
         new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
     
+    new_user['posts'] = []
+    new_user['albums'] = []
+    new_user['collections'] = []
+
     # Insert account details into collection called 'user'
     mongo.db.users.insert(new_user)
     return dumps({})
@@ -519,6 +523,46 @@ def update_photo():
     # Update either price, title, keywords or add discount
     return dumps(update_photo_details(mongo, photo_details))
 
+@app.route('/user/updatephoto', methods=['GET'])
+@validate_token
+def photo_details_edit():
+    """
+    Description
+    -----------
+    Validates that the user is allowed to edit the photo
+
+    Parameters
+    ----------
+    photoId: str
+    token: str
+
+    Returns
+    -------
+    success or error
+    """
+
+    photoId = request.args.get('photoId')
+    token = request.args.get('token')
+    user_uid = token_functions.get_uid(token)
+    validate_photo_user(mongo, photoId, user_uid)
+
+    result = mongo.db.photos.find_one({"_id": photoId})
+
+    # Encode image into 
+    with open(result["pathToImg"], "rb") as f:
+        imgStr = base64.b64encode(f.read())
+
+    data = {
+        "title": result["title"],
+        "price": result["price"],
+        "tags": result["tags"],
+        "albums": result["albums"],
+        "discount": result["discount"],
+        "photoStr": imgStr,
+        "metadata": result["metadata"]
+    }
+
+    return dumps(loads(data))
 
 @app.route('/user/profile/uploadphoto', methods=['POST'])
 @validate_token
@@ -605,7 +649,7 @@ def photo_details():
         title: str,
         numLikes: number,
         datePosted: Date,
-        tagsList: str[],
+        tags: str[],
         nickname: str (Artist's Nickname)
         email: str
         u_id: str, (Artist of the photo)

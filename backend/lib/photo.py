@@ -28,7 +28,9 @@ def create_photo_entry(mongo, photo_details):
 
     # Insert photo entry, except "path" attribute
     user_uid = token_functions.get_uid(photo_details['token'])
+    print(user_uid)
     default = {
+        "metadata": base64_str.split(',')[0] + ',',
         "discount": 0.0,
         "posted": datetime.datetime.now(),
         "user": ObjectId(user_uid),
@@ -49,9 +51,11 @@ def create_photo_entry(mongo, photo_details):
     set_path = {"$set": {"pathToImg": path}}
     mongo.db.photos.update_one(query, set_path)
     
-    posts = mongo.db.users.find({"_id": user_uid}, {"posts": 1})
+    response = mongo.db.users.find_one({"_id": ObjectId(user_uid)}, {"posts": 1})
+    posts = response["posts"]
     posts.append(ObjectId(name))
-    mongo.db.users.update_one({"_id": user_uid, {"$set": {"posts": posts}})
+
+    mongo.db.users.update_one({"_id": user_uid}, {"$set": {"posts": posts}})
     return {
         "success": "true"
     }

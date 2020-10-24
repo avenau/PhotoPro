@@ -17,24 +17,19 @@ export default function EditPhoto(props: any) {
     const [price, setPrice] = useState<number>()
     const [tags, setTags] = useState<string[]>()
     const [discount, setDiscount] = useState("")
-    const [photoStr, setPhotoStr] = useState("")
-    const [photoId, setPhotoId] = useState("")
     const [albums, setAlbums] = useState<string[]>()
+    const [photoId, setPhotoId] = useState("5f93d2a21b8f208d3e115864")
 
     const [imagePreview, setPreview] = useState<string>()
     const [modalSave, setModalSave] = useState(false)
     const [modalDelete, setModalDelete] = useState(false)
 
-    useEffect(() => {
-            setPhotoId(props.photoId)
-            getPhotoDetails(props.photoId)    
-        }, []
-    )
+    
 
     function handleSave(event: React.FormEvent<HTMLElement>) {
         event.preventDefault();
         const token = localStorage.getItem("token");
-        axios.post('/user/updatephoto', {
+        axios.put('/user/updatephoto', {
             title: title,
             price: price,
             tags: tags,
@@ -52,12 +47,18 @@ export default function EditPhoto(props: any) {
     }
 
     function handleDelete(event: React.FormEvent<HTMLElement>) {
-
+        // Call Joe's method to delete photo/set deleted flag
+        // Navigate back to user profile
+        const uid = localStorage.getItem("u_id");
+        props.history.push(`/photo/${uid}`)
+        console.log("Not deleted yet, but in handleDelete")
     }
 
     function getPhotoDetails(photoId: string) {
         const token = localStorage.getItem("token");
-        axios.get(`/photo_details?p_id=${photoId}?token=${token}`)
+        console.log("photoid", photoId)
+        console.log("token", token)
+        axios.get(`/user/updatephoto?p_id=${photoId}?token=${token}`)
         .then((response) => {
             console.log(response.data);
             setTitle(response.data.title);
@@ -65,10 +66,9 @@ export default function EditPhoto(props: any) {
             setTags(response.data.tags);
             setAlbums(response.data.albums);
             setDiscount(response.data.discount);
-            setPhotoStr(response.data.photoStr);
 
-            // TODO create image from photo string
-            // Set preview
+            // Set image preview
+            setPreview(response.data.metadata + response.data.photoStr)
         })
         .catch((err) => {
             console.log(err)
@@ -122,6 +122,7 @@ export default function EditPhoto(props: any) {
                     </Row>
                   </Col>
                 </Row>
+                <Image id="preview" src={imagePreview}/>
                 <Row>
                     <Col>
                         <Button id="saveButton" onClick={() => {setModalSave(true)}}>Save photo</Button>

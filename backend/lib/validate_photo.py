@@ -10,7 +10,7 @@ def validate_photo(details):
     validate_price(details["price"])
     validate_title(details["title"])
     validate_album(details["albums"])
-    validate_tags(details["tagsList"])
+    validate_tags(details["tags"])
 
 def validate_photo_user(mongo, photo, user_uid):
     """
@@ -85,13 +85,13 @@ def reformat_lists(photo_details):
 
     return photo_details
 def lower_tags(photo_details):
-    tags = photo_details["tagsList"]
+    tags = photo_details["tags"]
     if type(tags) is not list:
         tags = json.loads(tags)
 
-    photo_details.pop("tagsList")
+    photo_details.pop("tags")
     tags = [i.lower() for i in tags]
-    photo_details.update({"tagsList": tags})
+    photo_details.update({"tags": tags})
     return photo_details
 
 def convert_album_list(photo_details):

@@ -21,6 +21,7 @@ import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import UploadPage from "./pages/UploadPage/UploadPage";
+import EditPhoto from "./pages/EditPhoto";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
         <ProtectedRoute path="/manage_confirmation" component={ManageConfirmation} />
         <ProtectedRoute path="/feed" component={HomePage} />
         <ProtectedRoute path="/photo/:photo_id" component={PhotoDetails} />
+        <ProtectedRoute path="/edit" component={EditPhoto}/>
         <Route path="*" component={DoesNotExistPage} />
         {/*<ProtectedRoute path="/photo/:photo_id" component={DummyFeed} />*/}
 
