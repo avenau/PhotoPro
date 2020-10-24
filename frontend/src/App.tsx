@@ -17,7 +17,7 @@ import ProfilePage from "./pages/ProfilePage";
 import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
-import EditPhoto from "./pages/EditPhoto";
+// import EditPhoto from "./pages/EditPhoto";
 
 
 interface Props {}
@@ -29,15 +29,19 @@ class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const token = localStorage.getItem("token");
-    if (token !== null) {
-      axios.get(`/verifytoken?token=${token}`).then((response: any) => {
-        if (response.data.valid) this.setState({ valid: true });
-      });
-    }
-
+    console.log('token', token)
     this.state = {
       valid: false,
     };
+    if (token !== null) {
+      axios.get(`/verifytoken?token=${token}`).then((response: any) => {
+        console.log('in axios')
+        if (response.data.valid) {
+  
+          this.setState({ valid: true });
+        }
+      });
+    }
   }
 
   render() {
@@ -99,7 +103,7 @@ class App extends React.Component<Props, State> {
             path="/photo/:photo_id"
             component={PhotoDetails}
           />
-          <ProtectedRoute valid={this.state.valid} path="/edit" component={EditPhoto}/>
+          {/* <ProtectedRoute valid={this.state.valid} path="/edit" component={EditPhoto}/> */}
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}
         </Switch>
