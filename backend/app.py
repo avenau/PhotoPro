@@ -217,6 +217,38 @@ def profile_details():
         "profilePic": details["profilePic"]
     })
 
+@app.route('/purchases/buycredits', methods=['POST'])
+@validate_token
+def buy_credits():
+    """
+    Description
+    -----------
+    User buys credits.
+
+    Parameters
+    ----------
+    token: str,
+    ncredits: int
+
+    Returns
+    -------
+    {'credits_bought': int}
+    """
+    #TODO: validate
+    token = request.form.get("token")
+    user_id = token_functions.get_uid(token)
+    credits_to_add = int(request.form.get("ncredits"))
+    query = {"_id": ObjectId(user_id)}
+    
+    user_details = get_user_details(user_id, mongo)
+    current_credits = user_details['credits']
+    set_credits = {"$set": {"credits": current_credits + credits_to_add}}
+    mongo.db.users.update_one(query, set_credits)
+
+    return dumps({
+        'credits_bought': credits_to_add
+    })
+
 
 # Returns the two showdown images for the day
 @app.route('/showdown/getImages', methods=['GET'])
