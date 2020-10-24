@@ -10,7 +10,7 @@ import "./axios";
 import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AnonRoute from "./components/AnonRoute/AnonRoute";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/LoginPage/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
