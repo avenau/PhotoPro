@@ -5,6 +5,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 
 interface Props extends RouteComponentProps {
   type?: string;
+  prefill?: string;
 }
 
 interface State {
@@ -14,12 +15,13 @@ interface State {
 class Search extends Component<Props, State> {
   static defaultProps = {
     type: "user",
+    prefill: "",
   };
 
   constructor(props: Props) {
     super(props);
     this.state = {
-      q: "",
+      q: this.props.prefill!,
     };
   }
 
@@ -47,6 +49,7 @@ class Search extends Component<Props, State> {
           placeholder="Search"
           className="mr-sm-2"
           name="q"
+          value={this.state.q}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             this.handleChange(e);
           }}
