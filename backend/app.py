@@ -33,6 +33,10 @@ from lib import db
 from lib.photo_details import get_photo_details
 from lib.photo.remove_photo import remove_photo
 
+# Remove to other file
+from lib.validate_photo import validate_photo_user
+from lib.photo.user_photo import create_thumbnail
+
 # Config
 from config import DevelopmentConfig, defaultHandler
 
@@ -534,7 +538,7 @@ def update_photo():
     return dumps(update_photo_details(mongo, photo_details))
 
 @app.route('/user/updatephoto', methods=['GET'])
-@validate_token
+# @validate_token
 def photo_details_edit():
     """
     Description
@@ -553,26 +557,29 @@ def photo_details_edit():
 
     photoId = request.args.get('photoId')
     token = request.args.get('token')
+
     user_uid = token_functions.get_uid(token)
     validate_photo_user(mongo, photoId, user_uid)
 
-    result = mongo.db.photos.find_one({"_id": photoId})
-
+    result = mongo.db.photos.find_one({"_id": ObjectId(photoId)})
+    print(result)
     # Encode image into 
     with open(result["pathToImg"], "rb") as f:
-        imgStr = base64.b64encode(f.read())
-
+        img = f.read()
+    
+    img = str(base64.b64encode(img))
+   
     data = {
         "title": result["title"],
         "price": result["price"],
         "tags": result["tags"],
         "albums": result["albums"],
         "discount": result["discount"],
-        "photoStr": imgStr,
+        "photoStr": img,
         "metadata": result["metadata"]
     }
 
-    return dumps(loads(data))
+    return dumps(data)
 
 
 @app.route('/user/photos/removephoto', methods=['DELETE'])

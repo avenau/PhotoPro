@@ -10,10 +10,16 @@ export default function Tags(props: any) {
   const [tagsErrMsg, setTagsErr] = useState(
     "Remember to add at least one keyword!"
   );
+  const [tags, setTags] = useState(props.tagsList)
+  // const [initLen, ] = 
 
   useEffect(() => {
-    updateTagsList(props.tagsList)
-  }, []
+    if (tags !== undefined) {
+      console.log('in here tags')
+      console.log(tags)
+      updateTagsList(tags)
+    }
+  }, [tags]
   )
 
   function clearTagInput() {
@@ -149,7 +155,7 @@ export default function Tags(props: any) {
           You can include 1 to 10 keywords. Keywords should describe the main
           aspects of your photo.
           <p id="b">
-            {props.tagsList.length} Detected keywords (click keyword to delete):{" "}
+            {0} Detected keywords (click keyword to delete):{" "}
             {tagButtons}
           </p>
           <p className="error">{tagsErrMsg}</p>

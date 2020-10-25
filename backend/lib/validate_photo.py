@@ -4,6 +4,8 @@ TODO set new env variable for testing
 """
 from lib.Error import ValueError
 import json
+from bson.objectid import ObjectId
+
 
 
 def validate_photo(details):
@@ -19,11 +21,16 @@ def validate_photo_user(mongo, photo, user_uid):
     @param user_uid: ObjectId
     @return True or error
     """
-    photoOwner = mongo.db.photos.find({"_id": photo}, {"user": 1})
-    if photoOwner is not user_uid:
+    photoOwner = mongo.db.photos.find_one({"_id": ObjectId(photo)}, {"user": 1})
+    print('validate')
+    print(photoOwner)
+    print(user_uid)
+    print(photoOwner["user"])
+    print(ObjectId(user_uid))
+    if photoOwner["user"] != ObjectId(user_uid):
         print("photo owner ", photoOwner)
         print("user id ", user_uid)
-        raise ValueError("User " + user_uid + "is not the owner of" + "photo " + photo)
+        raise ValueError("User " + user_uid + "is not the owner of photo " + photo)
 
     return True
 

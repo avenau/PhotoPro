@@ -40,11 +40,14 @@ def validate_token(function):
             token = request.form['token']
         elif request.method == 'DELETE':
             token = request.args.get('token')
+        elif request.metho == 'PUT':
+            token = request.form['token']
         else:
-            print("@validate_token supports GET, POST and DELETE requests")
+            print("@validate_token supports GET, PUT, POST and DELETE requests")
             raise TokenError("@validate_token supports GET\
                               , POST, DELETE requests")
-
+        print('token', token)
+        print('photoid', request.args.get('photoId'))
         # Check that token is correct format
         if isinstance(token, str) is False:
             print("Token is not a string")

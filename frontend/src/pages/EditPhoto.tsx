@@ -18,12 +18,23 @@ export default function EditPhoto(props: any) {
     const [tags, setTags] = useState<string[]>()
     const [discount, setDiscount] = useState("")
     const [albums, setAlbums] = useState<string[]>()
-    const [photoId, setPhotoId] = useState("5f93d2a21b8f208d3e115864")
+    const [photoId, setPhotoId] = useState("5f94554463aa81c7b0cd57ed")
+    const [metadata, setMetaData] = useState<string>()
 
     const [imagePreview, setPreview] = useState<string>()
     const [modalSave, setModalSave] = useState(false)
     const [modalDelete, setModalDelete] = useState(false)
+    const [loading, setLoading] = useState(false)
 
+    const token = localStorage.getItem("token");
+    console.log("photoid", photoId)
+    console.log("token", token)
+
+    useEffect(() => {
+        console.log('start')
+        getPhotoDetails(photoId)
+        console.log("in use effect")
+    }, [])
 
     function handleSave(event: React.FormEvent<HTMLElement>) {
         event.preventDefault();
@@ -55,22 +66,29 @@ export default function EditPhoto(props: any) {
 
     function getPhotoDetails(photoId: string) {
         const token = localStorage.getItem("token");
+        setLoading(true)
         console.log("photoid", photoId)
         console.log("token", token)
-        axios.get(`/user/updatephoto?p_id=${photoId}?token=${token}`)
+        axios.get('/user/updatephoto', {params: {
+            photoId: photoId,
+            token: token
+        }})
         .then((response) => {
             console.log(response.data);
+            setLoading(false)
             setTitle(response.data.title);
             setPrice(response.data.price);
             setTags(response.data.tags);
             setAlbums(response.data.albums);
             setDiscount(response.data.discount);
+            setMetaData(response.data.metadata);
 
             // Set image preview
-            setPreview(response.data.metadata + response.data.photoStr)
+            setPreview(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0,-1));
         })
         .catch((err) => {
             console.log(err)
+            setLoading(false)
         })
     }
     
@@ -84,7 +102,7 @@ export default function EditPhoto(props: any) {
         return btn?.setAttribute("disabled", "true");
     }
 
-    return(
+    return loading ? (<div>Loading...</div>) : (
         <>
         <Toolbar/>
         <Container className="mt-5">
@@ -121,7 +139,6 @@ export default function EditPhoto(props: any) {
                     </Row>
                   </Col>
                 </Row>
-                <Image id="preview" src={imagePreview}/>
                 <Row>
                     <Col>
                         <Button id="saveButton" onClick={() => {setModalSave(true)}}>Save photo</Button>
@@ -131,7 +148,7 @@ export default function EditPhoto(props: any) {
                     </Col>
                 </Row>
             </Form>
-            <Modal show={modalSave} onHide={setModalSave(false)} animation={false}>
+            <Modal show={modalSave} onHide={() => {setModalSave(false)}} animation={false}>
                 <Container>
                     <h3>Are you sure you want to make changes to your photo?</h3>
                     <Row>
@@ -144,7 +161,7 @@ export default function EditPhoto(props: any) {
                     </Row>
                 </Container>
             </Modal>
-            <Modal show={modalDelete} onHide={setModalDelete(false)} animation={false}>
+            <Modal show={modalDelete} onHide={() => {setModalDelete(false)}} animation={false}>
                 <Container>
                     <h3>Are you sure you want to delete your photo?</h3>
                     <h4>You cannot recover your photo after deletion</h4>
