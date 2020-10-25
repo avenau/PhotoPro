@@ -2,13 +2,14 @@
 Validate photo details
 TODO set new env variable for testing
 """
-from lib.Error import ValueError
+from ..Error import ValueError
 import json
 from bson.objectid import ObjectId
 
 
 
 def validate_photo(details):
+   
     validate_price(details["price"])
     validate_title(details["title"])
     validate_album(details["albums"])
@@ -17,16 +18,16 @@ def validate_photo(details):
 def validate_photo_user(mongo, photo, user_uid):
     """
     Check that user is authorised to modify the photo
-    @param photo: ObjectId
-    @param user_uid: ObjectId
+    @param photo: str
+    @param user_uid: str 
     @return True or error
     """
     photoOwner = mongo.db.photos.find_one({"_id": ObjectId(photo)}, {"user": 1})
-    print('validate')
-    print(photoOwner)
-    print(user_uid)
-    print(photoOwner["user"])
-    print(ObjectId(user_uid))
+
+    # Or if deleted TODO
+    if photoOwner == None:
+        raise ValueError("Photo does not exist")
+
     if photoOwner["user"] != ObjectId(user_uid):
         print("photo owner ", photoOwner)
         print("user id ", user_uid)
@@ -50,6 +51,8 @@ def validate_price(price):
     if type(price) is int:
         if price < 0:
             raise ValueError("Price cannot be negative")
+        elif price % 100 != 0:
+            raise ValueError("Price must be a multiple of 100")
     return True
 
 

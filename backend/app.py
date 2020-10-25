@@ -5,6 +5,7 @@ Handle requests to and fro server and web app client
 """
 # Pip functions
 import traceback
+import base64
 from json import dumps, loads
 from bson.objectid import ObjectId
 from flask import Flask, request
@@ -12,29 +13,41 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
-import base64
-import datetime
-
 
 # JAJAC made functions
-from lib.showdown import get_images
-from lib.welcome.contributors import get_popular_contributors_images
-from lib.welcome.popular_images import get_popular_images
-from lib.profile.profile_details import get_user_details
-from lib.profile.upload_photo import update_user_thumbnail
-from lib.search.user_search import user_search
-from lib.token_decorator import validate_token
-from lib.validate_login import login
-from lib.photo_edit import create_photo_entry, update_photo_details
-import lib.password_reset as password_reset
-import lib.validate_registration as val_reg
-import lib.token_functions as token_functions
-from lib import db
-from lib.photo_details import get_photo_details
+
+# Photo
+from lib.photo.photo_edit import create_photo_entry, update_photo_details
+from lib.photo.photo_details import get_photo_details
 from lib.photo.remove_photo import remove_photo
 
+# Profile
+from lib.profile.profile_details import get_user_details
+from lib.profile.upload_photo import update_user_thumbnail
+
+# Search
+from lib.search.user_search import user_search
+
+# Showdown
+from lib.showdown import get_images
+
+# User
+from lib.user.validate_login import login
+import lib.user.password_reset as password_reset
+import lib.user.validate_registration as val_reg
+
+# Welcome
+from lib.welcome.contributors import get_popular_contributors_images
+from lib.welcome.popular_images import get_popular_images
+
+# Other/utils
+from lib.token_decorator import validate_token
+import lib.token_functions as token_functions
+from lib import db
+
+
 # Remove to other file
-from lib.validate_photo import validate_photo_user
+from lib.photo.validate_photo import validate_photo_user
 from lib.photo.user_photo import create_thumbnail
 
 # Config

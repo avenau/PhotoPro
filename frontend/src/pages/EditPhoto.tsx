@@ -18,17 +18,24 @@ export default function EditPhoto(props: any) {
     const [tags, setTags] = useState<string[]>()
     const [discount, setDiscount] = useState("")
     const [albums, setAlbums] = useState<string[]>()
-    const [photoId, setPhotoId] = useState("5f94554463aa81c7b0cd57ed")
     const [metadata, setMetaData] = useState<string>()
+
+    // Hardcoded for testing purposes. Replace with photo id of current user
+    // TODO localStorage.getItem("photoId") from photo details page
+    const [photoId, setPhotoId] = useState("5f958990a4787d1b3bed36e5") 
 
     const [imagePreview, setPreview] = useState<string>()
     const [modalSave, setModalSave] = useState(false)
     const [modalDelete, setModalDelete] = useState(false)
     const [loading, setLoading] = useState(false)
 
-    const token = localStorage.getItem("token");
-    console.log("photoid", photoId)
-    console.log("token", token)
+    // Original values to display on page
+    const [originalVal, setOriginal] = useState({
+        oTitle: title,
+        oPrice: price,
+        oDiscount: discount,
+        oAlbums: albums
+    })
 
     useEffect(() => {
         console.log('start')
@@ -42,8 +49,8 @@ export default function EditPhoto(props: any) {
         axios.put('/user/updatephoto', {
             title: title,
             price: price,
-            tags: tags,
-            albums: albums, 
+            tags: JSON.stringify(tags),
+            albums: JSON.stringify(albums), 
             discount: discount,
             token: token,
             photoId: photoId
@@ -60,7 +67,7 @@ export default function EditPhoto(props: any) {
         // Call Joe's method to delete photo/set deleted flag
         // Navigate back to user profile
         const uid = localStorage.getItem("u_id");
-        props.history.push(`/photo/${uid}`)
+        props.history.push(`/user/${uid}`)
         console.log("Not deleted yet, but in handleDelete")
     }
 
@@ -83,12 +90,19 @@ export default function EditPhoto(props: any) {
             setDiscount(response.data.discount);
             setMetaData(response.data.metadata);
 
+            setOriginal({oTitle: response.data.title,
+                oPrice: response.data.price,
+                oDiscount: response.data.discount,
+                oAlbums: response.data.albums})
             // Set image preview
             setPreview(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0,-1));
         })
         .catch((err) => {
             console.log(err)
             setLoading(false)
+            const uid = localStorage.getItem("u_id");
+            props.history.push(`/user/${uid}`)
+
         })
     }
     
@@ -113,11 +127,13 @@ export default function EditPhoto(props: any) {
                     deactivateUploadButton={deactivateSaveButton}
                     activateUploadButton={activateSaveButton}
                     titleDef={title}/>
+                <p style={{fontSize: "13px"}}> Current photo title: <b>{originalVal.oTitle}</b> </p>
                 <Price
                     deactivateUploadButton={deactivateSaveButton}
                     activateUploadButton={activateSaveButton}
                     onChange={(price: number) => setPrice(price)}
                     priceDef={price}/>
+                <p style={{fontSize: "13px"}}> Current price: <b>{originalVal.oPrice} credits</b> </p>
                 <Tags
                     deactivateUploadButton={deactivateSaveButton}
                     activateUploadButton={activateSaveButton}
@@ -139,6 +155,7 @@ export default function EditPhoto(props: any) {
                     </Row>
                   </Col>
                 </Row>
+                <br/>
                 <Row>
                     <Col>
                         <Button id="saveButton" onClick={() => {setModalSave(true)}}>Save photo</Button>
@@ -147,33 +164,27 @@ export default function EditPhoto(props: any) {
                         <Button id="delete" variant="danger" onClick={() => {setModalDelete(true)}}>Delete photo</Button>
                     </Col>
                 </Row>
+                <br/>
             </Form>
             <Modal show={modalSave} onHide={() => {setModalSave(false)}} animation={false}>
-                <Container>
-                    <h3>Are you sure you want to make changes to your photo?</h3>
-                    <Row>
-                    <Col>
-                        <Button id="saveConfirmed" variant="secondary" onClick={(e) => {handleSave(e)}}>Save photo</Button>
-                    </Col>
-                    <Col>
-                        <Button id="cancelSave" variant="danger" onClick={() => {setModalSave(false)}}>Cancel</Button>
-                    </Col>
-                    </Row>
-                </Container>
+                <Modal.Header closeButton>
+                    <Modal.Title>Save photo</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to make changes to your photo?!</Modal.Body>
+                <Modal.Footer>
+                <Button id="saveConfirmed" variant="primary" onClick={(e) => {handleSave(e)}}>Save photo</Button>
+                <Button id="cancelSave" variant="secondary" onClick={() => {setModalSave(false)}}>Cancel</Button>
+                </Modal.Footer>
             </Modal>
             <Modal show={modalDelete} onHide={() => {setModalDelete(false)}} animation={false}>
-                <Container>
-                    <h3>Are you sure you want to delete your photo?</h3>
-                    <h4>You cannot recover your photo after deletion</h4>
-                    <Row>
-                    <Col>
-                        <Button id="deleteConfirmed" variant="danger" onClick={(e) => {handleDelete(e)}}>Delete photo</Button>
-                    </Col>
-                    <Col>
-                        <Button id="cancelDelete" variant="secondary" onClick={() => {setModalSave(false)}}>Cancel</Button>
-                    </Col>
-                    </Row>
-                </Container>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete photo</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete your photo? You cannot recover your photo after deletion</Modal.Body>
+                <Modal.Footer>
+                    <Button id="deleteConfirmed" variant="danger" onClick={(e) => {handleDelete(e)}}>Delete photo</Button>
+                    <Button id="cancelDelete" variant="secondary" onClick={() => {setModalDelete(false)}}>Cancel</Button>
+                </Modal.Footer>
             </Modal>
         </Container>
         </>

@@ -40,7 +40,7 @@ def validate_token(function):
             token = request.form['token']
         elif request.method == 'DELETE':
             token = request.args.get('token')
-        elif request.metho == 'PUT':
+        elif request.method == 'PUT':
             token = request.form['token']
         else:
             print("@validate_token supports GET, PUT, POST and DELETE requests")

@@ -7,8 +7,8 @@ import datetime
 from bson.objectid import ObjectId
 
 
-from lib.validate_photo import validate_photo, validate_photo_user, reformat_lists
-import lib.token_functions as token_functions
+from lib.photo.validate_photo import validate_photo, validate_photo_user, reformat_lists
+from ..token_functions import get_uid
 
 
 def create_photo_entry(mongo, photo_details):
@@ -27,8 +27,8 @@ def create_photo_entry(mongo, photo_details):
     photo_details.pop("extension")
 
     # Insert photo entry, except "path" attribute
-    user_uid = token_functions.get_uid(photo_details['token'])
-    print(user_uid)
+    user_uid = get_uid(photo_details['token'])
+
     default = {
         "metadata": base64_str.split(',')[0] + ',',
         "discount": 0.0,
@@ -53,8 +53,10 @@ def create_photo_entry(mongo, photo_details):
     
     response = mongo.db.users.find_one({"_id": ObjectId(user_uid)}, {"posts": 1})
     posts = response["posts"]
+    print("post malone", posts)
     posts.append(ObjectId(name))
 
+    # Where id matches user_uid, replace posts with new posts
     mongo.db.users.update_one({"_id": user_uid}, {"$set": {"posts": posts}})
     return {
         "success": "true"
@@ -111,16 +113,19 @@ def update_photo_details(mongo, photo_details):
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
 
-    user_uid = token_functions.get_uid(photo_details['token'])
+    user_uid = get_uid(photo_details['token'])
     # Get the photo object id
-    photo = photo_details["photo"]
-    validate_photo_user(mongo, photo, user_uid)
+    photoId = photo_details["photoId"]
+    validate_photo_user(mongo, photoId, user_uid)
 
-    # Parameters which may be modified
-    photoId = photo_details("photo")
+    print("update")
+    print(photo_details)
+    print(photoId)
 
     for i in modify:
-        mongo.db.photos.update({"_id": photoId}, {"$set": {i: photo_details[i]}})
+        print('update', i)
+        print(photo_details[i])
+        mongo.db.photos.update_one({"_id": photoId}, {"$set": {i: photo_details[i]}})
     
     return {
         "success": "true"

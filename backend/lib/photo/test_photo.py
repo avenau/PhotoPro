@@ -1,7 +1,6 @@
 import pytest
-from upload_photo import *
 from validate_photo import *
-from lib.Error import ValueError
+from ..Error import ValueError
 
 
 def photo():
