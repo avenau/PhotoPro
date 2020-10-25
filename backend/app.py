@@ -34,6 +34,7 @@ from lib.photo_details.photo_details import get_photo_details
 from lib.photo_details.photo_likes import is_photo_liked
 from lib.photo.remove_photo import remove_photo
 from lib.photo_details.photo_likes import update_likes_mongo
+import lib.photo_details.photo_details as photo_details_lib 
 
 # Config
 from config import DevelopmentConfig, defaultHandler
@@ -689,7 +690,7 @@ def photo_details():
     
     p_id_string = str(photo_details['user'])
     artist = mongo.db.users.find_one({"_id": photo_details['user']})
-    purchased = (photo_details['_id'] in artist['purchased'])
+    #purchased = (photo_details['_id'] in artist['purchased'])
 
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
@@ -704,6 +705,30 @@ def photo_details():
         "pathToImg": photo_details['pathToImg'],
         
     })
+    
+@app.route('/photo_details/isPurchased', methods=['GET'])
+def photo_purchased():
+    """
+    Description
+    -----------
+    GET request to retrieve information for a photo
+
+    Parameters
+    ----------
+    p_id : string
+    u_id : string
+
+    Returns
+    -------
+    {
+        isPurchased: boolean,
+    }
+    """
+    photo_id = request.args.get("p_id")
+    user_id = request.args.get("u_id")
+    isPurchased = photo_details_lib.is_photo_purchased(photo_id, user_id, mongo)
+    return dumps({"isPurchased": isPurchased})
+    
     
 @app.route('/photo_details/isLiked', methods=['GET'])
 def photo_liked():

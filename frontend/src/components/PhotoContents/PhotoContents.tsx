@@ -59,13 +59,26 @@ export default function PhotoContents(props: ContentProps) {
             })
     }
 
+    const isPurchased = async (photoId: string) => {
+        await axios.get(`/photo_details/isPurchased?p_id=${photoId}&u_id=${currentUser}`)
+            .then((response) => {
+                if (response.data.isPurchased === true) {
+                    setPurchase(true);
+                } else {
+                    setPurchase(false);
+                }
+            })
+    }
+
 
 
     useEffect(() => {
         getPhotoDetails(props.photoId);
         getCurrentUser();
+        isPurchased(props.photoId);
         console.log("Current User: " + currentUser);
-    }, [titleName, currentUser])
+        console.log("Purchased: " + purchased);
+    }, [titleName, currentUser, purchased])
 
     function DetermineButton() {
         if (currentUser === "" || purchased === false) {
