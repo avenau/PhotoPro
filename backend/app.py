@@ -682,9 +682,12 @@ def photo_details():
     print("PRINT PHOTO ID")
     print(photo_id)
     
-    artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
+    #artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
     photo_details = get_photo_details(photo_id, mongo)
-    p_id_string = str(artist['_id'])
+    #p_id_string = str(artist['_id'])
+    
+    p_id_string = str(photo_details['user'])
+    artist = mongo.db.users.find_one({"_id": photo_details['user']})
 
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
@@ -693,9 +696,10 @@ def photo_details():
         "u_id": p_id_string,
         "title": photo_details['title'],
         "likes": photo_details["likes"],
-        "tagsList": photo_details["tagsList"],
+        "tagsList": photo_details["tags"],
         "nickname": artist['nickname'],
         "email": artist['email'],
+        "pathToImg": photo_details['pathToImg'],
     })
     
 @app.route('/photo_details/isLiked', methods=['GET'])
