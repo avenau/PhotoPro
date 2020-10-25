@@ -17,7 +17,7 @@ from flask_pymongo import PyMongo
 # JAJAC made functions
 
 # Photo
-from lib.photo.photo_edit import create_photo_entry, update_photo_details
+from lib.photo.photo_edit import create_photo_entry, update_photo_details, get_photo_edit
 from lib.photo.photo_details import get_photo_details
 from lib.photo.remove_photo import remove_photo
 
@@ -522,36 +522,8 @@ def upload_actual_photo():
     photo_details = request.form.to_dict()
     return dumps(create_photo_entry(mongo, photo_details))
 
-@app.route('/user/updatephoto', methods=['PUT'])
-@validate_token
-def update_photo():
-    """
-    Description
-    -----------
-    Accepts parameters related to EDITING photo details, verifies the parameters, 
-    creates a database entry for the photo and saves the photo details 
-    to backend.
-
-    Parameters
-    ----------
-    title: str,
-    price: str,
-    tags: str[],
-    albums: str[],
-    discount: str,
-    token: str,
-    photo: ObjectId
-
-    Returns
-    -------
-    success or error
-    """
-    photo_details = request.form.to_dict()
-    # Update either price, title, keywords or add discount
-    return dumps(update_photo_details(mongo, photo_details))
-
 @app.route('/user/updatephoto', methods=['GET'])
-# @validate_token
+@validate_token
 def photo_details_edit():
     """
     Description
@@ -571,29 +543,35 @@ def photo_details_edit():
     photoId = request.args.get('photoId')
     token = request.args.get('token')
 
-    user_uid = token_functions.get_uid(token)
-    validate_photo_user(mongo, photoId, user_uid)
+    return dumps(get_photo_edit(mongo, photoId, token))
 
-    result = mongo.db.photos.find_one({"_id": ObjectId(photoId)})
-    print(result)
-    # Encode image into 
-    with open(result["pathToImg"], "rb") as f:
-        img = f.read()
-    
-    img = str(base64.b64encode(img))
-   
-    data = {
-        "title": result["title"],
-        "price": result["price"],
-        "tags": result["tags"],
-        "albums": result["albums"],
-        "discount": result["discount"],
-        "photoStr": img,
-        "metadata": result["metadata"]
-    }
+@app.route('/user/updatephoto', methods=['PUT'])
+@validate_token
+def update_photo():
+    """
+    Description
+    -----------
+    Accepts parameters related to EDITING photo details, verifies the parameters, 
+    creates a database entry for the photo and saves the photo details 
+    to backend.
 
-    return dumps(data)
+    Parameters
+    ----------
+    title: str,
+    price: str,
+    tags: str[],
+    albums: str[],
+    discount: str,
+    token: str,
+    photo: str
 
+    Returns
+    -------
+    success or error
+    """
+    photo_details = request.form.to_dict()
+    # Update either price, title, keywords or add discount
+    return dumps(update_photo_details(mongo, photo_details))
 
 @app.route('/user/photos/removephoto', methods=['DELETE'])
 @validate_token

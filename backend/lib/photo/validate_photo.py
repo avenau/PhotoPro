@@ -29,8 +29,6 @@ def validate_photo_user(mongo, photo, user_uid):
         raise ValueError("Photo does not exist")
 
     if photoOwner["user"] != ObjectId(user_uid):
-        print("photo owner ", photoOwner)
-        print("user id ", user_uid)
         raise ValueError("User " + user_uid + "is not the owner of photo " + photo)
 
     return True

@@ -22,7 +22,7 @@ export default function EditPhoto(props: any) {
 
     // Hardcoded for testing purposes. Replace with photo id of current user
     // TODO localStorage.getItem("photoId") from photo details page
-    const [photoId, setPhotoId] = useState("5f958990a4787d1b3bed36e5") 
+    const [photoId, setPhotoId] = useState("5f9597b8b3add57653535d79") 
 
     const [imagePreview, setPreview] = useState<string>()
     const [modalSave, setModalSave] = useState(false)
