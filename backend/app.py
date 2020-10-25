@@ -665,6 +665,7 @@ def photo_details():
     Parameters
     ----------
     p_id : string
+    u_id : string
 
     Returns
     -------
@@ -688,6 +689,7 @@ def photo_details():
     
     p_id_string = str(photo_details['user'])
     artist = mongo.db.users.find_one({"_id": photo_details['user']})
+    purchased = (photo_details['_id'] in artist['purchased'])
 
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
@@ -700,6 +702,7 @@ def photo_details():
         "nickname": artist['nickname'],
         "email": artist['email'],
         "pathToImg": photo_details['pathToImg'],
+        
     })
     
 @app.route('/photo_details/isLiked', methods=['GET'])
@@ -774,6 +777,10 @@ def get_verified_user():
     }
     """
     token = request.args.get("token")
+    if token == None:
+        return dumps({
+            "u_id": "",
+        })
     u_id = token_functions.get_uid(token)
     return dumps({
         "u_id": u_id, 

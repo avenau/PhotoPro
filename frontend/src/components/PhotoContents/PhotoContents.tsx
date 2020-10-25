@@ -19,9 +19,11 @@ export default function PhotoContents(props: ContentProps) {
     const [isLoaded, setLoad] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
     const [photo, setPhoto] = useState("");
+    const [currentUser, setUser] = useState("No Id");
+    const [purchased, setPurchase] = useState(false);
     //const [currentUser, setCurrentUser] = useState("Current User")
     //TODO: Use Verify Tokens For this
-    const currentUser = localStorage.getItem('u_id') as string;
+    //const currentUser = localStorage.getItem('u_id') as string;
     const updateTags = (tag: string) => {
         if (tag) {
             setTags(tags => [...tags, tag]);
@@ -40,9 +42,20 @@ export default function PhotoContents(props: ContentProps) {
                 setEmail(response.data.email);
                 setLikes(response.data.likes);
                 setTags(response.data.tagsList);
+                setPurchase(response.data.purchased);
                 setTitle(response.data.title);
                 setPhoto(response.data.pathToImg);
                 setLoad(true);
+            })
+    }
+
+    const getCurrentUser = async () => {
+        await axios.get(`/get_current_user?token=${localStorage.getItem('token')}`)
+            .then((response) => {
+                if (response.data.u_id !== "false") {
+                    setUser(response.data.u_id);
+                }
+
             })
     }
 
@@ -50,10 +63,22 @@ export default function PhotoContents(props: ContentProps) {
 
     useEffect(() => {
         getPhotoDetails(props.photoId);
-    }, [titleName])
+        getCurrentUser();
+        console.log("Current User: " + currentUser);
+    }, [titleName, currentUser])
 
-    function determineButton() {
+    function DetermineButton() {
+        if (currentUser === "" || purchased === false) {
+            return (
+                <div><Button>Download Watermarked Photo</Button>
+                    <Button>Purchase Photo</Button></div>
 
+            )
+        } else if (purchased === true) {
+            return (
+                <Button>Download Full Photo</Button>
+            )
+        }
     }
 
 
