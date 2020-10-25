@@ -15,10 +15,10 @@ import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import ProfilePage from "./pages/ProfilePage";
 import Register from "./pages/Register";
-import SearchPage from "./pages/SearchPage";
+import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 
-interface Props { }
+interface Props {}
 
 interface State {
   valid: boolean;

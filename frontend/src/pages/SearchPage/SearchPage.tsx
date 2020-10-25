@@ -3,9 +3,9 @@ import axios from "axios";
 import { RouteComponentProps } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroller";
 import Spinner from "react-bootstrap/Spinner";
-import Toolbar from "../components/Toolbar/Toolbar";
-import UserHeader from "../components/UserHeader/UserHeader";
+import Toolbar from "../../components/Toolbar/Toolbar";
 import "./SearchPage.scss";
+import UserResults from "../../components/Search/UserResults";
 
 interface Props extends RouteComponentProps {}
 
@@ -69,23 +69,7 @@ export default class ProfilePage extends React.Component<Props, State> {
               </Spinner>
             }
           >
-            {this.state.profiles.map((profile) => (
-              <div
-                onClick={(e) => {
-                  e.preventDefault();
-                  this.props.history.push(`/user/${profile.id}`);
-                }}
-                className="result-container"
-                key={profile.id}
-              >
-                <UserHeader
-                  style={{ marginTop: "100px" }}
-                  name={`${profile.fname} ${profile.lname}`}
-                  // currentUser={profile.id === localStorage.getItem("u_id")}
-                  {...profile}
-                />
-              </div>
-            ))}
+            <UserResults profiles={this.state.profiles} {...this.props} />
           </InfiniteScroll>
         </div>
       </>
