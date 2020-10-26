@@ -23,6 +23,7 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
       credits: null,
       price: 0,
       priceMsg: "",
+      // Number of credit the user wants to buy
       ncredits: 0,
       creditsErrMsg: "",
       location: "",
