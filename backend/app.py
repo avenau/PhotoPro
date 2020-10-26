@@ -682,20 +682,17 @@ def photo_details():
     """
     photo_id = request.args.get("p_id")
     current_user = request.args.get("u_id")
-    print("PRINT PHOTO ID")
-    print(photo_id)
-    print(current_user)
     
+    #This is if posts are stored in user entity
     #artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
-    photo_details = get_photo_details(photo_id, mongo)
-    
     #p_id_string = str(artist['_id'])
+    
+    photo_details = get_photo_details(photo_id, mongo)
     
     p_id_string = str(photo_details['user'])
     artist = mongo.db.users.find_one({"_id": photo_details['user']})
     
     if current_user != "" and current_user is None:
-        print("GOING IN")
         current_user_details = get_user_details(current_user, mongo)
         purchased = (photo_details['_id'] in current_user_details['purchased'])
     else :
@@ -714,29 +711,6 @@ def photo_details():
         "purchased": purchased,
         
     })
-    
-@app.route('/photo_details/isPurchased', methods=['GET'])
-def photo_purchased():
-    """
-    Description
-    -----------
-    GET request to retrieve information for a photo
-
-    Parameters
-    ----------
-    p_id : string
-    u_id : string
-
-    Returns
-    -------
-    {
-        isPurchased: boolean,
-    }
-    """
-    photo_id = request.args.get("p_id")
-    user_id = request.args.get("u_id")
-    isPurchased = photo_details_lib.is_photo_purchased(photo_id, user_id, mongo)
-    return dumps({"isPurchased": isPurchased})
     
     
 @app.route('/photo_details/isLiked', methods=['GET'])
@@ -759,8 +733,6 @@ def photo_liked():
     """
     photo_id = request.args.get("p_id")
     user_id = request.args.get("u_id")
-    #print("USER ID TEST")
-    #print(user_id)
     isLiked = is_photo_liked(photo_id, user_id, mongo)
     return dumps({
         "isLiked": isLiked,

@@ -20,10 +20,9 @@ export default function PhotoContents(props: ContentProps) {
     const [isLoaded, setLoad] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
     const [artist, setArtist] = useState("");
+    //TODO
     const [photo, setPhoto] = useState("");
-    // const [currentUser, setUser] = useState("No Id");
     const [purchased, setPurchase] = useState<boolean>();
-    //TODO: Use Verify Tokens For this
     const currentUser = localStorage.getItem('u_id') as string;
     const updateTags = (tag: string) => {
         if (tag) {
@@ -50,33 +49,9 @@ export default function PhotoContents(props: ContentProps) {
             })
     }
 
-    /*const getCurrentUser = async () => {
-        await axios.get(`/get_current_user?token=${localStorage.getItem('token')}`)
-            .then((response) => {
-                if (response.data.u_id !== "false") {
-                    setUser(response.data.u_id);
-                }
-
-            })
-    }*/
-
-    /* const isPurchased = async (photoId: string) => {
-         await axios.get(`/photo_details/isPurchased?p_id=${photoId}&u_id=${currentUser}`)
-             .then((response) => {
-                 if (response.data.isPurchased === true) {
-                     setPurchase(true);
-                 } else {
-                     setPurchase(false);
-                 }
-             })
-     }*/
-
-
 
     useEffect(() => {
         getPhotoDetails(props.photoId);
-        //getCurrentUser();
-        //isPurchased(props.photoId);
 
         console.log("Purchased: " + purchased);
     }, [purchased])
@@ -142,6 +117,6 @@ export default function PhotoContents(props: ContentProps) {
                     </Row>
                 </Container>
 
-            </div > : <div> <p>Still Loading</p> </div>
+            </div > : <div> <p>Photo does not exist!</p> </div>
     );
 }
