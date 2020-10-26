@@ -5,14 +5,11 @@ import Col from "react-bootstrap/Col";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { ArrowLeft } from "react-bootstrap-icons";
 import { RouteChildrenProps } from "react-router-dom";
 import Toolbar from "../../components/Toolbar/Toolbar";
 import axios from "axios";
 import "./BuyCreditsPage.css";
-
-const CURRENCY_API_URL =
-  "https://openexchangerates.org/api/latest.json?app_id=";
-const ALLANS_CURRENCY_API_KEY = "9c2b48254528496897f2c690960e967b";
 
 class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
@@ -133,6 +130,10 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
     return (
       <div className="buyCreditsPage">
         <Toolbar />
+        <Button className="ml-3" href="/purchases">
+          <ArrowLeft />
+          {" Purchases"}
+        </Button>
         <Container className="mt-5">
           <Row>
             <Col>

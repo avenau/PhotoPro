@@ -5,6 +5,7 @@ import Col from "react-bootstrap/Col";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { ArrowLeft } from "react-bootstrap-icons";
 import { RouteChildrenProps } from "react-router-dom";
 import Toolbar from "../../components/Toolbar/Toolbar";
 import axios from "axios";
@@ -132,6 +133,10 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
     return (
       <div className="refundCreditsPage">
         <Toolbar />
+        <Button className="ml-3" href="/purchases">
+          <ArrowLeft />
+          {" Purchases"}
+        </Button>
         <Container className="mt-5">
           <Row>
             <Col>
