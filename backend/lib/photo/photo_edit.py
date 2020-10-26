@@ -139,7 +139,7 @@ def update_photo_details(mongo, photo_details):
     @param photo_details(object): object containing values to change
     @returns: response body
     """
-    modify = ["title", "price", "tags", "albums"]
+    modify = ["title", "price", "tags", "albums", "discount"]
 
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)

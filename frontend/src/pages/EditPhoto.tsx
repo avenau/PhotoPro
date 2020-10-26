@@ -11,13 +11,13 @@ import Price from "../components/Photo/Price";
 import Tags from "../components/Photo/Tags";
 import Album from "../components/Photo/Album";
 import AlbumList from '../components/ProfileLists/AlbumList';
-
+import Discount from '../components/Photo/Discount'
 
 export default function EditPhoto(props: any) {
     const [title, setTitle] = useState("")
     const [price, setPrice] = useState<number>()
     const [tags, setTags] = useState<string[]>()
-    const [discount, setDiscount] = useState("")
+    const [discount, setDiscount] = useState<number>()
     const [albums, setAlbums] = useState<string[]>()
     const [metadata, setMetaData] = useState<string>()
 
@@ -173,6 +173,13 @@ export default function EditPhoto(props: any) {
                     activateUploadButton={activateSaveButton}
                     tagsList={tags}
                     setTagsList={(tagsList: any) => setTags(tagsList)}/>
+                <Discount
+                    deactivateUploadButton={deactivateSaveButton}
+                    activateUploadButton={activateSaveButton}
+                    discountDef={discount}
+                    price={price}
+                    onChange={(discount: number) => setDiscount(discount)}
+                />
                 <Row>
                   <Col xs={6}>
                     <Image
