@@ -680,7 +680,7 @@ def search_photo():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps({"temp": "yes"})
+    return dumps({[]})
 
 @app.route('/search/collection', methods=['GET'])
 def search_collection():
@@ -706,7 +706,7 @@ def search_collection():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps({"temp": "yes"})
+    return dumps({[]})
 
 @app.route('/search/album', methods=['GET'])
 def search_album():
@@ -728,7 +728,7 @@ def search_album():
         TODO
     }
     """
-    return dumps({"temp": "yes"})
+    return dumps({[]})
 
 
 '''
