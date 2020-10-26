@@ -23,6 +23,7 @@ from lib.photo.remove_photo import remove_photo
 # Photo details
 from lib.photo_details.photo_details import get_photo_details
 from lib.photo_details.photo_likes import is_photo_liked, update_likes_mongo
+import lib.photo_details.photo_details as photo_details_lib 
 
 # Profile
 from lib.profile.profile_details import get_user_details
@@ -577,7 +578,28 @@ def update_photo():
     # Update either price, title, keywords or add discount
     return dumps(update_photo_details(mongo, photo_details))
 
-@app.route('/user/photos/removephoto', methods=['DELETE'])
+@app.route('/user/updatephoto/deleted', methods=['GET'])
+@validate_token
+def check_deleted():
+    """
+    Description
+    -----------
+    Check if the photo is marked as deleted
+
+    Parameters
+    ----------
+    photoId: str
+
+     Returns
+    -------
+    {deleted: boolean(string)}
+    """
+    photoId = request.args.get("photoId")
+    res = mongo.db.photos.find_one({"_id": ObjectId(photoId)}, {"deleted": 1})
+
+    return dumps({"deleted": res["deleted"]})
+
+@app.route('/user/updatephoto', methods=['DELETE'])
 @validate_token
 def user_remove_photo():
     '''
@@ -687,6 +709,7 @@ def photo_details():
     Parameters
     ----------
     p_id : string
+    u_id : string (Id of current user)
 
     Returns
     -------
@@ -701,13 +724,24 @@ def photo_details():
     }
     """
     photo_id = request.args.get("p_id")
-    print("PRINT PHOTO ID")
-    print(photo_id)
+    current_user = request.args.get("u_id")
     
-    artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
+    #This is if posts are stored in user entity
+    #artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
+    #p_id_string = str(artist['_id'])
+    
     photo_details = get_photo_details(photo_id, mongo)
-    p_id_string = str(artist['_id'])
-
+    
+    p_id_string = str(photo_details['user'])
+    artist = mongo.db.users.find_one({"_id": photo_details['user']})
+    print("PRINTING CURRENT USER")
+    print(current_user)
+    
+    if current_user != "" and current_user != "null":
+        current_user_details = get_user_details(current_user, mongo)
+        purchased = (photo_details['_id'] in current_user_details['purchased'])
+    else :
+        purchased = False
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
 
@@ -715,10 +749,14 @@ def photo_details():
         "u_id": p_id_string,
         "title": photo_details['title'],
         "likes": photo_details["likes"],
-        "tagsList": photo_details["tagsList"],
+        "tagsList": photo_details["tags"],
         "nickname": artist['nickname'],
         "email": artist['email'],
+        "pathToImg": photo_details['pathToImg'],
+        "purchased": purchased,
+        
     })
+    
     
 @app.route('/photo_details/isLiked', methods=['GET'])
 def photo_liked():
@@ -740,8 +778,6 @@ def photo_liked():
     """
     photo_id = request.args.get("p_id")
     user_id = request.args.get("u_id")
-    #print("USER ID TEST")
-    #print(user_id)
     isLiked = is_photo_liked(photo_id, user_id, mongo)
     return dumps({
         "isLiked": isLiked,
@@ -792,6 +828,10 @@ def get_verified_user():
     }
     """
     token = request.args.get("token")
+    if token == None:
+        return dumps({
+            "u_id": "",
+        })
     u_id = token_functions.get_uid(token)
     return dumps({
         "u_id": u_id, 

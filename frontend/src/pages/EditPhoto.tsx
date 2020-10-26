@@ -27,7 +27,7 @@ export default function EditPhoto(props: any) {
     const [imagePreview, setPreview] = useState<string>()
     const [modalSave, setModalSave] = useState(false)
     const [modalDelete, setModalDelete] = useState(false)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     // Original values to display on page
     const [originalVal, setOriginal] = useState({
@@ -39,6 +39,7 @@ export default function EditPhoto(props: any) {
 
     useEffect(() => {
         console.log('start')
+        checkDelete(photoId)
         getPhotoDetails(photoId)
         console.log("in use effect")
     }, [])
@@ -66,14 +67,45 @@ export default function EditPhoto(props: any) {
     function handleDelete(event: React.FormEvent<HTMLElement>) {
         // Call Joe's method to delete photo/set deleted flag
         // Navigate back to user profile
-        const uid = localStorage.getItem("u_id");
-        props.history.push(`/user/${uid}`)
-        console.log("Not deleted yet, but in handleDelete")
+        const token = localStorage.getItem("token");
+        console.log('token', token)
+        if (token !== null) {
+            const u_id = localStorage.getItem("u_id");
+            axios.delete('/user/updatephoto', { params: {
+                token: token,
+                imgId: photoId
+            }})
+            .then((response) => {
+                props.history.push(`/user/${u_id}`)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        }
+    }
+
+    function checkDelete(photoId: string) {
+        const token = localStorage.getItem("token");
+        axios.get('/user/updatephoto/deleted', {params: {
+            photoId: photoId,
+            token: token
+        }})
+        .then((response) => {
+            console.log(response)
+            if (response.data.deleted === true) {
+                // Do not navigate to deleted page
+                props.history.goBack()
+            }
+        }
+        )
+        .catch((err) => {
+            console.log(err)
+            props.history.goBack()
+        })
     }
 
     function getPhotoDetails(photoId: string) {
         const token = localStorage.getItem("token");
-        setLoading(true)
         console.log("photoid", photoId)
         console.log("token", token)
         axios.get('/user/updatephoto', {params: {
@@ -82,7 +114,10 @@ export default function EditPhoto(props: any) {
         }})
         .then((response) => {
             console.log(response.data);
-            setLoading(false)
+            if (response.data.deleted === true) {
+                // Do not navigate to deleted page
+                props.history.goBack()
+            }
             setTitle(response.data.title);
             setPrice(response.data.price);
             setTags(response.data.tags);
@@ -96,10 +131,10 @@ export default function EditPhoto(props: any) {
                 oAlbums: response.data.albums})
             // Set image preview
             setPreview(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0,-1));
+            setLoading(false)
         })
         .catch((err) => {
             console.log(err)
-            setLoading(false)
             props.history.goBack()
 
         })

@@ -37,6 +37,7 @@ def create_photo_entry(mongo, photo_details):
         "likes": 0,
         "comments": ["TODO"],
         "won": "TODO",
+        "deleted": False
     }
     photo_details.update(default)
     photo_entry = mongo.db.photos.insert_one(photo_details)
@@ -125,7 +126,8 @@ def get_photo_edit(mongo, photoId, token):
         "albums": result["albums"],
         "discount": result["discount"],
         "photoStr": img,
-        "metadata": result["metadata"]
+        "metadata": result["metadata"],
+        "deleted": result["deleted"]
     }
 
 

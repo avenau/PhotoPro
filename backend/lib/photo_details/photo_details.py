@@ -23,3 +23,33 @@ def get_photo_details(p_id, mongo):
         #TODO: Add Photo Errors
         #raise UserDNE("User not found")
     return photo
+    
+def is_photo_purchased(p_id, u_id, mongo):
+    '''
+    Get the Photo information from mongo
+    @param p_id(string): The _id of the photo
+    @param u_id(string): The _id of the user
+    @param mongo(object): The photo collection in Mongo
+    @return isPurchased(boolean): Returns whether the user have purchased the photo
+    '''
+    
+    try:
+        u_oid = ObjectId(u_id)
+    except InvalidId:
+        raise TokenError("u_id is not a valid ObjectId." + u_id)
+
+    try:
+        p_oid = ObjectId(p_id)
+    except InvalidId:
+        raise TokenError("p_id is not a valid ObjectId." + p_id)
+        
+    user = mongo.db.users.find_one({"_id": u_oid})
+    if user is None:
+        #print("Photos not found")
+        #TODO: Add Photo Errors
+        raise UserDNE("User not found")
+
+    
+    isPurchased = (p_oid in user['purchased'])
+    #print("isPurchased: " + isPurchased)
+    return isPurchased

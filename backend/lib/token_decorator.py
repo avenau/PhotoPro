@@ -33,6 +33,8 @@ def validate_token(function):
 
     @wraps(function)
     def validate(*args, **kwargs):
+        print("in here mate", request.args)
+
         # Check for HTTP method
         if request.method == 'GET':
             token = request.args.get('token')
