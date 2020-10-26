@@ -34,7 +34,8 @@ from lib.photo_details.photo_details import get_photo_details
 from lib.photo_details.photo_likes import is_photo_liked
 from lib.photo.remove_photo import remove_photo
 from lib.photo_details.photo_likes import update_likes_mongo
-import lib.photo_details.photo_details as photo_details_lib 
+import lib.photo_details.photo_details as photo_details_lib
+from lib.comments.comment_photo import comments_photo 
 
 # Config
 from config import DevelopmentConfig, defaultHandler
@@ -765,6 +766,33 @@ def update_likes():
     upvote = params.get("upStatus")
     #print("NEW COUNT: " + params.get("count"))
     update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
+    return dumps({})
+    
+@app.route('/comments/comment', methods=['POST'])
+def comment_photo():
+    """
+    Description
+    -----------
+    Adds Comments to Mongo
+
+    Parameters
+    ----------
+    photoId : string
+    userId : string (Commenter)
+    posted : date
+    content : string
+
+    Returns
+    -------
+    None
+    """
+    params = request.form.to_dict()
+    photo_id = params.get("photoId")
+    user_id = params.get("currentUser")
+    posted = params.get("commentDate")
+    content = params.get("commentContent")
+    
+    comments_photo(photo_id, user_id, posted, content, mongo)
     return dumps({})
 
 @app.route('/get_current_user', methods=['GET'])
