@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { RouteChildrenProps } from "react-router-dom";
 import axios from "axios";
 import { Button, Form, Modal, Container, Row, Col, Image } from 'react-bootstrap';
+import { RouteComponentProps } from "react-router-dom";
 
 // Functional components
 import Title from "../components/Photo/Title";
@@ -20,9 +21,8 @@ export default function EditPhoto(props: any) {
     const [albums, setAlbums] = useState<string[]>()
     const [metadata, setMetaData] = useState<string>()
 
-    // Hardcoded for testing purposes. Replace with photo id of current user
-    // TODO localStorage.getItem("photoId") from photo details page
-    const [photoId, setPhotoId] = useState("5f9597b8b3add57653535d79") 
+    const { params } = props.match;
+    const [photoId, setPhotoId] = useState(Object.values(params)[0] as string)
 
     const [imagePreview, setPreview] = useState<string>()
     const [modalSave, setModalSave] = useState(false)
@@ -100,8 +100,7 @@ export default function EditPhoto(props: any) {
         .catch((err) => {
             console.log(err)
             setLoading(false)
-            const uid = localStorage.getItem("u_id");
-            props.history.push(`/user/${uid}`)
+            props.history.goBack()
 
         })
     }

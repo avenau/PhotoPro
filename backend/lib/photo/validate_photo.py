@@ -49,8 +49,7 @@ def validate_price(price):
     if type(price) is int:
         if price < 0:
             raise ValueError("Price cannot be negative")
-        elif price % 100 != 0:
-            raise ValueError("Price must be a multiple of 100")
+
     return True
 
 

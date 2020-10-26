@@ -112,6 +112,7 @@ export default function Tags(props: any) {
       props.deactivateUploadButton();
     } else {
       setTagsErr("");
+      props.activateUploadButton();
     }
   }
 

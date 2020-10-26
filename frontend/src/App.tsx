@@ -110,7 +110,9 @@ class App extends React.Component<Props, State> {
             path="/manage_confirmation"
             component={ManageConfirmation}
           />
-          <ProtectedRoute valid={this.state.valid} path="/edit" component={EditPhoto}/>
+          <ProtectedRoute valid={this.state.valid}
+          path="/edit/:photo_id"
+          component={EditPhoto}/>
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}
         </Switch>

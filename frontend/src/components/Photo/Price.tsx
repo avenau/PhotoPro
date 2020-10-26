@@ -10,10 +10,7 @@ export default function Price(props: any) {
           setErrMsg("Please enter a whole number.")
         } else if (price < 0) {
           props.deactivateUploadButton();
-          setErrMsg("Please enter a positive number, which is a multiple of 100.")
-        } else if ((price % 100) !== 0) {
-          props.deactivateUploadButton();
-          setErrMsg("Please enter a positive number, which is a multiple of 100.")
+          setErrMsg("Please enter a positive number.")
         } else {
           props.activateUploadButton();
           setErrMsg("")
@@ -27,7 +24,7 @@ export default function Price(props: any) {
             <Form.Control required placeholder={props.priceDef} type="number" onChange={(e) => setPrice(Number(e.target.value))}>
             </Form.Control>
             <Form.Text className="text-muted priceInfo">
-                Price must be a positive whole number, or 0 if you'd like to release your photo for free. Must be multiple of 100 e.g. 100, 200, 300.
+                Price must be a positive whole number, or 0 if you'd like to release your photo for free.
                 <p className="error">{priceErrMsg}</p>
             </Form.Text>
         </Form.Group>
