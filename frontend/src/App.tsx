@@ -23,6 +23,7 @@ import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import UploadPage from "./pages/UploadPage/UploadPage";
 import PurchasesPage from "./pages/Purchases/PurchasesPage";
 import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
+import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
 
 function App() {
   return (
@@ -53,6 +54,11 @@ function App() {
           exact
           path="/purchases/buycredits"
           component={BuyCreditsPage}
+        />
+        <ProtectedRoute
+          exact
+          path="/purchases/refundcredits"
+          component={RefundCreditsPage}
         />
         <ProtectedRoute exact path="/upload" component={UploadPage} />
         <ProtectedRoute path="/manage_account" component={ManageAccount} />

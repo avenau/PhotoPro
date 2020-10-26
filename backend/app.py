@@ -234,7 +234,6 @@ def buy_credits():
     -------
     {'credits_bought': int}
     """
-    #TODO: validate credits are integer > 0
     token = request.form.get("token")
     user_id = token_functions.get_uid(token)
     credits_to_add = int(request.form.get("ncredits"))
