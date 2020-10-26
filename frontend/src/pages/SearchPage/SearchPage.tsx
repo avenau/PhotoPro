@@ -57,7 +57,7 @@ export default class ProfilePage extends React.Component<Props, State> {
       <>
         <Toolbar />
         <div className="search-options">
-          <Search prefill={this.state.search} />
+          <Search prefill={this.state.search} type={this.state.type} />
         </div>
         <div className="search-results">
           <InfiniteScroll
