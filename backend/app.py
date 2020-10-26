@@ -234,10 +234,15 @@ def buy_credits():
     -------
     {'credits_bought': int}
     """
-    #TODO: validate
+    #TODO: validate credits are integer > 0
     token = request.form.get("token")
     user_id = token_functions.get_uid(token)
     credits_to_add = int(request.form.get("ncredits"))
+
+    # Validate credits_to_add
+    if credits_to_add < 1:
+        raise ValueError("You need to buy at least 1 credit.")
+
     query = {"_id": ObjectId(user_id)}
     
     user_details = get_user_details(user_id, mongo)
