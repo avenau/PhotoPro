@@ -7,3 +7,11 @@
   color: rgba(0, 0, 0, 0.5) !important;
   border-color: #ced4da !important;
 }
+
+.dropdown-item {
+  color: #6d7072 !important;
+  &:active,
+  &.active {
+    background-color: #dae0e5 !important;
+  }
+}
