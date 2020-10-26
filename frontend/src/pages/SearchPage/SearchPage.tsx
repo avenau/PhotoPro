@@ -6,6 +6,7 @@ import Spinner from "react-bootstrap/Spinner";
 import Toolbar from "../../components/Toolbar/Toolbar";
 import "./SearchPage.scss";
 import UserResults from "../../components/Search/UserResults";
+import Search from "../../components/Search/Search";
 
 interface Props extends RouteComponentProps {}
 
@@ -55,7 +56,10 @@ export default class ProfilePage extends React.Component<Props, State> {
     return (
       <>
         <Toolbar />
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="search-options">
+          <Search prefill={this.state.search} />
+        </div>
+        <div className="search-results">
           <InfiniteScroll
             hasMore={!this.state.atEnd}
             loadMore={() => this.getProfiles()}
