@@ -1,9 +1,9 @@
 '''
 Validate inputs of the user
 '''
-from lib.Error import EmailError, PasswordError, LocationError
+from ..Error import EmailError, PasswordError, LocationError
 import re
-from lib.countries_list import countries
+from ..countries_list import countries
 
 
 def valid_registration(mongo, new_user):

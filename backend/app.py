@@ -18,8 +18,11 @@ from flask_pymongo import PyMongo
 
 # Photo
 from lib.photo.photo_edit import create_photo_entry, update_photo_details, get_photo_edit
-from lib.photo.photo_details import get_photo_details
 from lib.photo.remove_photo import remove_photo
+
+# Photo details
+from lib.photo_details.photo_details import get_photo_details
+from lib.photo_details.photo_likes import is_photo_liked, update_likes_mongo
 
 # Profile
 from lib.profile.profile_details import get_user_details
@@ -45,11 +48,6 @@ from lib.token_decorator import validate_token
 import lib.token_functions as token_functions
 from lib import db
 
-
-# Remove to other file
-from lib.photo.validate_photo import validate_photo_user
-from lib.photo.user_photo import create_thumbnail
-
 # Config
 from config import DevelopmentConfig, defaultHandler
 
@@ -62,7 +60,7 @@ mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 
 
-@app.route('/verifytoken', methods=['GET', 'POST'])
+@app.route('/verifytoken', methods=['GET'])
 def verify_token():
     """
     Verify that the token matches the secret
@@ -189,7 +187,13 @@ def account_registration():
     'aboutMe': str,
     'DOB': str,
     'location': str
-
+params = request.form.to_dict()
+    photo_id = params.get("photoId")
+    user_id = params.get("userId")
+    new_count = int(params.get("count"))
+    upvote = params.get("upStatus")
+    print("NEW COUNT: " + params.get("count"))
+    update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
     Returns
     -------
     None
@@ -682,7 +686,7 @@ def photo_details():
 
     Parameters
     ----------
-    query : string
+    p_id : string
 
     Returns
     -------
@@ -697,10 +701,12 @@ def photo_details():
     }
     """
     photo_id = request.args.get("p_id")
+    print("PRINT PHOTO ID")
+    print(photo_id)
+    
     artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
     photo_details = get_photo_details(photo_id, mongo)
     p_id_string = str(artist['_id'])
-    print(photo_details['tags'])
 
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
@@ -709,11 +715,87 @@ def photo_details():
         "u_id": p_id_string,
         "title": photo_details['title'],
         "likes": photo_details["likes"],
-        "tags": photo_details["tags"],
+        "tagsList": photo_details["tagsList"],
         "nickname": artist['nickname'],
         "email": artist['email'],
     })
+    
+@app.route('/photo_details/isLiked', methods=['GET'])
+def photo_liked():
+    """
+    Description
+    -----------
+    GET request to retrieve information for a photo
 
+    Parameters
+    ----------
+    p_id : string
+    u_id : string
+
+    Returns
+    -------
+    {
+        isLiked : boolean
+    }
+    """
+    photo_id = request.args.get("p_id")
+    user_id = request.args.get("u_id")
+    #print("USER ID TEST")
+    #print(user_id)
+    isLiked = is_photo_liked(photo_id, user_id, mongo)
+    return dumps({
+        "isLiked": isLiked,
+    })
+ 
+@app.route('/photo_details/updateLikes', methods=['POST'])
+def update_likes():
+    """
+    Description
+    -----------
+    Form request that updates the likes of a photo on mongo
+
+    Parameters
+    ----------
+    photoId : string
+    userId : string
+    count : number (Number of Likes)
+    upStatus : boolean (True if liking, false if unliking)
+
+    Returns
+    -------
+    None
+    """
+    params = request.form.to_dict()
+    photo_id = params.get("photoId")
+    user_id = params.get("userId")
+    new_count = int(params.get("count"))
+    upvote = params.get("upStatus")
+    #print("NEW COUNT: " + params.get("count"))
+    update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
+    return dumps({})
+
+@app.route('/get_current_user', methods=['GET'])
+def get_verified_user():
+    """
+    Description
+    -----------
+    Gets user id from token
+
+    Parameters
+    ----------
+    token : string
+
+    Returns
+    -------
+    {
+        u_id : string
+    }
+    """
+    token = request.args.get("token")
+    u_id = token_functions.get_uid(token)
+    return dumps({
+        "u_id": u_id, 
+    })
 
 '''
 ---------------
