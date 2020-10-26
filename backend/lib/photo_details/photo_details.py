@@ -43,17 +43,13 @@ def is_photo_purchased(p_id, u_id, mongo):
     except InvalidId:
         raise TokenError("p_id is not a valid ObjectId." + p_id)
         
+    user = mongo.db.users.find_one({"_id": u_oid})
     if user is None:
         #print("Photos not found")
         #TODO: Add Photo Errors
         raise UserDNE("User not found")
-        
-    if photo is None:
-        print("Photos not found")
-        #TODO: Add Photo Errors
-        #raise UserDNE("User not found")
 
-    user = mongo.db.users.find_one({"_id": u_oid})
+    
     isPurchased = (p_oid in user['purchased'])
-    print("isPurchased: " + isPurchased)
+    #print("isPurchased: " + isPurchased)
     return isPurchased

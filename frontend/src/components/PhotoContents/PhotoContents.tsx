@@ -4,6 +4,7 @@ import BookmarkButton from "../BookmarkButton";
 import LikeButton from "../LikeButton";
 import "./PhotoContents.scss";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 
 interface ContentProps {
@@ -18,12 +19,12 @@ export default function PhotoContents(props: ContentProps) {
     const [likes, setLikes] = useState(0);
     const [isLoaded, setLoad] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
+    const [artist, setArtist] = useState("");
     const [photo, setPhoto] = useState("");
-    const [currentUser, setUser] = useState("No Id");
-    const [purchased, setPurchase] = useState(false);
-    //const [currentUser, setCurrentUser] = useState("Current User")
+    // const [currentUser, setUser] = useState("No Id");
+    const [purchased, setPurchase] = useState<boolean>();
     //TODO: Use Verify Tokens For this
-    //const currentUser = localStorage.getItem('u_id') as string;
+    const currentUser = localStorage.getItem('u_id') as string;
     const updateTags = (tag: string) => {
         if (tag) {
             setTags(tags => [...tags, tag]);
@@ -34,10 +35,10 @@ export default function PhotoContents(props: ContentProps) {
 
 
     const getPhotoDetails = async (photoId: string) => {
-        await axios.get(`/photo_details?p_id=${photoId}`)
+        await axios.get(`/photo_details?p_id=${photoId}&u_id=${currentUser}`)
             .then((response) => {
                 console.log(response.data);
-
+                setArtist(response.data.u_id);
                 setNick(response.data.nickname);
                 setEmail(response.data.email);
                 setLikes(response.data.likes);
@@ -49,7 +50,7 @@ export default function PhotoContents(props: ContentProps) {
             })
     }
 
-    const getCurrentUser = async () => {
+    /*const getCurrentUser = async () => {
         await axios.get(`/get_current_user?token=${localStorage.getItem('token')}`)
             .then((response) => {
                 if (response.data.u_id !== "false") {
@@ -57,41 +58,46 @@ export default function PhotoContents(props: ContentProps) {
                 }
 
             })
-    }
+    }*/
 
-    const isPurchased = async (photoId: string) => {
-        await axios.get(`/photo_details/isPurchased?p_id=${photoId}&u_id=${currentUser}`)
-            .then((response) => {
-                if (response.data.isPurchased === true) {
-                    setPurchase(true);
-                } else {
-                    setPurchase(false);
-                }
-            })
-    }
+    /* const isPurchased = async (photoId: string) => {
+         await axios.get(`/photo_details/isPurchased?p_id=${photoId}&u_id=${currentUser}`)
+             .then((response) => {
+                 if (response.data.isPurchased === true) {
+                     setPurchase(true);
+                 } else {
+                     setPurchase(false);
+                 }
+             })
+     }*/
 
 
 
     useEffect(() => {
         getPhotoDetails(props.photoId);
-        getCurrentUser();
-        isPurchased(props.photoId);
-        console.log("Current User: " + currentUser);
+        //getCurrentUser();
+        //isPurchased(props.photoId);
+
         console.log("Purchased: " + purchased);
-    }, [titleName, currentUser, purchased])
+    }, [purchased])
 
     function DetermineButton() {
-        if (currentUser === "" || purchased === false) {
-            return (
-                <div><Button>Download Watermarked Photo</Button>
-                    <Button>Purchase Photo</Button></div>
+        if (artist === currentUser) {
+            return (<div><Button>Download Full Photo</Button>
+                <Link to="/edit" ><Button>Manage Photo</Button></Link>
 
-            )
+            </div >);
+
         } else if (purchased === true) {
             return (
                 <Button>Download Full Photo</Button>
-            )
+            );
         }
+        return (
+            <div><Button>Download Watermarked Photo</Button>
+                <Button>Purchase Photo</Button></div>
+        );
+
     }
 
 
@@ -108,8 +114,7 @@ export default function PhotoContents(props: ContentProps) {
                     <Row className="PhotoInteraction">
                         <LikeButton u_id={currentUser} p_id={props.photoId} />
                         <BookmarkButton u_id={currentUser} p_id={props.photoId} />
-                        <Button>Download Picture</Button>
-                        <Button>Manage Photo</Button>
+                        <DetermineButton />
                     </Row>
                     <div className="ArtistInfo">
                         <Row>

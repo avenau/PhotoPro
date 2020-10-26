@@ -666,7 +666,7 @@ def photo_details():
     Parameters
     ----------
     p_id : string
-    u_id : string
+    u_id : string (Id of current user)
 
     Returns
     -------
@@ -681,17 +681,25 @@ def photo_details():
     }
     """
     photo_id = request.args.get("p_id")
+    current_user = request.args.get("u_id")
     print("PRINT PHOTO ID")
     print(photo_id)
+    print(current_user)
     
     #artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
     photo_details = get_photo_details(photo_id, mongo)
+    
     #p_id_string = str(artist['_id'])
     
     p_id_string = str(photo_details['user'])
     artist = mongo.db.users.find_one({"_id": photo_details['user']})
-    #purchased = (photo_details['_id'] in artist['purchased'])
-
+    
+    if current_user != "" and current_user is None:
+        print("GOING IN")
+        current_user_details = get_user_details(current_user, mongo)
+        purchased = (photo_details['_id'] in current_user_details['purchased'])
+    else :
+        purchased = False
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
 
@@ -703,6 +711,7 @@ def photo_details():
         "nickname": artist['nickname'],
         "email": artist['email'],
         "pathToImg": photo_details['pathToImg'],
+        "purchased": purchased,
         
     })
     

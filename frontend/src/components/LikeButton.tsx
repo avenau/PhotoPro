@@ -74,7 +74,7 @@ export default function LikeButton(props: LikeProps) {
     }
 
     const getLikeCount = async (photoId: string) => {
-        await axios.get(`/photo_details?p_id=${photoId}`)
+        await axios.get(`/photo_details?p_id=${photoId}&u_id=${""}`)
             .then((response) => {
                 setCount(response.data.likes);
             })
