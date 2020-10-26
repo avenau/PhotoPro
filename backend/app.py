@@ -635,6 +635,7 @@ def search_user():
     query : string
     offset : int
     limit : int
+    orderby : string
 
     Returns
     -------
@@ -651,6 +652,91 @@ def search_user():
     data["limit"] = int(data["limit"])
 
     return dumps(user_search(data, mongo))
+
+@app.route('/search/photo', methods=['GET'])
+def search_photo():
+    """
+    Description
+    -----------
+    GET request to return many photo details based on a query
+
+    Parameters
+    ----------
+    query : string
+    offset : int
+    limit : int
+    orderby : string
+    filetype : string
+    priceMin : int
+    priceMax : int
+
+    Returns
+    -------
+    {
+        TODO
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps({"temp": "yes"})
+
+@app.route('/search/collection', methods=['GET'])
+def search_collection():
+    """
+    Description
+    -----------
+    GET request to return many user details based on a query
+
+    Parameters
+    ----------
+    query : string
+    offset : int
+    limit : int
+    orderby : string
+
+    Returns
+    -------
+    {
+        TODO
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps({"temp": "yes"})
+
+@app.route('/search/album', methods=['GET'])
+def search_album():
+    """
+    Description
+    -----------
+    GET request to return many album details based on a query
+
+    Parameters
+    ----------
+    query : string
+    offset : int
+    limit : int
+    orderby : string
+
+    Returns
+    -------
+    {
+        TODO
+    }
+    """
+    return dumps({"temp": "yes"})
+
+
+'''
+-------------------
+- End Search Routes -
+-------------------
+'''
+
 
 
 @app.route('/photo_details', methods=['GET'])
@@ -681,7 +767,7 @@ def photo_details():
     photo_id = request.args.get("p_id")
     print("PRINT PHOTO ID")
     print(photo_id)
-    
+
     artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
     photo_details = get_photo_details(photo_id, mongo)
     p_id_string = str(artist['_id'])
@@ -697,7 +783,7 @@ def photo_details():
         "nickname": artist['nickname'],
         "email": artist['email'],
     })
-    
+
 @app.route('/photo_details/isLiked', methods=['GET'])
 def photo_liked():
     """
@@ -724,7 +810,7 @@ def photo_liked():
     return dumps({
         "isLiked": isLiked,
     })
- 
+
 @app.route('/photo_details/updateLikes', methods=['POST'])
 def update_likes():
     """
@@ -772,7 +858,7 @@ def get_verified_user():
     token = request.args.get("token")
     u_id = token_functions.get_uid(token)
     return dumps({
-        "u_id": u_id, 
+        "u_id": u_id,
     })
 
 '''
