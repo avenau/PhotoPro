@@ -18,28 +18,39 @@ import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 
-interface Props {}
+interface Props { }
 
 interface State {
   valid: boolean;
+  loading: boolean;
 }
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const token = localStorage.getItem("token");
+    let loading = true;
     if (token !== null) {
       axios.get(`/verifytoken?token=${token}`).then((response: any) => {
-        if (response.data.valid) this.setState({ valid: true });
+        if (response.data.valid) {
+          this.setState({ valid: true, loading: false });
+        } else {
+          this.setState({ valid: false, loading: false });
+        }
       });
+    } else {
+      loading = false;
     }
 
     this.state = {
       valid: false,
+      loading,
     };
   }
 
   render() {
-    return (
+    return this.state.loading ? (
+      <div>Loading...</div>
+    ) : (
       <Router forceRefresh>
         <Switch>
           <AnonRoute
@@ -74,6 +85,11 @@ class App extends React.Component<Props, State> {
           />
           <Route path="/user/:user_id" component={ProfilePage} />
           <Route path="/search/:type" component={SearchPage} />
+          <Route
+            valid={this.state.valid}
+            path="/photo/:photo_id"
+            component={PhotoDetails}
+          />
           <ProtectedRoute
             valid={this.state.valid}
             exact
@@ -91,11 +107,6 @@ class App extends React.Component<Props, State> {
             exact
             path="/manage_confirmation"
             component={ManageConfirmation}
-          />
-          <ProtectedRoute
-            valid={this.state.valid}
-            path="/photo/:photo_id"
-            component={PhotoDetails}
           />
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}
