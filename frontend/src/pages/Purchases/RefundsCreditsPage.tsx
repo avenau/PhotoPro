@@ -19,7 +19,7 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
       // Number of credits the user currently has
       // Set by axios.get below
       credits: null,
-      price: 0,
+      price: "0",
       priceMsg: "",
       // Number of credits the user wants to refund
       ncredits: 0,

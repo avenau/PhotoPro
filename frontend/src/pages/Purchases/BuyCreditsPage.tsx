@@ -18,7 +18,7 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
     this.state = {
       // Number of credits the user currently has
       // Set by axios.get below
-      credits: null,
+      credits: "0",
       price: 0,
       priceMsg: "",
       // Number of credit the user wants to buy
