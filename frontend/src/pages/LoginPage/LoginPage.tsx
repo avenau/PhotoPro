@@ -8,7 +8,6 @@ import Col from "react-bootstrap/Col";
 import axios from "axios";
 import { RouteChildrenProps } from "react-router-dom";
 import Toolbar from "../../components/Toolbar/Toolbar";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 export default class LoginPage extends React.Component<
   RouteChildrenProps,
@@ -40,9 +39,10 @@ export default class LoginPage extends React.Component<
         const { data } = response;
         localStorage.setItem("token", data.token);
         localStorage.setItem("u_id", data.u_id);
+        localStorage.setItem("nickname", data.nickname);
         this.handleLoginClick();
         console.log(`isLoggedInState: ${this.state.isLoggedIn}`);
-        this.props.history.push("/feed");
+        this.props.history.push("/");
       })
       .catch((e) => {
         console.log(e);
@@ -57,7 +57,7 @@ export default class LoginPage extends React.Component<
   render() {
     return (
       <div className="loginPage">
-        <Toolbar isLoggedIn={this.state.isLoggedIn} />
+        <Toolbar />
         <Container>
           <Jumbotron>
             <h1>Log In to PhotoPro</h1>
