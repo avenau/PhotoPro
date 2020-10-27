@@ -3,6 +3,8 @@ Backend main file
 Handle requests to and fro server and web app client
  - Team JAJAC :)
 """
+import os
+
 # Pip functions
 import traceback
 from json import dumps, loads
@@ -14,6 +16,7 @@ from flask_mail import Mail
 from flask_pymongo import PyMongo
 import base64
 import datetime
+from PIL import Image
 
 
 # JAJAC made functions
@@ -607,7 +610,6 @@ def upload_actual_photo():
     }
     photo_details.update(default)
     photo_details.pop("photo")
-    photo_details.pop("extension")
     photo_details.pop("token")
     # Insert photo entry, except "path" attribute
     photo_entry = mongo.db.photos.insert_one(photo_details)
@@ -619,18 +621,25 @@ def upload_actual_photo():
     folder = './backend/images/'
     file_name = name + extension
     path = folder + file_name
+    path_thumbnail = folder + name + "_t" + extension
     # Remove metadata from b64
     img_data = base64.b64decode(base64_str.split(',')[1])
 
     # Save image to /backend/images directory
     with open(path, 'wb') as f:
         f.write(img_data)
+        # Attempting to attach compressed thumbnail to photos
+        thumb = Image.open(path)
+        thumb.thumbnail((150, 150))
+        thumb.save(path_thumbnail)
+        print("Thumbnail saved to" + path_thumbnail)
+    
 
     print("An image was written to " + path)
 
     # Add "path" attribute to db entry
     query = {"_id": ObjectId(name)}
-    set_path = {"$set": {"pathToImg": path}}
+    set_path = {"$set": {"path": path, "pathThumb": path_thumbnail}}
     mongo.db.photos.update_one(query, set_path)
 
     return dumps({
