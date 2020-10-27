@@ -272,6 +272,45 @@ def buy_credits():
         'credits_bought': credits_to_add
     })
 
+@app.route('/purchases/refundcredits', methods=['POST'])
+@validate_token
+def refund_credits():
+    """
+    Description
+    -----------
+    User refunds credits.
+
+    Parameters
+    ----------
+    token: str,
+    ncredits: int
+
+    Returns
+    -------
+    {'credits_refunded': int}
+    """
+    token = request.form.get("token")
+    user_id = token_functions.get_uid(token)
+    credits_to_refund = int(request.form.get("ncredits"))
+
+    
+    query = {"_id": ObjectId(user_id)}
+    user_details = get_user_details(user_id, mongo)
+    current_credits = user_details['credits']
+
+    # Validate credits_to_refund
+    if credits_to_refund < 1:
+        raise ValueError("You need to buy at least 1 credit.")
+    elif credits_to_refund > current_credits:
+        raise ValueError("You can't refund more credits than you own.")
+
+    set_credits = {"$set": {"credits": current_credits - credits_to_refund}}
+    mongo.db.users.update_one(query, set_credits)
+
+    return dumps({
+        'credits_refunded': credits_to_refund
+    })
+
 
 # Returns the two showdown images for the day
 @app.route('/showdown/getImages', methods=['GET'])
