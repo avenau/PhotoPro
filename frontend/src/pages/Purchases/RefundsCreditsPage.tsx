@@ -7,6 +7,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { RouteChildrenProps } from "react-router-dom";
+import BackButton from "../../components/BackButton/BackButton";
 import Toolbar from "../../components/Toolbar/Toolbar";
 import axios from "axios";
 import "./BuyCreditsPage.css";
@@ -133,10 +134,7 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
     return (
       <div className="refundCreditsPage">
         <Toolbar />
-        <Button className="ml-3" href="/purchases">
-          <ArrowLeft />
-          {" Purchases"}
-        </Button>
+        <BackButton href="/purchases" label="Purchases" />
         <Container className="mt-5">
           <Row>
             <Col>
