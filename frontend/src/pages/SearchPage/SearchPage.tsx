@@ -150,6 +150,7 @@ export default class ProfilePage extends React.Component<Props, State> {
         </div>
         <div className="search-results">
           <InfiniteScroll
+            className="test"
             hasMore={!atEnd}
             loadMore={() => this.getProfiles()}
             loader={

@@ -1,6 +1,7 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import UserHeader from "../UserHeader/UserHeader";
+import "./UserList.scss";
 
 interface Props extends RouteComponentProps {
   profiles: Profile[];
