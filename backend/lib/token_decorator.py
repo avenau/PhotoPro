@@ -33,6 +33,7 @@ def validate_token(function):
 
     @wraps(function)
     def validate(*args, **kwargs):
+
         # Check for HTTP method
         if request.method == 'GET':
             token = request.args.get('token')
@@ -40,8 +41,10 @@ def validate_token(function):
             token = request.form['token']
         elif request.method == 'DELETE':
             token = request.args.get('token')
+        elif request.method == 'PUT':
+            token = request.form['token']
         else:
-            print("@validate_token supports GET, POST and DELETE requests")
+            print("@validate_token supports GET, PUT, POST and DELETE requests")
             raise TokenError("@validate_token supports GET\
                               , POST, DELETE requests")
 

@@ -30,7 +30,7 @@ export default function FileUpload(props: InterfaceFile) {
       setErrMsg("");
       props.pickedPhoto(false);
     } else if (
-      ![".jpg", ".jpeg", ",png", ".gif", ".svg"].includes(fileExtension)
+      ![".jpg", ".jpeg", ".png", ".gif", ".svg"].includes(fileExtension)
     ) {
       setErrMsg(
         "Sorry, we only support .jpg, .png, ,.gif, and .svg images at the moment."
@@ -58,7 +58,7 @@ export default function FileUpload(props: InterfaceFile) {
         <Form.File
           id="photo"
           label="Select A Photo"
-          accept=".jpg, .png, .gif, .svg"
+          accept=".jpg, .jpeg, .png, .gif, .svg"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             handleFileChange(e)
           }

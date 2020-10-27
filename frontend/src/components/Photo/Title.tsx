@@ -4,6 +4,7 @@ import Form from "react-bootstrap/Form"
 // Todo fix types
 export default function Title(props: any) {
     const [titleErrMsg, setErrMsg] = useState("")
+
     function setTitle(title: string) {
         if (title.length > 40) { 
           props.deactivateUploadButton();
@@ -18,7 +19,7 @@ export default function Title(props: any) {
         <>
         <Form.Group controlId="title">
             <Form.Label>Photo Title</Form.Label>
-            <Form.Control required type="text" onChange={(e) => setTitle(e.target.value)}/>
+            <Form.Control required placeholder={props.titleDef} type="text" onChange={(e) => setTitle(e.target.value)}/>
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             <Form.Text className="text-muted titleInfo">
                 Title must be between 1 and 40 characters long. 
