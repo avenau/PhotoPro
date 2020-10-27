@@ -7,7 +7,7 @@ interface BackButtonProps {
   label: string;
 }
 
-export default function BackButton(props: any) {
+export default function BackButton(props: BackButtonProps) {
   return (
     <Button className="ml-3" href={props.href}>
       <ArrowLeft />
