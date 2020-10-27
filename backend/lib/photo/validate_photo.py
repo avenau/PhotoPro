@@ -105,7 +105,7 @@ def validate_discount(discount):
 
 def validate_extension(extension):
     # Accepted extensions
-    exts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".raw"]
+    exts = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
     if extension not in exts:
         raise ValueError("You attempted to upload a file type we don't accept.")
 
