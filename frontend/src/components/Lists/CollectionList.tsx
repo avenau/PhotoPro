@@ -1,5 +1,5 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import UserHeader from "../UserHeader/UserHeader";
 
 interface Props extends RouteComponentProps {
@@ -15,7 +15,7 @@ interface Profile {
   id: string;
 }
 
-export default class CollectionList extends React.Component<Props> {
+class CollectionList extends React.Component<Props> {
   render() {
     return (
       <>
@@ -39,3 +39,5 @@ export default class CollectionList extends React.Component<Props> {
     );
   }
 }
+
+export default withRouter(CollectionList);

@@ -43,7 +43,7 @@ def create_photo_entry(mongo, photo_details):
     }
     photo_details.update(default)
     photo_entry = mongo.db.photos.insert_one(photo_details)
-    
+
     # Process photo and upload
     photo_oid = photo_entry.inserted_id
     name = str(photo_oid)
@@ -51,9 +51,9 @@ def create_photo_entry(mongo, photo_details):
 
     # Add "path" attribute to db entry
     query = {"_id": ObjectId(name)}
-    set_path = {"$set": {"pathToImg": path, "pathThumb": path_thumbnail}}
+    set_path = {"$set": {"path": path, "pathThumb": path_thumbnail}}
     mongo.db.photos.update_one(query, set_path)
-    
+
 
     # Add photo to user's posts
     response = mongo.db.users.find_one({"_id": ObjectId(user_uid)}, {"posts": 1})
@@ -63,7 +63,7 @@ def create_photo_entry(mongo, photo_details):
     return {
         "success": "true"
     }
-    
+
 def process_photo(base64_str, name, extension):
     """
     Process base64 str of a photo, convert and save/upload file
@@ -106,7 +106,7 @@ def save_photo_dir(img_data, name, extension):
         thumb.thumbnail((150, 150))
         thumb.save(path_thumbnail)
         print("Thumbnail saved to" + path_thumbnail)
-    
+
     return (path, path_thumbnail)
 
 # Get details about photo
@@ -123,10 +123,10 @@ def get_photo_edit(mongo, photoId, token):
 
     result = mongo.db.photos.find_one({"_id": ObjectId(photoId)})
     print(result)
-    # Encode image into 
-    with open(result["pathToImg"], "rb") as f:
+    # Encode image into
+    with open(result["path"], "rb") as f:
         img = f.read()
-    
+
     img = str(base64.b64encode(img))
 
     return {
@@ -162,7 +162,7 @@ def update_photo_details(mongo, photo_details):
 
     for i in modify:
         mongo.db.photos.update({"_id": ObjectId(photoId)}, {"$set": {i: photo_details[i]}})
-    
+
     return {
         "success": "true"
     }

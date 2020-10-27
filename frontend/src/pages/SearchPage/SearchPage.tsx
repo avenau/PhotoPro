@@ -6,6 +6,9 @@ import Spinner from "react-bootstrap/Spinner";
 import InfiniteScroll from "react-infinite-scroller";
 import { RouteComponentProps } from "react-router-dom";
 import UserList from "../../components/Lists/UserList";
+import PhotoList from "../../components/Lists/PhotoList";
+import AlbumList from "../../components/Lists/AlbumList";
+import CollectionList from "../../components/Lists/CollectionList";
 import OrderBy from "../../components/Search/OrderBy";
 import PriceFilter from "../../components/Search/PriceFilter";
 import Search from "../../components/Search/Search";
@@ -20,7 +23,7 @@ interface State {
   type: string;
   offset: number;
   limit: number;
-  profiles: any[];
+  results: any[];
   atEnd: boolean;
   orderby: string;
   filetype: string;
@@ -28,7 +31,7 @@ interface State {
   priceMax?: number;
 }
 
-export default class ProfilePage extends React.Component<Props, State> {
+export default class SearchPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const { params } = this.props.match;
@@ -53,7 +56,7 @@ export default class ProfilePage extends React.Component<Props, State> {
       search: typeof queryParams.q === "string" ? queryParams.q : "",
       limit: 5,
       offset: 0,
-      profiles: [],
+      results: [],
       type,
       atEnd: false,
       orderby:
@@ -65,7 +68,7 @@ export default class ProfilePage extends React.Component<Props, State> {
     };
   }
 
-  private getProfiles() {
+  private getResults() {
     axios
       .get(`/search/${this.state.type}`, {
         params: {
@@ -80,7 +83,7 @@ export default class ProfilePage extends React.Component<Props, State> {
       })
       .then((res) => {
         this.setState((prevState) => ({
-          profiles: [...prevState.profiles, ...res.data],
+          results: [...prevState.results, ...res.data],
           offset: prevState.offset + res.data.length,
         }));
         if (res.data.length < this.state.limit) {
@@ -90,12 +93,28 @@ export default class ProfilePage extends React.Component<Props, State> {
       .catch(() => {});
   }
 
+  private getList() {
+    switch (this.state.type) {
+      case "photo":
+        return <PhotoList photos={this.state.results} />;
+      case "album":
+        return <AlbumList profiles={this.state.results} />;
+      case "collection":
+        return <CollectionList profiles={this.state.results} />;
+      case "user":
+        return <UserList profiles={this.state.results} />;
+
+      default:
+        return <div>Error: Invalid seach type: {this.state.type}</div>;
+    }
+  }
+
   private orderChange(orderid: string) {
-    this.setState({ orderby: orderid, profiles: [], offset: 0 });
+    this.setState({ orderby: orderid, results: [], offset: 0 });
   }
 
   private typeChange(typeid: string) {
-    this.setState({ filetype: typeid, profiles: [], offset: 0 });
+    this.setState({ filetype: typeid, results: [], offset: 0 });
   }
 
   private priceChange(priceMin?: number, priceMax?: number) {
@@ -106,7 +125,6 @@ export default class ProfilePage extends React.Component<Props, State> {
     const {
       search,
       type,
-      profiles,
       atEnd,
       orderby,
       filetype,
@@ -150,9 +168,8 @@ export default class ProfilePage extends React.Component<Props, State> {
         </div>
         <div className="search-results">
           <InfiniteScroll
-            className="test"
             hasMore={!atEnd}
-            loadMore={() => this.getProfiles()}
+            loadMore={() => this.getResults()}
             loader={
               <Spinner
                 animation="border"
@@ -164,7 +181,7 @@ export default class ProfilePage extends React.Component<Props, State> {
               </Spinner>
             }
           >
-            <UserList profiles={profiles} {...this.props} />
+            {this.getList()}
           </InfiniteScroll>
         </div>
       </>
