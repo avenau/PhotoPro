@@ -1,6 +1,5 @@
-import React from 'react';
-import Nav from 'react-bootstrap/Nav';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React from "react";
+import Nav from "react-bootstrap/Nav";
 
 function LoggedOut() {
   return (

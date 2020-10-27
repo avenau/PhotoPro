@@ -1,8 +1,9 @@
 """
-Login user 
+Login user
 """
 from lib.Error import EmailError, PasswordError
 from lib.token_functions import create_token
+
 
 def login(mongo, bcrypt, email, password):
     if email == "":
@@ -17,13 +18,16 @@ def login(mongo, bcrypt, email, password):
 
     u_id = ""
     token = ""
+    nickname = ""
     if bcrypt.check_password_hash(hashedPassword, password):
         u_id = user["_id"]
+        nickname = user["nickname"]
         token = create_token(str(u_id))
     else:
         raise PasswordError("That password is incorrect.")
 
     return {
         "u_id": str(u_id),
-        "token": token
+        "token": token,
+        "nickname": nickname
     }
