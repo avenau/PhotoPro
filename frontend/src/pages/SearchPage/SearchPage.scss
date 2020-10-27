@@ -9,18 +9,4 @@
 .search-results {
   display: flex;
   justify-content: center;
-  .result-container {
-    margin: 40px;
-    padding: 5px;
-    &:hover {
-      box-shadow: 0px 0px 5px 5px #007bff;
-      transition: box-shadow 0.2s linear;
-      cursor: pointer;
-      scale: 1000%;
-      border-radius: 20px;
-    }
-    &:active {
-      border: red;
-    }
-  }
 }

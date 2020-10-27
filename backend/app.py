@@ -36,6 +36,7 @@ from lib.profile.upload_photo import update_user_thumbnail
 
 # Search
 from lib.search.user_search import user_search
+from lib.search.photo_search import photo_search
 
 # Showdown
 from lib.showdown import get_images
@@ -798,14 +799,19 @@ def search_photo():
     Returns
     -------
     {
-        TODO
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
     }
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps({[]})
+    return dumps(photo_search(data, mongo))
 
 @app.route('/search/collection', methods=['GET'])
 def search_collection():
@@ -919,7 +925,7 @@ def photo_details():
         "tagsList": photo_details["tags"],
         "nickname": artist['nickname'],
         "email": artist['email'],
-        "pathToImg": photo_details['pathToImg'],
+        "path": photo_details['path'],
         "purchased": purchased,
 
     })
