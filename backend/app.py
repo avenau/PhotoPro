@@ -628,7 +628,7 @@ def upload_actual_photo():
     # Save image to /backend/images directory
     with open(path, 'wb') as f:
         f.write(img_data)
-        # Attempting to attach compressed thumbnail to photos
+        # Attach compressed thumbnail to photos
         thumb = Image.open(path)
         thumb.thumbnail((150, 150))
         thumb.save(path_thumbnail)
