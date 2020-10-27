@@ -301,7 +301,7 @@ def refund_credits():
     # Validate credits_to_refund
     if credits_to_refund < 1:
         raise ValueError("You need to buy at least 1 credit.")
-    elif credits_to_refund > current_credits:
+    if credits_to_refund > current_credits:
         raise ValueError("You can't refund more credits than you own.")
 
     set_credits = {"$set": {"credits": current_credits - credits_to_refund}}

@@ -63,6 +63,7 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
           <Row id="purchasesHeading">
             <h1>Your Purchases</h1>
           </Row>
+          {/* TODO: Actually display purchases here */}
           <Tabs defaultActiveKey="photos" transition={false}>
             <Tab eventKey="photos" title="Photos"></Tab>
             <Tab eventKey="albums" title="Albums"></Tab>
