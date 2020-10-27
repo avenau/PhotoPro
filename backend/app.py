@@ -19,7 +19,7 @@ from flask_pymongo import PyMongo
 # JAJAC made functions
 
 # Comments
-from lib.comments.comment_photo import comments_photo 
+from lib.comments.comment_photo import comments_photo
 
 # Photo
 from lib.photo.photo_edit import create_photo_entry, update_photo_details, get_photo_edit
@@ -28,7 +28,7 @@ from lib.photo.remove_photo import remove_photo
 # Photo details
 from lib.photo_details.photo_details import get_photo_details
 from lib.photo_details.photo_likes import is_photo_liked, update_likes_mongo
-import lib.photo_details.photo_details as photo_details_lib 
+import lib.photo_details.photo_details as photo_details_lib
 
 # Profile
 from lib.profile.profile_details import get_user_details
@@ -216,7 +216,7 @@ def account_registration():
     # Add collections and other user owned entities
     new_user['posts'] = []
     new_user['albums'] = []
-    new_user['collections'] = []        
+    new_user['collections'] = []
     new_user['likes'] = []
     new_user['purchased'] = []
     new_user['credits'] = 0
@@ -284,7 +284,7 @@ def buy_credits():
         raise ValueError("You need to buy at least 1 credit.")
 
     query = {"_id": ObjectId(user_id)}
-    
+
     user_details = get_user_details(user_id, mongo)
     current_credits = user_details['credits']
     set_credits = {"$set": {"credits": current_credits + credits_to_add}}
@@ -315,7 +315,7 @@ def refund_credits():
     user_id = token_functions.get_uid(token)
     credits_to_refund = int(request.form.get("ncredits"))
 
-    
+
     query = {"_id": ObjectId(user_id)}
     user_details = get_user_details(user_id, mongo)
     current_credits = user_details['credits']
@@ -637,8 +637,8 @@ def update_photo():
     """
     Description
     -----------
-    Accepts parameters related to EDITING photo details, verifies the parameters, 
-    creates a database entry for the photo and saves the photo details 
+    Accepts parameters related to EDITING photo details, verifies the parameters,
+    creates a database entry for the photo and saves the photo details
     to backend.
 
     Parameters
@@ -760,6 +760,7 @@ def search_user():
     query : string
     offset : int
     limit : int
+    orderby : string
 
     Returns
     -------
@@ -776,6 +777,91 @@ def search_user():
     data["limit"] = int(data["limit"])
 
     return dumps(user_search(data, mongo))
+
+@app.route('/search/photo', methods=['GET'])
+def search_photo():
+    """
+    Description
+    -----------
+    GET request to return many photo details based on a query
+
+    Parameters
+    ----------
+    query : string
+    offset : int
+    limit : int
+    orderby : string
+    filetype : string
+    priceMin : int
+    priceMax : int
+
+    Returns
+    -------
+    {
+        TODO
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps({[]})
+
+@app.route('/search/collection', methods=['GET'])
+def search_collection():
+    """
+    Description
+    -----------
+    GET request to return many user details based on a query
+
+    Parameters
+    ----------
+    query : string
+    offset : int
+    limit : int
+    orderby : string
+
+    Returns
+    -------
+    {
+        TODO
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps({[]})
+
+@app.route('/search/album', methods=['GET'])
+def search_album():
+    """
+    Description
+    -----------
+    GET request to return many album details based on a query
+
+    Parameters
+    ----------
+    query : string
+    offset : int
+    limit : int
+    orderby : string
+
+    Returns
+    -------
+    {
+        TODO
+    }
+    """
+    return dumps({[]})
+
+
+'''
+-------------------
+- End Search Routes -
+-------------------
+'''
+
 
 
 @app.route('/photo_details', methods=['GET'])
@@ -806,18 +892,18 @@ def photo_details():
     """
     photo_id = request.args.get("p_id")
     current_user = request.args.get("u_id")
-    
+
     #This is if posts are stored in user entity
     #artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
     #p_id_string = str(artist['_id'])
-    
+
     photo_details = get_photo_details(photo_id, mongo)
-    
+
     p_id_string = str(photo_details['user'])
     artist = mongo.db.users.find_one({"_id": photo_details['user']})
     print("PRINTING CURRENT USER")
     print(current_user)
-    
+
     if current_user != "" and current_user != "null":
         current_user_details = get_user_details(current_user, mongo)
         purchased = (photo_details['_id'] in current_user_details['purchased'])
@@ -835,10 +921,9 @@ def photo_details():
         "email": artist['email'],
         "pathToImg": photo_details['pathToImg'],
         "purchased": purchased,
-        
+
     })
-    
-    
+
 @app.route('/photo_details/isLiked', methods=['GET'])
 def photo_liked():
     """
@@ -863,7 +948,7 @@ def photo_liked():
     return dumps({
         "isLiked": isLiked,
     })
- 
+
 @app.route('/photo_details/updateLikes', methods=['POST'])
 def update_likes():
     """
@@ -890,7 +975,7 @@ def update_likes():
     #print("NEW COUNT: " + params.get("count"))
     update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
     return dumps({})
-    
+
 @app.route('/comments/comment', methods=['POST'])
 def comment_photo():
     """
@@ -914,7 +999,7 @@ def comment_photo():
     user_id = params.get("currentUser")
     posted = params.get("commentDate")
     content = params.get("commentContent")
-    
+
     comments_photo(photo_id, user_id, posted, content, mongo)
     return dumps({})
 
@@ -942,7 +1027,7 @@ def get_verified_user():
         })
     u_id = token_functions.get_uid(token)
     return dumps({
-        "u_id": u_id, 
+        "u_id": u_id,
     })
 
 '''
