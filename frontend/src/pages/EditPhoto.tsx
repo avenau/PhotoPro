@@ -5,13 +5,13 @@ import { Button, Form, Modal, Container, Row, Col, Image } from 'react-bootstrap
 import { RouteComponentProps } from "react-router-dom";
 
 // Functional components
-import Title from "../components/Photo/Title";
+import Title from "../components/PhotoEdit/Title";
 import Toolbar from "../components/Toolbar/Toolbar";
-import Price from "../components/Photo/Price";
-import Tags from "../components/Photo/Tags";
-import Album from "../components/Photo/Album";
+import Price from "../components/PhotoEdit/Price";
+import Tags from "../components/PhotoEdit/Tags";
+import Album from "../components/PhotoEdit/Album";
 import AlbumList from '../components/ProfileLists/AlbumList';
-import Discount from '../components/Photo/Discount'
+import Discount from '../components/PhotoEdit/Discount'
 
 export default function EditPhoto(props: any) {
     const [title, setTitle] = useState("")
@@ -49,7 +49,7 @@ export default function EditPhoto(props: any) {
             title: title,
             price: price,
             tags: JSON.stringify(tags),
-            albums: JSON.stringify(albums), 
+            albums: JSON.stringify(albums),
             discount: discount,
             token: token,
             photoId: photoId
@@ -133,12 +133,12 @@ export default function EditPhoto(props: any) {
 
         })
     }
-    
+
     function activateSaveButton() {
         const btn = document.getElementById("saveButton");
         return btn?.removeAttribute("disabled");
     }
-    
+
     function deactivateSaveButton() {
         const btn = document.getElementById("saveButton");
         return btn?.setAttribute("disabled", "true");
@@ -150,7 +150,7 @@ export default function EditPhoto(props: any) {
         <Container className="mt-5">
             <h1>Edit Photo</h1>
             <Form>
-                <Title 
+                <Title
                     onChange={(title: string) => setTitle(title)}
                     deactivateUploadButton={deactivateSaveButton}
                     activateUploadButton={activateSaveButton}
