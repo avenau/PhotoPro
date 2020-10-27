@@ -1,6 +1,6 @@
 import pytest
 from validate_photo import *
-from ..Error import ValueError
+from Error import ValueError
 
 
 def photo():
@@ -72,3 +72,24 @@ def test_lower():
     testdict = {"tags": ["UPPER", "lower", "mIx"]}
     testdict = lower_tags(testdict)
     assert testdict == {'tags': ['upper', 'lower', 'mix']}
+
+def test_discount():
+    discount = 0
+    discount1 = 100
+    discount2 = -1
+    discount3 = 101
+    discount4 = 50
+    discount5 = 50.5
+
+    with pytest.raises(ValueError):
+        validate_discount(discount2)
+    
+    with pytest.raises(ValueError):
+        validate_discount(discount3)
+
+    # with pytest.raises(ValueError):
+    #     validate_discount(discount5)
+
+    assert validate_discount(discount) == True
+    assert validate_discount(discount1) == True
+    assert validate_discount(discount4) == True

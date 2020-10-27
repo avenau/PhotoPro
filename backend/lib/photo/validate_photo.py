@@ -89,6 +89,20 @@ def validate_album(albums):
 
     return True
 
+def validate_discount(discount):
+    if type(discount) is str:
+        if not discount.isnumeric():
+            raise ValueError("Cannot contain alphabet characters")
+        if discount == "":
+            raise ValueError("Discount cannot be empty")
+        if discount is None:
+            raise ValueError("Empty object")
+        discount = int(discount)
+    if type(discount) is int:
+        if discount < 0 or discount > 100:
+            raise ValueError("Discount must be between 0 and 100")
+    
+    return True
 
 def reformat_lists(photo_details):
     photo_details = lower_tags(photo_details)
