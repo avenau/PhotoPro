@@ -629,10 +629,11 @@ def upload_actual_photo():
     with open(path, 'wb') as f:
         f.write(img_data)
         # Attach compressed thumbnail to photos
-        thumb = Image.open(path)
-        thumb.thumbnail((150, 150))
-        thumb.save(path_thumbnail)
-        print("Thumbnail saved to" + path_thumbnail)
+        if extension != ".svg":
+            thumb = Image.open(path)
+            thumb.thumbnail((150, 150))
+            thumb.save(path_thumbnail)
+            print("Thumbnail saved to" + path_thumbnail)
     
 
     print("An image was written to " + path)
