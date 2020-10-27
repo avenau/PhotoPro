@@ -1,5 +1,5 @@
-import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 
 export interface IExampleLoginProps {
   setAuth: (token: string, u_id: string) => void;
@@ -9,9 +9,10 @@ export default class ExamplePageAuth extends React.Component<
   RouteComponentProps & IExampleLoginProps
 > {
   private doLogin() {
-    this.props.setAuth("token", "1");
-    this.props.history.push("/exampleauth");
+    this.props.setAuth('token', '1');
+    this.props.history.push('/exampleauth');
   }
+
   render() {
     return (
       <>

@@ -1,7 +1,7 @@
 import axios from "axios";
 import qs from "qs";
 
-axios.defaults.baseURL = "http://localhost:8001/";
+axios.defaults.baseURL = `http://localhost:${(window as any).BACKEND_PORT}/`;
 axios.defaults.headers.put["Content-Type"] =
   "application/x-www-form-urlencoded";
 axios.defaults.headers.post["Content-Type"] =
@@ -26,15 +26,16 @@ const errorHandler = (error: any) => {
   // if has response show the error
   console.error(error);
 
+  // TODO toastify back here
+
   if (error.response) {
     console.log(error.response.data);
+    alert(error.response.data.message);
   }
 
   return Promise.reject({ ...error });
 };
 
-const responseHandler = (response: any) => {
-  return response;
-};
+const responseHandler = (response: any) => response;
 
 axios.interceptors.response.use(responseHandler, errorHandler);

@@ -1,77 +1,146 @@
+import axios from "axios";
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  RouteComponentProps,
-  Switch,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
-import { AuthProvider } from "./AuthContext";
 import "./axios";
+import AnonRoute from "./components/AnonRoute/AnonRoute";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import ExampleLoginPage from "./pages/Examples/ExampleLoginPage";
-import ExamplePage from "./pages/Examples/ExmaplePage";
-import ExamplePage2 from "./pages/Examples/ExmaplePage2";
-import ExamplePageAuth from "./pages/Examples/ExmaplePageAuth";
+import DoesNotExistPage from "./pages/DoesNotExistPage";
+import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import ManageAccount from "./pages/ManageAccount/ManageAccount";
+import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
+import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
+import ProfilePage from "./pages/ProfilePage";
+import Register from "./pages/Register";
+import SearchPage from "./pages/SearchPage";
+import UploadPage from "./pages/UploadPage/UploadPage";
+import EditPhoto from "./pages/EditPhoto";
 
-function App() {
-  /**
-   * Gets the token from localStorage. If token doesn't exist return an empty string (rather than null)
-   * setAuthDetails() is used since state is a hook here (functional component)
-   */
-  const [authDetails, setAuthDetails] = React.useState(
-    localStorage.getItem("token") !== null ? localStorage.getItem("token") : ""
-  );
+import PurchasesPage from "./pages/Purchases/PurchasesPage";
+import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
+import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
 
-  /**
-   * Function to update the localStorage and update state
-   */
-  function setAuth(token: string, u_id: string) {
-    localStorage.setItem("token", token);
-    localStorage.setItem("u_id", u_id);
-    setAuthDetails(token);
+interface Props {}
+
+interface State {
+  valid: boolean;
+  loading: boolean;
+}
+class App extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    const token = localStorage.getItem("token");
+    let loading = true;
+    if (token !== null) {
+      axios.get(`/verifytoken?token=${token}`).then((response: any) => {
+        if (response.data.valid) {
+          this.setState({ valid: true, loading: false });
+        } else {
+          this.setState({ valid: false, loading: false });
+        }
+      });
+    } else {
+      loading = false;
+    }
+
+    this.state = {
+      valid: false,
+      loading,
+    };
   }
-  return (
-    <AuthProvider value={authDetails!}>
-      <Router>
-        <Switch>
-          <Route exact path="/example" component={ExamplePage} />
-          <Route exact path="/example2" component={ExamplePage2} />
-          <Route
-            exact
-            path="/login"
-            render={(props: RouteComponentProps) => {
-              return <ExampleLoginPage {...props} setAuth={setAuth} />;
-            }}
-          />
-          <ProtectedRoute path="/exampleauth" component={ExamplePageAuth} />
 
-          {/* EXAMPLE LOGIN/REGISTER ROUTES BELOW */}
-          {/* <Route
+  render() {
+    return this.state.loading ? (
+      <div>Loading...</div>
+    ) : (
+      <Router forceRefresh>
+        <Switch>
+          <AnonRoute
+            valid={this.state.valid}
             exact
             path="/login"
-            render={(props: RouteComponentProps) => {
-              return <LoginPage {...props} setAuth={setAuth} />;
-            }}
+            component={LoginPage}
           />
-          <Route
+          <Route exact path="/" component={HomePage} />
+          <AnonRoute
+            valid={this.state.valid}
             exact
             path="/register"
-            render={(props: RouteComponentProps) => {
-              return <RegisterPage {...props} setAuth={setAuth} />;
-            }}
-          /> */}
-
-          {/* EXAMPLE PAGES WHICH REQUIRE LOGIN TO REACH */}
-          {/* <ProtectedRoute exact path="/" component={HomePage} />
-          <ProtectedRoute path="/profile/:profile" component={ProfilePage} />
-          <ProtectedRoute path="/channel/:channel_id" component={ChannelPage} />
-          <ProtectedRoute path="/search/:query_str" component={SearchPage} />
-          <ProtectedRoute path="/search" component={SearchPage} /> */}
+            component={Register}
+          />
+          <AnonRoute
+            exact
+            valid={this.state.valid}
+            path="/forgotpassword/request"
+            component={ForgotPasswordPage}
+          />
+          <AnonRoute
+            exact
+            valid={this.state.valid}
+            path="/forgotpassword/reset"
+            component={ResetPasswordPage}
+          />
+          <Route
+            exact
+            path="/forgotpassword/reset"
+            component={ResetPasswordPage}
+          />
+          <Route path="/user/:user_id" component={ProfilePage} />
+          <Route path="/search/:type" component={SearchPage} />
+          <Route
+            valid={this.state.valid}
+            path="/photo/:photo_id"
+            component={PhotoDetails}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/upload"
+            component={UploadPage}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/manage_account"
+            component={ManageAccount}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/manage_confirmation"
+            component={ManageConfirmation}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            path="/edit/:photo_id"
+            component={EditPhoto}/>
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/purchases"
+            component={PurchasesPage}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/purchases/buycredits"
+            component={BuyCreditsPage}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/purchases/refundcredits"
+            component={RefundCreditsPage}
+          />
+          <Route path="*" component={DoesNotExistPage} />
+          {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}
         </Switch>
       </Router>
-    </AuthProvider>
-  );
+    );
+  }
 }
 
 export default App;

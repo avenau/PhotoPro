@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 
-export default class ExamplePage2 extends React.Component {
+export default class ExamplePage extends React.Component {
   render() {
     return (
       <>
-        <div>This is a second example page</div>
+        <div>This is an example page</div>
         <br />
         <a href="/example">example</a>
         <br />

@@ -1,22 +1,19 @@
 import React from "react";
 import { Redirect, Route, RouteProps } from "react-router-dom";
-import AuthContext from "../../AuthContext";
 
 /**
- * Get the token value from localStorage, if it exists then continue.
+ * Get the token value from localStorage, check validity with back end
+ * then continue.
  * If it did not exist then the user should be redirected to login.
  *
- * TODO
- * Could be a good idea to check whether the token is valid with the backend
- * rather than just checking its existence
+ * Same is true except validity is passed from App.tsx
  */
-function ProtectedRoute(props: RouteProps) {
-  const token = React.useContext(AuthContext);
-  console.log(token);
-  if (!token) {
-    return <Redirect to="/login" />;
-  }
-  return <Route {...props} />;
+
+interface Props extends RouteProps {
+  valid: boolean;
+}
+function ProtectedRoute(props: Props) {
+  return props.valid ? <Route {...props} /> : <Redirect to="/login" />;
 }
 
 export default ProtectedRoute;
