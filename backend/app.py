@@ -199,6 +199,11 @@ params = request.form.to_dict()
         new_user['profilePic'] = ""
     else:
         new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
+        
+    #Add Likes, Purchased and Posts Collections
+    new_user['likes'] = []
+    new_user['purchased'] = []
+    new_user['posts'] = []
 
     # Insert account details into collection called 'user'
     mongo.db.users.insert(new_user)

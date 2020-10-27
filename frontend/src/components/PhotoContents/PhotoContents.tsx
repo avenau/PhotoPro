@@ -110,7 +110,7 @@ export default function PhotoContents(props: ContentProps) {
 
                             </Row>
                             <Row>{tags.map((tag) => (
-                                <><Button variant="secondary">{tag}</Button>{'  '}</>
+                                <><Button className="mr-1" variant="secondary">{tag}</Button>{' '}</>
                             ))}</Row>
 
 
