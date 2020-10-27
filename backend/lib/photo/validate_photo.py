@@ -2,16 +2,36 @@
 Validate photo details
 TODO set new env variable for testing
 """
-from lib.Error import ValueError
+from ..Error import ValueError
 import json
+from bson.objectid import ObjectId
+
 
 
 def validate_photo(details):
+   
     validate_price(details["price"])
     validate_title(details["title"])
     validate_album(details["albums"])
     validate_tags(details["tags"])
 
+def validate_photo_user(mongo, photo, user_uid):
+    """
+    Check that user is authorised to modify the photo
+    @param photo: str
+    @param user_uid: str 
+    @return True or error
+    """
+    photoOwner = mongo.db.photos.find_one({"_id": ObjectId(photo)}, {"user": 1})
+
+    # Or if deleted TODO
+    if photoOwner == None:
+        raise ValueError("Photo does not exist")
+
+    if photoOwner["user"] != ObjectId(user_uid):
+        raise ValueError("User " + user_uid + "is not the owner of photo " + photo)
+
+    return True
 
 def validate_price(price):
     """
@@ -29,6 +49,7 @@ def validate_price(price):
     if type(price) is int:
         if price < 0:
             raise ValueError("Price cannot be negative")
+
     return True
 
 
@@ -48,7 +69,6 @@ def validate_tags(tags):
 
     return True
 
-
 def validate_title(title):
     """
     Check title is not empty
@@ -65,6 +85,29 @@ def validate_album(albums):
     for i in albums:
         if i is None or i == "":
             raise ValueError("Cannot be empty or None")
+
+    return True
+
+def validate_discount(discount):
+    if type(discount) is str:
+        if not discount.isnumeric():
+            raise ValueError("Cannot contain alphabet characters")
+        if discount == "":
+            raise ValueError("Discount cannot be empty")
+        if discount is None:
+            raise ValueError("Empty object")
+        discount = int(discount)
+    if type(discount) is int:
+        if discount < 0 or discount > 100:
+            raise ValueError("Discount must be between 0 and 100")
+    
+    return True
+
+def validate_extension(extension):
+    # Accepted extensions
+    exts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".raw"]
+    if extension not in exts:
+        raise ValueError("You attempted to upload a file type we don't accept.")
 
     return True
 

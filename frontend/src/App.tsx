@@ -6,14 +6,18 @@ import "./axios";
 import AnonRoute from "./components/AnonRoute/AnonRoute";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import DoesNotExistPage from "./pages/DoesNotExistPage";
+import EditPhoto from "./pages/EditPhoto";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/LoginPage/LoginPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import ProfilePage from "./pages/ProfilePage";
+import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
+import PurchasesPage from "./pages/Purchases/PurchasesPage";
+import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
 import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
@@ -107,6 +111,29 @@ class App extends React.Component<Props, State> {
             exact
             path="/manage_confirmation"
             component={ManageConfirmation}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            path="/edit/:photo_id"
+            component={EditPhoto}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/purchases"
+            component={PurchasesPage}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/purchases/buycredits"
+            component={BuyCreditsPage}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/purchases/refundcredits"
+            component={RefundCreditsPage}
           />
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}
