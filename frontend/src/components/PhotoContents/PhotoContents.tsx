@@ -5,6 +5,7 @@ import LikeButton from "../LikeButton";
 import "./PhotoContents.scss";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import PhotoComments from "../../components/PhotoComments/PhotoComments";
 
 
 interface ContentProps {
@@ -109,13 +110,14 @@ export default function PhotoContents(props: ContentProps) {
 
                             </Row>
                             <Row>{tags.map((tag) => (
-                                <><Button variant="secondary">{tag}</Button>{'  '}</>
+                                <><Button className="mr-1" variant="secondary">{tag}</Button>{' '}</>
                             ))}</Row>
 
 
                         </Col>
                     </Row>
                 </Container>
+                <PhotoComments p_id={props.photoId} />
 
             </div > : <div> <p>Photo does not exist!</p> </div>
     );

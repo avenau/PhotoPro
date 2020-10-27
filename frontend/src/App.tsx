@@ -9,7 +9,7 @@ import DoesNotExistPage from "./pages/DoesNotExistPage";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/LoginPage/LoginPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
@@ -19,8 +19,11 @@ import SearchPage from "./pages/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 import EditPhoto from "./pages/EditPhoto";
 
+import PurchasesPage from "./pages/Purchases/PurchasesPage";
+import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
+import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
 
-interface Props { }
+interface Props {}
 
 interface State {
   valid: boolean;
@@ -110,9 +113,28 @@ class App extends React.Component<Props, State> {
             path="/manage_confirmation"
             component={ManageConfirmation}
           />
-          <ProtectedRoute valid={this.state.valid}
-          path="/edit/:photo_id"
-          component={EditPhoto}/>
+          <ProtectedRoute
+            valid={this.state.valid}
+            path="/edit/:photo_id"
+            component={EditPhoto}/>
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/purchases"
+            component={PurchasesPage}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/purchases/buycredits"
+            component={BuyCreditsPage}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/purchases/refundcredits"
+            component={RefundCreditsPage}
+          />
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}
         </Switch>

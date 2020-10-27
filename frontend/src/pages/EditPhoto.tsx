@@ -32,16 +32,14 @@ export default function EditPhoto(props: any) {
     // Original values to display on page
     const [originalVal, setOriginal] = useState({
         oTitle: title,
-        oPrice: price,
-        oDiscount: discount,
+        oPrice: 0,
+        oDiscount: 0,
         oAlbums: albums
     })
 
     useEffect(() => {
-        console.log('start')
         checkDelete(photoId)
         getPhotoDetails(photoId)
-        console.log("in use effect")
     }, [])
 
     function handleSave(event: React.FormEvent<HTMLElement>) {
@@ -65,10 +63,8 @@ export default function EditPhoto(props: any) {
     }
 
     function handleDelete(event: React.FormEvent<HTMLElement>) {
-        // Call Joe's method to delete photo/set deleted flag
         // Navigate back to user profile
         const token = localStorage.getItem("token");
-        console.log('token', token)
         if (token !== null) {
             const u_id = localStorage.getItem("u_id");
             axios.delete('/user/updatephoto', { params: {
@@ -106,8 +102,6 @@ export default function EditPhoto(props: any) {
 
     function getPhotoDetails(photoId: string) {
         const token = localStorage.getItem("token");
-        console.log("photoid", photoId)
-        console.log("token", token)
         axios.get('/user/updatephoto', {params: {
             photoId: photoId,
             token: token
@@ -178,6 +172,8 @@ export default function EditPhoto(props: any) {
                     activateUploadButton={activateSaveButton}
                     discountDef={discount}
                     price={price}
+                    oPrice={originalVal.oPrice}
+                    oDiscount={originalVal.oDiscount}
                     onChange={(discount: number) => setDiscount(discount)}
                 />
                 <Row>

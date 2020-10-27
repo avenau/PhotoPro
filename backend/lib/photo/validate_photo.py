@@ -69,7 +69,6 @@ def validate_tags(tags):
 
     return True
 
-
 def validate_title(title):
     """
     Check title is not empty
@@ -103,6 +102,15 @@ def validate_discount(discount):
             raise ValueError("Discount must be between 0 and 100")
     
     return True
+
+def validate_extension(extension):
+    # Accepted extensions
+    exts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".raw"]
+    if extension not in exts:
+        raise ValueError("You attempted to upload a file type we don't accept.")
+
+    return True
+
 
 def reformat_lists(photo_details):
     photo_details = lower_tags(photo_details)

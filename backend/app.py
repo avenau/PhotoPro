@@ -3,6 +3,8 @@ Backend main file
 Handle requests to and fro server and web app client
  - Team JAJAC :)
 """
+import os
+
 # Pip functions
 import traceback
 import base64
@@ -15,6 +17,9 @@ from flask_mail import Mail
 from flask_pymongo import PyMongo
 
 # JAJAC made functions
+
+# Comments
+from lib.comments.comment_photo import comments_photo 
 
 # Photo
 from lib.photo.photo_edit import create_photo_entry, update_photo_details, get_photo_edit
@@ -48,6 +53,8 @@ from lib.welcome.popular_images import get_popular_images
 from lib.token_decorator import validate_token
 import lib.token_functions as token_functions
 from lib import db
+
+
 
 # Config
 from config import DevelopmentConfig, defaultHandler
@@ -188,13 +195,7 @@ def account_registration():
     'aboutMe': str,
     'DOB': str,
     'location': str
-params = request.form.to_dict()
-    photo_id = params.get("photoId")
-    user_id = params.get("userId")
-    new_count = int(params.get("count"))
-    upvote = params.get("upStatus")
-    print("NEW COUNT: " + params.get("count"))
-    update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
+
     Returns
     -------
     None
@@ -211,10 +212,14 @@ params = request.form.to_dict()
         new_user['profilePic'] = ""
     else:
         new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
-    
+
+    # Add collections and other user owned entities
     new_user['posts'] = []
     new_user['albums'] = []
-    new_user['collections'] = []
+    new_user['collections'] = []        
+    new_user['likes'] = []
+    new_user['purchased'] = []
+    new_user['credits'] = 0
 
     # Insert account details into collection called 'user'
     mongo.db.users.insert(new_user)
@@ -251,6 +256,81 @@ def profile_details():
         "location": details["location"],
         "email": details["email"],
         "profilePic": details["profilePic"]
+    })
+
+@app.route('/purchases/buycredits', methods=['POST'])
+@validate_token
+def buy_credits():
+    """
+    Description
+    -----------
+    User buys credits.
+
+    Parameters
+    ----------
+    token: str,
+    ncredits: int
+
+    Returns
+    -------
+    {'credits_bought': int}
+    """
+    token = request.form.get("token")
+    user_id = token_functions.get_uid(token)
+    credits_to_add = int(request.form.get("ncredits"))
+
+    # Validate credits_to_add
+    if credits_to_add < 1:
+        raise ValueError("You need to buy at least 1 credit.")
+
+    query = {"_id": ObjectId(user_id)}
+    
+    user_details = get_user_details(user_id, mongo)
+    current_credits = user_details['credits']
+    set_credits = {"$set": {"credits": current_credits + credits_to_add}}
+    mongo.db.users.update_one(query, set_credits)
+
+    return dumps({
+        'credits_bought': credits_to_add
+    })
+
+@app.route('/purchases/refundcredits', methods=['POST'])
+@validate_token
+def refund_credits():
+    """
+    Description
+    -----------
+    User refunds credits.
+
+    Parameters
+    ----------
+    token: str,
+    ncredits: int
+
+    Returns
+    -------
+    {'credits_refunded': int}
+    """
+    token = request.form.get("token")
+    user_id = token_functions.get_uid(token)
+    credits_to_refund = int(request.form.get("ncredits"))
+
+    
+    query = {"_id": ObjectId(user_id)}
+    user_details = get_user_details(user_id, mongo)
+    current_credits = user_details['credits']
+
+    # Validate credits_to_refund
+    if credits_to_refund < 1:
+        raise ValueError("You need to buy at least 1 credit.")
+    if credits_to_refund > current_credits:
+        raise ValueError("You can't refund more credits than you own.")
+
+    set_credits = {"$set": {"credits": current_credits - credits_to_refund}}
+    mongo.db.users.update_one(query, set_credits)
+
+    return dumps({
+        'credits_refunded': credits_to_refund
     })
 
 
@@ -370,6 +450,7 @@ def user_info_with_token():
         'lname': user['lname'],
         'email': user['email'],
         'nickname': user['nickname'],
+        'credits': user['credits'],
         'DOB': user['DOB'],
         'location': user['location'],
         'aboutMe': user['aboutMe'],
@@ -809,6 +890,33 @@ def update_likes():
     #print("NEW COUNT: " + params.get("count"))
     update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
     return dumps({})
+    
+@app.route('/comments/comment', methods=['POST'])
+def comment_photo():
+    """
+    Description
+    -----------
+    Adds Comments to Mongo
+
+    Parameters
+    ----------
+    photoId : string
+    userId : string (Commenter)
+    posted : date
+    content : string
+
+    Returns
+    -------
+    None
+    """
+    params = request.form.to_dict()
+    photo_id = params.get("photoId")
+    user_id = params.get("currentUser")
+    posted = params.get("commentDate")
+    content = params.get("commentContent")
+    
+    comments_photo(photo_id, user_id, posted, content, mongo)
+    return dumps({})
 
 @app.route('/get_current_user', methods=['GET'])
 def get_verified_user():
@@ -872,3 +980,5 @@ def basic():
     print(arguments)
     return dumps(arguments)
 
+if __name__ == '__main__':
+    app.run(port=8001, debug=True)

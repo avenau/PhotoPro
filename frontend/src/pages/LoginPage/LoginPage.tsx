@@ -7,7 +7,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import axios from "axios";
 import { RouteChildrenProps } from "react-router-dom";
-import Toolbar from "../components/Toolbar/Toolbar";
+import Toolbar from "../../components/Toolbar/Toolbar";
 
 export default class LoginPage extends React.Component<
   RouteChildrenProps,

@@ -33,7 +33,6 @@ def validate_token(function):
 
     @wraps(function)
     def validate(*args, **kwargs):
-        print("in here mate", request.args)
 
         # Check for HTTP method
         if request.method == 'GET':
@@ -48,8 +47,7 @@ def validate_token(function):
             print("@validate_token supports GET, PUT, POST and DELETE requests")
             raise TokenError("@validate_token supports GET\
                               , POST, DELETE requests")
-        print('token', token)
-        print('photoid', request.args.get('photoId'))
+
         # Check that token is correct format
         if isinstance(token, str) is False:
             print("Token is not a string")

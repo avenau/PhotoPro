@@ -5,9 +5,10 @@ Create and modify photos which are uploaded by a user
 import base64
 import datetime
 from bson.objectid import ObjectId
+from PIL import Image
 
 
-from lib.photo.validate_photo import validate_photo, validate_photo_user, reformat_lists
+from lib.photo.validate_photo import validate_photo, validate_photo_user, reformat_lists, validate_extension, validate_discount
 from ..token_functions import get_uid
 
 
@@ -19,15 +20,16 @@ def create_photo_entry(mongo, photo_details):
 
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
+    validate_extension(photo_details["extension"])
 
     # Get photo values before popping them
     base64_str = photo_details['photo']
     extension = photo_details['extension']
     photo_details.pop("photo")
-    photo_details.pop("extension")
 
     # Insert photo entry, except "path" attribute
     user_uid = get_uid(photo_details['token'])
+    photo_details.pop("token")
 
     default = {
         "metadata": base64_str.split(',')[0] + ',',
@@ -45,18 +47,18 @@ def create_photo_entry(mongo, photo_details):
     # Process photo and upload
     photo_oid = photo_entry.inserted_id
     name = str(photo_oid)
-    path = process_photo(base64_str, name, extension)
+    (path, path_thumbnail) = process_photo(base64_str, name, extension)
 
     # Add "path" attribute to db entry
     query = {"_id": ObjectId(name)}
-    set_path = {"$set": {"pathToImg": path}}
+    set_path = {"$set": {"pathToImg": path, "pathThumb": path_thumbnail}}
     mongo.db.photos.update_one(query, set_path)
     
+
+    # Add photo to user's posts
     response = mongo.db.users.find_one({"_id": ObjectId(user_uid)}, {"posts": 1})
     posts = response["posts"]
     posts.append(ObjectId(name))
-
-    # Where id matches user_uid, replace posts with new posts
     mongo.db.users.update_one({"_id": ObjectId(user_uid)}, {"$set": {"posts": posts}})
     return {
         "success": "true"
@@ -86,18 +88,25 @@ def save_photo_dir(img_data, name, extension):
     @param img_data: decoded base 64 image
     @param name: name of photo
     @param extension: photo type
-    @returns: path to photo
+    @returns: path to photo, path to thumbnail of photo
     """
     # Set image path to ./backend/images/'xxxxxx.extension'
     folder = './backend/images/'
     file_name = name + extension
     path = folder + file_name
+    path_thumbnail = folder + name + "_t" + extension
 
     # Save image to /backend/images directory
     with open(path, 'wb') as f:
         f.write(img_data)
 
-    return path
+    # Attach compressed thumbnail to photos
+    thumb = Image.open(path)
+    thumb.thumbnail((150, 150))
+    thumb.save(path_thumbnail)
+    print("Thumbnail saved to" + path_thumbnail)
+    
+    return (path, path_thumbnail)
 
 # Get details about photo
 def get_photo_edit(mongo, photoId, token):
@@ -143,6 +152,7 @@ def update_photo_details(mongo, photo_details):
 
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
+    validate_discount(photo_details["discount"])
 
     user_uid = get_uid(photo_details['token'])
     # Get the photo object id

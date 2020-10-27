@@ -1,7 +1,17 @@
 import React, {useState, useEffect} from 'react'
 import Form from "react-bootstrap/Form"
 
-export default function Discount(props: { price: number | undefined; deactivateUploadButton: () => void; activateUploadButton: () => void; onChange: (arg0: number) => void; discountDef: number | undefined; }) {
+interface IDiscount {
+    price: number | undefined;
+    oPrice: number;
+    oDiscount: number;
+    deactivateUploadButton: () => void;
+    activateUploadButton: () => void;
+    onChange: (arg0: number) => void;
+    discountDef: number | undefined;
+}
+
+export default function Discount(props: IDiscount) {
     const [discountErrMsg, setErrMsg] = useState("")
     const [discountedPrice, setDiscountPrice] = useState(props.price)
     const [valid, setValid] = useState(true)
@@ -28,10 +38,15 @@ export default function Discount(props: { price: number | undefined; deactivateU
             setValid(true)
           }
           if (props.price !== undefined) {
-            setDiscountPrice(Math.floor((1-discount/100)*props.price))
+            setDiscountPrice(calDiscount(discount, props.price))
             props.onChange(discount);
           }
     }
+
+    function calDiscount(discount:number, price:number) {
+        return Math.floor((1-discount/100)*price)
+    }
+
 
     return(
         <>
@@ -44,6 +59,9 @@ export default function Discount(props: { price: number | undefined; deactivateU
                 <p className="error">{discountErrMsg}</p>
             </Form.Text>
             </Form.Group>
+            <p style={{fontSize: "13px"}}> 
+            Current discount: <b>{props.oDiscount}% off </b>of {props.oPrice} credits ...
+            <b>{calDiscount(props.oDiscount, props.oPrice)} credits.</b></p>
             {valid ?
             <p style={{fontSize: "13px"}}>{props.discountDef}% off original price: <s>{props.price} credits</s> ... NOW <b>{discountedPrice} credits.</b></p>
             : <></>
