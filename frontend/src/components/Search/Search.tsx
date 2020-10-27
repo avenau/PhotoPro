@@ -1,16 +1,21 @@
+import qs from "qs";
 import React, { Component } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import { RouteComponentProps, withRouter } from "react-router-dom";
-import InputGroup from "react-bootstrap/InputGroup";
-import DropdownButton from "react-bootstrap/DropdownButton";
-import Dropdown from "react-bootstrap/Dropdown";
 import { Search as SearchIcon } from "react-bootstrap-icons";
+import Button from "react-bootstrap/Button";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import "./Search.scss";
 
 interface Props extends RouteComponentProps {
   type?: string;
   prefill?: string;
+  order?: string;
+  filetype?: string;
+  priceMin?: number;
+  priceMax?: number;
 }
 
 interface State {
@@ -22,6 +27,8 @@ class Search extends Component<Props, State> {
   static defaultProps = {
     type: "photo",
     prefill: "",
+    order: "recent",
+    filetype: "all",
   };
 
   constructor(props: Props) {
@@ -33,9 +40,19 @@ class Search extends Component<Props, State> {
   }
 
   private handleSubmit(event: React.FormEvent<HTMLElement>) {
+    const { order, filetype, priceMin, priceMax } = this.props;
     event.preventDefault();
-    const query = encodeURI(this.state.q);
-    this.props.history.push(`/search/${this.state.type}?q=${query}`);
+    const queryParams = {
+      q: encodeURI(this.state.q),
+      order,
+      filetype,
+      priceMin: priceMin && !Number.isNaN(priceMin) ? priceMin : undefined,
+      priceMax: priceMax && !Number.isNaN(priceMax) ? priceMax : undefined,
+    };
+    this.props.history.push({
+      pathname: `/search/${this.state.type}`,
+      search: qs.stringify(queryParams),
+    });
   }
 
   private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -68,10 +85,10 @@ class Search extends Component<Props, State> {
               Photo
             </Dropdown.Item>
             <Dropdown.Item
-              onClick={() => this.setState({ type: "user" })}
-              active={this.state.type.toLowerCase() === "user"}
+              onClick={() => this.setState({ type: "album" })}
+              active={this.state.type.toLowerCase() === "album"}
             >
-              User
+              Album
             </Dropdown.Item>
             <Dropdown.Item
               onClick={() => this.setState({ type: "collection" })}
@@ -80,10 +97,10 @@ class Search extends Component<Props, State> {
               Collection
             </Dropdown.Item>
             <Dropdown.Item
-              onClick={() => this.setState({ type: "album" })}
-              active={this.state.type.toLowerCase() === "album"}
+              onClick={() => this.setState({ type: "user" })}
+              active={this.state.type.toLowerCase() === "user"}
             >
-              Album
+              User
             </Dropdown.Item>
           </DropdownButton>
           <Form.Control

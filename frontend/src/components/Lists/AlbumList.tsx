@@ -15,7 +15,7 @@ interface Profile {
   id: string;
 }
 
-export default class UserResults extends React.Component<Props> {
+export default class CollectionList extends React.Component<Props> {
   render() {
     return (
       <>
