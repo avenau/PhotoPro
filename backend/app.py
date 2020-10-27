@@ -845,9 +845,18 @@ def update_likes():
     user_id = params.get("userId")
     new_count = int(params.get("count"))
     upvote = params.get("upStatus")
+    token = params.get("token")
     #print("NEW COUNT: " + params.get("count"))
-    update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
-    return dumps({})
+    try:
+        token_functions.verify_token(token)
+        update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
+        return dumps({
+            "valid": True
+        })
+    except Exception:
+        return dumps({
+            "valid": False
+        })
     
 @app.route('/comments/comment', methods=['POST'])
 def comment_photo():
