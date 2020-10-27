@@ -99,11 +99,13 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       <div className="uploadPage">
         <Toolbar />
         <Container className="mt-5">
+          <h1>Upload Photo</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Title
               deactivateUploadButton={this.deactivateUploadButton}
               activateUploadButton={this.activateUploadButton}
               onChange={(title: string) => this.setState({ title: title })}
+              titleDef={""}
             />
             <Price
               deactivateUploadButton={this.deactivateUploadButton}

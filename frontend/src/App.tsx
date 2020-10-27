@@ -17,6 +17,8 @@ import ProfilePage from "./pages/ProfilePage";
 import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
+import EditPhoto from "./pages/EditPhoto";
+
 import PurchasesPage from "./pages/Purchases/PurchasesPage";
 import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
 import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
@@ -111,6 +113,10 @@ class App extends React.Component<Props, State> {
             path="/manage_confirmation"
             component={ManageConfirmation}
           />
+          <ProtectedRoute
+            valid={this.state.valid}
+            path="/edit/:photo_id"
+            component={EditPhoto}/>
           <ProtectedRoute
             valid={this.state.valid}
             exact
