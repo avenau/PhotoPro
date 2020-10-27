@@ -69,7 +69,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
           albums: JSON.stringify(this.state.albums),
           // The photo, encoded as a base64 string
           photo: response[0],
-          // The file extension e.g. ".jpg" or ".raw"
+          // The file extension e.g. ".jpg" or ".gif"
           extension: response[1],
           token: token,
         })
