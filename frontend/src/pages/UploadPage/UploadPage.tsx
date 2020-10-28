@@ -31,7 +31,6 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       hasPickedPhoto: false,
       imagePreview: null,
       albums: [],
-      photo: "",
       photoElement: "",
     };
     this.setState = this.setState.bind(this);
