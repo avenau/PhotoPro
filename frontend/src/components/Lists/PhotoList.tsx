@@ -19,20 +19,20 @@ interface Photo {
 class PhotoList extends React.Component<Props> {
   render() {
     return (
-      <>
+      <div className="photo-results">
         {this.props.photos.map((photo) => (
           <div
             onClick={(e) => {
               e.preventDefault();
               this.props.history.push(`/photo/${photo.id}`);
             }}
-            className="result-container"
             key={photo.id}
+            className="photo-result"
           >
             <PhotoThumbnail {...photo} />
           </div>
         ))}
-      </>
+      </div>
     );
   }
 }

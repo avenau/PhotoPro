@@ -103,7 +103,7 @@ def save_photo_dir(img_data, name, extension):
     # Attach compressed thumbnail to photos
     if extension != ".svg":
         thumb = Image.open(path)
-        thumb.thumbnail((150, 150))
+        thumb.thumbnail((300, 200))
         thumb.save(path_thumbnail)
         print("Thumbnail saved to" + path_thumbnail)
 
