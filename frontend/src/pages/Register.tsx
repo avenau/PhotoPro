@@ -9,7 +9,7 @@ import axios from "axios";
 import { RouteChildrenProps } from "react-router-dom";
 import ValidatePassword from "../components/AccountManagement/ValidatePassword";
 import Toolbar from "../components/Toolbar/Toolbar";
-import FileUpload from "../components/Photo/FileUpload";
+import FileUpload from "../components/PhotoEdit/FileUpload";
 
 export default function Register(props: RouteChildrenProps) {
   const [validateFeedback, setFeedback] = useState(false);
