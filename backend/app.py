@@ -907,8 +907,8 @@ def photo_details():
 
     p_id_string = str(photo_details['user'])
     artist = mongo.db.users.find_one({"_id": photo_details['user']})
-    print("PRINTING CURRENT USER")
-    print(current_user)
+    #print("PRINTING CURRENT USER")
+    #print(current_user)
 
     if current_user != "" and current_user != "null":
         current_user_details = get_user_details(current_user, mongo)

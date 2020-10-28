@@ -41,7 +41,7 @@ export default function PhotoContents(props: ContentProps) {
       .get(`/photo_details?p_id=${photoId}&u_id=${currentUser}`)
       .then((response) => {
 
-        console.log(response.data);
+        //console.log(response.data);
         setArtist(response.data.u_id);
         setNick(response.data.nickname);
         setEmail(response.data.email);
@@ -53,24 +53,24 @@ export default function PhotoContents(props: ContentProps) {
         setTitle(response.data.title);
         setPrice(response.data.price);
         setPhoto(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0, -1));
-        console.log("deleted" + response.data.deleted);
-        console.log(response.status);
+        //console.log("deleted" + response.data.deleted);
+        //console.log(response.status);
       });
   };
 
   useEffect(() => {
     getPhotoDetails(props.photoId);
     if (purchased === true) {
-      console.log("Purchased Section");
+      //console.log("Purchased Section");
       setLoad(true);
     } else if (deleted === true || localStorage.getItem('u_id') === null || artist === "") {
-      console.log("IN deleted Section");
+      //console.log("IN deleted Section");
       setLoad(false);
     } else {
-      console.log("Everything Else");
+      //console.log("Everything Else");
       setLoad(true);
     }
-    console.log("Purchased: " + purchased);
+    //console.log("Purchased: " + purchased);
   }, [purchased, deleted]);
 
   function DetermineButton() {
