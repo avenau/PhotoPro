@@ -258,6 +258,8 @@ export default function Register(props: RouteChildrenProps) {
         reader.readAsDataURL(thePhotoFile);
         reader.onload = () => resolve([reader.result, photoExtension]);
         reader.onerror = (err) => reject(err);
+      } else {
+        return ["", ""];
       }
     });
   }

@@ -212,7 +212,7 @@ def account_registration():
     if new_user.get('profilePic') is None:
         new_user['profilePic'] = ""
     else:
-        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
+        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'], new_user['extension'])
 
     # Add collections and other user owned entities
     new_user['posts'] = []
