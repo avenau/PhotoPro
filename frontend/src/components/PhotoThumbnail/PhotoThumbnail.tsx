@@ -20,6 +20,13 @@ export default class PhotoThumbnail extends React.Component<Props> {
 
   render() {
     console.log(this.props);
-    return <Image src={this.getPic()} className="photo-thumbnail" />;
+    return (
+      <>
+        <Image src={this.getPic()} className="photo-thumbnail" />
+        <div className="overlay">
+          <button>Hi there i am button</button>
+        </div>
+      </>
+    );
   }
 }
