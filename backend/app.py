@@ -210,8 +210,8 @@ def account_registration():
     new_user["password"] = hashed_password
 
     # Handle profile pic
-    if new_user.get('profilePic') is None:
-        new_user['profilePic'] = ""
+    if new_user.get('profilePic') == "":
+        new_user['profilePic'] = ["", ""]
     else:
         new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'], new_user['extension'])
 
@@ -919,7 +919,7 @@ def photo_details():
         purchased = False
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
-    
+
     with open(photo_details["path"], "rb") as f:
         img = f.read()
 
@@ -1002,7 +1002,7 @@ def update_likes():
         return dumps({
             "valid": False
         })
-    
+
     update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
     return dumps({})
 

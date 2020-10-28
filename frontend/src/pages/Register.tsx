@@ -249,7 +249,7 @@ export default function Register(props: RouteChildrenProps) {
   function setProfilePic() {
     return new Promise((resolve, reject) => {
       const fileInput = profilePicInput as HTMLInputElement;
-      if (fileInput.files && fileInput.files[0]) {
+      if (fileInput && fileInput.files && fileInput.files[0]) {
         const thePhotoFile = fileInput.files[0];
         const photoFileName = thePhotoFile.name;
         const match = photoFileName.toLowerCase().match(/\.[^\.]*$/);
@@ -259,7 +259,7 @@ export default function Register(props: RouteChildrenProps) {
         reader.onload = () => resolve([reader.result, photoExtension]);
         reader.onerror = (err) => reject(err);
       } else {
-        return ["", ""];
+        resolve(["", ""]);
       }
     });
   }
@@ -269,6 +269,8 @@ export default function Register(props: RouteChildrenProps) {
     event.preventDefault();
     event.stopPropagation();
     setProfilePic().then((response: any) => {
+      console.log("boooo");
+
       if (form.checkValidity() === true) {
         axios
           .post("/accountregistration", {
@@ -376,14 +378,13 @@ export default function Register(props: RouteChildrenProps) {
           </Form.Group>
           <FileUpload
             deactivateUploadButton={() => {
-              return;
+              
             }}
             activateUploadButton={() => {
-              return;
+              
             }}
             onChange={(photoInput: HTMLElement | null) =>
-              setProfilePicInput(photoInput)
-            }
+              setProfilePicInput(photoInput)}
             setPreview={(preview: string) => {
               setProfilePicPreview(preview);
             }}
