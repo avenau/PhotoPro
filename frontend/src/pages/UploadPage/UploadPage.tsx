@@ -131,6 +131,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
               pickedPhoto={(selectedPhoto) =>
                 this.setState({ hasPickedPhoto: selectedPhoto })
               }
+              label="Select a photo"
             />
             {this.state.hasPickedPhoto ? (
               <div>

@@ -368,6 +368,7 @@ export default function Register(props: RouteChildrenProps) {
             pickedPhoto={(hasPickedPhoto: boolean) => {
               setHasProfilePic(hasPickedPhoto);
             }}
+            label="Set your profile picture (Optional)"
           />
           {hasProfilePic ? (
             <div>
