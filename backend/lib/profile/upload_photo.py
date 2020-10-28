@@ -21,7 +21,7 @@ def extension_to_mimetype(extension):
     elif extension == ".gif":
         mime = "GIF"
     elif extension == ".svg":
-        mime = "SVG"
+        mime = "SVG+XML"
     
     return mime
 
@@ -32,10 +32,10 @@ def update_user_thumbnail(base64_image, extension):
     '''
     mime = extension_to_mimetype(extension)
     base64_image = base64_image.split(',')[1]
-
+    print(mime)
     # Cannot compress SVG
-    if mime == "SVG":
-        return (base64_image, "SVG")
+    if mime == "SVG+XML":
+        return (base64_image, mime)
     
     # Not SVG
     size = (150, 150)
@@ -49,9 +49,9 @@ def update_user_thumbnail(base64_image, extension):
     thumb.thumbnail(size)
     thumb.save('temp_thumb_compressed'+extension)
     # Attach the following to db entry
-    thumb_b64 = base64.b64encode(open('temp_thumb_compressed.jpg', 'rb').read()).decode('utf-8')
+    thumb_b64 = base64.b64encode(open('temp_thumb_compressed'+extension, 'rb').read()).decode('utf-8')
 
-    os.remove('temp_thumb_uncompressed.jpg')
-    os.remove('temp_thumb_compressed.jpg')
+    os.remove('temp_thumb_uncompressed'+extension)
+    os.remove('temp_thumb_compressed'+extension)
 
     return (thumb_b64, mime)
