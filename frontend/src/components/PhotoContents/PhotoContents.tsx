@@ -40,6 +40,7 @@ export default function PhotoContents(props: ContentProps) {
     await axios
       .get(`/photo_details?p_id=${photoId}&u_id=${currentUser}`)
       .then((response) => {
+
         console.log(response.data);
         setArtist(response.data.u_id);
         setNick(response.data.nickname);
@@ -53,6 +54,7 @@ export default function PhotoContents(props: ContentProps) {
         setPrice(response.data.price);
         setPhoto(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0, -1));
         console.log("deleted" + response.data.deleted);
+        console.log(response.status);
       });
   };
 
@@ -61,7 +63,7 @@ export default function PhotoContents(props: ContentProps) {
     if (purchased === true) {
       console.log("Purchased Section");
       setLoad(true);
-    } else if (deleted === true || localStorage.getItem('u_id') === null) {
+    } else if (deleted === true || localStorage.getItem('u_id') === null || artist === "") {
       console.log("IN deleted Section");
       setLoad(false);
     } else {
