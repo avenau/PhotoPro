@@ -3,7 +3,6 @@ Backend main file
 Handle requests to and fro server and web app client
  - Team JAJAC :)
 """
-import os
 
 # Pip functions
 import traceback
@@ -192,6 +191,8 @@ def account_registration():
     'privFName': str,
     'privLName':  str,
     'privEmail': str,
+    'profilePic': base64,
+    'extension': str,
     'aboutMe': str,
     'DOB': str,
     'location': str

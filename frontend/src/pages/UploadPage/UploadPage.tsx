@@ -44,7 +44,8 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       if (fileInput.files && fileInput.files[0]) {
         const thePhotoFile = fileInput.files[0];
         const photoFileName = thePhotoFile.name;
-        const photoExtension = photoFileName.substr(photoFileName.length - 4);
+        const match = photoFileName.toLowerCase().match(/\.[^\.]*$/);
+        const photoExtension = match !== null ? match[0] : "";
         const reader = new FileReader();
         reader.readAsDataURL(thePhotoFile);
         reader.onload = () => resolve([reader.result, photoExtension]);

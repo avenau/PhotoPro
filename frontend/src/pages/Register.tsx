@@ -246,40 +246,60 @@ export default function Register(props: RouteChildrenProps) {
     "Zimbabwe",
   ];
 
+  function setProfilePic() {
+    return new Promise((resolve, reject) => {
+      const fileInput = profilePicInput as HTMLInputElement;
+      if (fileInput.files && fileInput.files[0]) {
+        const thePhotoFile = fileInput.files[0];
+        const photoFileName = thePhotoFile.name;
+        const match = photoFileName.toLowerCase().match(/\.[^\.]*$/);
+        const photoExtension = match !== null ? match[0] : "";
+        const reader = new FileReader();
+        reader.readAsDataURL(thePhotoFile);
+        reader.onload = () => resolve([reader.result, photoExtension]);
+        reader.onerror = (err) => reject(err);
+      }
+    });
+  }
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const form = event.currentTarget;
     event.preventDefault();
     event.stopPropagation();
-    if (form.checkValidity() === true) {
-      axios
-        .post("/accountregistration", {
-          fname,
-          lname,
-          email,
-          nickname,
-          password,
-          privFName,
-          privLName,
-          privEmail,
-          aboutMe,
-          DOB,
-          location,
-        })
-        .then((r) => {
-          if (r.status !== 200) {
-            console.log("Here");
-            throw new Error();
-          }
-          console.log("Success");
-          props.history.push("/login");
-        })
-        .catch((e) => {
-          console.log("==========Error occured==========");
-          console.log(e);
-          console.log("=================================");
-        });
-      setFeedback(true);
-    }
+    setProfilePic().then((response: any) => {
+      if (form.checkValidity() === true) {
+        axios
+          .post("/accountregistration", {
+            fname,
+            lname,
+            email,
+            nickname,
+            password,
+            privFName,
+            privLName,
+            privEmail,
+            profilePic: response[0],
+            extension: response[1],
+            aboutMe,
+            DOB,
+            location,
+          })
+          .then((r) => {
+            if (r.status !== 200) {
+              console.log("Here");
+              throw new Error();
+            }
+            console.log("Success");
+            props.history.push("/login");
+          })
+          .catch((e) => {
+            console.log("==========Error occured==========");
+            console.log(e);
+            console.log("=================================");
+          });
+        setFeedback(true);
+      }
+    });
   };
 
   return (
