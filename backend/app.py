@@ -1,6 +1,6 @@
 """
 Backend main file
-Handle requests to and fro server and web app client
+Handle requests to and from server and web app client
  - Team JAJAC :)
 """
 import os
@@ -918,7 +918,7 @@ def photo_details():
         purchased = False
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
-    
+
     with open(photo_details["path"], "rb") as f:
         img = f.read()
 
@@ -1001,7 +1001,7 @@ def update_likes():
         return dumps({
             "valid": False
         })
-    
+
     update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
     return dumps({})
 
