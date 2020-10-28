@@ -912,11 +912,17 @@ def photo_details():
 
     if current_user != "" and current_user != "null":
         current_user_details = get_user_details(current_user, mongo)
+        #purchased = (photo_details['_id'] in current_user_details['purchased'])
         purchased = (photo_details['_id'] in current_user_details['purchased'])
     else :
         purchased = False
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
+    
+    with open(photo_details["path"], "rb") as f:
+        img = f.read()
+
+    img = str(base64.b64encode(img))
 
     return dumps({
         "u_id": p_id_string,
@@ -927,6 +933,8 @@ def photo_details():
         "email": artist['email'],
         "path": photo_details['path'],
         "purchased": purchased,
+        "photoStr" : img,
+        "metadata" : photo_details['metadata'],
 
     })
 

@@ -23,6 +23,7 @@ export default function PhotoContents(props: ContentProps) {
   const [photo, setPhoto] = useState("");
   const [purchased, setPurchase] = useState<boolean>();
   const currentUser = localStorage.getItem("u_id") as string;
+  const [meta, setMeta] = useState("");
   const updateTags = (tag: string) => {
     if (tag) {
       setTags((tags) => [...tags, tag]);
@@ -42,8 +43,9 @@ export default function PhotoContents(props: ContentProps) {
         setLikes(response.data.likes);
         setTags(response.data.tagsList);
         setPurchase(response.data.purchased);
+        setMeta(response.data.metadata);
         setTitle(response.data.title);
-        setPhoto(response.data.path);
+        setPhoto(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0, -1));
         setLoad(true);
       });
   };
@@ -81,7 +83,7 @@ export default function PhotoContents(props: ContentProps) {
         <Row className="PhotoRow">
           <img
             className="actualPhoto"
-            src="https://scontent.fsyd8-1.fna.fbcdn.net/v/t1.0-9/121219614_3529427603766814_3815530349844701512_o.jpg?_nc_cat=111&ccb=2&_nc_sid=e3f864&_nc_ohc=Yc5BU7mBfcIAX-SBR2q&_nc_ht=scontent.fsyd8-1.fna&oh=fb9406ff6f5fbfa7136dc7930dc5c7fd&oe=5FBB9523"
+            src={photo}
             alt="new"
           />
         </Row>
@@ -119,9 +121,9 @@ export default function PhotoContents(props: ContentProps) {
       <PhotoComments p_id={props.photoId} />
     </div>
   ) : (
-    <div>
-      {" "}
-      <p>Photo does not exist!</p>{" "}
-    </div>
-  );
+      <div>
+        {" "}
+        <p>Photo does not exist!</p>{" "}
+      </div>
+    );
 }
