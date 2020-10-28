@@ -11,11 +11,11 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 // Functional components
-import Title from "../../components/Photo/Title";
-import Price from "../../components/Photo/Price";
-import Tags from "../../components/Photo/Tags";
-import Album from "../../components/Photo/Album";
-import FileUpload from "../../components/Photo/FileUpload";
+import Title from "../../components/PhotoEdit/Title";
+import Price from "../../components/PhotoEdit/Price";
+import Tags from "../../components/PhotoEdit/Tags";
+import Album from "../../components/PhotoEdit/Album";
+import FileUpload from "../../components/PhotoEdit/FileUpload";
 
 class UploadPage extends React.Component<RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
@@ -23,7 +23,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
     this.state = {
       title: "",
       price: 0,
-      /** 'tagsList' is the current list of tags attached to the photo, 
+      /** 'tagsList' is the current list of tags attached to the photo,
              which will eventaully be sent to the back end */
       tagsList: [],
       /** Whether the user has selected a photo yet.

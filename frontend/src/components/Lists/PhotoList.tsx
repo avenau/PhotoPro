@@ -1,41 +1,40 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
-import UserHeader from "../UserHeader/UserHeader";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import PhotoThumbnail from "../PhotoThumbnail/PhotoThumbnail";
+import "./PhotoList.scss";
 
 interface Props extends RouteComponentProps {
-  profiles: Profile[];
+  photos: Photo[];
 }
 
-interface Profile {
-  fname: string;
-  lname: string;
-  nickname: string;
-  email: string;
-  location: string;
+interface Photo {
   id: string;
+  title: string;
+  price: number;
+  discount: string;
+  photoStr: string;
+  metadata: string;
 }
 
-export default class PhotoList extends React.Component<Props> {
+class PhotoList extends React.Component<Props> {
   render() {
     return (
-      <>
-        {this.props.profiles.map((profile) => (
+      <div className="photo-results">
+        {this.props.photos.map((photo) => (
           <div
             onClick={(e) => {
               e.preventDefault();
-              this.props.history.push(`/user/${profile.id}`);
+              this.props.history.push(`/photo/${photo.id}`);
             }}
-            className="result-container"
-            key={profile.id}
+            key={photo.id}
+            className="photo-result"
           >
-            <UserHeader
-              name={`${profile.fname} ${profile.lname}`}
-              currentUser={profile.id === localStorage.getItem("u_id")}
-              {...profile}
-            />
+            <PhotoThumbnail {...photo} />
           </div>
         ))}
-      </>
+      </div>
     );
   }
 }
+
+export default withRouter(PhotoList);

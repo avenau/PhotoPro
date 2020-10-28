@@ -52,7 +52,7 @@ def remove_photo(photos, u_id, identifier):
     '''
     TODO: Remove the photo from the directory structure
     # Remove the photo from the file system
-    if remove_photo_from_directory(photo['pathToImg']) is not True:
+    if remove_photo_from_directory(photo['path']) is not True:
         raise FileExistsError("Couldn't find photo")
     '''
 

@@ -35,6 +35,7 @@ from lib.profile.upload_photo import update_user_thumbnail
 
 # Search
 from lib.search.user_search import user_search
+from lib.search.photo_search import photo_search
 
 # Showdown
 from lib.showdown import get_images
@@ -799,14 +800,19 @@ def search_photo():
     Returns
     -------
     {
-        TODO
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
     }
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps({[]})
+    return dumps(photo_search(data, mongo))
 
 @app.route('/search/collection', methods=['GET'])
 def search_collection():
@@ -902,16 +908,22 @@ def photo_details():
 
     p_id_string = str(photo_details['user'])
     artist = mongo.db.users.find_one({"_id": photo_details['user']})
-    print("PRINTING CURRENT USER")
-    print(current_user)
+    #print("PRINTING CURRENT USER")
+    #print(current_user)
 
     if current_user != "" and current_user != "null":
         current_user_details = get_user_details(current_user, mongo)
+        #purchased = (photo_details['_id'] in current_user_details['purchased'])
         purchased = (photo_details['_id'] in current_user_details['purchased'])
     else :
         purchased = False
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
+    
+    with open(photo_details["path"], "rb") as f:
+        img = f.read()
+
+    img = str(base64.b64encode(img))
 
     return dumps({
         "u_id": p_id_string,
@@ -920,8 +932,13 @@ def photo_details():
         "tagsList": photo_details["tags"],
         "nickname": artist['nickname'],
         "email": artist['email'],
-        "pathToImg": photo_details['pathToImg'],
+        "path": photo_details['path'],
         "purchased": purchased,
+        "photoStr" : img,
+        "metadata" : photo_details['metadata'],
+        "price" : photo_details["price"],
+        "discount" : photo_details["discount"],
+        "deleted" : photo_details["deleted"],
 
     })
 
@@ -973,7 +990,19 @@ def update_likes():
     user_id = params.get("userId")
     new_count = int(params.get("count"))
     upvote = params.get("upStatus")
+    token = params.get("token")
     #print("NEW COUNT: " + params.get("count"))
+    try:
+        token_functions.verify_token(token)
+        update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
+        return dumps({
+            "valid": True
+        })
+    except Exception:
+        return dumps({
+            "valid": False
+        })
+    
     update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
     return dumps({})
 

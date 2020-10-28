@@ -33,6 +33,18 @@ class App extends React.Component<Props, State> {
     super(props);
     const token = localStorage.getItem("token");
     let loading = true;
+    if (token === null) {
+      loading = false;
+    }
+
+    this.state = {
+      valid: false,
+      loading,
+    };
+  }
+
+  componentDidMount() {
+    const token = localStorage.getItem("token");
     if (token !== null) {
       axios.get(`/verifytoken?token=${token}`).then((response: any) => {
         if (response.data.valid) {
@@ -41,14 +53,7 @@ class App extends React.Component<Props, State> {
           this.setState({ valid: false, loading: false });
         }
       });
-    } else {
-      loading = false;
     }
-
-    this.state = {
-      valid: false,
-      loading,
-    };
   }
 
   render() {

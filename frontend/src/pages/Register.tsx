@@ -423,7 +423,7 @@ export default function Register(props: RouteChildrenProps) {
               onChange={(e) => setLocation(e.target.value)}
             >
               {countries.map((country) => (
-                <option>{country}</option>
+                <option key={country}>{country}</option>
               ))}
             </Form.Control>
           </Form.Group>
