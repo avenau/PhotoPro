@@ -6,6 +6,7 @@ import "./PhotoContents.scss";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import PhotoComments from "../../components/PhotoComments/PhotoComments";
+import Price from "../Price";
 
 interface ContentProps {
   photoId: string;
@@ -24,6 +25,9 @@ export default function PhotoContents(props: ContentProps) {
   const [purchased, setPurchase] = useState<boolean>();
   const currentUser = localStorage.getItem("u_id") as string;
   const [meta, setMeta] = useState("");
+  const [price, setPrice] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [deleted, setDeleted] = useState(false);
   const updateTags = (tag: string) => {
     if (tag) {
       setTags((tags) => [...tags, tag]);
@@ -43,36 +47,51 @@ export default function PhotoContents(props: ContentProps) {
         setLikes(response.data.likes);
         setTags(response.data.tagsList);
         setPurchase(response.data.purchased);
+        setDeleted(response.data.deleted);
         setMeta(response.data.metadata);
         setTitle(response.data.title);
+        setPrice(response.data.price);
         setPhoto(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0, -1));
-        setLoad(true);
+        console.log("deleted" + response.data.deleted);
       });
   };
 
   useEffect(() => {
     getPhotoDetails(props.photoId);
-
+    if (purchased === true) {
+      console.log("Purchased Section");
+      setLoad(true);
+    } else if (deleted === true || localStorage.getItem('u_id') === null) {
+      console.log("IN deleted Section");
+      setLoad(false);
+    } else {
+      console.log("Everything Else");
+      setLoad(true);
+    }
     console.log("Purchased: " + purchased);
-  }, [purchased]);
+  }, [purchased, deleted]);
 
   function DetermineButton() {
     if (artist === currentUser) {
       return (
         <div>
           <Button>Download Full Photo</Button>
-          <Link to="/edit">
-            <Button>Manage Photo</Button>
+          <Link to={`/edit/${props.photoId}`}>
+            <Button className="ml-1">Manage Photo</Button>
           </Link>
-        </div>
+          <Price price={price} discount={discount} />
+        </div >
       );
     } else if (purchased === true) {
-      return <Button>Download Full Photo</Button>;
+      return <div><Button className="ml-1">Download Full Photo</Button>
+        <Price price={price} discount={discount} />
+      </div>;
     }
     return (
       <div>
-        <Button>Download Watermarked Photo</Button>
-        <Button>Purchase Photo</Button>
+        <Button className="ml-1">Download Watermarked Photo</Button>
+        <Button className="ml-1">Purchase Photo</Button>
+        <Price price={price} discount={discount} />
       </div>
     );
   }
@@ -109,7 +128,7 @@ export default function PhotoContents(props: ContentProps) {
             <Row>
               {tags.map((tag) => (
                 <>
-                  <Button className="mr-1" variant="secondary">
+                  <Button key={tag} className="mr-1 mt-1" variant="secondary">
                     {tag}
                   </Button>{" "}
                 </>

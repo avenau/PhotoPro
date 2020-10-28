@@ -935,6 +935,9 @@ def photo_details():
         "purchased": purchased,
         "photoStr" : img,
         "metadata" : photo_details['metadata'],
+        "price" : photo_details["price"],
+        "discount" : photo_details["discount"],
+        "deleted" : photo_details["deleted"],
 
     })
 
