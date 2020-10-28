@@ -8,20 +8,24 @@ import os
 # Pip functions
 import base64
 from json import dumps
-from flask import Flask, request, abort
+from flask import Flask, request, abort, send_from_directory
+from flask.helpers import send_file
 from flask_cors import CORS
 from functools import wraps
 
 class Config(object):
     PORT_NUMBER = os.getenv("FS_API_PORT")
     TESTING = True
-    FLASK_DEBUG = True
+    DEBUG = True
 
 app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 secretkey = "PhotoProSecretAPIKey"
 
+"""
+HELPERS
+"""
 
 def validate_secret(function):
     @wraps(function)
@@ -39,6 +43,11 @@ def dir_check(function):
         return function()
     return inner
 
+"""
+ROUTES
+"""
+
+# TODO complete
 @app.route('/upload', methods=['POST'])
 @validate_secret
 @dir_check
@@ -46,17 +55,13 @@ def upload_photo():
     """
     Description
     -----------
-    Saves an image to the file system with the given title
+    Saves an image to the file system with the given filename
 
     Parameters
     ----------
-    title: str,
-    price: str,
-    token: str,
-    tags: str[],
-    albums: str[],
-    photo: str,
-    extension: str
+    filename: str,
+    photo: str
+
     Returns
     -------
     None
@@ -65,40 +70,37 @@ def upload_photo():
     # return dumps(create_photo_entry(mongo, photo_details))
     return dumps({})
 
-@app.route('/get', methods=['POST'])
+# TODO get actual photo not static
+@app.route('/get', methods=['GET'])
 @validate_secret
 @dir_check
 def get_photo():
     """
     Description
     -----------
-    Accepts parameters related to a photo, verifies the parameters,
-    creates a database entry for the photo and saves the photo file
-    to backend/images.
+    Get base64 string of a photo from a file system
 
     Parameters
     ----------
-    title: str,
-    price: str,
-    token: str,
-    tags: str[],
-    albums: str[],
-    photo: str,
-    extension: str
+    filename: str
+
     Returns
     -------
-    None
+    photoStr: str
     """
     photo_details = request.form.to_dict()
-    # return dumps(create_photo_entry(mongo, photo_details))
-    return dumps({})
+    with open("./backend/images/5f98e3a13308e8ba864b0524.jpg", "rb") as f:
+        img = f.read()
+        return base64.b64encode(img).decode("utf-8")
 
+    # If using blob instead of base64 encode
+    # return send_from_directory(directory="./images", filename="5f98e3a13308e8ba864b0524.jpg", as_attachment=True, attachment_filename="test.jpg")
 
-# '''
-# ---------------
-# - Test Routes -
-# ---------------
-# '''
+'''
+---------------
+- Test Routes -
+---------------
+'''
 
 @app.route('/testsecret', methods=['GET'])
 @validate_secret
@@ -114,6 +116,7 @@ def test_secret():
     })
 
 @app.route('/testdir', methods=['GET'])
+@validate_secret
 @dir_check
 def test_dir():
     '''

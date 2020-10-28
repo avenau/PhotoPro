@@ -4,10 +4,13 @@ Handle requests to and from server and web app client
  - Team JAJAC :)
 """
 import os
+import re
 
 # Pip functions
 import traceback
 import base64
+import requests
+from flask.helpers import send_file
 from json import dumps, loads
 from bson.objectid import ObjectId
 from flask import Flask, request
@@ -1093,6 +1096,13 @@ def basic():
         arguments = request.args
     print(arguments)
     return dumps(arguments)
+
+@app.route('/download', methods=['GET'])
+def download():
+    # TODO update this to download the actuall image and have non static api call route
+    headers = {"secretkey": "PhotoProSecretAPIKey"}
+    r = requests.get("http://localhost:8101/get", headers=headers)
+    return r.content.decode("utf-8")
 
 if __name__ == '__main__':
     app.run(port=8001, debug=True)
