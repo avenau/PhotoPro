@@ -22,6 +22,7 @@ export default function FileUpload(props: InterfaceFile) {
       setErrMsg(
         "Couldn't get file extension. Make sure your file is a .jpg, .png, ,.gif, .svg."
       );
+      return;
     }
     // If no file, or file removed, remove "Upload" button and remove error msg
     // Else if file is not accepted, remove "Upload" button and display error msg
@@ -64,7 +65,7 @@ export default function FileUpload(props: InterfaceFile) {
           }
         />
         <Form.Text className="text-muted">
-          We accept .jpg, .png, .gif, and .svg images images.
+          We accept .jpg, .png, .gif, and .svg images.
           <p className="error">{fileErrMsg}</p>
         </Form.Text>
       </Form.Group>
