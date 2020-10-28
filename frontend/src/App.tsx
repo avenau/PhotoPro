@@ -6,6 +6,7 @@ import "./axios";
 import AnonRoute from "./components/AnonRoute/AnonRoute";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import DoesNotExistPage from "./pages/DoesNotExistPage";
+import EditPhoto from "./pages/EditPhoto";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import HomePage from "./pages/HomePage";
@@ -14,12 +15,12 @@ import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import ProfilePage from "./pages/ProfilePage";
-import Register from "./pages/Register";
-import SearchPage from "./pages/SearchPage";
-import UploadPage from "./pages/UploadPage/UploadPage";
-import PurchasesPage from "./pages/Purchases/PurchasesPage";
 import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
+import PurchasesPage from "./pages/Purchases/PurchasesPage";
 import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
+import Register from "./pages/Register";
+import SearchPage from "./pages/SearchPage/SearchPage";
+import UploadPage from "./pages/UploadPage/UploadPage";
 
 interface Props {}
 
@@ -32,6 +33,18 @@ class App extends React.Component<Props, State> {
     super(props);
     const token = localStorage.getItem("token");
     let loading = true;
+    if (token === null) {
+      loading = false;
+    }
+
+    this.state = {
+      valid: false,
+      loading,
+    };
+  }
+
+  componentDidMount() {
+    const token = localStorage.getItem("token");
     if (token !== null) {
       axios.get(`/verifytoken?token=${token}`).then((response: any) => {
         if (response.data.valid) {
@@ -40,14 +53,7 @@ class App extends React.Component<Props, State> {
           this.setState({ valid: false, loading: false });
         }
       });
-    } else {
-      loading = false;
     }
-
-    this.state = {
-      valid: false,
-      loading,
-    };
   }
 
   render() {
@@ -110,6 +116,11 @@ class App extends React.Component<Props, State> {
             exact
             path="/manage_confirmation"
             component={ManageConfirmation}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            path="/edit/:photo_id"
+            component={EditPhoto}
           />
           <ProtectedRoute
             valid={this.state.valid}

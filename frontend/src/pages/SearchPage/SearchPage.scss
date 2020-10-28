@@ -1,0 +1,12 @@
+.search-options {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  > * {
+    margin: 0px 10px;
+  }
+}
+.search-results {
+  display: flex;
+  justify-content: center;
+}

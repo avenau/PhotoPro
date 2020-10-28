@@ -1,6 +1,6 @@
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
-from lib.Error import TokenError
+from ..Error import TokenError
 # Modified from profile_details
 
 
@@ -20,8 +20,8 @@ def get_photo_details(p_id, mongo):
     photo = mongo.db.photos.find_one({"_id": oid})
     if photo is None:
         print("Photos not found")
-        # TODO: Add Photo Errors
-        # raise UserDNE("User not found")
+        #TODO: Add Photo Errors
+        #raise UserDNE("User not found")
     return photo
     
 def is_photo_purchased(p_id, u_id, mongo):
