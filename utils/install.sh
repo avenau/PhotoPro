@@ -3,7 +3,7 @@
 # Backend environment install
 echo "Installing python requirements..."
 cd backend
-if [ -e env ]
+if [ -e env -a "$1" != "-b" ]
 then
   rm -rf env
 fi
