@@ -3,7 +3,7 @@
 cd backend
 
 export FLASK_APP=fs_api.py
-export FLASK_ENV=development
+export FLASK_ENV=production
 export FS_API_PORT=$1
 
 # Host 0.0.0.0 is just for the server, you can run host=127.0.0.1 locally

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO download images directory
-
 echo "========== Beginning installation =============="
 ./utils/install.sh
 if [ $? -ne 0 ]
@@ -9,6 +7,8 @@ then
   echo "Something went wrong with the installation..."
   exit 1
 fi
+
+if [ "$1" = "-l" ]
 
 echo "========== Beginning build =============="
 ./utils/build.sh

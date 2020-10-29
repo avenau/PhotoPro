@@ -17,8 +17,6 @@ from functools import wraps
 
 class Config(object):
     PORT_NUMBER = os.getenv("FS_API_PORT")
-    TESTING = True
-    DEBUG = True
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -101,7 +99,7 @@ def get_photo():
         abort(404)
 
 @app.route('/download', methods=['GET'])
-# @validate_secret
+@validate_secret
 @dir_check
 def get_iamges():
     """
@@ -177,4 +175,4 @@ def basic():
     return dumps(arguments)
 
 if __name__ == '__main__':
-    app.run(port=8101, debug=True)
+    app.run(port=8101, debug=False)

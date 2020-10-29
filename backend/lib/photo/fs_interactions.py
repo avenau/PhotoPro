@@ -21,4 +21,4 @@ def find_photo(filename):
   """
   params = {"filename": filename}
   r = requests.get(f"{FS_API_URL}/get", params=params, headers=headers)
-  return r.text
+  return r.content.decode("utf-8")

@@ -16,6 +16,7 @@ For all others see `requirements.txt`
 ## Frontend Requirements
 
 - npm
+- npx
 
 All other dependencies are managed by npm in `frontend/package.json`
 
@@ -31,7 +32,7 @@ Start the webservers.
 
 `./start.sh`
 
-**Note: Currently `start.sh` does not deal with the image file system hosting**
+To run the filesystem api locally instead of using the external server the start script can be ran with the `-l` flag, this will attempt to download the images/ directory from the server before running but all images will only be saved and retrieved from localhost.
 
 The website can be restarted with `./start.sh` without running `./prepare.sh` again after the initial run.
 

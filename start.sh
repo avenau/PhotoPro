@@ -50,13 +50,18 @@ then
   sleep 0.1
 fi
 
-if [ $localfs -eq 0 ]
+if [ $localfs -eq 1 ]
 then
+  # Failsafe check - if images doesn't exist run the download script again
+  if ! [ -e backend/images ]
+  then
+    ./utils/download_fs.sh
+  fi
   port_api=8101
-  while [[ `netstat -taln | egrep $port_f` != "" ]]
+  while [[ `netstat -taln | egrep $port_api` != "" ]]
   do
-    echo "Failed on port $port_f, trying another"
-    port_f=$((port_f + 1))
+    echo "Failed on port $port_api, trying another"
+    port_api=$((port_api + 1))
   done
   echo "========== Running fs_api on port $port_api =============="
 
@@ -64,8 +69,8 @@ then
   ./utils/run_fs_api.sh $port_api &
   sleep 0.1
 else
-  echo "========== Using remote fs_api at https://fs-api.coen-townson.me =============="
-  export FS_API_URL="https://fs-api.coen-townson.me"
+  echo "========== Using remote fs_api at https://photopro.fsapi.coen-townson.me =============="
+  export FS_API_URL="https://photopro.fsapi.coen-townson.me"
 fi
 
 echo "========== Running backend on port $port_b =============="
