@@ -24,7 +24,7 @@ interface State {
   email: string;
   userId: string;
   dne: boolean;
-  profilePic: string;
+  profilePic: string[];
 }
 
 export default class ProfilePage extends React.Component<Props, State> {
@@ -40,7 +40,7 @@ export default class ProfilePage extends React.Component<Props, State> {
       email: "",
       userId,
       dne: false,
-      profilePic: "",
+      profilePic: ["", ""],
     };
   }
 

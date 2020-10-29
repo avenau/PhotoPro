@@ -1,4 +1,4 @@
-from lib.Error import UserDNE, TokenError
+from ..Error import UserDNE, TokenError
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
 

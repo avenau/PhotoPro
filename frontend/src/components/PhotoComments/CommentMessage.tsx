@@ -1,4 +1,5 @@
 import React from "react";
+import { Row } from "react-bootstrap";
 interface MessageProp {
     message: string;
     author: string
@@ -9,8 +10,8 @@ export default function CommentMessage(props: MessageProp) {
 
     return (
         <div>
-            <p><b>{props.author}</b> posted 30 days ago</p>
-            <p>{props.message}</p>
+            <Row><p><b>{props.author}</b> posted 30 days ago</p></Row>
+            <Row>{props.message}</Row>
         </div>
     );
 }

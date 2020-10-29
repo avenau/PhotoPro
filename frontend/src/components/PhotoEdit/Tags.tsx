@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -10,6 +10,17 @@ export default function Tags(props: any) {
   const [tagsErrMsg, setTagsErr] = useState(
     "Remember to add at least one keyword!"
   );
+  const [tagsLength, setTagsLength] = useState(0)
+
+  useEffect(() => {
+    console.log('out here tags')
+    console.log(props.tagsList)
+    if (props.tagsList != undefined) {
+      refreshTagButtons(props.tagsList)
+      refreshTagsErr(props.tagsList)
+    }
+  }, [props.tagsList]
+  )
 
   function clearTagInput() {
     const tagInput = document.getElementById("tags") as HTMLInputElement;
@@ -70,6 +81,7 @@ export default function Tags(props: any) {
         </span>
       );
     });
+    setTagsLength(updatedTagsList.length)
     setTagButtons(newTagButtons);
     clearTagInput();
   }
@@ -100,6 +112,7 @@ export default function Tags(props: any) {
       props.deactivateUploadButton();
     } else {
       setTagsErr("");
+      props.activateUploadButton();
     }
   }
 
@@ -144,7 +157,7 @@ export default function Tags(props: any) {
           You can include 1 to 10 keywords. Keywords should describe the main
           aspects of your photo.
           <p id="b">
-            {props.tagsList.length} Detected keywords (click keyword to delete):{" "}
+            {tagsLength} Detected keywords (click keyword to delete):{" "}
             {tagButtons}
           </p>
           <p className="error">{tagsErrMsg}</p>
