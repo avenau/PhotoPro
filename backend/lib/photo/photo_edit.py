@@ -11,7 +11,7 @@ from io import BytesIO
 
 from lib.photo.validate_photo import validate_photo, validate_photo_user, reformat_lists, validate_extension, validate_discount
 from ..token_functions import get_uid
-from lib.photo.fs_interactions import save_photo
+from lib.photo.fs_interactions import find_photo, save_photo
 
 
 def create_photo_entry(mongo, photo_details):
@@ -25,7 +25,7 @@ def create_photo_entry(mongo, photo_details):
     validate_extension(photo_details["extension"])
 
     # Get photo values before popping them
-    base64_str = photo_details['photo'].split(',')[1]
+    [ metadata, base64_str ] = photo_details['photo'].split(',')
     extension = photo_details['extension']
     photo_details.pop("photo")
 
@@ -34,7 +34,7 @@ def create_photo_entry(mongo, photo_details):
     photo_details.pop("token")
 
     default = {
-        "metadata": base64_str.split(',')[0] + ',',
+        "metadata": f"{metadata},",
         "discount": 0.0,
         "posted": datetime.datetime.now(),
         "user": ObjectId(user_uid),
@@ -105,12 +105,9 @@ def get_photo_edit(mongo, photoId, token):
     validate_photo_user(mongo, photoId, user_uid)
 
     result = mongo.db.photos.find_one({"_id": ObjectId(photoId)})
-    print(result)
-    # Encode image into
-    with open(result["path"], "rb") as f:
-        img = f.read()
 
-    img = str(base64.b64encode(img))
+    # Get image from FS API
+    img = find_photo(f"{photoId}{result['extension']}")
 
     return {
         "title": result["title"],
