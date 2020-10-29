@@ -52,11 +52,6 @@ fi
 
 if [ $localfs -eq 1 ]
 then
-  # Failsafe check - if images doesn't exist run the download script again
-  if ! [ -e backend/images ]
-  then
-    ./utils/download_fs.sh
-  fi
   port_api=8101
   while [[ `netstat -taln | egrep $port_api` != "" ]]
   do
