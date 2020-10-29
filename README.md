@@ -26,7 +26,7 @@ With a fresh copy of the repo install all of the requirements and build the fron
 
 `./prepare.sh`
 
-**Note: If you will be running start.sh below with `-l` you should also run prepare.sh with -l to download all images in the database from the server. Not applicable if you are running a local database also.**
+**Note: If you will be running start.sh below with `-l` you should also run prepare.sh with `-l` to download all images in the database from the server. Not applicable if you are running a local database also.**
 
 After initially running the prepare script it does not need to be rerun unless changes are made to the code.
 
