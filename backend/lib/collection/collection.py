@@ -8,23 +8,27 @@ from mongoengine import ListField
 from mongoengine import ReferenceField
 from mongoengine import DateTimeField
 from mongoengine import BooleanField
+from mongoengine import IntField
 from mongoengine import Document
 from mongoengine import connect
-from mongoengine.queryset import queryset_manager
 from photo import Photo
 
 
 class Collection(Document):
     '''
     Collection made up of a title, photos and a creation date
+    Collection {
+        title: "Cool collection",
+        photos: [Object1, Object2]
+    }
     '''
     title = StringField(required=True, max_length=200)
-    photos = ListField(ReferenceField(Photo))
+    photos = ListField(ReferenceField(Photo, reverse_delete_rule=1))
     creation_date = DateTimeField(default=datetime.datetime.now())
     # created_by = ReferenceField(User)
-    private = BooleanField()
+    private = BooleanField(default=False, required=True)
     tags = ListField(StringField())
-    price = 0
+    price = IntField(default=0)
 
     def update_title(self, new_title):
         '''
@@ -41,6 +45,7 @@ class Collection(Document):
         for photo in self.photos:
             for tag in photo.tags:
                 tags.add(tag)
+        self.tags = list(tags)
         self.save()
 
     def add_photos(self, photos):
@@ -57,6 +62,7 @@ class Collection(Document):
     def remove_photos(self, photos):
         '''
         Remove a list of photos
+        @param photos: list of photo references
         '''
         for photo in photos:
             self.photos.remove(photo)
@@ -87,13 +93,6 @@ class Collection(Document):
         '''
         self.private = False
         self.save()
-
-    @queryset_manager
-    def get_deleted_photos(self, queryset):
-        '''
-        Get all the photos that have been deleted
-        '''
-        return queryset.filter(deleted=True)
 
 
 def test_collection():
@@ -132,22 +131,35 @@ def test_collection():
         posted=datetime.datetime.now(),
         likes=2,
         comments=['This photo sucks'],
-        deleted=False,
+        deleted=True,
         pathToImg='./backend/thisSecondPhoto.jpg'
     )
 
     # Photo MUST be saved to the database to be referenced
-    photo_one.save()
-    photo_two.save()
+    p_1 = Photo.objects(title=photo_one.title).first()
+    if p_1 is None:
+        photo_one.save()
+        p_1 = photo_one
+    p_2 = Photo.objects(title=photo_two.title).first()
+    if p_2 is None:
+        photo_two.save()
+        p_2 = photo_two
 
     # Create a Collection
     my_collection = Collection(
         title='My Collection',
-        photos=[photo_one]
+        photos=[p_1]
     )
-    my_collection.save()
-    my_collection.update_title('New Title')
-    my_collection.add_photos([photo_two])
+    c_1 = Collection.objects(title=my_collection.title).first()
+    if c_1 is None:
+        my_collection.save()
+        c_1 = my_collection
+
+    # Update the title
+    c_1.update_title('New Title')
+
+    # Add some photos
+    c_1.add_photos([p_2])
 
 
 if __name__ == '__main__':
