@@ -47,8 +47,7 @@ def dir_check(function):
 ROUTES
 """
 
-# TODO complete
-@app.route('/upload', methods=['POST'])
+@app.route('/save', methods=['POST'])
 @validate_secret
 @dir_check
 def upload_photo():
@@ -66,8 +65,10 @@ def upload_photo():
     -------
     None
     """
-    photo_details = request.form.to_dict()
-    # return dumps(create_photo_entry(mongo, photo_details))
+    r = request.form.to_dict()
+    print(f"saving {r['filename']}")
+    with open(f"./backend/images/{r['filename']}", "wb") as f:
+        f.write(base64.b64decode(r['photo']))
     return dumps({})
 
 # TODO get actual photo not static
@@ -89,12 +90,9 @@ def get_photo():
     photoStr: str
     """
     photo_details = request.form.to_dict()
-    with open("./backend/images/5f98e3a13308e8ba864b0524.jpg", "rb") as f:
+    with open("./backend/images/5f9a28f1d24123a4b0c8a4c8.jpg", "rb") as f:
         img = f.read()
         return base64.b64encode(img).decode("utf-8")
-
-    # If using blob instead of base64 encode
-    # return send_from_directory(directory="./images", filename="5f98e3a13308e8ba864b0524.jpg", as_attachment=True, attachment_filename="test.jpg")
 
 '''
 ---------------

@@ -6,10 +6,12 @@ import base64
 import datetime
 from bson.objectid import ObjectId
 from PIL import Image
+from io import BytesIO
 
 
 from lib.photo.validate_photo import validate_photo, validate_photo_user, reformat_lists, validate_extension, validate_discount
 from ..token_functions import get_uid
+from lib.photo.fs_interactions import save_photo
 
 
 def create_photo_entry(mongo, photo_details):
@@ -23,7 +25,7 @@ def create_photo_entry(mongo, photo_details):
     validate_extension(photo_details["extension"])
 
     # Get photo values before popping them
-    base64_str = photo_details['photo']
+    base64_str = photo_details['photo'].split(',')[1]
     extension = photo_details['extension']
     photo_details.pop("photo")
 
@@ -47,12 +49,13 @@ def create_photo_entry(mongo, photo_details):
     # Process photo and upload
     photo_oid = photo_entry.inserted_id
     name = str(photo_oid)
-    (path, path_thumbnail) = process_photo(base64_str, name, extension)
+    process_photo(base64_str, name, extension)
 
+    # ------ No need to include path in DB --------
     # Add "path" attribute to db entry
-    query = {"_id": ObjectId(name)}
-    set_path = {"$set": {"path": path, "pathThumb": path_thumbnail}}
-    mongo.db.photos.update_one(query, set_path)
+    # query = {"_id": ObjectId(name)}
+    # set_path = {"$set": {"path": path, "pathThumb": path_thumbnail}}
+    # mongo.db.photos.update_one(query, set_path)
 
 
     # Add photo to user's posts
@@ -67,7 +70,6 @@ def create_photo_entry(mongo, photo_details):
 def process_photo(base64_str, name, extension):
     """
     Process base64 str of a photo, convert and save/upload file
-    TODO add flag to upload photo to server
 
     @param base64_str: raw base64 str
     @param name: name of photo
@@ -75,39 +77,20 @@ def process_photo(base64_str, name, extension):
     @returns: path to photo
     """
 
-    # Remove metadata from b64
-    img_data = base64.b64decode(base64_str.split(',')[1])
-
-    path = save_photo_dir(img_data, name, extension)
-
-    return path
-
-def save_photo_dir(img_data, name, extension):
-    """
-    Save the photo to local directory
-    @param img_data: decoded base 64 image
-    @param name: name of photo
-    @param extension: photo type
-    @returns: path to photo, path to thumbnail of photo
-    """
-    # Set image path to ./backend/images/'xxxxxx.extension'
-    folder = './backend/images/'
-    file_name = name + extension
-    path = folder + file_name
-    path_thumbnail = folder + name + "_t" + extension
-
-    # Save image to /backend/images directory
-    with open(path, 'wb') as f:
-        f.write(img_data)
+    filename = name + extension
+    save_photo(base64_str, filename)
 
     # Attach compressed thumbnail to photos
     if extension != ".svg":
-        thumb = Image.open(path)
+        filename_thumbnail = name + "_t" + extension
+        img_data = base64.b64decode(base64_str)
+        thumb = Image.open(BytesIO(img_data))
         thumb.thumbnail((300, 200))
-        thumb.save(path_thumbnail)
-        print("Thumbnail saved to" + path_thumbnail)
+        buffer = BytesIO()
+        thumb.save(buffer, thumb.format)
+        save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
 
-    return (path, path_thumbnail)
+
 
 # Get details about photo
 def get_photo_edit(mongo, photoId, token):
