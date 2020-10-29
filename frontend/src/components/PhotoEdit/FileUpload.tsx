@@ -7,6 +7,7 @@ interface InterfaceFile {
   deactivateUploadButton: () => void;
   activateUploadButton: () => void;
   setPreview: (arg0: string) => any;
+  label: string;
 }
 
 export default function FileUpload(props: InterfaceFile) {
@@ -57,14 +58,13 @@ export default function FileUpload(props: InterfaceFile) {
       <Form.Group>
         <Form.File
           id="photo"
-          label="Select A Photo"
+          label={props.label}
           accept=".jpg, .jpeg, .png, .gif, .svg"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            handleFileChange(e)
-          }
+            handleFileChange(e)}
         />
         <Form.Text className="text-muted">
-          We accept .jpg, .png, .gif, and .svg images images.
+          We accept .jp(e)g, .png, .gif, and .svg images.
           <p className="error">{fileErrMsg}</p>
         </Form.Text>
       </Form.Group>

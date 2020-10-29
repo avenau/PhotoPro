@@ -31,7 +31,6 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       hasPickedPhoto: false,
       imagePreview: null,
       albums: [],
-      photo: "",
       photoElement: "",
     };
     this.setState = this.setState.bind(this);
@@ -45,7 +44,8 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       if (fileInput.files && fileInput.files[0]) {
         const thePhotoFile = fileInput.files[0];
         const photoFileName = thePhotoFile.name;
-        const photoExtension = photoFileName.substr(photoFileName.length - 4);
+        const match = photoFileName.toLowerCase().match(/\.[^\.]*$/);
+        const photoExtension = match !== null ? match[0] : "";
         const reader = new FileReader();
         reader.readAsDataURL(thePhotoFile);
         reader.onload = () => resolve([reader.result, photoExtension]);
@@ -132,6 +132,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
               pickedPhoto={(selectedPhoto) =>
                 this.setState({ hasPickedPhoto: selectedPhoto })
               }
+              label="Select a photo"
             />
             {this.state.hasPickedPhoto ? (
               <div>

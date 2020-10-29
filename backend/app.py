@@ -3,12 +3,9 @@ Backend main file
 Handle requests to and from server and web app client
  - Team JAJAC :)
 """
-import os
-import re
 
 # Pip functions
 import traceback
-import base64
 import requests
 from flask.helpers import send_file
 from json import dumps, loads
@@ -197,6 +194,8 @@ def account_registration():
     'privFName': str,
     'privLName':  str,
     'privEmail': str,
+    'profilePic': base64,
+    'extension': str,
     'aboutMe': str,
     'DOB': str,
     'location': str
@@ -213,10 +212,10 @@ def account_registration():
     new_user["password"] = hashed_password
 
     # Handle profile pic
-    if new_user.get('profilePic') is None:
-        new_user['profilePic'] = ""
+    if new_user.get('profilePic') == "":
+        new_user['profilePic'] = ["", ""]
     else:
-        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
+        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'], new_user['extension'])
 
     # Add collections and other user owned entities
     new_user['posts'] = []
@@ -923,9 +922,6 @@ def photo_details():
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
 
-    # with open(photo_details["path"], "rb") as f:
-    #     img = f.read()
-
     img = find_photo(f"{photo_id}{photo_details['extension']}")
 
     return dumps({
@@ -1096,13 +1092,6 @@ def basic():
         arguments = request.args
     print(arguments)
     return dumps(arguments)
-
-@app.route('/download', methods=['GET'])
-def download():
-    # TODO update this to download the actuall image and have non static api call route
-    headers = {"secretkey": "PhotoProSecretAPIKey"}
-    r = requests.get("http://localhost:8101/get", headers=headers)
-    return r.content.decode("utf-8")
 
 if __name__ == '__main__':
     app.run(port=8001, debug=True)
