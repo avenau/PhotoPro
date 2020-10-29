@@ -112,3 +112,23 @@ Photo details edit.
 Price discount change.
 Fix directory structure.
 If time, work on watermarking.
+
+=======================Week 6 (Wed 21 Oct - Wed 28 Oct)=======================
+
+PLANNED
+I aimed to finish my user stories on editing price, and other photo details. I also completed fixing some of the directory structure.
+Most of our other stories revolved around displaying photos on the various pages, photo details, search; CRUD photos in backend.
+Joe focused on researching MongoEngine as a more high level way of interacting with our DB.
+
+FINISHED
+I was able to finish what I planned. CRUD for photos in backend were completed!
+
+CHALLENGES
+I had some troubles at first with reusing the components from the upload page.
+
+REFLECTION
+I need to manage my time properly. Aim to finish most of the work by Monday at latest. Dealing with high coupling. 
+
+NEXT
+- Finish creating albums from upload and edit page.
+- Also editing albums from profile page.
