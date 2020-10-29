@@ -7,7 +7,9 @@ import os
 
 # Pip functions
 import base64
+import zipfile
 from json import dumps
+from io import BytesIO
 from flask import Flask, request, abort, send_from_directory
 from flask.helpers import send_file
 from flask_cors import CORS
@@ -96,6 +98,35 @@ def get_photo():
             img = f.read()
             return base64.b64encode(img).decode("utf-8")
     except:
+        abort(404)
+
+@app.route('/download', methods=['GET'])
+# @validate_secret
+@dir_check
+def get_iamges():
+    """
+    Description
+    -----------
+    Get the images/ directory as a zip
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    images: zip file
+    """
+    r = request.args.to_dict()
+    print(r)
+    try:
+        memory_file = BytesIO()
+        with zipfile.ZipFile(memory_file, 'w') as zf:
+            for individualFile in os.listdir(path="./backend/images"):
+                zf.write(f"./backend/images/{individualFile}", arcname=f"{individualFile}")
+        memory_file.seek(0)
+        return send_file(memory_file, attachment_filename='images.zip', as_attachment=True)
+    except Exception as e:
+        print(e)
         abort(404)
 
 

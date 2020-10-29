@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO download images directory
+
 echo "========== Beginning installation =============="
 ./utils/install.sh
 if [ $? -ne 0 ]
