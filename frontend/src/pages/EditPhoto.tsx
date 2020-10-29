@@ -143,10 +143,7 @@ export default function EditPhoto(props: any) {
           oAlbums: response.data.albums,
         });
         // Set image preview
-        setPreview(
-          response.data.metadata +
-            response.data.photoStr.replace("b'", "").slice(0, -1)
-        );
+        setPreview(response.data.metadata + response.data.photoStr);
         setLoading(false);
       })
       .catch((err) => {

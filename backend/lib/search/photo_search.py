@@ -2,6 +2,8 @@ from bson.json_util import dumps
 from json import loads
 import base64
 
+from lib.photo.fs_interactions import find_photo
+
 def photo_search(data, mongo):
   res = mongo.db.photos.aggregate(
     [
@@ -19,6 +21,7 @@ def photo_search(data, mongo):
           "discount": 1,
           "pathThumb": 1,
           "metadata": 1,
+          "extension": 1,
           "id": {"$toString": "$_id"},
           "_id": 0
         }
@@ -33,7 +36,6 @@ def photo_search(data, mongo):
   )
   res = loads(dumps(res))
   for result in res:
-    with open(result["pathThumb"], "rb") as f:
-        img = f.read()
-    result["photoStr"] = str(base64.b64encode(img))
+    # TODO add watermark check here
+    result["photoStr"] = find_photo(f"{result['id']}_t{result['extension']}")
   return res

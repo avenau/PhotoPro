@@ -21,6 +21,7 @@ import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
 import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
+import DownloadExample from "./pages/DownloadExample";
 
 interface Props {}
 
@@ -94,6 +95,7 @@ class App extends React.Component<Props, State> {
           />
           <Route path="/user/:user_id" component={ProfilePage} />
           <Route path="/search/:type" component={SearchPage} />
+          <Route path="/downloadexample" component={DownloadExample} />
           <Route
             valid={this.state.valid}
             path="/photo/:photo_id"

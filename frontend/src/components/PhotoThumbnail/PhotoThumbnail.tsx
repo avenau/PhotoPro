@@ -13,9 +13,7 @@ interface Props {
 
 export default class PhotoThumbnail extends React.Component<Props> {
   private getPic() {
-    return (
-      this.props.metadata + this.props.photoStr.replace("b'", "").slice(0, -1)
-    );
+    return this.props.metadata + this.props.photoStr;
   }
 
   render() {
