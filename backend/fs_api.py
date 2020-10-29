@@ -90,9 +90,13 @@ def get_photo():
     photoStr: str
     """
     photo_details = request.form.to_dict()
-    with open("./backend/images/5f9a28f1d24123a4b0c8a4c8.jpg", "rb") as f:
-        img = f.read()
-        return base64.b64encode(img).decode("utf-8")
+    try:
+        with open("./backend/images/5f9a28f1d24123a4b0c8a4c8.jpg", "rb") as f:
+            img = f.read()
+            return base64.b64encode(img).decode("utf-8")
+    except:
+        abort(404)
+
 
 '''
 ---------------

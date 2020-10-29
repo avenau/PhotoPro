@@ -49,23 +49,23 @@ def create_photo_entry(mongo, photo_details):
     # Process photo and upload
     photo_oid = photo_entry.inserted_id
     name = str(photo_oid)
-    process_photo(base64_str, name, extension)
+    try:
+        process_photo(base64_str, name, extension)
 
-    # ------ No need to include path in DB --------
-    # Add "path" attribute to db entry
-    # query = {"_id": ObjectId(name)}
-    # set_path = {"$set": {"path": path, "pathThumb": path_thumbnail}}
-    # mongo.db.photos.update_one(query, set_path)
-
-
-    # Add photo to user's posts
-    response = mongo.db.users.find_one({"_id": ObjectId(user_uid)}, {"posts": 1})
-    posts = response["posts"]
-    posts.append(ObjectId(name))
-    mongo.db.users.update_one({"_id": ObjectId(user_uid)}, {"$set": {"posts": posts}})
-    return {
-        "success": "true"
-    }
+        # Add photo to user's posts
+        response = mongo.db.users.find_one({"_id": ObjectId(user_uid)}, {"posts": 1})
+        posts = response["posts"]
+        posts.append(ObjectId(name))
+        mongo.db.users.update_one({"_id": ObjectId(user_uid)}, {"$set": {"posts": posts}})
+        return {
+            "success": "true"
+        }
+    except:
+        mongo.db.photos.delete_one({"_id": photo_oid})
+        print("Didn't add to DB")
+        return {
+            "success": "false"
+        }
 
 def process_photo(base64_str, name, extension):
     """
