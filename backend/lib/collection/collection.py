@@ -11,7 +11,7 @@ from mongoengine import BooleanField
 from mongoengine import IntField
 from mongoengine import Document
 from mongoengine import connect
-from photo import Photo
+from photo.photo import Photo
 
 
 class Collection(Document):

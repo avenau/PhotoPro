@@ -78,3 +78,6 @@ package-lock.json
 
 # Static images
 backend/images/
+
+# Python package related stuff
+photopro_lib.egg-info
