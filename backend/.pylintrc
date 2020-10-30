@@ -7,5 +7,6 @@ load-plugins=pylint_mongoengine
 # fix-me: Don't lint TODO: sections (feel free to remove)
 disable=
     broad-except,
-    fixme
-
+    fixme,
+    too-many-public-methods,
+    too-many-instance-attributes
