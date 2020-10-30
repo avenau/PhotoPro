@@ -2,24 +2,19 @@ import React, { useState, useEffect } from 'react';
 import {Form, Card, Button, Row, Col} from "react-bootstrap"
 import AlbumList from '../../components/ProfileLists/AlbumList';
 import axios from 'axios'
-import { render } from '@testing-library/react';
-
-
-
-interface IAlbum {
-    [key: string]: string
-}
 
 // Select existing albums or create new album
 export default function Album(props: any) {
-    const [albums, setAlbums] = useState<any[][]>([])
+    const [albums, setAlbums] = useState<string[][]>([])
     const [selectedAlbums, setSelAlbums] = useState<string[]>([])
 
     // New album card
     const [newAlbumCard, setNewAlbumCard] = useState(false)
     const [newAlbumTitle, setNewAlbumTitle] = useState("")
+    const [errMsg, setErrMsg] = useState("")
 
     const token = localStorage.getItem('token')
+
     useEffect(() => {
         axios.get('/albums', {params:
             {token: token}}
@@ -57,6 +52,19 @@ export default function Album(props: any) {
         console.log(tempSelected)
     }
 
+    function setNewAlbum(album: string) {
+        if (album.length > 40) { 
+        // TODO change to album button
+        //   deactivateUploadButton();
+          setErrMsg("Please keep your album name under 40 characters to be concise.")
+        } else {
+        //   activateUploadButton();
+          setErrMsg("")
+          setNewAlbumTitle(album)
+        }
+        
+    }
+
     function createNewAlbum(event: React.FormEvent<HTMLElement>) {
         console.log('in create new album')
         
@@ -83,16 +91,24 @@ export default function Album(props: any) {
     <>
         { newAlbumCard ?
         (<Card className="text-center">
+            <br/>
             <Card.Title>Create new album</Card.Title>
+            <Card.Text>
+            <small className="text-muted">You can edit the title later on your profile page</small>
+            <small className="text-muted">Album name must be between 1 to 40 characters long</small>
+            </Card.Text>
             <Form.Group className="newAlbum">
-                <Form.Control placeholder="Enter album title" onChange={(e) => setNewAlbumTitle(e.target.value)}/>
+                <Form.Control placeholder="Enter album title" onChange={(e) => setNewAlbum(e.target.value)}/>
+                <Card.Text>
+                    <small className="text-muted">{errMsg}</small>
+                </Card.Text>
                 <br/>
                 <Row>
                 <Col>
                     <Button variant="secondary" onClick={(e) => {setNewAlbumCard(false)}}> Cancel</Button>
                 </Col>
                 <Col>
-                    <Button onClick={(e) => {createNewAlbum(e)}}>Create and add photo to album</Button>
+                    <Button onClick={(e) => {createNewAlbum(e)}}>Add photo to new album</Button>
                 </Col>
                 </Row>
             </Form.Group>
