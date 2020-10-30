@@ -25,3 +25,4 @@ class Photo(Document):
     comments = ListField(StringField())
     deleted = BooleanField(default=False)
     pathToImg = StringField()
+    meta = {'collection': 'photos-mongoengine'}

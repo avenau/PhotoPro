@@ -10,13 +10,12 @@ from mongoengine import DateTimeField
 from mongoengine import BooleanField
 from mongoengine import IntField
 from mongoengine import Document
-from mongoengine import connect
-from photo.photo import Photo
+from lib.photo.photo import Photo
 
 
 class Collection(Document):
     '''
-    Collection made up of a title, photos and a creation date
+    Collection class definition
     Collection {
         title: "Cool collection",
         photos: [Object1, Object2]
@@ -29,6 +28,7 @@ class Collection(Document):
     private = BooleanField(default=False, required=True)
     tags = ListField(StringField())
     price = IntField(default=0)
+    meta = {'collection': 'collections-mongoengine'}
 
     def update_title(self, new_title):
         '''
@@ -93,74 +93,3 @@ class Collection(Document):
         '''
         self.private = False
         self.save()
-
-
-def test_collection():
-    '''
-    Test:
-    1) Connect to the db
-    2) Create a Photo
-    3) Save the Photo
-    4) Create a Collection
-    5) Save the Collection
-    6) Update the Collection title
-    7) Save the Collection title
-    '''
-    # Connect to the database
-    connect('angular-flask-muckaround')
-
-    # Create a Photo
-    photo_one = Photo(
-        title='Photo One',
-        price='50',
-        tags=['dog', 'cat'],
-        discount=0,
-        posted=datetime.datetime.now(),
-        likes=1,
-        comments=['Great photo', 'I love it'],
-        deleted=False,
-        pathToImg='./backend/thisphoto.jpg'
-    )
-
-    # Create a second photo
-    photo_two = Photo(
-        title='Photo Two',
-        price=20,
-        tags=['dog', 'bird'],
-        discount=0,
-        posted=datetime.datetime.now(),
-        likes=2,
-        comments=['This photo sucks'],
-        deleted=True,
-        pathToImg='./backend/thisSecondPhoto.jpg'
-    )
-
-    # Photo MUST be saved to the database to be referenced
-    p_1 = Photo.objects(title=photo_one.title).first()
-    if p_1 is None:
-        photo_one.save()
-        p_1 = photo_one
-    p_2 = Photo.objects(title=photo_two.title).first()
-    if p_2 is None:
-        photo_two.save()
-        p_2 = photo_two
-
-    # Create a Collection
-    my_collection = Collection(
-        title='My Collection',
-        photos=[p_1]
-    )
-    c_1 = Collection.objects(title=my_collection.title).first()
-    if c_1 is None:
-        my_collection.save()
-        c_1 = my_collection
-
-    # Update the title
-    c_1.update_title('New Title')
-
-    # Add some photos
-    c_1.add_photos([p_2])
-
-
-if __name__ == '__main__':
-    test_collection()
