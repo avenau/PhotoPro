@@ -42,19 +42,19 @@ export default function Album(props: any) {
         console.log(event.currentTarget.checked)
         const album = event.currentTarget.id 
         const checked = event.currentTarget.checked
+        var tempSelected = [...selectedAlbums]
         if (checked === true) {
             // Add album to list
-            selectedAlbums.push(album)
-            
-            // setSelAlbums(selectedAlbums)
+            tempSelected = [...selectedAlbums, album]            
+            setSelAlbums(tempSelected)
         } else {
             // Remove album from album list
-            const index = selectedAlbums.indexOf(album)
-            selectedAlbums.splice(index, 1)
-            // setSelAlbums(selectedAlbums)
+            const index = tempSelected.indexOf(album)
+            tempSelected.splice(index, 1)
+            setSelAlbums(tempSelected)
         }
         
-        console.log(selectedAlbums)
+        console.log(tempSelected)
     }
 
     function createNewAlbum(event: React.FormEvent<HTMLElement>) {
@@ -66,7 +66,7 @@ export default function Album(props: any) {
         })
         .then((res) => {
             const albumId = res.data.albumId
-            selectedAlbums.push(newAlbumTitle)
+            selectedAlbums.push(albumId)
             albums.push([albumId, newAlbumTitle])
             setNewAlbumCard(false)
         }
@@ -104,8 +104,10 @@ export default function Album(props: any) {
             {albums.map((album)=> {
                 return <Form.Check
                 type="checkbox"
+                defaultChecked={selectedAlbums.includes(album[0])}
                 label={album[1]}
                 id={album[0]}
+                key={album[0]}
                 onClick={(e: React.FormEvent<HTMLInputElement>) => {addAlbums(e)}}/>
             })}
             <Card.Text>
