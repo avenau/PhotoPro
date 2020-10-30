@@ -1030,6 +1030,85 @@ def get_verified_user():
         "u_id": u_id,
     })
 
+@app.route('/albums', methods=['GET'])
+@validate_token
+def albums():
+    """
+    Description
+    -----------
+    Gets albums of a user
+
+    Parameters
+    ----------
+    token : string
+
+    Returns
+    -------
+    {
+        albumId: title,
+        albumId: title
+        ...
+    }
+    """
+
+    token = request.args.get('token')
+    u_id = token_functions.verify_token(token)["u_id"]
+
+    # List of album ids
+    albums = mongo.db.users.find_one({'_id': ObjectId(u_id)}, {'albums': 1})['albums']
+
+    # Find the titles of the albums and place in dictionary
+    # {albumid: title, albumid, title2: albumid:...}
+    albumList = list()
+    for i in albums:
+        title = mongo.db.albums.find_one({'_id': i}, {'title': 1})['title']
+        print(title)
+        albumList.append((str(i), title))
+
+    return dumps({"albumList": albumList})
+
+@app.route('/albums', methods=['POST'])
+@validate_token
+def add_album():
+    """
+    Description
+    -----------
+    Add album to user
+
+    Parameters
+    ----------
+    token : string
+    title: string
+
+    Returns
+    -------
+    {
+        albumId: int 
+    } 
+
+    """
+    token = request.form.get('token')
+    u_id = token_functions.verify_token(token)["u_id"]
+    
+    # TODO validate title length
+    # Validate title, must not already exist in the DB
+    title = request.form.get('title')
+    
+
+    # Create new album
+    album = mongo.db.albums.insert_one({
+        "title": title,
+        "discount": 0.0,
+        "photos": [],
+        "user": ObjectId(u_id)
+    })
+    albumId = album.inserted_id
+    print(albumId)
+    # Current albums
+
+    mongo.db.users.update_one({'_id': ObjectId(u_id)}, {"$push": {"albums": ObjectId(albumId)}})
+
+    return dumps({"albumId": str(albumId)})
 '''
 ---------------
 - Test Routes -

@@ -5,13 +5,12 @@ import { Button, Form, Modal, Container, Row, Col, Image } from 'react-bootstrap
 import { RouteComponentProps } from "react-router-dom";
 
 // Functional components
-import Title from "../components/Photo/Title";
+import Title from "../components/PhotoEdit/Title";
 import Toolbar from "../components/Toolbar/Toolbar";
-import Price from "../components/Photo/Price";
-import Tags from "../components/Photo/Tags";
-import Album from "../components/Photo/Album";
-import AlbumList from '../components/ProfileLists/AlbumList';
-import Discount from '../components/Photo/Discount'
+import Price from "../components/PhotoEdit/Price";
+import Tags from "../components/PhotoEdit/Tags";
+import Album from "../components/PhotoEdit/Album";
+import Discount from '../components/PhotoEdit/Discount'
 
 export default function EditPhoto(props: any) {
     const [title, setTitle] = useState("")
@@ -143,6 +142,7 @@ export default function EditPhoto(props: any) {
         const btn = document.getElementById("saveButton");
         return btn?.setAttribute("disabled", "true");
     }
+
 
     return loading ? (<div>Loading...</div>) : (
         <>

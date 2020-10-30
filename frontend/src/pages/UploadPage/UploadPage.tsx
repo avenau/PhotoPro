@@ -11,11 +11,11 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 // Functional components
-import Title from "../../components/Photo/Title";
-import Price from "../../components/Photo/Price";
-import Tags from "../../components/Photo/Tags";
-import Album from "../../components/Photo/Album";
-import FileUpload from "../../components/Photo/FileUpload";
+import Title from "../../components/PhotoEdit/Title";
+import Price from "../../components/PhotoEdit/Price";
+import Tags from "../../components/PhotoEdit/Tags";
+import Album from "../../components/PhotoEdit/Album";
+import FileUpload from "../../components/PhotoEdit/FileUpload";
 
 class UploadPage extends React.Component<RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
@@ -149,11 +149,6 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
                         this.setState({ albums: albums });
                       }}
                     />
-                    <Row>
-                      <Col>
-                        <Button> Create a new album</Button>
-                      </Col>
-                    </Row>
                   </Col>
                 </Row>
                 <Button id="uploadButton" className="mt-2" type="submit">
