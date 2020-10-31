@@ -25,7 +25,6 @@ MarkupSafe==1.1.1
 mccabe==0.6.1
 mongoengine==0.20.0
 packaging==20.4
--e git+git@github.com:unsw-cse-capstone-project/capstone-project-comp3900-w15a-jajac.git@f1eeef4975fdb960e8f606c2bb7e6e7e8a92128f#egg=photopro&subdirectory=backend
 Pillow==8.0.0
 pkg-resources==0.0.0
 pluggy==0.13.1
