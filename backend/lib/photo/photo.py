@@ -10,6 +10,8 @@ from mongoengine import IntField
 from mongoengine import BooleanField
 from mongoengine import Document
 from mongoengine import ReferenceField
+
+# Used as part of 'collection.Collection'
 import lib.collection.collection as collection
 
 
@@ -20,6 +22,7 @@ class Photo(Document):
     title = StringField()
     price = IntField()
     # albums = ListField()
+    # Collections that this photo is a part of
     collections = ListField(ReferenceField('collection.Collection'))
     tags = ListField(StringField())
     discount = IntField(default=0)
@@ -192,14 +195,25 @@ class Photo(Document):
             return []
         return self.comments[0]
 
+    def remove_collection(self, old_collection):
+        '''
+        Remove a collection from this photo's references
+        '''
+        if self in old_collection.photos:
+            old_collection.photos.remove(self)
+            old_collection.save()
+        if old_collection in self.collections:
+            self.collections.remove(old_collection)
+            self.save()
+
     def delete_photo(self):
         '''
         Delete the photo by setting the deleted flag to False
         '''
         self.deleted = True
-        # TODO: search through all albums and collections and remove reference
         for this_collection in self.collections:
-            this_collection.photos.remove(self)
+            this_collection.remove_photo(self)
+            this_collection.save()
         self.save()
 
     def undelete_photo(self):
@@ -208,7 +222,6 @@ class Photo(Document):
         WARNING: Not sure of the longterm ramifications of this
         '''
         self.deleted = False
-        self.save()
 
     def is_deleted(self):
         '''
@@ -224,7 +237,6 @@ class Photo(Document):
         if not isinstance(path, str):
             raise ValueError("Path must be of type string")
         self.path = path
-        self.save()
 
     def get_path(self):
         '''
@@ -238,7 +250,7 @@ class Photo(Document):
         Add a collection to the photo's list of collections
         @param collection : lib.collection.jajaccollection.Collection
         '''
-        self.collections.add(new_collection)
+        self.collections.append(new_collection)
 
     def get_collections(self):
         '''
@@ -248,7 +260,8 @@ class Photo(Document):
 
     def clean(self):
         '''
-        Ensure that the tags are unique
+        Methods called as part of save()
+        1) Ensure that the tags are unique
         '''
         if list(set(self.tags)) is not self.tags:
             self.tags = list(set(self.tags))

@@ -27,17 +27,29 @@ class Collection(Document):
     photos = ListField(ReferenceField('photo.Photo'))
     creation_date = DateTimeField(default=datetime.datetime.now())
     # created_by = ReferenceField(User)
-    private = BooleanField(default=False, required=True)
+    private = BooleanField(default=False)
     tags = ListField(StringField())
     price = IntField(default=0)
+    deleted = BooleanField(default=False)
     meta = {'collection': 'collections-mongoengine'}
+
+    def get_title(self):
+        '''
+        Get the title of the collection
+        '''
+        return self.title
 
     def update_title(self, new_title):
         '''
         Update the title of the image
         '''
         self.title = new_title
-        self.save()
+
+    def get_tags(self):
+        '''
+        Get the list of tags
+        '''
+        return self.tags
 
     def update_tags(self):
         '''
@@ -48,38 +60,52 @@ class Collection(Document):
             for tag in this_photo.tags:
                 tags.add(tag)
         self.tags = list(tags)
-        self.save()
+
+    def get_photos(self):
+        '''
+        Get the list of photos
+        '''
+        return self.photos
 
     def add_photo(self, new_photo):
         '''
-        Add a single photo
+        Add a single photo to the collection
+        Adds this collection to the photo
         '''
         self.photos.append(new_photo)
-        self.update_tags()
-        self.update_price()
-        self.save()
+        new_photo.add_collection(self)
 
     def add_photos(self, new_photos):
         '''
         Add a list of photos
+        Add this collection to the photos
         @param photos: list of photo references
         '''
         for this_photo in new_photos:
             self.photos.append(this_photo)
-        self.update_tags()
-        self.update_price()
-        self.save()
+            this_photo.add_collection(self)
+
+    def remove_photo(self, old_photo):
+        '''
+        Remove a photo from this collection
+        Remove this collection from the photo
+        @param photo: Photo(Document)
+        '''
+        if self in old_photo.collections:
+            old_photo.collections.remove(self)
+            old_photo.save()
+        if old_photo in self.photos:
+            self.photos.remove(old_photo)
+            self.save()
 
     def remove_photos(self, photos):
         '''
-        Remove a list of photos
+        Remove a list of photos from this collection
+        Remove this collection from the list of photos
         @param photos: list of photo references
         '''
         for this_photo in photos:
-            self.photos.remove(this_photo)
-        self.update_tags()
-        self.update_price()
-        self.save()
+            self.remove_photo(this_photo)
 
     def update_price(self):
         '''
@@ -89,18 +115,40 @@ class Collection(Document):
         for this_photo in self.photos:
             price += this_photo.price
         self.price = price
-        self.save()
 
     def set_private(self):
         '''
         Set the collection to private
         '''
         self.private = True
-        self.save()
 
     def set_public(self):
         '''
         Set the collection to public
         '''
         self.private = False
-        self.save()
+
+    def is_deleted(self):
+        '''
+        Check whether the collection is deleted
+        '''
+        return self.deleted
+
+    def delete_collection(self):
+        '''
+        Soft deletion of the collection
+        Dereferences photos and removes self
+        '''
+        self.deleted = True
+        for this_photo in self.photos:
+            this_photo.remove_collection(self)
+            this_photo.save()
+
+    def clean(self):
+        '''
+        Methods to be performed on a self.save()
+        1) Update the tags
+        2) Update the price
+        '''
+        self.update_tags()
+        self.update_price()

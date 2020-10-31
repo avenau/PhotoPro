@@ -9,4 +9,5 @@ disable=
     broad-except,
     fixme,
     too-many-public-methods,
-    too-many-instance-attributes
+    too-many-instance-attributes,
+    unused-import
