@@ -80,7 +80,7 @@ def process_photo(base64_str, name, extension):
     filename = name + extension
     save_photo(base64_str, filename)
 
-    # Attach compressed thumbnail to photos
+    # Upload compressed thumbnail as well
     if extension != ".svg":
         filename_thumbnail = name + "_t" + extension
         img_data = base64.b64decode(base64_str)
