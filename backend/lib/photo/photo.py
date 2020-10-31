@@ -1,5 +1,5 @@
 '''
-Dummy Photo class and methods
+Photo Class for mongoengine
 '''
 
 import datetime
@@ -21,8 +21,7 @@ class Photo(Document):
     '''
     title = StringField()
     price = IntField()
-    # albums = ListField()
-    # Collections that this photo is a part of
+    albums = ListField()
     collections = ListField(ReferenceField('collection.Collection'))
     tags = ListField(StringField())
     discount = IntField(default=0)
