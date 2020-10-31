@@ -10,7 +10,9 @@ from mongoengine import DateTimeField
 from mongoengine import BooleanField
 from mongoengine import IntField
 from mongoengine import Document
-from lib.photo.photo import Photo
+
+# Own class import
+import lib.photo.photo as photo
 
 
 class Collection(Document):
@@ -22,7 +24,7 @@ class Collection(Document):
     }
     '''
     title = StringField(required=True, max_length=200)
-    photos = ListField(ReferenceField(Photo, reverse_delete_rule=1))
+    photos = ListField(ReferenceField('photo.Photo'))
     creation_date = DateTimeField(default=datetime.datetime.now())
     # created_by = ReferenceField(User)
     private = BooleanField(default=False, required=True)
@@ -42,19 +44,28 @@ class Collection(Document):
         Create a unique set of all tags in all photos
         '''
         tags = set(self.tags)
-        for photo in self.photos:
-            for tag in photo.tags:
+        for this_photo in self.photos:
+            for tag in this_photo.tags:
                 tags.add(tag)
         self.tags = list(tags)
         self.save()
 
-    def add_photos(self, photos):
+    def add_photo(self, new_photo):
+        '''
+        Add a single photo
+        '''
+        self.photos.append(new_photo)
+        self.update_tags()
+        self.update_price()
+        self.save()
+
+    def add_photos(self, new_photos):
         '''
         Add a list of photos
         @param photos: list of photo references
         '''
-        for photo in photos:
-            self.photos.append(photo)
+        for this_photo in new_photos:
+            self.photos.append(this_photo)
         self.update_tags()
         self.update_price()
         self.save()
@@ -64,8 +75,8 @@ class Collection(Document):
         Remove a list of photos
         @param photos: list of photo references
         '''
-        for photo in photos:
-            self.photos.remove(photo)
+        for this_photo in photos:
+            self.photos.remove(this_photo)
         self.update_tags()
         self.update_price()
         self.save()
@@ -75,8 +86,8 @@ class Collection(Document):
         Iterate through the photos and update the price
         '''
         price = 0
-        for photo in self.photos:
-            price += photo.price
+        for this_photo in self.photos:
+            price += this_photo.price
         self.price = price
         self.save()
 

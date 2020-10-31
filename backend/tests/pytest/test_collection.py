@@ -23,7 +23,7 @@ photo_one = Photo(
     likes=1,
     comments=['Great photo', 'I love it'],
     deleted=False,
-    pathToImg='./backend/thisphoto.jpg'
+    path='./backend/thisphoto.jpg'
 )
 
 # Photo Two
@@ -36,7 +36,7 @@ photo_two = Photo(
     likes=2,
     comments=['This photo sucks'],
     deleted=True,
-    pathToImg='./backend/thisSecondPhoto.jpg'
+    path='./backend/thisSecondPhoto.jpg'
 )
 
 # Collection
@@ -115,6 +115,16 @@ def test_adding_photos():
     assert len(my_collection.photos) == len([photo_one, photo_two])
     queried_collection = Collection.objects.first()
     assert len(queried_collection.photos) == len([photo_one, photo_two])
+
+
+def test_removing_photo():
+    '''
+    Add a photo and then delete it, removing it from the collection
+    '''
+    photo_one.save()
+    my_collection.save()
+    my_collection.add_photo(photo_one)
+    photo_one.delete()
 
 
 def test_clean_db():
