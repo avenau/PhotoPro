@@ -28,49 +28,53 @@ export default function LikeButton(props: LikeProps) {
         }
         console.log(count);
         if (userLoggedin === true) {
-            if (status != "light") {
-                setCount(count - 1);
-                count = count - 1;
-                setStatus('light');
-                setContent("You successfully unliked this photo!")
-                setShow(true);
-            } else {
-                setCount(count + 1);
-                count = count + 1;
-                setStatus('primary')
-                setContent("You successfully liked this photo!")
-                setShow(true);
-            }
+
             let upStatus = likeStatus === "light" ? true : false;
             //console.log("Upstatus: " + upStatus);
             //console.log("CHANGED COUNT " + count);
+            if (localStorage.getItem('token') !== null && localStorage.getItem('token') !== "") {
+                await axios.post(`/photo_details/updateLikes?=${localStorage.getItem('token')}`,
+                    {
+                        photoId,
+                        userId,
+                        count,
+                        upStatus,
+                    })
+                    .then((r) => {
+                        if (r.status !== 200) {
+                            //console.log("UPDATE LIKES NOT SUCCESSFUL");
+                            throw new Error();
+                        } else if (r.status === 200) {
+                            if (status != "light") {
+                                setCount(count - 1);
+                                count = count - 1;
+                                setStatus('light');
+                                setContent("You successfully unliked this photo!")
+                                setShow(true);
+                            } else {
+                                setCount(count + 1);
+                                count = count + 1;
+                                setStatus('primary')
+                                setContent("You successfully liked this photo!")
+                                setShow(true);
+                            }
+                        }
 
-            await axios.post('/photo_details/updateLikes',
-                {
-                    photoId,
-                    userId,
-                    count,
-                    upStatus,
-                })
-                .then((r) => {
-                    if (r.status !== 200) {
-                        //console.log("UPDATE LIKES NOT SUCCESSFUL");
-                        throw new Error();
-                    }
+                    })
+                    .catch((e) => {
+                        console.log('==========Error occured==========');
+                        console.log(e);
+                        console.log('=================================');
 
-                })
-                .catch((e) => {
-                    console.log('==========Error occured==========');
-                    console.log(e);
-                    console.log('=================================');
+                    });
 
-                });
+
+            }
 
         } else {
             setContent("You must be logged in to like a photo!")
             setShow(true);
         }
-
     }
 
     const getLikeCount = async (photoId: string) => {

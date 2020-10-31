@@ -8,6 +8,11 @@ then
   exit 1
 fi
 
+if [ "$1" = "-l" ]
+then
+  exit 0
+fi
+
 echo "========== Beginning build =============="
 ./utils/build.sh
 if [ $? -ne 0 ]

@@ -1,8 +1,6 @@
 import pytest
-from validate_photo_details import validate_title, validate_price
-from validate_photo_deatils import validate_tags, validate_album
-from validate_photo_details import lower_tags
-from lib.Error import ValueError
+from validate_photo import *
+from Error import ValueError
 
 
 def photo():
@@ -13,8 +11,7 @@ def photo():
         "albumsToAddTo": ["fruit", "nature"]
     }
 
-
-# ========================== Tests ==========================
+# ========================== Test upload ==========================
 def test_title():
     photoDetails = photo()
     with pytest.raises(ValueError):
@@ -60,8 +57,7 @@ def test_tags():
     with pytest.raises(ValueError):
         validate_tags(["", "apple"])
 
-    assert validate_tags(photoDetails["tags"]) is True
-
+    assert validate_tags(photoDetails["tags"]) == True
 
 def test_albums():
     photoDetails = photo()
@@ -76,3 +72,24 @@ def test_lower():
     testdict = {"tags": ["UPPER", "lower", "mIx"]}
     testdict = lower_tags(testdict)
     assert testdict == {'tags': ['upper', 'lower', 'mix']}
+
+def test_discount():
+    discount = 0
+    discount1 = 100
+    discount2 = -1
+    discount3 = 101
+    discount4 = 50
+    discount5 = 50.5
+
+    with pytest.raises(ValueError):
+        validate_discount(discount2)
+    
+    with pytest.raises(ValueError):
+        validate_discount(discount3)
+
+    # with pytest.raises(ValueError):
+    #     validate_discount(discount5)
+
+    assert validate_discount(discount) == True
+    assert validate_discount(discount1) == True
+    assert validate_discount(discount4) == True

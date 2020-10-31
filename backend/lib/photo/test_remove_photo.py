@@ -16,7 +16,7 @@ photo = {
     'user': ObjectId(),
     'likes': 100,
     'won': 'blah',
-    'pathToImg': './5f924493364b9098e954c2b3.jpg'
+    'path': './5f924493364b9098e954c2b3.jpg'
 }
 
 

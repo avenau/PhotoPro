@@ -28,6 +28,9 @@ module.exports = {
     "class-methods-use-this": "off",
     "react/jsx-wrap-multilines": "off",
     "react/sort-comp": "off",
+    "eslint@typescript-eslint/explicit-module-boundary-types": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error"],
   },
   settings: {
     "import/resolver": "typescript", // this loads <rootdir>/tsconfig.json to eslint
