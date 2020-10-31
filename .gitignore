@@ -78,3 +78,4 @@ package-lock.json
 
 # Static images
 backend/images/
+backend/photopro.egg-info/
