@@ -16,6 +16,7 @@ For all others see `requirements.txt`
 ## Frontend Requirements
 
 - npm
+- npx
 
 All other dependencies are managed by npm in `frontend/package.json`
 
@@ -25,13 +26,15 @@ With a fresh copy of the repo install all of the requirements and build the fron
 
 `./prepare.sh`
 
+**Note: If you will be running start.sh below with `-l` you should also run prepare.sh with `-l` to download all images in the database from the server. Not applicable if you are running a local database also.**
+
 After initially running the prepare script it does not need to be rerun unless changes are made to the code.
 
 Start the webservers.
 
 `./start.sh`
 
-**Note: Currently `start.sh` does not deal with the image file system hosting**
+To run the filesystem api locally instead of using the external server the start script can be ran with the `-l` flag, this will attempt to download the images/ directory from the server before running but all images will only be saved and retrieved from localhost.
 
 The website can be restarted with `./start.sh` without running `./prepare.sh` again after the initial run.
 

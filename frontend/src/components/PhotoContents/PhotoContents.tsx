@@ -7,6 +7,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import PhotoComments from "../../components/PhotoComments/PhotoComments";
 import Price from "../Price";
+import Tags from "../Tags";
 
 interface ContentProps {
   photoId: string;
@@ -130,9 +131,7 @@ export default function PhotoContents(props: ContentProps) {
             <Row>
               {tags.map((tag) => (
                 <>
-                  <Button key={tag} className="mr-1 mt-1" variant="secondary">
-                    {tag}
-                  </Button>{" "}
+                  <Tags tagName={tag} />
                 </>
               ))}
             </Row>

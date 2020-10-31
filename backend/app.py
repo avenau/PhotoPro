@@ -1,12 +1,13 @@
 """
 Backend main file
-Handle requests to and fro server and web app client
+Handle requests to and from server and web app client
  - Team JAJAC :)
 """
 
 # Pip functions
 import traceback
-import base64
+import requests
+from flask.helpers import send_file
 from json import dumps, loads
 from bson.objectid import ObjectId
 from flask import Flask, request
@@ -19,6 +20,7 @@ from flask_pymongo import PyMongo
 
 # Comments
 from lib.comments.comment_photo import comments_photo
+from lib.photo.fs_interactions import find_photo
 
 # Photo
 from lib.photo.photo_edit import create_photo_entry, update_photo_details, get_photo_edit
@@ -920,10 +922,7 @@ def photo_details():
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
 
-    with open(photo_details["path"], "rb") as f:
-        img = f.read()
-
-    img = str(base64.b64encode(img))
+    img = find_photo(f"{photo_id}{photo_details['extension']}")
 
     return dumps({
         "u_id": p_id_string,
@@ -932,7 +931,6 @@ def photo_details():
         "tagsList": photo_details["tags"],
         "nickname": artist['nickname'],
         "email": artist['email'],
-        "path": photo_details['path'],
         "purchased": purchased,
         "photoStr" : img,
         "metadata" : photo_details['metadata'],

@@ -6,10 +6,12 @@ import base64
 import datetime
 from bson.objectid import ObjectId
 from PIL import Image
+from io import BytesIO
 
 
 from lib.photo.validate_photo import validate_photo, validate_photo_user, reformat_lists, validate_extension, validate_discount
 from ..token_functions import get_uid
+from lib.photo.fs_interactions import find_photo, save_photo
 
 
 def create_photo_entry(mongo, photo_details):
@@ -23,7 +25,7 @@ def create_photo_entry(mongo, photo_details):
     validate_extension(photo_details["extension"])
 
     # Get photo values before popping them
-    base64_str = photo_details['photo']
+    [ metadata, base64_str ] = photo_details['photo'].split(',')
     extension = photo_details['extension']
     photo_details.pop("photo")
 
@@ -32,7 +34,7 @@ def create_photo_entry(mongo, photo_details):
     photo_details.pop("token")
 
     default = {
-        "metadata": base64_str.split(',')[0] + ',',
+        "metadata": f"{metadata},",
         "discount": 0.0,
         "posted": datetime.datetime.now(),
         "user": ObjectId(user_uid),
@@ -47,27 +49,27 @@ def create_photo_entry(mongo, photo_details):
     # Process photo and upload
     photo_oid = photo_entry.inserted_id
     name = str(photo_oid)
-    (path, path_thumbnail) = process_photo(base64_str, name, extension)
+    try:
+        process_photo(base64_str, name, extension)
 
-    # Add "path" attribute to db entry
-    query = {"_id": ObjectId(name)}
-    set_path = {"$set": {"path": path, "pathThumb": path_thumbnail}}
-    mongo.db.photos.update_one(query, set_path)
-
-
-    # Add photo to user's posts
-    response = mongo.db.users.find_one({"_id": ObjectId(user_uid)}, {"posts": 1})
-    posts = response["posts"]
-    posts.append(ObjectId(name))
-    mongo.db.users.update_one({"_id": ObjectId(user_uid)}, {"$set": {"posts": posts}})
-    return {
-        "success": "true"
-    }
+        # Add photo to user's posts
+        response = mongo.db.users.find_one({"_id": ObjectId(user_uid)}, {"posts": 1})
+        posts = response["posts"]
+        posts.append(ObjectId(name))
+        mongo.db.users.update_one({"_id": ObjectId(user_uid)}, {"$set": {"posts": posts}})
+        return {
+            "success": "true"
+        }
+    except:
+        mongo.db.photos.delete_one({"_id": photo_oid})
+        print("Didn't add to DB")
+        return {
+            "success": "false"
+        }
 
 def process_photo(base64_str, name, extension):
     """
     Process base64 str of a photo, convert and save/upload file
-    TODO add flag to upload photo to server
 
     @param base64_str: raw base64 str
     @param name: name of photo
@@ -75,39 +77,20 @@ def process_photo(base64_str, name, extension):
     @returns: path to photo
     """
 
-    # Remove metadata from b64
-    img_data = base64.b64decode(base64_str.split(',')[1])
-
-    path = save_photo_dir(img_data, name, extension)
-
-    return path
-
-def save_photo_dir(img_data, name, extension):
-    """
-    Save the photo to local directory
-    @param img_data: decoded base 64 image
-    @param name: name of photo
-    @param extension: photo type
-    @returns: path to photo, path to thumbnail of photo
-    """
-    # Set image path to ./backend/images/'xxxxxx.extension'
-    folder = './backend/images/'
-    file_name = name + extension
-    path = folder + file_name
-    path_thumbnail = folder + name + "_t" + extension
-
-    # Save image to /backend/images directory
-    with open(path, 'wb') as f:
-        f.write(img_data)
+    filename = name + extension
+    save_photo(base64_str, filename)
 
     # Attach compressed thumbnail to photos
     if extension != ".svg":
-        thumb = Image.open(path)
+        filename_thumbnail = name + "_t" + extension
+        img_data = base64.b64decode(base64_str)
+        thumb = Image.open(BytesIO(img_data))
         thumb.thumbnail((300, 200))
-        thumb.save(path_thumbnail)
-        print("Thumbnail saved to" + path_thumbnail)
+        buffer = BytesIO()
+        thumb.save(buffer, thumb.format)
+        save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
 
-    return (path, path_thumbnail)
+
 
 # Get details about photo
 def get_photo_edit(mongo, photoId, token):
@@ -122,12 +105,9 @@ def get_photo_edit(mongo, photoId, token):
     validate_photo_user(mongo, photoId, user_uid)
 
     result = mongo.db.photos.find_one({"_id": ObjectId(photoId)})
-    print(result)
-    # Encode image into
-    with open(result["path"], "rb") as f:
-        img = f.read()
 
-    img = str(base64.b64encode(img))
+    # Get image from FS API
+    img = find_photo(f"{photoId}{result['extension']}")
 
     return {
         "title": result["title"],
