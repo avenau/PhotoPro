@@ -39,3 +39,8 @@ I fixed a bug with the toolbar where logged in state was not being correctly sav
 I began work on JAJAC-8.
 
 ---------------- Week 7 ----------------
+I fixed a react bug with App.tsx where state was being set before component mounted.
+I completed JAJAC-8.
+I fixed a firefox bug with user search hover behaviour.
+I began work on JAJAC4, JAJAC-7, JAJAC-51.
+I set up the remote filesystem api behaviour for images
