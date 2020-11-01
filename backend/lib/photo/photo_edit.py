@@ -102,7 +102,7 @@ def make_thumbnail_gif(base64_str, filename_thumbnail):
     thumb = Image.open(BytesIO(img_data))
     frames = [frame.copy() for frame in ImageSequence.Iterator(thumb)]
     for frame in frames:
-        frame.thumbnail((300, 200), Image.ANTIALIAS)
+        frame.thumbnail((300, 200))
 
     # Save thumbnail
     out = frames[0]
