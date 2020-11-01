@@ -77,3 +77,11 @@ class DatabaseError(HTTPException):
     code = 500
     message = 'No message specified'
     toast = True
+
+class ValidationError(HTTPException):
+    '''
+    ValidationError: When mongoengine can't validate the changes
+    '''
+    code = 406
+    message = "Validation on Database failed. Input error"
+    toast = True

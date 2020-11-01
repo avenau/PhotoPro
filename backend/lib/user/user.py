@@ -12,57 +12,81 @@ from mongoengine import ReferenceField
 from mongoengine import EmailField
 from mongoengine import ValidationError
 from mongoengine import BinaryField
+from mongoengine import BooleanField
 
 import lib.collection.collection as collection
 import lib.photo.photo as photo
-
-
-# User custom validation
-def allowable_extension(ext):
-    '''
-    Validate the extension
-    '''
-    exts = ['.jpg', '.jpeg', '.png', '.svg']
-    if ext not in exts:
-        raise ValidationError("Extension is not one in list " + str(exts))
+import lib.user.validate_login as validate_login
+import lib.user.validate_registration as validate_registration
+import lib.photo.validate_photo as validate_photo
+import lib.user.validation as validation
 
 
 class User(Document):
     '''
     Mongoengine User definition
+    NOTE: Password is assumed to always be a binary hash
     '''
+    # User's first name
     fname = StringField(required=True)
+    # User's last name
     lname = StringField(required=True)
-    email = EmailField(required=True)
+    # User's email
+    email = EmailField(required=True, unique=True)
+    # User's nickname
     nickname = StringField(required=True)
-    # Assumes a Binary String will be passed
+    # User's hashed password
     password = BinaryField(required=True)
-    privFName = StringField()
-    privLName = StringField()
-    profilePic = ListField(StringField())
-    extension = StringField(validation=allowable_extension)
-    aboutMe = StringField()
-    DOB = DateTimeField()
-    location = StringField()
+    """
+    # Whether user's first name is private
+    priv_f_name = BooleanField(default=True)
+    # Whether user's last name is private
+    priv_l_name = BooleanField(default=True)
+    """
+    # User's profile pic, base64 encoded string
+    profile_pic = ListField(StringField())
+    # User's profile pic extension
+    extension = StringField(validation=validate_photo.validate_extension)
+    # User's info about themself
+    about_me = StringField()
+    """
+    # User's Date of Birth
+    # DOB = DateTimeField()
+    """
+    # User's country, validated again the location list
+    location = StringField(validation=validate_registration.valid_location)
+    # Array of Photo references that the user has posted
     posts = ListField(ReferenceField('photo.Photo'))
+    """
+    # TODO:
+    # User's albums that they've created
     # albums = ListField()
+    """
+    # Array of Collection references that the user has created
     collections = ListField(ReferenceField('collection.Collection'))
-    likes = ListField(IntField())
-    purchased = ListField()
-    credits = IntField()
+    # Array of liked Photo references
+    likes = ListField(ReferenceField('photo.Photo'))
+    # Array of purchased Photo references
+    purchased = ListField(ReferenceField('photo.Photo'))
+    # User's current credits
+    credits = IntField(default=0, validation=validation.validate_credit)
+    # Meta data about the User collection
     meta = {'collection': 'users-mongoengine'}
 
+    # User Methods:
+    # -------------
     def get_fname(self):
         '''
         Get user's first name
         '''
         return self.fname
-    
+
     def set_fname(self, fname):
         '''
         Set user's first name
         '''
         self.fname = fname
+        self.validate()
 
     def get_lname(self):
         '''
@@ -87,8 +111,6 @@ class User(Document):
         Assign a new email
         '''
         self.email = email
-        # I think this will validate the email... ?
-        self.validate()
 
     def __get_password(self):
         '''
@@ -103,7 +125,6 @@ class User(Document):
         @param b_password: binary
         '''
         self.password = b_password
-        self.validate()
 
     def is_matching_password(self, b_password):
         '''
@@ -113,3 +134,202 @@ class User(Document):
         '''
         return self.__get_password() == b_password
 
+    """
+    PRIVATE DETAILS NEEDED?
+    def get_private_fname(self):
+        '''
+        Get whether firstname is private or not
+        '''
+        return self.priv_f_name
+
+    def set_private_fname(self, is_private):
+        '''
+        Set privacy of first name
+        @param is_private: boolean
+        '''
+        self.priv_f_name = is_private
+
+    def get_private_lname(self):
+        '''
+        Get whether last name is private or not
+        '''
+        return self.priv_l_name
+
+    def set_private_lname(self, is_private):
+        '''
+        Set private of last name
+        @param is_private: boolean
+        '''
+        self.priv_l_name = is_private
+    """
+
+    def get_profile_pic(self):
+        '''
+        Get the profile picture of the user
+        '''
+        return self.profile_pic
+
+    def set_profile_pic(self, pic):
+        '''
+        Set the profile pic of the user
+        @param pic: string(base64)
+        '''
+        self.profile_pic = pic
+
+    def get_extension(self):
+        '''
+        Return the extension of the profile picture
+        '''
+        return self.extension
+
+    def set_extension(self, ext):
+        '''
+        Set the extension
+        Raises a ValidationError on failed vaidate_extension()
+        @param ext: str(e.g. .jpg)
+        '''
+        self.extension = ext
+
+    def get_about_me(self):
+        '''
+        Return user's About Me string
+        '''
+        return self.about_me
+
+    def set_about_me(self, about_me):
+        '''
+        Set the about me string
+        @param about_me: string
+        '''
+        self.about_me = about_me
+
+    """
+    def get_dob(self):
+        '''
+        Get date of birth of the user
+        '''
+        return self.DOB
+
+    def set_dob(self, dob):
+        '''
+        Set the date of birth
+        @param dob: datetime
+        '''
+        self.DOB = dob
+    """
+
+    def get_location(self):
+        '''
+        Get the country of the user
+        '''
+        return self.location
+
+    def set_location(self, location):
+        '''
+        Sets the location, validates against the location list
+        @param location: string(from location list)
+        '''
+        self.location = location
+
+    def get_posts(self):
+        '''
+        Returns all non-deleted posts
+        '''
+        posts = []
+        for post in self.posts:
+            if not post.deleted:
+                posts.append(post)
+        return posts
+
+    def add_post(self, this_photo):
+        '''
+        Add a new photo to the user's posts
+        '''
+        self.posts.add(this_photo)
+
+    def remove_post(self, this_photo):
+        '''
+        Remove a photo from the user's posts
+        DO WE NEED TO REMOVE IT FROM THE COLLECTIONS?
+        '''
+        self.posts.remove(this_photo)
+
+    def get_collections(self):
+        '''
+        Get non-deleted collections
+        '''
+        collections = []
+        for coll in self.collections:
+            if not coll.deleted:
+                collections.append(coll)
+        return collections
+
+    def get_liked(self):
+        '''
+        Get the photos that this user likes
+        Don't include deleted photos
+        '''
+        liked = []
+        for like in self.likes:
+            if like.deleted is False:
+                liked.append(like)
+        return liked
+
+    def add_liked_photo(self, this_photo):
+        '''
+        Add a photo to the photos this user likes
+        '''
+        self.likes.add(this_photo)
+
+    def remove_liked_photo(self, this_photo):
+        '''
+        Remove a photo from the liked photos
+        '''
+        self.likes.remove(this_photo)
+
+    def get_purchased(self):
+        '''
+        Get the photos that the user has purchased
+        '''
+        purchased = []
+        for item in self.purchased:
+            if not item.deleted:
+                purchased.append(item)
+        return purchased
+
+    def add_purchased(self, this_photo):
+        '''
+        Add a photo to purchased photos
+        '''
+        self.purchased.add(this_photo)
+
+    def get_credits(self):
+        '''
+        Get user's credits
+        '''
+        return self.credits
+
+    def add_credits(self, credit):
+        '''
+        Add credit to User's credits
+        Validation passed by validation.validate_credit()
+        @param: credit: int
+        '''
+        self.credits = self.credits + credit
+
+    def remove_credits(self, credit):
+        '''
+        Remove credit from User's credits
+        Validation passed by validation.validate_credit()
+        @param: credit: int
+        '''
+        self.credits = self.credits - credit
+
+
+    # User Document validation
+    # ------------------------
+    def clean(self):
+        '''
+        Run on every User.save()
+        Add validation checks here
+        '''

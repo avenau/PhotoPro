@@ -13,6 +13,7 @@ from mongoengine import ReferenceField
 
 # Used as part of 'collection.Collection'
 import lib.collection.collection as collection
+import lib.user.user as user
 
 
 class Photo(Document):
@@ -21,13 +22,14 @@ class Photo(Document):
     '''
     title = StringField()
     price = IntField()
-    albums = ListField()
+    # TODO: Albums
+    # albums = ListField()
     collections = ListField(ReferenceField('collection.Collection'))
     tags = ListField(StringField())
     discount = IntField(default=0)
     posted = DateTimeField(default=datetime.datetime.now())
-    # user = ReferenceField()
-    likes = IntField()
+    user = ReferenceField('user.User')
+    likes = IntField(default=0)
     comments = ListField(StringField())
     deleted = BooleanField(default=False)
     path = StringField()
@@ -41,7 +43,6 @@ class Photo(Document):
         '''
         # Ensure unique
         self.tags = set(tags).union(set(self.tags))
-        self.save()
 
     def add_tag(self, tag):
         '''
@@ -61,14 +62,12 @@ class Photo(Document):
         Ensure that all tags are unique
         '''
         self.tags = set(self.tags)
-        self.save()
 
     def set_title(self, title):
         '''
         Set the Photo title
         '''
         self.title = title
-        self.save()
 
     def get_title(self):
         '''
@@ -83,7 +82,6 @@ class Photo(Document):
         if not isinstance(price, int):
             raise ValueError("Price must be an integer")
         self.price = price
-        self.save()
 
     def get_price(self):
         '''
@@ -102,7 +100,6 @@ class Photo(Document):
         if discount > 100:
             raise ValueError("Discount must be less than 100")
         self.discount = discount
-        self.save()
 
     def get_discount(self):
         '''
@@ -117,44 +114,46 @@ class Photo(Document):
         '''
         return int(self.price * (self.discount/100))
 
-    def set_posted_date(self, date):
+    def get_user(self):
         '''
-        Set the datetime of the post of the photo
+        Get the creator of the photo
         '''
-        if not isinstance(date, datetime.datetime):
-            raise ValueError("date must be of type datetime")
-        self.posted = date
-        self.save()
+        return self.user
 
-    def set_likes(self, n_likes):
+    def set_user(self, user):
         '''
-        Set likes to the required number of likes
+        Set the owner of the photo
+        @param user: User: mongoengine.Document
         '''
-        self.likes = n_likes
-        self.save()
+        self.user = user
 
     def increment_likes(self):
         '''
         Increase the likes by one
+        Increase the likes of the user by one
+        Save the user object
         '''
         self.likes += 1
-        self.save()
+        self.get_user().increment_likes()
+        self.get_user().save()
 
     def decrement_likes(self):
         '''
         Decrement likes by one unless likes == 0
+        Decrease the likes of the user by one
+        Save the user object
         '''
         if self.likes == 0:
             return
         self.likes -= 1
-        self.save()
+        self.get_user().decrement_likes()
+        self.get_user().save()
 
     def reset_likes(self):
         '''
         Reset likes to 0
         '''
         self.likes = 0
-        self.save()
 
     def get_likes(self):
         '''
@@ -174,7 +173,6 @@ class Photo(Document):
         if not isinstance(comments[0], str):
             raise ValueError("Comment is not of type string")
         self.comments.extend(comments)
-        self.save()
 
     def add_comment(self, comment):
         '''
@@ -184,7 +182,6 @@ class Photo(Document):
         if not isinstance(comment, str):
             raise ValueError("Comment must be of type string")
         self.comments.append(comment)
-        self.save()
 
     def get_comments(self):
         '''
@@ -203,7 +200,6 @@ class Photo(Document):
             old_collection.save()
         if old_collection in self.collections:
             self.collections.remove(old_collection)
-            self.save()
 
     def delete_photo(self):
         '''
@@ -213,7 +209,6 @@ class Photo(Document):
         for this_collection in self.collections:
             this_collection.remove_photo(self)
             this_collection.save()
-        self.save()
 
     def undelete_photo(self):
         '''
@@ -264,3 +259,4 @@ class Photo(Document):
         '''
         if list(set(self.tags)) is not self.tags:
             self.tags = list(set(self.tags))
+        self.validate()
