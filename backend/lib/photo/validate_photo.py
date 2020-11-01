@@ -2,43 +2,52 @@
 Validate photo details
 TODO set new env variable for testing
 """
-from ..Error import ValueError
+
 import json
 from bson.objectid import ObjectId
 
+from lib.Error import ValueError
 
 
 def validate_photo(details):
-   
+    '''
+    General validation methods
+    '''
     validate_price(details["price"])
     validate_title(details["title"])
     validate_album(details["albums"])
     validate_tags(details["tags"])
 
+
 def validate_photo_user(mongo, photo, user_uid):
     """
     Check that user is authorised to modify the photo
     @param photo: str
-    @param user_uid: str 
+    @param user_uid: str
     @return True or error
     """
-    photoOwner = mongo.db.photos.find_one({"_id": ObjectId(photo)}, {"user": 1})
+    photo_owner = mongo.db.photos.find_one({"_id": ObjectId(photo)},
+                                           {"user": 1})
 
     # Or if deleted TODO
-    if photoOwner == None:
+    if photo_owner is None:
         raise ValueError("Photo does not exist")
 
-    if photoOwner["user"] != ObjectId(user_uid):
-        raise ValueError("User " + user_uid + "is not the owner of photo " + photo)
+    if photo_owner["user"] != ObjectId(user_uid):
+        raise ValueError("User " +
+                         user_uid +
+                         "is not the owner of photo " +
+                         photo)
 
     return True
+
 
 def validate_price(price):
     """
     @param price: int
     @return True or error
     """
-    if type(price) is str:
+    if isinstance(price, str):
         if not price.isnumeric():
             raise ValueError("Cannot contain alphabet characters")
         if price == "":
@@ -46,7 +55,7 @@ def validate_price(price):
         if price is None:
             raise ValueError("Empty object")
         price = int(price)
-    if type(price) is int:
+    if isinstance(price, int):
         if price < 0:
             raise ValueError("Price cannot be negative")
 
@@ -69,6 +78,7 @@ def validate_tags(tags):
 
     return True
 
+
 def validate_title(title):
     """
     Check title is not empty
@@ -82,14 +92,21 @@ def validate_title(title):
 
 
 def validate_album(albums):
+    '''
+    Check the album has a non-empty strings
+    '''
     for i in albums:
         if i is None or i == "":
             raise ValueError("Cannot be empty or None")
 
     return True
 
+
 def validate_discount(discount):
-    if type(discount) is str:
+    '''
+    Validate the type of the discount
+    '''
+    if isinstance(discount, str):
         if not discount.isnumeric():
             raise ValueError("Cannot contain alphabet characters")
         if discount == "":
@@ -97,31 +114,40 @@ def validate_discount(discount):
         if discount is None:
             raise ValueError("Empty object")
         discount = int(discount)
-    if type(discount) is int:
+    if isinstance(discount, int):
         if discount < 0 or discount > 100:
             raise ValueError("Discount must be between 0 and 100")
-    
     return True
 
+
 def validate_extension(extension):
-    # Accepted extensions
+    '''
+    Check that the extension is valid:
+    .jpg, .jpeg, .png, .gif, .svg
+    '''
     exts = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
     if extension not in exts:
-        raise ValueError("You attempted to upload a file type we don't accept.")
+        raise ValueError("Attempted to upload a file type we don't accept.")
 
     return True
 
 
 def reformat_lists(photo_details):
+    '''
+    1) Lower case for tags
+    2) Convert JSON album list to python
+    '''
     photo_details = lower_tags(photo_details)
     photo_details = convert_album_list(photo_details)
-
     return photo_details
 
 
 def lower_tags(photo_details):
+    '''
+    Convert tags to lowercase
+    '''
     tags = photo_details["tags"]
-    if type(tags) is not list:
+    if not isinstance(tags, list):
         tags = json.loads(tags)
 
     photo_details.pop("tags")
@@ -135,7 +161,7 @@ def convert_album_list(photo_details):
     Convert JSON album list to python
     """
     albums = photo_details["albums"]
-    if type(albums) is not list:
+    if not isinstance(albums, list):
         albums = json.loads(albums)
     photo_details["albums"] = albums
     return photo_details
