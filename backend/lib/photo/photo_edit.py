@@ -6,7 +6,8 @@ import base64
 import datetime
 from io import BytesIO
 from bson.objectid import ObjectId
-from PIL import Image
+from PIL import Image, ImageSequence
+from io import BytesIO
 
 
 from lib.photo.validate_photo import validate_photo
@@ -86,17 +87,47 @@ def process_photo(base64_str, name, extension):
 
     filename = name + extension
     save_photo(base64_str, filename)
+    filename_thumbnail = name + "_t" + extension
 
     # Attach compressed thumbnail to photos
-    if extension != ".svg":
-        filename_thumbnail = name + "_t" + extension
-        img_data = base64.b64decode(base64_str)
-        thumb = Image.open(BytesIO(img_data))
-        thumb.thumbnail((300, 200))
-        buffer = BytesIO()
-        thumb.save(buffer, thumb.format)
-        save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"),
-                   filename_thumbnail)
+    if not extension in [".svg", ".gif"]:
+        make_thumbnail(base64_str, filename_thumbnail)
+    if extension == ".gif":
+        make_thumbnail_gif(base64_str, filename_thumbnail)
+
+
+def make_thumbnail(base64_str, filename_thumbnail):
+    '''
+    Make a thumbnail from the base64 string
+    @param base64_str: string
+    @param filename_thumbnail : string
+    '''
+    img_data = base64.b64decode(base64_str)
+    thumb = Image.open(BytesIO(img_data))
+    thumb.thumbnail((300, 200))
+    buffer = BytesIO()
+    thumb.save(buffer, thumb.format)
+    save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
+
+def make_thumbnail_gif(base64_str, filename_thumbnail):
+    '''
+    Make a thumbnail out of a gif
+    @param base64_str: string
+    @param filename_thumbnail : string
+    '''
+    # Resize each frame in thumbnail
+    img_data = base64.b64decode(base64_str)
+    thumb = Image.open(BytesIO(img_data))
+    frames = [frame.copy() for frame in ImageSequence.Iterator(thumb)]
+    for frame in frames:
+        frame.thumbnail((300, 200))
+
+    # Save thumbnail
+    out = frames[0]
+    out.info = thumb.info
+    buffer = BytesIO()
+    out.save(buffer, format=thumb.format, save_all=True, append_images=frames[1:], loop=0)
+    save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
 
 
 def get_photo_edit(mongo, photoId, token):
