@@ -42,12 +42,10 @@ class Photo(Document):
     # Number of likes of the photo
     likes = IntField(default=0)
     # List of Comments associated with the photo
+    # TODO Change this to comment class
     comments = ListField(StringField())
     # Whether the photo is deleted or not
     deleted = BooleanField(default=False)
-    # Path to the photo.
-    # TODO: Is this marked for deletion???
-    path = StringField()
     # Metadata of the photo {collection: collection-name}
     meta = {'collection': 'photos-mongoengine'}
 
@@ -132,7 +130,7 @@ class Photo(Document):
         Get the discounted price of the photo
         @return price : integer
         '''
-        return int(self.price * (self.discount/100))
+        return int(self.price - self.price * (self.discount/100))
 
     def get_user(self):
         '''
@@ -243,21 +241,6 @@ class Photo(Document):
         @return True on deleted, False otherwise
         '''
         return self.deleted
-
-    def set_path(self, path):
-        '''
-        Set the path of the image
-        '''
-        if not isinstance(path, str):
-            raise ValueError("Path must be of type string")
-        self.path = path
-
-    def get_path(self):
-        '''
-        Get the path of the image
-        @return string
-        '''
-        return self.path
 
     def add_collection(self, new_collection):
         '''

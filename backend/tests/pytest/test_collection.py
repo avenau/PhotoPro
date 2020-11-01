@@ -92,7 +92,6 @@ def test_adding_photos():
         likes=1,
         comments=['Great photo', 'I love it'],
         deleted=False,
-        path='./backend/thisphoto.jpg'
     )
     photo_one.save()
 
@@ -105,7 +104,6 @@ def test_adding_photos():
         likes=2,
         comments=['This photo sucks'],
         deleted=True,
-        path='./backend/thisSecondPhoto.jpg'
     )
     photo_two.save()
 
@@ -140,7 +138,6 @@ def test_deleting_photo():
         likes=1,
         comments=['Great photo', 'I love it'],
         deleted=False,
-        path='./backend/thisphoto.jpg'
     )
 
     photo_one.save()
@@ -179,7 +176,6 @@ def test_deleting_collection():
         likes=1,
         comments=['Great photo', 'I love it'],
         deleted=False,
-        path='./backend/thisphoto.jpg'
     )
     photo_one.save()
 

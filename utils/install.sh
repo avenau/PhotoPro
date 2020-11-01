@@ -3,13 +3,14 @@
 # Backend environment install
 echo "Installing python requirements..."
 cd backend
-if [ -e env -a "$1" != "-b" ]
+if [ -e env ]
 then
   rm -rf env
 fi
 python3 -m venv env
 source env/bin/activate
 pip3 install -r requirements.txt
+python -m pip install -e .
 
 if [ "$1" = "-b" ]
 then

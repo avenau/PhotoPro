@@ -82,7 +82,6 @@ def process_photo(base64_str, name, extension):
     @param base64_str: raw base64 str
     @param name: name of photo
     @param extension: photo type
-    @returns: path to photo
     """
 
     filename = name + extension

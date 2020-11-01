@@ -54,7 +54,6 @@ def test_unique_tags():
         likes=1,
         comments=['Great photo', 'I love it'],
         deleted=False,
-        path='./backend/thisphoto.jpg'
     )
     test_photo.save()
 
@@ -76,7 +75,6 @@ def test_add_photo():
         likes=1,
         comments=['Great photo', 'I love it'],
         deleted=False,
-        path='./backend/thisphoto.jpg'
     )
     photo_one.save()
 
@@ -107,7 +105,6 @@ def test_delete_photo():
         likes=1,
         comments=['Great photo', 'I love it'],
         deleted=False,
-        path='./backend/thisphoto.jpg'
     )
     photo_one.save()
 
