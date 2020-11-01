@@ -5,7 +5,7 @@ Create and modify photos which are uploaded by a user
 import base64
 import datetime
 from bson.objectid import ObjectId
-from PIL import Image
+from PIL import Image, ImageSequence
 from io import BytesIO
 
 
@@ -79,17 +79,37 @@ def process_photo(base64_str, name, extension):
 
     filename = name + extension
     save_photo(base64_str, filename)
+    filename_thumbnail = name + "_t" + extension
 
     # Attach compressed thumbnail to photos
-    if extension != ".svg":
-        filename_thumbnail = name + "_t" + extension
-        img_data = base64.b64decode(base64_str)
-        thumb = Image.open(BytesIO(img_data))
-        thumb.thumbnail((300, 200))
-        buffer = BytesIO()
-        thumb.save(buffer, thumb.format)
-        save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
+    if not extension in [".svg", ".gif"]:
+        make_thumbnail(base64_str, filename_thumbnail)
+    if extension == ".gif":
+        make_thumbnail_gif(base64_str, filename_thumbnail)
 
+
+def make_thumbnail(base64_str, filename_thumbnail):
+    img_data = base64.b64decode(base64_str)
+    thumb = Image.open(BytesIO(img_data))
+    thumb.thumbnail((300, 200))
+    buffer = BytesIO()
+    thumb.save(buffer, thumb.format)
+    save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
+
+def make_thumbnail_gif(base64_str, filename_thumbnail):
+    # Resize each frame in thumbnail
+    img_data = base64.b64decode(base64_str)
+    thumb = Image.open(BytesIO(img_data))
+    frames = [frame.copy() for frame in ImageSequence.Iterator(thumb)]
+    for frame in frames:
+        frame.thumbnail((300, 200))
+
+    # Save thumbnail
+    out = frames[0]
+    out.info = thumb.info
+    buffer = BytesIO()
+    out.save(buffer, format=thumb.format, save_all=True, append_images=frames[1:], loop=0)
+    save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
 
 
 # Get details about photo
