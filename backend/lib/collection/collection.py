@@ -13,6 +13,7 @@ from mongoengine import Document
 
 # Own class import
 import lib.photo.photo as photo
+import lib.collection.validation as validation
 
 
 class Collection(Document):
@@ -29,7 +30,7 @@ class Collection(Document):
     # created_by = ReferenceField(User)
     private = BooleanField(default=False)
     tags = ListField(StringField())
-    price = IntField(default=0)
+    price = IntField(default=0, validation=validation.validate_price)
     deleted = BooleanField(default=False)
     meta = {'collection': 'collections-mongoengine'}
 

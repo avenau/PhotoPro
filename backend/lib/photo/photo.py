@@ -14,26 +14,41 @@ from mongoengine import ReferenceField
 # Used as part of 'collection.Collection'
 import lib.collection.collection as collection
 import lib.user.user as user
+import lib.photo.validation as validation
 
 
 class Photo(Document):
     '''
-    Dummy photo class for testing jajaccollection.Collection
+    Photo definition and methods
     '''
-    title = StringField()
-    price = IntField()
+    # Title of the photo
+    title = StringField(required=True)
+    # Price of the photo
+    price = IntField(required=True, validation=validation.validate_price)
     # TODO: Albums
     # albums = ListField()
+    # List of Collection references that the photo is associated with
     collections = ListField(ReferenceField('collection.Collection'))
+    # List of Tags, updated to be unique on save
     tags = ListField(StringField())
-    discount = IntField(default=0)
+    # Metadata of the photo
+    metadata = StringField()
+    # Discounted price of the photo
+    discount = IntField(default=0, validation=validation.validate_discount)
+    # Posted date of the photo.
     posted = DateTimeField(default=datetime.datetime.now())
+    # User reference to the owner of the photo
     user = ReferenceField('user.User')
+    # Number of likes of the photo
     likes = IntField(default=0)
+    # List of Comments associated with the photo
     comments = ListField(StringField())
+    # Whether the photo is deleted or not
     deleted = BooleanField(default=False)
+    # Path to the photo.
+    # TODO: Is this marked for deletion???
     path = StringField()
-    # Name of the collection
+    # Metadata of the photo {collection: collection-name}
     meta = {'collection': 'photos-mongoengine'}
 
     def add_tags(self, tags):
@@ -79,8 +94,6 @@ class Photo(Document):
         '''
         Set the price of the photo
         '''
-        if not isinstance(price, int):
-            raise ValueError("Price must be an integer")
         self.price = price
 
     def get_price(self):
@@ -93,13 +106,20 @@ class Photo(Document):
         '''
         Set a discount on the photo
         '''
-        if not isinstance(discount, int):
-            raise ValueError("Discount must be of type integer")
-        if discount < 0:
-            raise ValueError("Discount must be greater than 0")
-        if discount > 100:
-            raise ValueError("Discount must be less than 100")
         self.discount = discount
+
+    def get_metadata(self):
+        '''
+        Get the metadata of the photo
+        e.g. "data:image/png;base64,"
+        '''
+        return self.metadata
+
+    def set_metadata(self, metadata):
+        '''
+        Set the metadata of the photo
+        '''
+        self.metadata = metadata
 
     def get_discount(self):
         '''
@@ -259,4 +279,3 @@ class Photo(Document):
         '''
         if list(set(self.tags)) is not self.tags:
             self.tags = list(set(self.tags))
-        self.validate()
