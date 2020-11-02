@@ -85,10 +85,8 @@ export default class SearchPage extends React.Component<Props, State> {
         this.setState((prevState) => ({
           results: [...prevState.results, ...res.data],
           offset: prevState.offset + res.data.length,
+          atEnd: res.data.length < prevState.limit,
         }));
-        if (res.data.length < this.state.limit) {
-          this.setState({ atEnd: true });
-        }
       })
       .catch(() => {});
   }
@@ -98,12 +96,11 @@ export default class SearchPage extends React.Component<Props, State> {
       case "photo":
         return <PhotoList photos={this.state.results} />;
       case "album":
-        return <AlbumList profiles={this.state.results} />;
+        return <AlbumList albums={this.state.results} />;
       case "collection":
-        return <CollectionList profiles={this.state.results} />;
+        return <CollectionList collections={this.state.results} />;
       case "user":
-        return <UserList profiles={this.state.results} />;
-
+        return <UserList users={this.state.results} />;
       default:
         return <div>Error: Invalid seach type: {this.state.type}</div>;
     }
