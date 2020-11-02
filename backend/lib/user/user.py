@@ -72,6 +72,12 @@ class User(Document):
 
     # User Methods:
     # -------------
+    def get_id(self):
+        '''
+        Object id of the user
+        '''
+        return self.id
+
     def get_fname(self):
         '''
         Get user's first name
@@ -109,10 +115,21 @@ class User(Document):
         '''
         self.email = email
 
-    def __get_password(self):
+    def get_nickname(self):
+        '''
+        Get the nickname of the user
+        '''
+        return self.nickname
+
+    def set_nickname(self, nickname):
+        '''
+        Set the nickname to something new
+        '''
+        self.nickname = nickname
+
+    def get_password(self):
         '''
         Gets the password of the user
-        Private method
         '''
         return self.password
 
@@ -131,7 +148,7 @@ class User(Document):
         '''
         if not isinstance(b_password, bytes):
             raise ValueError("Password must be a byte literal")
-        return self.__get_password() == b_password
+        return self.get_password() == b_password
 
     """
     PRIVATE DETAILS NEEDED?

@@ -6,8 +6,7 @@ Handle requests to and from server and web app client
 
 # Pip functions
 import traceback
-import requests
-from flask.helpers import send_file
+import mongoengine
 from json import dumps, loads
 from bson.objectid import ObjectId
 from flask import Flask, request
@@ -29,7 +28,6 @@ from lib.photo.remove_photo import remove_photo
 # Photo details
 from lib.photo_details.photo_details import get_photo_details
 from lib.photo_details.photo_likes import is_photo_liked, update_likes_mongo
-import lib.photo_details.photo_details as photo_details_lib
 
 # Profile
 from lib.profile.profile_details import get_user_details
@@ -45,7 +43,7 @@ from lib.showdown import get_images
 # User
 from lib.user.validate_login import login
 import lib.user.password_reset as password_reset
-import lib.user.validate_registration as val_reg
+from lib.user.user import User
 
 # Welcome
 from lib.welcome.contributors import get_popular_contributors_images
@@ -55,6 +53,7 @@ from lib.welcome.popular_images import get_popular_images
 from lib.token_decorator import validate_token
 import lib.token_functions as token_functions
 from lib import db
+from lib import Error
 
 
 
@@ -68,6 +67,7 @@ app.register_error_handler(Exception, defaultHandler)
 CORS(app)
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
+mongoengine.connect('angular-flask-muckaround')
 
 
 @app.route('/verifytoken', methods=['GET'])
@@ -124,7 +124,9 @@ def process_login():
     email = request.form.get("email")
     password = request.form.get("password")
 
-    return dumps(login(mongo, bcrypt, email, password))
+    ret = login(bcrypt, email, password)
+
+    return dumps(ret)
 
 
 @app.route('/passwordreset/request', methods=['POST'])
@@ -205,7 +207,6 @@ def account_registration():
     None
     """
     new_user = request.form.to_dict()
-    val_reg.valid_registration(mongo, new_user)
 
     # Make some hashbrowns
     hashed_password = bcrypt.generate_password_hash(new_user["password"])
@@ -215,18 +216,24 @@ def account_registration():
     if new_user.get('profilePic') == "":
         new_user['profilePic'] = ["", ""]
     else:
-        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'], new_user['extension'])
+        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'],
+                                                       new_user['extension'])
 
-    # Add collections and other user owned entities
-    new_user['posts'] = []
-    new_user['albums'] = []
-    new_user['collections'] = []
-    new_user['likes'] = []
-    new_user['purchased'] = []
-    new_user['credits'] = 0
+    this_user = User(
+        fname=new_user['fname'],
+        lname=new_user['lname'],
+        email=new_user['email'],
+        nickname=new_user['nickname'],
+        password=new_user['password'],
+        profile_pic=new_user['profilePic'],
+        extension=new_user['extension'],
+        about_me=new_user['aboutMe'],
+        location=new_user['location']
+    )
+    this_user.save()
+
 
     # Insert account details into collection called 'user'
-    mongo.db.users.insert(new_user)
     return dumps({})
 
 
@@ -261,6 +268,7 @@ def profile_details():
         "email": details["email"],
         "profilePic": details["profilePic"]
     })
+
 
 @app.route('/purchases/buycredits', methods=['POST'])
 @validate_token
@@ -940,6 +948,7 @@ def photo_details():
 
     })
 
+
 @app.route('/photo_details/isLiked', methods=['GET'])
 def photo_liked():
     """
@@ -964,6 +973,7 @@ def photo_liked():
     return dumps({
         "isLiked": isLiked,
     })
+
 
 @app.route('/photo_details/updateLikes', methods=['POST'])
 def update_likes():
@@ -1003,6 +1013,7 @@ def update_likes():
 
     update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
     return dumps({})
+
 
 @app.route('/comments/comment', methods=['POST'])
 def comment_photo():

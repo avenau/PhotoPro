@@ -4,9 +4,10 @@ Login user
 
 from lib.Error import EmailError, PasswordError
 from lib.token_functions import create_token
+from lib.user.user import User
 
 
-def login(mongo, bcrypt, email, password):
+def login(bcrypt, email, password):
     '''
     Login the user
     1) Email Validation
@@ -20,23 +21,14 @@ def login(mongo, bcrypt, email, password):
     @param password: binary
     @return user: {u_id: string, token: string, nickname: string}
     '''
-    if email == "":
-        raise EmailError("Please enter an email address.")
-    if password == "":
-        raise PasswordError("Please enter a password.")
-
-    user = mongo.db.users.find_one({"email": email})
+    user = User.objects(email=email).first()
     if not user:
         raise EmailError("That email isn't registered.")
-    hashed_password = user["password"]
-
-    u_id = ""
-    token = ""
-    nickname = ""
+    hashed_password = user.get_password()
     if bcrypt.check_password_hash(hashed_password, password):
-        u_id = user["_id"]
-        nickname = user["nickname"]
-        token = create_token(str(u_id))
+        u_id = user.get_id()
+        nickname = user.get_nickname()
+        token = create_token(str(user.get_id()))
     else:
         raise PasswordError("That password is incorrect.")
 
