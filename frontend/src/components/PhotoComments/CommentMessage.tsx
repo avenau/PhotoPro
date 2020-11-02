@@ -10,7 +10,7 @@ export default function CommentMessage(props: MessageProp) {
 
     return (
         <div>
-            <Row><p><b>{props.author}</b> posted 30 days ago</p></Row>
+            <Row><p><b>{props.author}</b> </p></Row>
             <Row>{props.message}</Row>
         </div>
     );

@@ -20,6 +20,7 @@ from flask_pymongo import PyMongo
 
 # Comments
 from lib.comments.comment_photo import comments_photo
+from lib.comments.get_comments import get_all_comments
 from lib.photo.fs_interactions import find_photo
 
 # Photo
@@ -1017,6 +1018,7 @@ def comment_photo():
     userId : string (Commenter)
     posted : date
     content : string
+    token : string (Commenter)
 
     Returns
     -------
@@ -1030,6 +1032,33 @@ def comment_photo():
 
     comments_photo(photo_id, user_id, posted, content, mongo)
     return dumps({})
+    
+@app.route('/comments/get_comments', methods=['GET'])
+def get_comments():
+    """
+    Description
+    -----------
+    Get Comments of a photo
+
+    Parameters
+    ----------
+    p_id : string
+    beginning : number 
+    end : number (-1 if want to return all of comments)
+    oldest_to_newest : boolean
+
+    Returns
+    -------
+    {
+        comments : [{author : string, comment : string, datePosted : date}]
+    }
+    """
+    photo_id = request.args.get("p_id")
+    print("Get All Comments Test!")
+    #print(get_all_comments(photo_id, mongo))
+    all_comments = get_all_comments(photo_id, mongo)
+    
+    return dumps({"comments" : all_comments})
 
 @app.route('/get_current_user', methods=['GET'])
 def get_verified_user():
