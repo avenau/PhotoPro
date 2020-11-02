@@ -41,3 +41,8 @@ Week 6
 Almost finished photo uploading. Just need to add the uploader to the photo db entry, and accept .gifs. 
 For next week I plan to implement credit purchasing/refunding. 
 If I finish that I plan to add other user stories to my tasks on Jira.
+
+Week 7
+Finished photo uploading.
+Finished credit purchasing/refunding.
+For next week I plan to save watermarked copies of images.
