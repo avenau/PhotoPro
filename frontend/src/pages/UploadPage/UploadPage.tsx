@@ -150,6 +150,8 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
                       }}
                       deactivateUploadButton={this.deactivateUploadButton}
                       activateUploadButton={this.activateUploadButton}
+                      setSelAlbums={(selAlbums: string[]) => {this.setState({albums: selAlbums})}}
+                      selectedAlbums={this.state.albums}
                     />
                   </Col>
                 </Row>
