@@ -25,6 +25,15 @@ class UserDNE(HTTPException):
     toast = False
 
 
+class PhotoDNE(HTTPException):
+    '''
+    PhotoDNE: Error when photo does not exist
+    '''
+    code = 400
+    message = 'No message specified'
+    toast = False
+
+
 class ValueError(HTTPException):
     '''
     ValueError: Error with the content given

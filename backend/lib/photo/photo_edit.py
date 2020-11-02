@@ -121,7 +121,7 @@ def make_thumbnail_gif(base64_str, filename_thumbnail):
     save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
 
 
-def get_photo_edit(mongo, photoId, token):
+def get_photo_edit(photo_id, token):
     """
     Get photo details from the database,
         validates if user is authorised to edit the photo
@@ -131,22 +131,22 @@ def get_photo_edit(mongo, photoId, token):
     @returns: response body
     """
     user_uid = get_uid(token)
-    validate_photo_user(mongo, photoId, user_uid)
-
-    result = mongo.db.photos.find_one({"_id": ObjectId(photoId)})
-
+    photo = lib.photo.photo.Photo.objects.get(id=photo_id)
+    if str(photo.get_user().id) != user_uid:
+        raise PermissionError("User is not able to edit this photo")
+    extension = photo.get_extension()
     # Get image from FS API
-    img = find_photo(f"{photoId}{result['extension']}")
+    img = find_photo(f"{photo_id}{extension}")
 
     return {
-        "title": result["title"],
-        "price": result["price"],
-        "tags": result["tags"],
-        "albums": result["albums"],
-        "discount": result["discount"],
+        "title": photo.get_title(),
+        "price": photo.get_price(),
+        "tags": photo.get_tags(),
+        "albums": photo.get_albums(),
+        "discount": photo.get_discount(),
         "photoStr": img,
-        "metadata": result["metadata"],
-        "deleted": result["deleted"]
+        "metadata": photo.get_metadata(),
+        "deleted": photo.is_deleted()
     }
 
 
@@ -167,7 +167,8 @@ def update_photo_details(mongo, photo_details):
     user_uid = get_uid(photo_details['token'])
     # Get the photo object id
     photoId = photo_details["photoId"]
-    validate_photo_user(mongo, photoId, user_uid)
+    # validate_photo_user(mongo, photoId, user_uid)
+
 
     for i in modify:
         mongo.db.photos.update({"_id": ObjectId(photoId)},

@@ -24,6 +24,7 @@ from lib.photo.fs_interactions import find_photo
 # Photo
 from lib.photo.photo_edit import create_photo_entry, update_photo_details, get_photo_edit
 from lib.photo.remove_photo import remove_photo
+from lib.photo.photo import Photo
 
 # Photo details
 from lib.photo_details.photo_details import get_photo_details
@@ -569,7 +570,6 @@ def upload_actual_photo():
 @validate_token
 def photo_details_edit():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     Validates that the user is allowed to edit the photo
@@ -584,10 +584,10 @@ def photo_details_edit():
     success or error
     """
 
-    photoId = request.args.get('photoId')
+    photo_id = request.args.get('photoId')
     token = request.args.get('token')
 
-    return dumps(get_photo_edit(mongo, photoId, token))
+    return dumps(get_photo_edit(photo_id, token))
 
 @app.route('/user/updatephoto', methods=['PUT'])
 @validate_token
@@ -622,7 +622,6 @@ def update_photo():
 @validate_token
 def check_deleted():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     Check if the photo is marked as deleted
@@ -635,10 +634,12 @@ def check_deleted():
     -------
     {deleted: boolean(string)}
     """
-    photoId = request.args.get("photoId")
-    res = mongo.db.photos.find_one({"_id": ObjectId(photoId)}, {"deleted": 1})
+    photo_id = request.args.get('photoId')
+    this_photo = Photo.objects.get(id=photo_id)
+    if not this_photo or photo_id == '':
+        raise Error.PhotoDNE("Could not find photo" + photo_id)
 
-    return dumps({"deleted": res["deleted"]})
+    return dumps({"deleted": this_photo.is_deleted()})
 
 @app.route('/user/updatephoto', methods=['DELETE'])
 @validate_token
