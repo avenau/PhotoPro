@@ -29,6 +29,7 @@ export default function PhotoContents(props: ContentProps) {
   const [price, setPrice] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [deleted, setDeleted] = useState(false);
+  const [loadMessage, setLoadMessage] = useState('Page Still Loading')
   const updateTags = (tag: string) => {
     if (tag) {
       setTags((tags) => [...tags, tag]);
@@ -54,6 +55,7 @@ export default function PhotoContents(props: ContentProps) {
         setTitle(response.data.title);
         setPrice(response.data.price);
         setPhoto(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0, -1));
+
         //console.log("deleted" + response.data.deleted);
         //console.log(response.status);
       });
@@ -64,9 +66,10 @@ export default function PhotoContents(props: ContentProps) {
     if (purchased === true) {
       //console.log("Purchased Section");
       setLoad(true);
-    } else if (deleted === true || localStorage.getItem('u_id') === null || artist === "") {
+    } else if (deleted === true || artist === "") {
       //console.log("IN deleted Section");
       setLoad(false);
+      setLoadMessage('The photo does not exist');
     } else {
       //console.log("Everything Else");
       setLoad(true);
@@ -143,7 +146,7 @@ export default function PhotoContents(props: ContentProps) {
   ) : (
       <div>
         {" "}
-        <p>Photo does not exist!</p>{" "}
+        <p>{loadMessage}</p>{" "}
       </div>
     );
 }
