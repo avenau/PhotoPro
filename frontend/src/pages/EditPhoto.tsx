@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { RouteChildrenProps } from "react-router-dom";
 import axios from "axios";
 import { Button, Form, Modal, Container, Row, Col, Image } from 'react-bootstrap';
-import { RouteComponentProps } from "react-router-dom";
 
 // Functional components
 import Title from "../components/PhotoEdit/Title";
@@ -184,12 +182,9 @@ export default function EditPhoto(props: any) {
                       src={imagePreview}/>
                   </Col>
                   <Col>
-                    <Album setAlbums={(albums: string[]) => {setAlbums(albums)}}/>
-                    <Row>
-                      <Col>
-                        <Button>Create a new album</Button>
-                      </Col>
-                    </Row>
+                    <Album 
+                        setSelAlbums={(selAlbums: string[]) => {setAlbums(selAlbums)}}
+                        selectedAlbums={albums}/>
                   </Col>
                 </Row>
                 <br/>

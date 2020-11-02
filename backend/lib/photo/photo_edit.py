@@ -31,6 +31,9 @@ def create_photo_entry(mongo, photo_details):
     user_uid = get_uid(photo_details['token'])
     photo_details.pop("token")
 
+    # Album ids
+    albums = photo_details['albums']
+
     default = {
         "metadata": base64_str.split(',')[0] + ',',
         "discount": 0.0,
@@ -39,7 +42,8 @@ def create_photo_entry(mongo, photo_details):
         "likes": 0,
         "comments": ["TODO"],
         "won": "TODO",
-        "deleted": False
+        "deleted": False,
+        "albums": [ObjectId(album) for album in albums]
     }
     photo_details.update(default)
     photo_entry = mongo.db.photos.insert_one(photo_details)
@@ -48,6 +52,9 @@ def create_photo_entry(mongo, photo_details):
     photo_oid = photo_entry.inserted_id
     name = str(photo_oid)
     (path, path_thumbnail) = process_photo(base64_str, name, extension)
+
+    # Add photo to albums
+    add_to_album(mongo, albums, photo_oid)
 
     # Add "path" attribute to db entry
     query = {"_id": ObjectId(name)}
@@ -132,7 +139,7 @@ def get_photo_edit(mongo, photoId, token):
         "title": result["title"],
         "price": result["price"],
         "tags": result["tags"],
-        "albums": result["albums"],
+        "albums": [str(i) for i in result["albums"]],
         "discount": result["discount"],
         "photoStr": img,
         "metadata": result["metadata"],
@@ -148,7 +155,7 @@ def update_photo_details(mongo, photo_details):
     @param photo_details(object): object containing values to change
     @returns: response body
     """
-    modify = ["title", "price", "tags", "albums", "discount"]
+    modify = ["title", "price", "tags", "discount"]
 
     photo_details = reformat_lists(photo_details)
     validate_photo(photo_details)
@@ -162,6 +169,13 @@ def update_photo_details(mongo, photo_details):
     for i in modify:
         mongo.db.photos.update({"_id": ObjectId(photoId)}, {"$set": {i: photo_details[i]}})
     
+    # Edit albums
+    mongo.db.photos.update({"_id": ObjectId(photoId)}, {"$set": {"albums": [ObjectId(album) for album in photo_details["albums"]]}})
+
     return {
         "success": "true"
     }
+
+def add_to_album(mongo, albums, photoId):
+    for album in albums:
+        mongo.db.albums.update({"_id": ObjectId(album)}, {"$push": {"photos": ObjectId(photoId)}})

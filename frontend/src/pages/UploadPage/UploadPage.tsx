@@ -145,11 +145,6 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
                   </Col>
                   <Col>
                     <Album
-                      setAlbums={(albums: string[]) => {
-                        this.setState({ albums: albums });
-                      }}
-                      deactivateUploadButton={this.deactivateUploadButton}
-                      activateUploadButton={this.activateUploadButton}
                       setSelAlbums={(selAlbums: string[]) => {this.setState({albums: selAlbums})}}
                       selectedAlbums={this.state.albums}
                     />
