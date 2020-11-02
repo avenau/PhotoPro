@@ -21,6 +21,7 @@ export default function PhotoContents(props: ContentProps) {
   const [isLoaded, setLoad] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [artist, setArtist] = useState("");
+  const [status, setStatus] = useState(0);
   //TODO
   const [photo, setPhoto] = useState("");
   const [purchased, setPurchase] = useState<boolean>();
@@ -51,6 +52,7 @@ export default function PhotoContents(props: ContentProps) {
         setTags(response.data.tagsList);
         setPurchase(response.data.purchased);
         setDeleted(response.data.deleted);
+        setStatus(response.data.status);
         setMeta(response.data.metadata);
         setTitle(response.data.title);
         setPrice(response.data.price);
@@ -74,8 +76,13 @@ export default function PhotoContents(props: ContentProps) {
       //console.log("Everything Else");
       setLoad(true);
     }
+    if (status === 0) {
+      setLoadMessage('Loading...');
+    }
+    console.log("STATUS UPDATE");
+    console.log(status);
     //console.log("Purchased: " + purchased);
-  }, [purchased, deleted]);
+  }, [purchased, deleted, status]);
 
   function DetermineButton() {
     if (artist === currentUser) {

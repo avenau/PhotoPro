@@ -9,7 +9,7 @@ import traceback
 import requests
 from flask.helpers import send_file
 from json import dumps, loads
-from bson.objectid import ObjectId
+from bson.objectid import ObjectId, InvalidId
 from flask import Flask, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
@@ -21,6 +21,7 @@ from werkzeug.exceptions import HTTPException
 
 # Comments
 from lib.comments.comment_photo import comments_photo
+from lib.comments.get_comments import get_all_comments
 from lib.photo.fs_interactions import find_photo
 
 # Photo
@@ -898,14 +899,34 @@ def photo_details():
         nickname: str (Artist's Nickname)
         email: str
         u_id: str, (Artist of the photo)
+        status : number (0 means not loaded yet, 1 means existing, 2 means does not exist)
     }
     """
     photo_id = request.args.get("p_id")
     current_user = request.args.get("u_id")
+    try:
+        p_oid = ObjectId(photo_id)
+    except InvalidId:
+        print("INVALID!!!!")
+        return dumps({
+            "u_id": "",
+            "title": "",
+            "likes": 0,
+            "tagsList": "",
+            "nickname": "",
+            "email": "",
+            "purchased": "",
+            "photoStr" : "",
+            "metadata" : "",
+            "price" : "",
+            "discount" : "",
+            "deleted" : "",
+            "status" : 2,
+        })
 
     #This is if posts are stored in user entity
     #artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
-    #p_id_string = str(artist['_id'])
+    #p_id_string = st{"status" : 2}r(artist['_id'])
 
     photo_details = get_photo_details(photo_id, mongo)
 
@@ -922,6 +943,8 @@ def photo_details():
         purchased = False
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
+    
+
 
     img = find_photo(f"{photo_id}{photo_details['extension']}")
 
@@ -938,6 +961,7 @@ def photo_details():
         "price" : photo_details["price"],
         "discount" : photo_details["discount"],
         "deleted" : photo_details["deleted"],
+        "status" : 1,
 
     })
 
@@ -946,7 +970,7 @@ def photo_liked():
     """
     Description
     -----------
-    GET request to retrieve information for a photo
+    GET request         return dumps({"status" : 2})to retrieve information for a photo
 
     Parameters
     ----------
@@ -1018,6 +1042,7 @@ def comment_photo():
     userId : string (Commenter)
     posted : date
     content : string
+    token : string (Commenter)
 
     Returns
     -------
@@ -1031,6 +1056,33 @@ def comment_photo():
 
     comments_photo(photo_id, user_id, posted, content, mongo)
     return dumps({})
+    
+@app.route('/comments/get_comments', methods=['GET'])
+def get_comments():
+    """
+    Description
+    -----------
+    Get Comments of a photo
+
+    Parameters
+    ----------
+    p_id : string
+    beginning : number 
+    end : number (-1 if want to return all of comments)
+    oldest_to_newest : boolean
+
+    Returns
+    -------
+    {
+        comments : [{author : string, comment : string, datePosted : date}]
+    }
+    """
+    photo_id = request.args.get("p_id")
+    print("Get All Comments Test!")
+    #print(get_all_comments(photo_id, mongo))
+    all_comments = get_all_comments(photo_id, mongo)
+    
+    return dumps({"comments" : all_comments})
 
 @app.route('/get_current_user', methods=['GET'])
 def get_verified_user():
