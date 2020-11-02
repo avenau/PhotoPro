@@ -11,7 +11,7 @@ interface Props {
   discount: number;
   photoStr: string;
   metadata: string;
-  author: string;
+  user: string;
 }
 
 export default class PhotoThumbnail extends React.Component<Props> {
@@ -36,12 +36,9 @@ export default class PhotoThumbnail extends React.Component<Props> {
 
   render() {
     console.log(this.props);
-    let purchasable = false;
-    if (
-      this.props.author &&
-      this.props.author === localStorage.getItem("u_id")
-    ) {
-      purchasable = true;
+    let purchasable = true;
+    if (this.props.user && this.props.user === localStorage.getItem("u_id")) {
+      purchasable = false;
     }
     return (
       <>

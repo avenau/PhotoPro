@@ -14,7 +14,7 @@ interface Photo {
   discount: number;
   photoStr: string;
   metadata: string;
-  author: string;
+  user: string;
 }
 
 class PhotoList extends React.Component<Props> {

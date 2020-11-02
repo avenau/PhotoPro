@@ -22,7 +22,7 @@ def photo_search(data, mongo):
           "pathThumb": 1,
           "metadata": 1,
           "extension": 1,
-          "author": {"$toString": "$user"},
+          "user": {"$toString": "$user"},
           "id": {"$toString": "$_id"},
           "_id": 0
         }
