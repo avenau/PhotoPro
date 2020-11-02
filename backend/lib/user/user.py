@@ -5,21 +5,18 @@ User Class for mongoengine
 import datetime
 from mongoengine import StringField
 from mongoengine import ListField
-from mongoengine import DateTimeField
 from mongoengine import IntField
 from mongoengine import Document
 from mongoengine import ReferenceField
 from mongoengine import EmailField
-from mongoengine import ValidationError
 from mongoengine import BinaryField
-from mongoengine import BooleanField
 
 import lib.collection.collection as collection
 import lib.photo.photo as photo
 import lib.user.validate_login as validate_login
 import lib.user.validate_registration as validate_registration
-import lib.photo.validate_photo as validate_photo
 import lib.user.validation as validation
+import lib.Error as Error
 
 
 class User(Document):
@@ -46,7 +43,7 @@ class User(Document):
     # User's profile pic, base64 encoded string
     profile_pic = ListField(StringField())
     # User's profile pic extension
-    extension = StringField(validation=validate_photo.validate_extension)
+    extension = StringField(validation=validation.validate_extension)
     # User's info about themself
     about_me = StringField()
     """
@@ -129,9 +126,11 @@ class User(Document):
     def is_matching_password(self, b_password):
         '''
         Check that the passwords match
-        @param b_password: binary string
+        @param b_password: byte literal
         @returns True on match, False otherwise
         '''
+        if not isinstance(b_password, bytes):
+            raise ValueError("Password must be a byte literal")
         return self.__get_password() == b_password
 
     """
@@ -245,7 +244,7 @@ class User(Document):
         '''
         Add a new photo to the user's posts
         '''
-        self.posts.add(this_photo)
+        self.posts.append(this_photo)
 
     def remove_post(self, this_photo):
         '''
@@ -301,7 +300,7 @@ class User(Document):
         '''
         Add a photo to purchased photos
         '''
-        self.purchased.add(this_photo)
+        self.purchased.append(this_photo)
 
     def get_credits(self):
         '''
@@ -315,6 +314,8 @@ class User(Document):
         Validation passed by validation.validate_credit()
         @param: credit: int
         '''
+        if not isinstance(credit, int):
+            raise Error.ValueError("Credits must be of type integer.")
         self.credits = self.credits + credit
 
     def remove_credits(self, credit):
@@ -323,8 +324,9 @@ class User(Document):
         Validation passed by validation.validate_credit()
         @param: credit: int
         '''
+        if not isinstance(credit, int):
+            raise Error.ValueError("Credits must be of type integer.")
         self.credits = self.credits - credit
-
 
     # User Document validation
     # ------------------------
