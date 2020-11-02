@@ -6,10 +6,10 @@ import Tabs from "react-bootstrap/Tabs";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { RouteComponentProps } from "react-router-dom";
-import AlbumList from "../components/ProfileLists/AlbumList";
-import CollectionList from "../components/ProfileLists/CollectionList";
-import FollowingList from "../components/ProfileLists/FollowingList";
-import PhotoList from "../components/ProfileLists/PhotoList";
+import AlbumList from "../components/Lists/AlbumList";
+import CollectionList from "../components/Lists/CollectionList";
+import UserList from "../components/Lists/UserList";
+import PhotoList from "../components/Lists/PhotoList";
 import Toolbar from "../components/Toolbar/Toolbar";
 import UserHeader from "../components/UserHeader/UserHeader";
 import "./Profile.scss";
@@ -162,17 +162,17 @@ export default class ProfilePage extends React.Component<Props, State> {
           transition={false}
         >
           <Tab eventKey="showcase" title="Showcase">
-            <PhotoList />
+            <PhotoList photos={[]} />
           </Tab>
           <Tab eventKey="albums" title="Albums">
-            <AlbumList />
+            <AlbumList albums={[]} />
           </Tab>
           <Tab eventKey="collections" title="Collections">
-            <CollectionList />
+            <CollectionList collections={[]} />
           </Tab>
           {currentUser ? (
             <Tab eventKey="following" title="Following">
-              <FollowingList />
+              <UserList users={[]} />
             </Tab>
           ) : (
             <></>

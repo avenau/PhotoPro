@@ -18,7 +18,7 @@ import Toolbar from "../components/Toolbar/Toolbar";
 import Price from "../components/PhotoEdit/Price";
 import Tags from "../components/PhotoEdit/Tags";
 import Album from "../components/PhotoEdit/Album";
-import AlbumList from "../components/ProfileLists/AlbumList";
+import AlbumList from "../components/Lists/AlbumList";
 import Discount from "../components/PhotoEdit/Discount";
 
 export default function EditPhoto(props: any) {

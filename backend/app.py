@@ -15,6 +15,7 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
+from werkzeug.exceptions import HTTPException
 
 # JAJAC made functions
 
@@ -64,7 +65,7 @@ from config import DevelopmentConfig, defaultHandler
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object(DevelopmentConfig)
-app.register_error_handler(Exception, defaultHandler)
+app.register_error_handler(HTTPException, defaultHandler)
 CORS(app)
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
