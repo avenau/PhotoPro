@@ -44,3 +44,6 @@ I completed JAJAC-8.
 I fixed a firefox bug with user search hover behaviour.
 I began work on JAJAC4, JAJAC-7, JAJAC-51.
 I set up the remote filesystem api behaviour for images
+I updated GIF thumbnails to be an animated version of the GIF rather than a static image.
+
+---------------- Week 7 ----------------
