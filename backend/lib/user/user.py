@@ -46,10 +46,6 @@ class User(Document):
     extension = StringField(validation=validation.validate_extension)
     # User's info about themself
     about_me = StringField()
-    """
-    # User's Date of Birth
-    # DOB = DateTimeField()
-    """
     # User's country, validated again the location list
     location = StringField(validation=validate_registration.valid_location)
     # Array of Photo references that the user has posted

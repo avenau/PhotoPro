@@ -4,7 +4,7 @@ Login user
 
 from lib.Error import EmailError, PasswordError
 from lib.token_functions import create_token
-from lib.user.user import User
+import lib.user.user
 
 
 def login(bcrypt, email, password):
@@ -21,7 +21,7 @@ def login(bcrypt, email, password):
     @param password: binary
     @return user: {u_id: string, token: string, nickname: string}
     '''
-    user = User.objects(email=email).first()
+    user = lib.user.user.User.objects(email=email).first()
     if not user:
         raise EmailError("That email isn't registered.")
     hashed_password = user.get_password()

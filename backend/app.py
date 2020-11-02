@@ -54,6 +54,7 @@ from lib.token_decorator import validate_token
 import lib.token_functions as token_functions
 from lib import db
 from lib import Error
+import lib
 
 
 
@@ -254,19 +255,22 @@ def profile_details():
         lname,
         nickname,
         location,
-        email
+        email,
+        profilePic
     }
     -------
     """
-    details = get_user_details(request.args.get("u_id"), mongo)
+    user = User.objects.get(id=request.args.get("u_id"))
+    if not user:
+        raise Error.UserDNE("Couldn't find user")
 
     return dumps({
-        "fname": details['fname'],
-        "lname": details['lname'],
-        "nickname": details["nickname"],
-        "location": details["location"],
-        "email": details["email"],
-        "profilePic": details["profilePic"]
+        "fname": user.get_fname(),
+        "lname": user.get_lname(),
+        "nickname": user.get_nickname(),
+        "location": user.get_location(),
+        "email": user.get_email(),
+        "profilePic": user.get_profile_pic()
     })
 
 
@@ -291,16 +295,10 @@ def buy_credits():
     user_id = token_functions.get_uid(token)
     credits_to_add = int(request.form.get("ncredits"))
 
-    # Validate credits_to_add
-    if credits_to_add < 1:
-        raise ValueError("You need to buy at least 1 credit.")
+    user = User.objects.get(id=user_id)
 
-    query = {"_id": ObjectId(user_id)}
-
-    user_details = get_user_details(user_id, mongo)
-    current_credits = user_details['credits']
-    set_credits = {"$set": {"credits": current_credits + credits_to_add}}
-    mongo.db.users.update_one(query, set_credits)
+    user.add_credits(credits_to_add)
+    user.save()
 
     return dumps({
         'credits_bought': credits_to_add
@@ -327,19 +325,12 @@ def refund_credits():
     user_id = token_functions.get_uid(token)
     credits_to_refund = int(request.form.get("ncredits"))
 
-
-    query = {"_id": ObjectId(user_id)}
-    user_details = get_user_details(user_id, mongo)
-    current_credits = user_details['credits']
-
-    # Validate credits_to_refund
-    if credits_to_refund < 1:
-        raise ValueError("You need to buy at least 1 credit.")
-    if credits_to_refund > current_credits:
-        raise ValueError("You can't refund more credits than you own.")
-
-    set_credits = {"$set": {"credits": current_credits - credits_to_refund}}
-    mongo.db.users.update_one(query, set_credits)
+    user = User.objects.get(id=user_id)
+    user.remove_credits(credits_to_refund)
+    try:
+        user.save()
+    except mongoengine.ValidationError:
+        raise Error.ValidationError("User has insufficient credits")
 
     return dumps({
         'credits_refunded': credits_to_refund
@@ -454,19 +445,20 @@ def user_info_with_token():
     if token == '':
         print("token is an empty string")
         return {}
-    u_id = token_functions.verify_token(token)
-    user = get_user_details(u_id['u_id'], mongo)
+    u_id = token_functions.get_uid(token)
+    user = User.objects.get(id=u_id)
+    if not user:
+        raise Error.UserDNE("Could not find user")
     # JSON Doesn't like ObjectId format
     return dumps({
-        'fname': user['fname'],
-        'lname': user['lname'],
-        'email': user['email'],
-        'nickname': user['nickname'],
-        'credits': user['credits'],
-        'DOB': user['DOB'],
-        'location': user['location'],
-        'aboutMe': user['aboutMe'],
-        'profilePic': user['profilePic']
+        'fname': user.get_fname(),
+        'lname': user.get_lname(),
+        'email': user.get_email(),
+        'nickname': user.get_nickname(),
+        'credits': user.get_credits(),
+        'location': user.get_location(),
+        'aboutMe': user.get_about_me(),
+        'profilePic': user.get_profile_pic()
     })
 
 
@@ -494,37 +486,15 @@ def manage_account():
     -------
     {'success: boolean}
     """
-    '''
-    Need Something to Check if current logged in account exist in database
-    I am assuming user_id is stored in localStorage
-    Hard coded this part, this part should check what the logged in
-    user object_id is
-    '''
     success = False
+    data = loads(request.data.decode())
+    user = User.objects.get(id = data['u_id'])
+    if user is None:
+        raise Error.UserDNE("User with id " + data['u_id'] + "does not exist")
     try:
-        data = loads(request.data.decode())
-        current_user = data['u_id']
-        find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
-            if (value == "" or key == "u_id"):
-                continue
-            if key == "password":
-                hashed_password= bcrypt.generate_password_hash(value)
-                mongo.db.users.update_one(find_userdb, {"$set": {
-                                                            key:
-                                                            hashed_password}})
-            elif key == "profilePic":
-                img_and_filetype = update_user_thumbnail(value)
-                mongo.db.users.update_one(find_userdb, {"$set": {
-                                                            key:
-                                                            img_and_filetype}})
-            else:
-                change_userdb = {"$set": {key: value}}
-                mongo.db.users.update_one(find_userdb, change_userdb)
-
+            lib.user.helper_functions.update_value(bcrypt, user, key, value)
         success = True
-
-    # TODO: Catching too general using Exception. Replace with e.g. ValueError
     except Exception:
         print("Errors... :-(")
         print(traceback.format_exc())
@@ -555,41 +525,16 @@ def password_check():
 
     data = request.form.to_dict()
     current_user = data['u_id']
-    user_object = mongo.db.users.find_one({"_id": ObjectId(current_user)})
-    current_password = user_object['password']
+    user_object = User.objects.get(id=current_user)
+    if user_object is None:
+        raise Error.UserDNE("User " + current_user + "does not exist")
 
     # TODO: set the token properly with jwt
-    if bcrypt.check_password_hash(current_password, data['password']):
+    if bcrypt.check_password_hash(user_object.get_password(), data['password']):
         data['password'] = "true"
     else:
         data['password'] = "false"
     print(data)
-
-    return data
-
-
-@app.route('/get_user_info', methods=['GET', 'POST'])
-def get_user():
-    """
-    Description
-    -----------
-
-    Parameters
-    ----------
-
-    Returns
-    -------
-    """
-    data = request.form.to_dict()
-    current_uid = data['u_id']
-    current_user = mongo.db.users.find_one({"_id": ObjectId(current_uid)})
-    data['fname'] = current_user['fname']
-    data['lname'] = current_user['lname']
-    data['email'] = current_user['email']
-    data['nickname'] = current_user['nickname']
-    data['dob'] = current_user['DOB']
-    data['location'] = current_user['location']
-    data['aboutMe'] = current_user['aboutMe']
 
     return data
 
@@ -618,12 +563,13 @@ def upload_actual_photo():
     None
     """
     photo_details = request.form.to_dict()
-    return dumps(create_photo_entry(mongo, photo_details))
+    return dumps(create_photo_entry(photo_details))
 
 @app.route('/user/updatephoto', methods=['GET'])
 @validate_token
 def photo_details_edit():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     Validates that the user is allowed to edit the photo
@@ -647,6 +593,7 @@ def photo_details_edit():
 @validate_token
 def update_photo():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     Accepts parameters related to EDITING photo details, verifies the parameters,
@@ -675,6 +622,7 @@ def update_photo():
 @validate_token
 def check_deleted():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     Check if the photo is marked as deleted
@@ -696,6 +644,7 @@ def check_deleted():
 @validate_token
 def user_remove_photo():
     '''
+    TODO: Update to mongoengine
     Description
     -----------
     Remove a photo that a user has uploaded
@@ -728,6 +677,7 @@ def user_remove_photo():
 @validate_token
 def upload_photo():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     Parameters
@@ -763,6 +713,7 @@ def upload_photo():
 @app.route('/search/user', methods=['GET'])
 def search_user():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many user details based on a query
@@ -793,6 +744,7 @@ def search_user():
 @app.route('/search/photo', methods=['GET'])
 def search_photo():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many photo details based on a query
@@ -827,6 +779,7 @@ def search_photo():
 @app.route('/search/collection', methods=['GET'])
 def search_collection():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many user details based on a query
@@ -853,6 +806,7 @@ def search_collection():
 @app.route('/search/album', methods=['GET'])
 def search_album():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many album details based on a query
@@ -886,6 +840,7 @@ def photo_details():
     # TODO: Should return photos and comments as well
     # Add to API list
     """
+    TODO: Update to mongoengine
     Description
     -----------
     GET request to retrieve information for a photo
@@ -952,6 +907,7 @@ def photo_details():
 @app.route('/photo_details/isLiked', methods=['GET'])
 def photo_liked():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     GET request to retrieve information for a photo
@@ -978,6 +934,7 @@ def photo_liked():
 @app.route('/photo_details/updateLikes', methods=['POST'])
 def update_likes():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     Form request that updates the likes of a photo on mongo
@@ -1018,6 +975,7 @@ def update_likes():
 @app.route('/comments/comment', methods=['POST'])
 def comment_photo():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     Adds Comments to Mongo
@@ -1045,6 +1003,7 @@ def comment_photo():
 @app.route('/get_current_user', methods=['GET'])
 def get_verified_user():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     Gets user id from token

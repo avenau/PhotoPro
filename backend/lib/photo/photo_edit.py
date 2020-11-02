@@ -17,59 +17,51 @@ from lib.photo.validate_photo import validate_extension
 from lib.photo.validate_photo import validate_discount
 from lib.token_functions import get_uid
 from lib.photo.fs_interactions import find_photo, save_photo
+import lib.Error as Error
+import lib.photo.photo
+import lib.user.user
 
 
-def create_photo_entry(mongo, photo_details):
+def create_photo_entry(photo_details):
     """
     Creates photo entry in photo collection and adds
     photo/post in the user collection
     """
 
     photo_details = reformat_lists(photo_details)
-    validate_photo(photo_details)
-    validate_extension(photo_details["extension"])
 
     # Get photo values before popping them
     [metadata, base64_str] = photo_details['photo'].split(',')
     extension = photo_details['extension']
-    photo_details.pop("photo")
 
     # Insert photo entry, except "path" attribute
     user_uid = get_uid(photo_details['token'])
-    photo_details.pop("token")
+    user = lib.user.user.User.objects.get(id=user_uid)
+    if not user:
+        raise Error.UserDNE("Could not find User " + user_uid)
 
-    default = {
-        "metadata": f"{metadata},",
-        "discount": 0.0,
-        "posted": datetime.datetime.now(),
-        "user": ObjectId(user_uid),
-        "likes": 0,
-        "comments": ["TODO"],
-        "won": "TODO",
-        "deleted": False
-    }
-    photo_details.update(default)
-    photo_entry = mongo.db.photos.insert_one(photo_details)
+    # Create a new photo
+    new_photo = lib.photo.photo.Photo(
+        title = photo_details['title'],
+        price = photo_details['price'],
+        user = user,
+        tags = photo_details['tags'],
+    )
+    new_photo.save()
 
     # Process photo and upload
-    photo_oid = photo_entry.inserted_id
+    photo_oid = new_photo.id
     name = str(photo_oid)
     try:
         process_photo(base64_str, name, extension)
 
         # Add photo to user's posts
-        response = mongo.db.users.find_one({"_id": ObjectId(user_uid)},
-                                           {"posts": 1})
-        posts = response["posts"]
-        posts.append(ObjectId(name))
-        mongo.db.users.update_one({"_id": ObjectId(user_uid)},
-                                  {"$set": {"posts": posts}})
+        user.add_post(new_photo)
+        user.save()
         return {
             "success": "true"
         }
     except:
-        mongo.db.photos.delete_one({"_id": photo_oid})
-        print("Didn't add to DB")
         return {
             "success": "false"
         }
