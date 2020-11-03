@@ -1,26 +1,39 @@
 '''
 Album class.
-TODO: Flesh it out
 '''
+
+import traceback
 from mongoengine import IntField
 import lib.catalogue.catalogue as catalogue
 import lib.album.validation as validation
+import lib.Error as Error
 
 class Album(catalogue.Catalogue):
     '''
-    Albums have a price
+    Albums have a discount
+    Albums consist of photos created by the owner
     '''
-    price = IntField(default=0,
-                     validation=validation.validate_price)
+    discount = IntField(default=0,
+                        validation=validation.validate_discount)
 
-    def get_price(self):
+    def get_discount(self):
         '''
         Get the price of an album
         '''
-        return self.price
+        return self.discount
 
-    def set_price(self, price):
+    def set_discount(self, discount):
         '''
         Set the price of the album
         '''
-        self.price = price
+        self.discount = discount
+
+    def clean(self):
+        '''
+        Additional validation
+        Check that photos are owned by the owner of the album
+        '''
+        for photo in self.photos:
+            if photo.get_user() != self.get_created_by():
+                print(traceback.format_exc())
+                raise Error.ValidationError("User does not own photo")

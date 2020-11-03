@@ -119,5 +119,18 @@ class Catalogue(Document):
             this_photo.remove_collection(self)
             this_photo.save()
 
+    def get_created_by(self):
+        '''
+        Get the user that created the album
+        '''
+        return self.created_by
+
+    def set_created_by(self, this_user):
+        '''
+        Update the creator of the collection
+        '''
+        self.created_by = this_user
+
+
     def clean(self):
         self.update_tags()
