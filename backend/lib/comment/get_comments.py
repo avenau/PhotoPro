@@ -1,22 +1,32 @@
-from lib.Error import UserDNE, TokenError
-from bson.objectid import ObjectId
-from bson.errors import InvalidId
-from json import dumps
+'''
+Get all comments for a photo
+'''
+import traceback
+from lib.Error import PhotoDNE
+import lib.photo.photo as photo
 
-def get_all_comments(p_id, mongo):
-    try:
-        p_oid = ObjectId(p_id)
-    except InvalidId:
-        raise TokenError("p_id is not a valid ObjectId." + p_id)
-    photo = mongo.db.photos.find_one({"_id": p_oid})
+
+def get_all_comments(p_id):
+    '''
+    Get all comments for a photo
+    @param p_id: string(photo id)
+    @return [
+        commenter: User,
+        datePosted: datetime,
+        content: string
+    ]
+    '''
+    this_photo = photo.Photo.objects.get(id=p_id)
+    if not this_photo:
+        print(traceback.format_exc)
+        raise PhotoDNE("Could not find photo")
+    comments = this_photo.get_comments()
     result = []
-    comment_ids = photo['comments']
-    for comment_id in comment_ids:
-        if comment_id == "TODO":
-            continue
-        comment = mongo.db.comments.find_one({"_id":comment_id})
-        commenter = mongo.db.users.find_one({"_id":comment['commenter']})['nickname']
-        datePosted = comment['posted']
-        content = comment['content']
-        result.append(dumps({"commenter":commenter, "datePosted":datePosted, "content":content}))
+    for comment in comments:
+        result.append({
+                'commenter': comment.get_commenter(),
+                'datePosted': comment.get_posted(),
+                'content': comment.get_content()
+            })
+
     return result

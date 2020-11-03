@@ -8,6 +8,7 @@ import lib.catalogue.catalogue as catalogue
 import lib.album.validation as validation
 import lib.Error as Error
 
+
 class Album(catalogue.Catalogue):
     '''
     Albums have a discount

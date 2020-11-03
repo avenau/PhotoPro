@@ -12,9 +12,10 @@ from mongoengine import Document
 from mongoengine import ReferenceField
 
 # Used as part of 'collection.Collection'
-import lib.collection.collection as collection
 import lib.user.user as user
 import lib.album.album as album
+import lib.comment.comment as comment
+import lib.collection.collection as collection
 import lib.photo.validation as validation
 
 
@@ -43,8 +44,7 @@ class Photo(Document):
     # Number of likes of the photo
     likes = IntField(default=0)
     # List of Comments associated with the photo
-    # TODO Change this to comment class
-    comments = ListField(StringField())
+    comments = ListField(StringField('comment.Comment'))
     # Whether the photo is deleted or not
     deleted = BooleanField(default=False)
     # Metadata of the photo {collection: collection-name}
@@ -139,12 +139,12 @@ class Photo(Document):
         '''
         return self.user
 
-    def set_user(self, user):
+    def set_user(self, this_user):
         '''
         Set the owner of the photo
         @param user: User: mongoengine.Document
         '''
-        self.user = user
+        self.user = this_user
 
     def increment_likes(self):
         '''
@@ -180,35 +180,18 @@ class Photo(Document):
         '''
         return self.likes
 
-    def add_comments(self, comments):
-        '''
-        Add a list of comments
-        @param comments: string[]
-        '''
-        if not isinstance(comments, list):
-            raise ValueError("Comments must be a list of strings")
-        if not comments:
-            return
-        if not isinstance(comments[0], str):
-            raise ValueError("Comment is not of type string")
-        self.comments.extend(comments)
-
-    def add_comment(self, comment):
+    def add_comment(self, this_comment):
         '''
         Add a single comment to the photo
         @param comment: string
         '''
-        if not isinstance(comment, str):
-            raise ValueError("Comment must be of type string")
-        self.comments.append(comment)
+        self.comments.append(this_comment)
 
     def get_comments(self):
         '''
         Get all the comments
         '''
-        if not self.comments:
-            return []
-        return self.comments[0]
+        return self.comments
 
     def remove_collection(self, old_collection):
         '''

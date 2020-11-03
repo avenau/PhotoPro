@@ -32,42 +32,34 @@ def is_photo_liked(photo_id, user_id):
     return is_liked
 
 
-def update_likes_mongo(photo_id, user_id, like_count, upvote, mongo):
+def like_photo(user_id, photo_id):
     '''
-    Updates Like Count
-    @param photo_id(string): The _id of the photo
-    @param user_id(string): The _id of the user that you want to check if liked
-    @param like_count(int): The new like count
-    @param mongo(object): Mongo Database
-    @return void
+    Toggle like on a photo
+    If photo is already liked, dislike it
+    If photo is not liked, like it
     '''
-    p_oid = None
-    u_oid = None
+    # Get the User
+    this_user = lib.user.user.User.objects.get(user_id)
 
-    try:
-        p_oid = ObjectId(photo_id)
-    except InvalidId:
-        raise TokenError("photo_id is not a valid ObjectId." + photo_id)
+    # Check that the user is valid
+    if not this_user:
+        raise Error.UserDNE("Could not find user " + user_id)
 
-    try:
-        u_oid = ObjectId(user_id)
-    except InvalidId:
-        raise TokenError("user_id is not a valid ObjectId." + user_id)
+    # Get the Photo
+    this_photo = lib.photo.photo.Photo.objects.get(photo_id)
 
-    photo = mongo.db.photos.find_one({"_id": p_oid})
-    liker = mongo.db.users.find_one({"_id": u_oid})
-    if photo is None:
-        print("Photos not found")
-        # TODO: Add Photo Errors
-        # raise UserDNE("User not found")
-    if liker is None:
-        raise UserDNE("User not found")
+    # Check that the photo is valid
+    if not this_photo:
+        raise Error.PhotoDNE("Could not find photo " + photo_id)
 
-    # Adds/Remove Photo to liker's add List
-    print("Upvote " + upvote)
-    if upvote == "true":
-        mongo.db.users.update_one({"_id": u_oid}, {"$push": {"likes": p_oid}})
+    # If already liked, remove the like from the photo
+    if this_photo in this_user.get_liked():
+        this_photo.decrement_likes()
+        this_user.remove_liked_photo(this_photo)
+        return False
+    # If not already liked, like the photo
     else:
-        mongo.db.users.update_one({"_id": u_oid}, {"$pull": {"likes": p_oid}})
+        this_photo.increment_likes()
+        this_user.add_liked_photo(this_photo)
+        return True
 
-    mongo.db.photos.update_one({"_id": p_oid}, {"$set": {"likes": like_count}})

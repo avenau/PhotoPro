@@ -11,8 +11,8 @@ from mongoengine import ReferenceField
 from mongoengine import EmailField
 from mongoengine import BinaryField
 
-import lib.collection.collection as collection
 import lib.photo.photo as photo
+import lib.collection.collection as collection
 import lib.user.validate_login as validate_login
 import lib.user.validate_registration as validate_registration
 import lib.user.validation as validation
@@ -34,12 +34,6 @@ class User(Document):
     nickname = StringField(required=True)
     # User's hashed password
     password = BinaryField(required=True)
-    """
-    # Whether user's first name is private
-    priv_f_name = BooleanField(default=True)
-    # Whether user's last name is private
-    priv_l_name = BooleanField(default=True)
-    """
     # User's profile pic, base64 encoded string
     profile_pic = ListField(StringField())
     # User's profile pic extension

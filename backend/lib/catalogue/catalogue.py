@@ -14,6 +14,7 @@ from mongoengine import BooleanField
 import lib.photo.photo as photo
 import lib.user.user as user
 
+
 class Catalogue(Document):
     '''
     Catalogue class
@@ -25,7 +26,6 @@ class Catalogue(Document):
     deleted = BooleanField(default=False)
     tags = ListField(StringField())
     meta = {'allow_inheritance': True, 'abstract': True}
-
 
     def get_title(self):
         '''
@@ -101,13 +101,11 @@ class Catalogue(Document):
         for this_photo in photos:
             self.remove_photo(this_photo)
 
-
     def is_deleted(self):
         '''
         Check whether the collection is deleted
         '''
         return self.deleted
-
 
     def delete_catalogue(self):
         '''
@@ -130,7 +128,6 @@ class Catalogue(Document):
         Update the creator of the collection
         '''
         self.created_by = this_user
-
 
     def clean(self):
         self.update_tags()

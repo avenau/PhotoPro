@@ -1,26 +1,28 @@
-from lib.Error import UserDNE, TokenError
-from bson.objectid import ObjectId
-from bson.errors import InvalidId
+'''
+Comment helper functions
+'''
 
-def comments_photo(p_id, u_id, posted, content, mongo):
-    try:
-        commenter_oid = ObjectId(u_id)
-        print("CURRENT ID: " + u_id)
-    except InvalidId:
-        raise TokenError("u_id is not a valid ObjectId." + u_id)
-        
-    try:
-        photo_oid = ObjectId(p_id)
-    except InvalidId:
-        raise TokenError("p_id is not a valid ObjectId." + p_id)
-        
-    comment_id = mongo.db.comments.insert({"posted" : posted, "content" : content, "commenter" : commenter_oid})
-    print("COMMMENT ID")
-    print(comment_id)
-    
-    try:
-        comment_oid = ObjectId(comment_id)
-    except InvalidId:
-        raise TokenError("comment_id is not a valid ObjectId." + comment_id)
-    mongo.db.photos.update_one({"_id": photo_oid}, { "$push": { "comments": comment_oid } })
-    
+import traceback
+from lib.Error import UserDNE, PhotoDNE
+import lib.catalogue.catalogue as catalogue
+import lib.comment.comment as comment
+import lib.user.user as user
+import lib.photo.photo as photo
+
+
+def comments_photo(p_id, u_id, content):
+    '''
+    Create a comment and attach it to the photo
+    '''
+    this_user = user.User.objects.get(id=u_id)
+    if not this_user:
+        print(traceback.format_exc)
+        raise UserDNE("Could not find user")
+
+    this_photo = photo.Photo.objects.get(id=p_id)
+    if not this_photo:
+        print(traceback.format_exc)
+        raise PhotoDNE("Could not find photo")
+
+    new_comment = comment.Comment(content=content, commenter=this_user)
+    this_photo.add_comment(new_comment)

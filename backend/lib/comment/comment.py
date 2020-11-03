@@ -8,11 +8,16 @@ from mongoengine import DateTimeField
 from mongoengine import StringField
 from mongoengine import ReferenceField
 
+import lib.user.user as user
+
 
 class Comment(Document):
-    posted = DateTimeField(required=True, default=datetime.datetime.now()),
-    content = StringField(required=True),
-    commenter = ReferenceField(required=True)
+    '''
+    Comment mongoengine class
+    '''
+    posted = DateTimeField(required=True, default=datetime.datetime.now())
+    content = StringField(required=True)
+    commenter = ReferenceField('user.User', required=True)
 
     def get_posted(self):
         '''

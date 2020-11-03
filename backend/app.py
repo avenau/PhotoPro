@@ -16,20 +16,26 @@ from flask_mail import Mail
 from flask_pymongo import PyMongo
 from werkzeug.exceptions import HTTPException
 
+# Classes
+from lib.photo.photo import Photo
+import lib.user.user as user
+import lib.catalogue.catalogue as catalogue
+import lib.album.album as album
+import lib.comment.comment as comment
+
 # JAJAC made functions
 
 # Comments
-from lib.comment.comment_photo import comments_photo
+import lib.comment.comment_photo as comment_photo
 from lib.comment.get_comments import get_all_comments
 
 # Photo
 from lib.photo.photo_edit import create_photo_entry, update_photo_details
 from lib.photo.photo_edit import get_photo_edit
 from lib.photo.remove_photo import remove_photo
-from lib.photo.photo import Photo
 
 # Photo details
-from lib.photo_details.photo_likes import is_photo_liked
+from lib.photo_details.photo_likes import is_photo_liked, like_photo
 
 # Profile
 from lib.profile.upload_photo import update_user_thumbnail
@@ -44,7 +50,6 @@ from lib.showdown import get_images
 # User
 from lib.user.validate_login import login
 import lib.user.password_reset as password_reset
-from lib.user.user import User
 
 # Welcome
 from lib.welcome.contributors import get_popular_contributors_images
@@ -218,7 +223,7 @@ def account_registration():
         new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'],
                                                        new_user['extension'])
 
-    this_user = User(
+    this_user = user.User(
         fname=new_user['fname'],
         lname=new_user['lname'],
         email=new_user['email'],
@@ -256,17 +261,17 @@ def profile_details():
     }
     -------
     """
-    user = User.objects.get(id=request.args.get("u_id"))
-    if not user:
+    this_user = user.User.objects.get(id=request.args.get("u_id"))
+    if not this_user:
         raise Error.UserDNE("Couldn't find user")
 
     return dumps({
-        "fname": user.get_fname(),
-        "lname": user.get_lname(),
-        "nickname": user.get_nickname(),
-        "location": user.get_location(),
-        "email": user.get_email(),
-        "profilePic": user.get_profile_pic()
+        "fname": this_user.get_fname(),
+        "lname": this_user.get_lname(),
+        "nickname": this_user.get_nickname(),
+        "location": this_user.get_location(),
+        "email": this_user.get_email(),
+        "profilePic": this_user.get_profile_pic()
     })
 
 
@@ -291,10 +296,10 @@ def buy_credits():
     user_id = token_functions.get_uid(token)
     credits_to_add = int(request.form.get("ncredits"))
 
-    user = User.objects.get(id=user_id)
+    this_user = user.User.objects.get(id=user_id)
 
-    user.add_credits(credits_to_add)
-    user.save()
+    this_user.add_credits(credits_to_add)
+    this_user.save()
 
     return dumps({
         'credits_bought': credits_to_add
@@ -322,10 +327,10 @@ def refund_credits():
     user_id = token_functions.get_uid(token)
     credits_to_refund = int(request.form.get("ncredits"))
 
-    user = User.objects.get(id=user_id)
-    user.remove_credits(credits_to_refund)
+    this_user = user.User.objects.get(id=user_id)
+    this_user.remove_credits(credits_to_refund)
     try:
-        user.save()
+        this_user.save()
     except mongoengine.ValidationError:
         raise Error.ValidationError("User has insufficient credits")
 
@@ -442,19 +447,19 @@ def user_info_with_token():
         print("token is an empty string")
         return {}
     u_id = token_functions.get_uid(token)
-    user = User.objects.get(id=u_id)
-    if not user:
+    this_user = user.User.objects.get(id=u_id)
+    if not this_user:
         raise Error.UserDNE("Could not find user")
     # JSON Doesn't like ObjectId format
     return dumps({
-        'fname': user.get_fname(),
-        'lname': user.get_lname(),
-        'email': user.get_email(),
-        'nickname': user.get_nickname(),
-        'credits': user.get_credits(),
-        'location': user.get_location(),
-        'aboutMe': user.get_about_me(),
-        'profilePic': user.get_profile_pic()
+        'fname': this_user.get_fname(),
+        'lname': this_user.get_lname(),
+        'email': this_user.get_email(),
+        'nickname': this_user.get_nickname(),
+        'credits': this_user.get_credits(),
+        'location': this_user.get_location(),
+        'aboutMe': this_user.get_about_me(),
+        'profilePic': this_user.get_profile_pic()
     })
 
 
@@ -483,12 +488,13 @@ def manage_account():
     """
     success = False
     data = loads(request.data.decode())
-    user = User.objects.get(id=data['u_id'])
-    if user is None:
+    this_user = user.User.objects.get(id=data['u_id'])
+    if this_user is None:
         raise Error.UserDNE("User with id " + data['u_id'] + "does not exist")
     try:
         for key, value in data.items():
-            lib.user.helper_functions.update_value(bcrypt, user, key, value)
+            lib.user.helper_functions.update_value(bcrypt, this_user,
+                                                   key, value)
         success = True
     except Exception:
         print("Errors... :-(")
@@ -512,7 +518,7 @@ def password_check():
     """
     data = request.form.to_dict()
     current_user = data['u_id']
-    user_object = User.objects.get(id=current_user)
+    user_object = user.User.objects.get(id=current_user)
     if user_object is None:
         raise Error.UserDNE("User " + current_user + "does not exist")
 
@@ -935,7 +941,6 @@ def photo_liked():
 @validate_token
 def update_likes():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     Form request that updates the likes of a photo on mongo
@@ -945,41 +950,26 @@ def update_likes():
     token: string
     photoId : string
 
-
     Returns
     -------
-    None
+    {
+        'liked': boolean
+    }
     """
     params = request.form.to_dict()
     photo_id = params.get("photoId")
     token = request.args.get('token')
     user_id = token_functions.get_uid(token)
 
-    this_user = lib.user.user.User.objects.get(user_id)
-    if not this_user:
-        raise Error.UserDNE("Could not find user " + user_id)
-    this_photo = lib.photo.photo.Photo.objects.get(photo_id)
-    if not this_photo:
-        raise Error.PhotoDNE("Could not find photo " + photo_id)
-
-    # If already liked, remove the like from the photo
-    if this_photo in this_user.get_liked():
-        this_photo.decrement_likes()
-        this_user.remove_liked_photo(this_photo)
-        liked = False
-    # If not already liked, like the photo
-    else:
-        this_photo.increment_likes()
-        this_user.add_liked_photo(this_photo)
-        liked = True
+    liked = like_photo(user_id, photo_id)
 
     return dumps({'liked': liked})
 
 
 @app.route('/comments/comment', methods=['POST'])
-def comment_photo():
+@validate_token
+def comment_on_photo():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     Adds Comments to Mongo
@@ -998,15 +988,16 @@ def comment_photo():
     """
     params = request.form.to_dict()
     photo_id = params.get("photoId")
-    user_id = params.get("currentUser")
-    posted = params.get("commentDate")
     content = params.get("commentContent")
+    token = params.get("token")
+    user_id = token_functions.get_uid(token)
 
-    comments_photo(photo_id, user_id, posted, content, mongo)
+    comment_photo.comments_photo(photo_id, user_id, content)
     return dumps({})
 
 
 @app.route('/comments/get_comments', methods=['GET'])
+@validate_token
 def get_comments():
     """
     Description
@@ -1023,12 +1014,13 @@ def get_comments():
     Returns
     -------
     {
-        comments : [{author : string, comment : string, datePosted : date}]
+        comments: [{commenter: string,
+                     comment : string,
+                     datePosted : date}]
     }
     """
     photo_id = request.args.get("p_id")
-    print("Get All Comments Test!")
-    all_comments = get_all_comments(photo_id, mongo)
+    all_comments = get_all_comments(photo_id)
 
     return dumps({"comments": all_comments})
 

@@ -7,10 +7,10 @@ from mongoengine import IntField
 
 # Own class import
 import lib.collection.validation as validation
-import lib.catalogue.catalogue as catalogue
+import lib.catalogue.catalogue
 
 
-class Collection(catalogue.Catalogue):
+class Collection(lib.catalogue.catalogue.Catalogue):
     '''
     Collection class definition
     Collection {
