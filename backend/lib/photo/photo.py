@@ -3,6 +3,7 @@ Photo Class for mongoengine
 '''
 
 import datetime
+from flask_cors import extension
 from mongoengine import StringField
 from mongoengine import ListField
 from mongoengine import DateTimeField
@@ -258,16 +259,21 @@ class Photo(Document):
         '''
         Get the watermarked or non watermarked photo based on
         whether the u_id passed in owns the photo
-        TODO deal with svgs
         '''
+
+        # SVG thumbnails are in png format
+        extension = self.get_extension()
+        if extension == ".svg":
+            extension = ".png"
+
         try:
             this_user = user.User.objects.get(id=u_id)
             if self in this_user.get_purchased() or this_user == self.get_user():
-                return find_photo(f"{self.get_id()}_t{self.get_extension()}")
+                return find_photo(f"{self.get_id()}_t{extension}")
             else:
-                return find_photo(f"{self.get_id()}_t_w{self.get_extension()}")
+                return find_photo(f"{self.get_id()}_t_w{extension}")
         except:
-            return find_photo(f"{self.get_id()}_t_w{self.get_extension()}")
+            return find_photo(f"{self.get_id()}_t_w{extension}")
 
 
     def get_photo(self):
