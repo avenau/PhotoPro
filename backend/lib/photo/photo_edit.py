@@ -87,9 +87,9 @@ def process_photo(base64_str, name, extension):
     """
 
     filename = name + extension
+    img_data = base64.b64decode(base64_str)
     save_photo(img_data, filename)
     filename_thumbnail = name + "_t" + extension
-    img_data = base64.b64decode(base64_str)
 
     # Watermarking and thumbnailing
     if not extension in [".svg", ".gif"]:
