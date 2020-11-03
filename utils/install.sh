@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Help features
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]
+then
+    echo "Usage: install.sh [OPTION]"
+    echo "  -b,         Only install backend requirements"
+    echo "  -h, --help  Show help options"
+    exit 0
+fi
+
 # Backend environment install
 echo "Installing python requirements..."
 cd backend
