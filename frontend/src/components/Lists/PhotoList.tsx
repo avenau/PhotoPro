@@ -1,6 +1,6 @@
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import PhotoThumbnail from "../PhotoThumbnail/PhotoThumbnail";
+import PhotoThumbnail from "../Thumbnails/PhotoThumbnail";
 import "./PhotoList.scss";
 
 interface Props extends RouteComponentProps {
@@ -11,9 +11,10 @@ interface Photo {
   id: string;
   title: string;
   price: number;
-  discount: string;
+  discount: number;
   photoStr: string;
   metadata: string;
+  user: string;
 }
 
 class PhotoList extends React.Component<Props> {

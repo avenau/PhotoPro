@@ -4,6 +4,7 @@ Filesystem Interactions
 
 import os
 import requests
+import base64
 
 headers = {"secretkey": "PhotoProSecretAPIKey"}
 FS_API_URL = os.getenv("FS_API_URL")
@@ -15,7 +16,7 @@ def save_photo(img_data, filename):
     @param img_data: decoded base 64 image
     @param filename: filename and extension of photo to save
     """
-    data = {"filename": filename, "photo": img_data}
+    data = {"filename": filename, "photo": base64.b64encode(img_data).decode('utf-8')}
     requests.post(f"{FS_API_URL}/save",
                   data=data,
                   headers=headers)

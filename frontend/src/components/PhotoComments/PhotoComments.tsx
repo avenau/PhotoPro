@@ -29,7 +29,7 @@ export default function PhotoComments(props: CommentProps) {
     }
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         setDate(new Date());
-        let currentUser = localStorage.getItem('u_id');
+        let token = localStorage.getItem('token');
         let photoId = props.p_id;
         /* photoId: string
          userId: string(Commenter)
@@ -37,11 +37,11 @@ export default function PhotoComments(props: CommentProps) {
          content: string*/
         event.preventDefault();
         event.stopPropagation();
-        console.log(currentUser);
+        console.log(token);
         console.log(photoId);
         axios.post('/comments/comment',
             {
-                currentUser,
+                token,
                 photoId,
                 commentContent,
                 commentDate,
@@ -52,8 +52,9 @@ export default function PhotoComments(props: CommentProps) {
     }
 
     const getComments = async (photoId: string) => {
+        let token = localStorage.getItem('token');
         await axios
-            .get(`/comments/get_comments?p_id=${photoId}`)
+            .get(`/comments/get_comments?p_id=${photoId}&token=${token}`)
             .then((response) => {
                 console.log(response.data);
                 var tempComments: CommentObject[] = [];

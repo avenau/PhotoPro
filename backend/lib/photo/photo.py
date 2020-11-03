@@ -3,6 +3,7 @@ Photo Class for mongoengine
 '''
 
 import datetime
+from flask_cors import extension
 from mongoengine import StringField
 from mongoengine import ListField
 from mongoengine import DateTimeField
@@ -10,10 +11,13 @@ from mongoengine import IntField
 from mongoengine import BooleanField
 from mongoengine import Document
 from mongoengine import ReferenceField
+from lib.photo.fs_interactions import find_photo
 
 # Used as part of 'collection.Collection'
-import lib.collection.collection as collection
 import lib.user.user as user
+import lib.album.album as album
+import lib.comment.comment as comment
+import lib.collection.collection as collection
 import lib.photo.validation as validation
 
 
@@ -22,15 +26,15 @@ class Photo(Document):
     Photo definition and methods
     '''
     # Title of the photo
-    title = StringField(required=True)
+    title = StringField(required=True, validation=validation.validate_title)
     # Price of the photo
     price = IntField(required=True, validation=validation.validate_price)
-    # TODO: Albums
-    # albums = ListField()
+    # List of Albums references that the photo is associated with
+    albums = ListField(ReferenceField('album.Album'))
     # List of Collection references that the photo is associated with
     collections = ListField(ReferenceField('collection.Collection'))
     # List of Tags, updated to be unique on save
-    tags = ListField(StringField())
+    tags = ListField(StringField(), validation=validation.validate_tags)
     # Metadata of the photo
     metadata = StringField()
     # Discounted price of the photo
@@ -39,15 +43,22 @@ class Photo(Document):
     posted = DateTimeField(default=datetime.datetime.now())
     # User reference to the owner of the photo
     user = ReferenceField('user.User')
+    # Photo's extension
+    extension = StringField(validation=validation.validate_extension)
     # Number of likes of the photo
     likes = IntField(default=0)
     # List of Comments associated with the photo
-    # TODO Change this to comment class
-    comments = ListField(StringField())
+    comments = ListField(StringField('comment.Comment'))
     # Whether the photo is deleted or not
     deleted = BooleanField(default=False)
     # Metadata of the photo {collection: collection-name}
     meta = {'collection': 'photos-mongoengine'}
+
+    def get_id(self):
+        '''
+        Object id of the photo
+        '''
+        return self.id
 
     def add_tags(self, tags):
         '''
@@ -138,12 +149,12 @@ class Photo(Document):
         '''
         return self.user
 
-    def set_user(self, user):
+    def set_user(self, this_user):
         '''
         Set the owner of the photo
         @param user: User: mongoengine.Document
         '''
-        self.user = user
+        self.user = this_user
 
     def increment_likes(self):
         '''
@@ -179,35 +190,18 @@ class Photo(Document):
         '''
         return self.likes
 
-    def add_comments(self, comments):
-        '''
-        Add a list of comments
-        @param comments: string[]
-        '''
-        if not isinstance(comments, list):
-            raise ValueError("Comments must be a list of strings")
-        if not comments:
-            return
-        if not isinstance(comments[0], str):
-            raise ValueError("Comment is not of type string")
-        self.comments.extend(comments)
-
-    def add_comment(self, comment):
+    def add_comment(self, this_comment):
         '''
         Add a single comment to the photo
         @param comment: string
         '''
-        if not isinstance(comment, str):
-            raise ValueError("Comment must be of type string")
-        self.comments.append(comment)
+        self.comments.append(this_comment)
 
     def get_comments(self):
         '''
         Get all the comments
         '''
-        if not self.comments:
-            return []
-        return self.comments[0]
+        return self.comments
 
     def remove_collection(self, old_collection):
         '''
@@ -254,6 +248,40 @@ class Photo(Document):
         Get the collection objects
         '''
         return self.collections
+
+    def get_extension(self):
+        '''
+        Get the collection objects
+        '''
+        return self.extension
+
+    def get_thumbnail(self, u_id):
+        '''
+        Get the watermarked or non watermarked photo based on
+        whether the u_id passed in owns the photo
+        '''
+
+        # SVG thumbnails are in png format
+        extension = self.get_extension()
+        if extension == ".svg":
+            extension = ".png"
+
+        try:
+            this_user = user.User.objects.get(id=u_id)
+            if self in this_user.get_purchased() or this_user == self.get_user():
+                return find_photo(f"{self.get_id()}_t{extension}")
+            else:
+                return find_photo(f"{self.get_id()}_t_w{extension}")
+        except:
+            return find_photo(f"{self.get_id()}_t_w{extension}")
+
+
+    def is_photo_owner(self, this_user):
+        '''
+        Check if the user is the owner of the photo
+        @return boolean
+        '''
+        return this_user is self.get_user()
 
     def clean(self):
         '''

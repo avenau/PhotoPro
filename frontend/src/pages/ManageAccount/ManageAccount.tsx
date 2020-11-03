@@ -24,20 +24,18 @@ export default function ManageAccount() {
   const [lname, setLname] = useState('');
   const [email, setEmail] = useState('');
   const [nickname, setNickname] = useState('');
-  const [dob, setDob] = useState('');
   const [aboutMe, setAbout] = useState('');
   const [location, setLocation] = useState('');
 
   const getUserInfo = () => {
     const userId = localStorage.getItem('u_id');
-    Axios.post('http://localhost:8001/get_user_info', { u_id: userId })
+    Axios.post('http://localhost:8001/userdetails', { u_id: userId })
       .then((response) => {
         //  console.log(response.data.current_user);
         setFname(response.data.fname);
         setLname(response.data.lname);
         setEmail(response.data.email);
         setNickname(response.data.nickname);
-        setDob(new Date(response.data.dob).toLocaleDateString('en-AU'));
         setAbout(response.data.aboutMe);
         setLocation(response.data.location);
       });
@@ -150,11 +148,6 @@ export default function ManageAccount() {
           <Form.Group controlId="retypePasswordForm">
             <Form.Label>Confirm New Password</Form.Label>
             <Form.Control type="password" placeholder="Confirm New Password" />
-          </Form.Group>
-
-          <Form.Group controlId="dobForm">
-            <Form.Label>Date of Birth</Form.Label>
-            <Form.Control type="date" name="DOB" placeholder={dob} onChange={(e) => handleChange(e)} />
           </Form.Group>
 
           <Form.Group controlId="profilePicURL">

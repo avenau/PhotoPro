@@ -79,16 +79,15 @@ export default class SearchPage extends React.Component<Props, State> {
           filetype: this.state.filetype,
           priceMin: this.state.priceMin,
           priceMax: this.state.priceMax,
+          token: localStorage.getItem("token"),
         },
       })
       .then((res) => {
         this.setState((prevState) => ({
           results: [...prevState.results, ...res.data],
           offset: prevState.offset + res.data.length,
+          atEnd: res.data.length < prevState.limit,
         }));
-        if (res.data.length < this.state.limit) {
-          this.setState({ atEnd: true });
-        }
       })
       .catch(() => {});
   }
@@ -98,27 +97,26 @@ export default class SearchPage extends React.Component<Props, State> {
       case "photo":
         return <PhotoList photos={this.state.results} />;
       case "album":
-        return <AlbumList profiles={this.state.results} />;
+        return <AlbumList albums={this.state.results} />;
       case "collection":
-        return <CollectionList profiles={this.state.results} />;
+        return <CollectionList collections={this.state.results} />;
       case "user":
-        return <UserList profiles={this.state.results} />;
-
+        return <UserList users={this.state.results} />;
       default:
         return <div>Error: Invalid seach type: {this.state.type}</div>;
     }
   }
 
   private orderChange(orderid: string) {
-    this.setState({ orderby: orderid, results: [], offset: 0 });
+    this.setState({ orderby: orderid, results: [], offset: 0, atEnd: false });
   }
 
   private typeChange(typeid: string) {
-    this.setState({ filetype: typeid, results: [], offset: 0 });
+    this.setState({ filetype: typeid, results: [], offset: 0, atEnd: false });
   }
 
   private priceChange(priceMin?: number, priceMax?: number) {
-    this.setState({ priceMin, priceMax });
+    this.setState({ priceMin, priceMax, atEnd: false });
   }
 
   render() {
@@ -137,7 +135,7 @@ export default class SearchPage extends React.Component<Props, State> {
         <div className="search-options">
           {type === "photo" ? (
             <TypeFilter
-              filetype="All"
+              filetype={filetype}
               onChange={(typeid) => this.typeChange(typeid)}
             />
           ) : (
