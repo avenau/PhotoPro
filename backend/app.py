@@ -899,6 +899,7 @@ def photo_details():
         email: str
         u_id: str, (Artist of the photo)
         status : number (0 means not loaded yet, 1 means existing, 2 means does not exist)
+        is_owner : bool
     }
     """
     photo_id = request.args.get("p_id")
@@ -921,6 +922,7 @@ def photo_details():
             "discount" : "",
             "deleted" : "",
             "status" : 2,
+            "is_owner" : False,
         })
 
     #This is if posts are stored in user entity

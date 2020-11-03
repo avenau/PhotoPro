@@ -106,11 +106,11 @@ export default function PhotoComments(props: CommentProps) {
                         </Col>
                     </Form.Row>
                 </Form >
-                <Row>
+                <Row className="CommentDisplay">
                     {comments.map((comment) => (
-                        <Row>
-                            <CommentMessage message={comment.content} author={comment.commenter} datePosted={comment.datePosted} />
-                        </Row>
+
+                        {/*} <CommentMessage message={comment.content} author={comment.commenter} datePosted={comment.datePosted} /> */ }
+
 
                     ))}
 
