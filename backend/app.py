@@ -1,25 +1,28 @@
 """
 Backend main file
-Handle requests to and fro server and web app client
+Handle requests to and from server and web app client
  - Team JAJAC :)
 """
-import os
 
 # Pip functions
 import traceback
-import base64
+import requests
+from flask.helpers import send_file
 from json import dumps, loads
-from bson.objectid import ObjectId
+from bson.objectid import ObjectId, InvalidId
 from flask import Flask, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_pymongo import PyMongo
+from werkzeug.exceptions import HTTPException
 
 # JAJAC made functions
 
 # Comments
 from lib.comments.comment_photo import comments_photo
+from lib.comments.get_comments import get_all_comments
+from lib.photo.fs_interactions import find_photo
 
 # Photo
 from lib.photo.photo_edit import create_photo_entry, update_photo_details, get_photo_edit
@@ -36,6 +39,7 @@ from lib.profile.upload_photo import update_user_thumbnail
 
 # Search
 from lib.search.user_search import user_search
+from lib.search.photo_search import photo_search
 
 # Showdown
 from lib.showdown import get_images
@@ -62,7 +66,7 @@ from config import DevelopmentConfig, defaultHandler
 
 app = Flask(__name__, static_url_path='/static')
 app.config.from_object(DevelopmentConfig)
-app.register_error_handler(Exception, defaultHandler)
+app.register_error_handler(HTTPException, defaultHandler)
 CORS(app)
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
@@ -192,6 +196,8 @@ def account_registration():
     'privFName': str,
     'privLName':  str,
     'privEmail': str,
+    'profilePic': base64,
+    'extension': str,
     'aboutMe': str,
     'DOB': str,
     'location': str
@@ -208,10 +214,10 @@ def account_registration():
     new_user["password"] = hashed_password
 
     # Handle profile pic
-    if new_user.get('profilePic') is None:
-        new_user['profilePic'] = ""
+    if new_user.get('profilePic') == "":
+        new_user['profilePic'] = ["", ""]
     else:
-        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'])
+        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'], new_user['extension'])
 
     # Add collections and other user owned entities
     new_user['posts'] = []
@@ -798,14 +804,19 @@ def search_photo():
     Returns
     -------
     {
-        TODO
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
     }
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps({[]})
+    return dumps(photo_search(data, mongo))
 
 @app.route('/search/collection', methods=['GET'])
 def search_collection():
@@ -888,29 +899,54 @@ def photo_details():
         nickname: str (Artist's Nickname)
         email: str
         u_id: str, (Artist of the photo)
+        status : number (0 means not loaded yet, 1 means existing, 2 means does not exist)
     }
     """
     photo_id = request.args.get("p_id")
     current_user = request.args.get("u_id")
+    try:
+        p_oid = ObjectId(photo_id)
+    except InvalidId:
+        print("INVALID!!!!")
+        return dumps({
+            "u_id": "",
+            "title": "",
+            "likes": 0,
+            "tagsList": "",
+            "nickname": "",
+            "email": "",
+            "purchased": "",
+            "photoStr" : "",
+            "metadata" : "",
+            "price" : "",
+            "discount" : "",
+            "deleted" : "",
+            "status" : 2,
+        })
 
     #This is if posts are stored in user entity
     #artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
-    #p_id_string = str(artist['_id'])
+    #p_id_string = st{"status" : 2}r(artist['_id'])
 
     photo_details = get_photo_details(photo_id, mongo)
 
     p_id_string = str(photo_details['user'])
     artist = mongo.db.users.find_one({"_id": photo_details['user']})
-    print("PRINTING CURRENT USER")
-    print(current_user)
+    #print("PRINTING CURRENT USER")
+    #print(current_user)
 
     if current_user != "" and current_user != "null":
         current_user_details = get_user_details(current_user, mongo)
+        #purchased = (photo_details['_id'] in current_user_details['purchased'])
         purchased = (photo_details['_id'] in current_user_details['purchased'])
     else :
         purchased = False
     #TODO: Find out how to send dates over
     #"posted": photo_details["posted"],
+    
+
+
+    img = find_photo(f"{photo_id}{photo_details['extension']}")
 
     return dumps({
         "u_id": p_id_string,
@@ -919,8 +955,13 @@ def photo_details():
         "tagsList": photo_details["tags"],
         "nickname": artist['nickname'],
         "email": artist['email'],
-        "pathToImg": photo_details['pathToImg'],
         "purchased": purchased,
+        "photoStr" : img,
+        "metadata" : photo_details['metadata'],
+        "price" : photo_details["price"],
+        "discount" : photo_details["discount"],
+        "deleted" : photo_details["deleted"],
+        "status" : 1,
 
     })
 
@@ -929,7 +970,7 @@ def photo_liked():
     """
     Description
     -----------
-    GET request to retrieve information for a photo
+    GET request         return dumps({"status" : 2})to retrieve information for a photo
 
     Parameters
     ----------
@@ -972,7 +1013,19 @@ def update_likes():
     user_id = params.get("userId")
     new_count = int(params.get("count"))
     upvote = params.get("upStatus")
+    token = params.get("token")
     #print("NEW COUNT: " + params.get("count"))
+    try:
+        token_functions.verify_token(token)
+        update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
+        return dumps({
+            "valid": True
+        })
+    except Exception:
+        return dumps({
+            "valid": False
+        })
+
     update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
     return dumps({})
 
@@ -989,6 +1042,7 @@ def comment_photo():
     userId : string (Commenter)
     posted : date
     content : string
+    token : string (Commenter)
 
     Returns
     -------
@@ -1002,6 +1056,33 @@ def comment_photo():
 
     comments_photo(photo_id, user_id, posted, content, mongo)
     return dumps({})
+    
+@app.route('/comments/get_comments', methods=['GET'])
+def get_comments():
+    """
+    Description
+    -----------
+    Get Comments of a photo
+
+    Parameters
+    ----------
+    p_id : string
+    beginning : number 
+    end : number (-1 if want to return all of comments)
+    oldest_to_newest : boolean
+
+    Returns
+    -------
+    {
+        comments : [{author : string, comment : string, datePosted : date}]
+    }
+    """
+    photo_id = request.args.get("p_id")
+    print("Get All Comments Test!")
+    #print(get_all_comments(photo_id, mongo))
+    all_comments = get_all_comments(photo_id, mongo)
+    
+    return dumps({"comments" : all_comments})
 
 @app.route('/get_current_user', methods=['GET'])
 def get_verified_user():

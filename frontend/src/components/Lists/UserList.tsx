@@ -1,9 +1,10 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import UserHeader from "../UserHeader/UserHeader";
+import "./UserList.scss";
 
 interface Props extends RouteComponentProps {
-  profiles: Profile[];
+  users: Profile[];
 }
 
 interface Profile {
@@ -15,11 +16,12 @@ interface Profile {
   id: string;
 }
 
-export default class UserList extends React.Component<Props> {
+class UserList extends React.Component<Props> {
   render() {
+    console.log("listed users");
     return (
       <>
-        {this.props.profiles.map((profile) => (
+        {this.props.users.map((profile) => (
           <div
             onClick={(e) => {
               e.preventDefault();
@@ -39,3 +41,5 @@ export default class UserList extends React.Component<Props> {
     );
   }
 }
+
+export default withRouter(UserList);

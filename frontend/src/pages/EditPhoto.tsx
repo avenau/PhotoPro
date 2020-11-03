@@ -1,6 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
+import { RouteChildrenProps } from "react-router-dom";
 import axios from "axios";
-import { Button, Form, Modal, Container, Row, Col, Image } from 'react-bootstrap';
+import {
+  Button,
+  Form,
+  Modal,
+  Container,
+  Row,
+  Col,
+  Image,
+} from "react-bootstrap";
+import { RouteComponentProps } from "react-router-dom";
 
 // Functional components
 import Title from "../components/PhotoEdit/Title";
@@ -11,136 +21,145 @@ import Album from "../components/PhotoEdit/Album";
 import Discount from '../components/PhotoEdit/Discount'
 
 export default function EditPhoto(props: any) {
-    const [title, setTitle] = useState("")
-    const [price, setPrice] = useState<number>()
-    const [tags, setTags] = useState<string[]>()
-    const [discount, setDiscount] = useState<number>()
-    const [albums, setAlbums] = useState<string[]>()
-    const [metadata, setMetaData] = useState<string>()
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState<number>();
+  const [tags, setTags] = useState<string[]>();
+  const [discount, setDiscount] = useState<number>();
+  const [albums, setAlbums] = useState<string[]>();
+  const [metadata, setMetaData] = useState<string>();
 
-    const { params } = props.match;
-    const [photoId, setPhotoId] = useState(Object.values(params)[0] as string)
+  const { params } = props.match;
+  const [photoId, setPhotoId] = useState(Object.values(params)[0] as string);
 
-    const [imagePreview, setPreview] = useState<string>()
-    const [modalSave, setModalSave] = useState(false)
-    const [modalDelete, setModalDelete] = useState(false)
-    const [loading, setLoading] = useState(true)
+  const [imagePreview, setPreview] = useState<string>();
+  const [modalSave, setModalSave] = useState(false);
+  const [modalDelete, setModalDelete] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-    // Original values to display on page
-    const [originalVal, setOriginal] = useState({
-        oTitle: title,
-        oPrice: 0,
-        oDiscount: 0,
-        oAlbums: albums
-    })
+  // Original values to display on page
+  const [originalVal, setOriginal] = useState({
+    oTitle: title,
+    oPrice: 0,
+    oDiscount: 0,
+    oAlbums: albums,
+  });
 
-    useEffect(() => {
-        checkDelete(photoId)
-        getPhotoDetails(photoId)
-    }, [])
+  useEffect(() => {
+    checkDelete(photoId);
+    getPhotoDetails(photoId);
+  }, []);
 
-    function handleSave(event: React.FormEvent<HTMLElement>) {
-        event.preventDefault();
-        const token = localStorage.getItem("token");
-        axios.put('/user/updatephoto', {
-            title: title,
-            price: price,
-            tags: JSON.stringify(tags),
-            albums: JSON.stringify(albums), 
-            discount: discount,
+  function handleSave(event: React.FormEvent<HTMLElement>) {
+    event.preventDefault();
+    const token = localStorage.getItem("token");
+    axios
+      .put("/user/updatephoto", {
+        title: title,
+        price: price,
+        tags: JSON.stringify(tags),
+        albums: JSON.stringify(albums),
+        discount: discount,
+        token: token,
+        photoId: photoId,
+      })
+      .then((response) => {
+        props.history.push(`/photo/${photoId}`);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  function handleDelete(event: React.FormEvent<HTMLElement>) {
+    // Navigate back to user profile
+    const token = localStorage.getItem("token");
+    if (token !== null) {
+      const u_id = localStorage.getItem("u_id");
+      axios
+        .delete("/user/updatephoto", {
+          params: {
             token: token,
-            photoId: photoId
+            imgId: photoId,
+          },
         })
         .then((response) => {
-            props.history.push(`/photo/${photoId}`)
+          props.history.push(`/user/${u_id}`);
         })
         .catch((err) => {
-            console.log(err)
-        })
+          console.log(err);
+        });
     }
+  }
 
-    function handleDelete(event: React.FormEvent<HTMLElement>) {
-        // Navigate back to user profile
-        const token = localStorage.getItem("token");
-        if (token !== null) {
-            const u_id = localStorage.getItem("u_id");
-            axios.delete('/user/updatephoto', { params: {
-                token: token,
-                imgId: photoId
-            }})
-            .then((response) => {
-                props.history.push(`/user/${u_id}`)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+  function checkDelete(photoId: string) {
+    const token = localStorage.getItem("token");
+    axios
+      .get("/user/updatephoto/deleted", {
+        params: {
+          photoId: photoId,
+          token: token,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        if (response.data.deleted === true) {
+          // Do not navigate to deleted page
+          props.history.goBack();
         }
-    }
+      })
+      .catch((err) => {
+        console.log(err);
+        props.history.goBack();
+      });
+  }
 
-    function checkDelete(photoId: string) {
-        const token = localStorage.getItem("token");
-        axios.get('/user/updatephoto/deleted', {params: {
-            photoId: photoId,
-            token: token
-        }})
-        .then((response) => {
-            console.log(response)
-            if (response.data.deleted === true) {
-                // Do not navigate to deleted page
-                props.history.goBack()
-            }
+  function getPhotoDetails(photoId: string) {
+    const token = localStorage.getItem("token");
+    axios
+      .get("/user/updatephoto", {
+        params: {
+          photoId: photoId,
+          token: token,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        if (response.data.deleted === true) {
+          // Do not navigate to deleted page
+          props.history.goBack();
         }
-        )
-        .catch((err) => {
-            console.log(err)
-            props.history.goBack()
-        })
-    }
+        setTitle(response.data.title);
+        setPrice(response.data.price);
+        setTags(response.data.tags);
+        setAlbums(response.data.albums);
+        setDiscount(response.data.discount);
+        setMetaData(response.data.metadata);
 
-    function getPhotoDetails(photoId: string) {
-        const token = localStorage.getItem("token");
-        axios.get('/user/updatephoto', {params: {
-            photoId: photoId,
-            token: token
-        }})
-        .then((response) => {
-            console.log(response.data);
-            if (response.data.deleted === true) {
-                // Do not navigate to deleted page
-                props.history.goBack()
-            }
-            setTitle(response.data.title);
-            setPrice(response.data.price);
-            setTags(response.data.tags);
-            setAlbums(response.data.albums);
-            setDiscount(response.data.discount);
-            setMetaData(response.data.metadata);
+        setOriginal({
+          oTitle: response.data.title,
+          oPrice: response.data.price,
+          oDiscount: response.data.discount,
+          oAlbums: response.data.albums,
+        });
+        // Set image preview
+        setPreview(response.data.metadata + response.data.photoStr);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        props.history.goBack();
+      });
+  }
 
-            setOriginal({oTitle: response.data.title,
-                oPrice: response.data.price,
-                oDiscount: response.data.discount,
-                oAlbums: response.data.albums})
-            // Set image preview
-            setPreview(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0,-1));
-            setLoading(false)
-        })
-        .catch((err) => {
-            console.log(err)
-            props.history.goBack()
+  function activateSaveButton() {
+    const btn = document.getElementById("saveButton");
+    return btn?.removeAttribute("disabled");
+  }
 
-        })
-    }
-    
-    function activateSaveButton() {
-        const btn = document.getElementById("saveButton");
-        return btn?.removeAttribute("disabled");
-    }
-    
-    function deactivateSaveButton() {
-        const btn = document.getElementById("saveButton");
-        return btn?.setAttribute("disabled", "true");
-    }
-
+  function deactivateSaveButton() {
+    const btn = document.getElementById("saveButton");
+    return btn?.setAttribute("disabled", "true");
+  }
 
     return loading ? (<div>Loading...</div>) : (
         <>

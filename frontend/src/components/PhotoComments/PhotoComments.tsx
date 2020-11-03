@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import CommentMessage from "./CommentMessage";
 import "./PhotoComments.scss";
@@ -9,9 +9,17 @@ interface CommentProps {
 }
 
 export default function PhotoComments(props: CommentProps) {
-    const [comments, setComments] = useState(0);
+    const [comments, setComments] = useState([]);
     const [commentDate, setDate] = useState(new Date());
     const [commentContent, setContent] = useState("");
+    const addComments = async (comment: string) => {
+        console.log("ADD COMMENTS");
+        //console.log(comment);
+        // console.log(JSON.parse(comment));
+        setComments(comments.concat(JSON.parse(comment)));
+
+        console.log(comments)
+    }
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         setDate(new Date());
         let currentUser = localStorage.getItem('u_id');
@@ -36,6 +44,42 @@ export default function PhotoComments(props: CommentProps) {
             })
     }
 
+    const getComments = async (photoId: string) => {
+        await axios
+            .get(`/comments/get_comments?p_id=${photoId}`)
+            .then((response) => {
+                /*console.log(response.data);
+                var tempComments: object[] = [];
+                console.log(response.data.comments);
+                for (let comment of response.data.comments) {
+                    console.log("Hi");
+                    tempComments.push(JSON.parse(comment));
+
+                }
+                console.log("COMMENT TEST!");
+                console.log(tempComments);
+                setComments(tempComments);
+
+                console.log(comments);*/
+
+                console.log(response.data);
+                var tempComments = [];
+                console.log(response.data.comments);
+                for (let comment of response.data.comments) {
+                    console.log("Hi");
+                    addComments(comment);
+
+                }
+                console.log("COMMENT TEST!");
+                console.log(comments);
+
+            });
+    }
+
+    useEffect(() => {
+        getComments(props.p_id);
+    }, []);
+
 
 
     return (
@@ -54,7 +98,13 @@ export default function PhotoComments(props: CommentProps) {
                     </Form.Row>
                 </Form >
                 <Row>
-                    <CommentMessage message="Hello" author="dollaking" datePosted={commentDate} />
+                    {comments.map((comment) => (
+                        <><Row>
+                            <CommentMessage message={comment['content']} author={comment['commenter']} datePosted={comment['datePosted']} />
+                        </Row>
+                        </>
+                    ))}
+
                 </Row>
             </Container>
 

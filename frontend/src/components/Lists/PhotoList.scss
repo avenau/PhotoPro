@@ -1,0 +1,19 @@
+.photo-results {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.photo-result {
+  margin: 40px 10px;
+  display: block;
+  position: relative;
+  &:hover {
+    transition: box-shadow 0.2s linear;
+    transform: scale(1.02);
+    -webkit-transform: scale(1.02);
+    transition: transform 0.2s linear;
+    cursor: pointer;
+    border-radius: 20px;
+  }
+}

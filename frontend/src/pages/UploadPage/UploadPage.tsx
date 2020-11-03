@@ -23,7 +23,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
     this.state = {
       title: "",
       price: 0,
-      /** 'tagsList' is the current list of tags attached to the photo, 
+      /** 'tagsList' is the current list of tags attached to the photo,
              which will eventaully be sent to the back end */
       tagsList: [],
       /** Whether the user has selected a photo yet.
@@ -31,7 +31,6 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       hasPickedPhoto: false,
       imagePreview: null,
       albums: [],
-      photo: "",
       photoElement: "",
     };
     this.setState = this.setState.bind(this);
@@ -45,7 +44,8 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       if (fileInput.files && fileInput.files[0]) {
         const thePhotoFile = fileInput.files[0];
         const photoFileName = thePhotoFile.name;
-        const photoExtension = photoFileName.substr(photoFileName.length - 4);
+        const match = photoFileName.toLowerCase().match(/\.[^\.]*$/);
+        const photoExtension = match !== null ? match[0] : "";
         const reader = new FileReader();
         reader.readAsDataURL(thePhotoFile);
         reader.onload = () => resolve([reader.result, photoExtension]);
@@ -69,7 +69,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
           albums: JSON.stringify(this.state.albums),
           // The photo, encoded as a base64 string
           photo: response[0],
-          // The file extension e.g. ".jpg" or ".raw"
+          // The file extension e.g. ".jpg" or ".gif"
           extension: response[1],
           token: token,
         })
@@ -132,6 +132,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
               pickedPhoto={(selectedPhoto) =>
                 this.setState({ hasPickedPhoto: selectedPhoto })
               }
+              label="Select a photo"
             />
             {this.state.hasPickedPhoto ? (
               <div>

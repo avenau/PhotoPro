@@ -21,6 +21,7 @@ import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
 import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
+import DownloadExample from "./pages/DownloadExample";
 
 interface Props {}
 
@@ -33,6 +34,18 @@ class App extends React.Component<Props, State> {
     super(props);
     const token = localStorage.getItem("token");
     let loading = true;
+    if (token === null) {
+      loading = false;
+    }
+
+    this.state = {
+      valid: false,
+      loading,
+    };
+  }
+
+  componentDidMount() {
+    const token = localStorage.getItem("token");
     if (token !== null) {
       axios.get(`/verifytoken?token=${token}`).then((response: any) => {
         if (response.data.valid) {
@@ -41,14 +54,7 @@ class App extends React.Component<Props, State> {
           this.setState({ valid: false, loading: false });
         }
       });
-    } else {
-      loading = false;
     }
-
-    this.state = {
-      valid: false,
-      loading,
-    };
   }
 
   render() {
@@ -89,6 +95,7 @@ class App extends React.Component<Props, State> {
           />
           <Route path="/user/:user_id" component={ProfilePage} />
           <Route path="/search/:type" component={SearchPage} />
+          <Route path="/downloadexample" component={DownloadExample} />
           <Route
             valid={this.state.valid}
             path="/photo/:photo_id"

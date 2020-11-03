@@ -1,9 +1,9 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import UserHeader from "../UserHeader/UserHeader";
 
 interface Props extends RouteComponentProps {
-  profiles: Profile[];
+  collections: Profile[];
 }
 
 interface Profile {
@@ -15,11 +15,11 @@ interface Profile {
   id: string;
 }
 
-export default class CollectionList extends React.Component<Props> {
+class CollectionList extends React.Component<Props> {
   render() {
     return (
       <>
-        {this.props.profiles.map((profile) => (
+        {this.props.collections.map((profile) => (
           <div
             onClick={(e) => {
               e.preventDefault();
@@ -39,3 +39,5 @@ export default class CollectionList extends React.Component<Props> {
     );
   }
 }
+
+export default withRouter(CollectionList);

@@ -6,7 +6,8 @@ interface InterfaceFile {
     onChange: (arg0: HTMLElement | null) => void;
     deactivateUploadButton: () => void;
     activateUploadButton: () => void;
-    setPreview: (arg0: string) => any; 
+    setPreview: (arg0: string) => any;
+    label: string;
 }
 
 export default function FileUpload(props: InterfaceFile ) {

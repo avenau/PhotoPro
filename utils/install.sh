@@ -9,8 +9,13 @@ then
 fi
 python3 -m venv env
 source env/bin/activate
-pip3 install -r requirements.txt
+python3 -m pip install -r requirements.txt
+python -m pip install -e .
 
+if [ "$1" = "-b" ]
+then
+  exit 0
+fi
 
 # Frontend environment install
 echo "Installing node requirements..."

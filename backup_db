@@ -1,1 +1,0 @@
-{"_id":{"$oid":"5f81131a48ca54daa5e46324"},"country":"Australia","nickname":"dollaking","credits":100000,"lname":"Au","fname":"Aven","search_history":["maccas","kfc","big mac"],"about_me":"I am a Maccas Addict","email":"avenau@live.com","birth_date":{"$date":"1999-10-30T00:00:00.000Z"},"password":"hello123","profile_pic":null}

@@ -1,13 +1,14 @@
+import _ from "lodash";
 import React from "react";
 import { Image } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
 import { PencilSquare } from "react-bootstrap-icons";
+import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
 
 interface Props {
-  profilePic?: string;
+  profilePic?: string[];
   header: boolean;
   currentUser: boolean;
   showEdit: boolean;
@@ -70,16 +71,16 @@ export default class UserHeader extends React.Component<Props> {
     );
   }
 
-  private getPic(){
+  private getPic() {
     // Get filetype
 
-    if (this.props.profilePic === ''){
+    if (_.isEqual(this.props.profilePic, ["", ""])) {
       return profilePic;
     }
-    if (this.props.profilePic !== undefined){
+    if (this.props.profilePic !== undefined) {
       // base64 of the tuple profilePic
       const b64 = `${this.props.profilePic[0]}`;
-      const header = "data:image/"
+      const header = "data:image/";
       // Filetype of the tuple profilePic
       const filetype = `${this.props.profilePic[1]}`;
       const footer = ";base64, ";
@@ -94,10 +95,7 @@ export default class UserHeader extends React.Component<Props> {
     return (
       <div className={`user-container ${this.props.className}`}>
         <div className="cropper">
-          <Image
-            src={this.getPic()}
-            className="image"
-          />
+          <Image src={this.getPic()} className="image" />
         </div>
         <div className="text-container">
           {this.props.header ? (
