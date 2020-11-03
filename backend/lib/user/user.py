@@ -46,10 +46,6 @@ class User(Document):
     extension = StringField(validation=validation.validate_extension)
     # User's info about themself
     about_me = StringField()
-    """
-    # User's Date of Birth
-    # DOB = DateTimeField()
-    """
     # User's country, validated again the location list
     location = StringField(validation=validate_registration.valid_location)
     # Array of Photo references that the user has posted
@@ -72,6 +68,12 @@ class User(Document):
 
     # User Methods:
     # -------------
+    def get_id(self):
+        '''
+        Object id of the user
+        '''
+        return self.id
+
     def get_fname(self):
         '''
         Get user's first name
@@ -109,10 +111,21 @@ class User(Document):
         '''
         self.email = email
 
-    def __get_password(self):
+    def get_nickname(self):
+        '''
+        Get the nickname of the user
+        '''
+        return self.nickname
+
+    def set_nickname(self, nickname):
+        '''
+        Set the nickname to something new
+        '''
+        self.nickname = nickname
+
+    def get_password(self):
         '''
         Gets the password of the user
-        Private method
         '''
         return self.password
 
@@ -131,36 +144,7 @@ class User(Document):
         '''
         if not isinstance(b_password, bytes):
             raise ValueError("Password must be a byte literal")
-        return self.__get_password() == b_password
-
-    """
-    PRIVATE DETAILS NEEDED?
-    def get_private_fname(self):
-        '''
-        Get whether firstname is private or not
-        '''
-        return self.priv_f_name
-
-    def set_private_fname(self, is_private):
-        '''
-        Set privacy of first name
-        @param is_private: boolean
-        '''
-        self.priv_f_name = is_private
-
-    def get_private_lname(self):
-        '''
-        Get whether last name is private or not
-        '''
-        return self.priv_l_name
-
-    def set_private_lname(self, is_private):
-        '''
-        Set private of last name
-        @param is_private: boolean
-        '''
-        self.priv_l_name = is_private
-    """
+        return self.get_password() == b_password
 
     def get_profile_pic(self):
         '''
@@ -201,21 +185,6 @@ class User(Document):
         @param about_me: string
         '''
         self.about_me = about_me
-
-    """
-    def get_dob(self):
-        '''
-        Get date of birth of the user
-        '''
-        return self.DOB
-
-    def set_dob(self, dob):
-        '''
-        Set the date of birth
-        @param dob: datetime
-        '''
-        self.DOB = dob
-    """
 
     def get_location(self):
         '''

@@ -22,23 +22,23 @@ export default function LikeButton(props: LikeProps) {
     const [alertContent, setContent] = useState("No Content");
     const [show, setShow] = useState(false);
     const closeAlert = () => setShow(false);
-    const updateLike = async (event: React.MouseEvent, count: number, status: string, photoId: string, userId: string) => {
+    const updateLike = async (event: React.MouseEvent,
+                              count: number,
+                              status: string,
+                              photoId: string,
+                              userId: string) => {
         if (event) {
             event.preventDefault();
         }
         console.log(count);
         if (userLoggedin === true) {
-
+            let token = localStorage.getItem('token');
             let upStatus = likeStatus === "light" ? true : false;
-            //console.log("Upstatus: " + upStatus);
-            //console.log("CHANGED COUNT " + count);
             if (localStorage.getItem('token') !== null && localStorage.getItem('token') !== "") {
                 await axios.post(`/photo_details/updateLikes?=${localStorage.getItem('token')}`,
                     {
                         photoId,
-                        userId,
-                        count,
-                        upStatus,
+                        token
                     })
                     .then((r) => {
                         if (r.status !== 200) {

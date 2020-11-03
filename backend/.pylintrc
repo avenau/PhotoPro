@@ -10,4 +10,5 @@ disable=
     fixme,
     too-many-public-methods,
     too-many-instance-attributes,
-    unused-import
+    unused-import,
+    raise-missing-from
