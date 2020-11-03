@@ -25,8 +25,8 @@ class Photo(Document):
     title = StringField(required=True)
     # Price of the photo
     price = IntField(required=True, validation=validation.validate_price)
-    # TODO: Albums
-    # albums = ListField()
+    # List of Albums references that the photo is associated with
+    albums = ListField(ReferenceField('album.Album'))
     # List of Collection references that the photo is associated with
     collections = ListField(ReferenceField('collection.Collection'))
     # List of Tags, updated to be unique on save
