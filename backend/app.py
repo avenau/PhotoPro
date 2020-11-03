@@ -463,7 +463,6 @@ def user_info_with_token():
     })
 
 
-# TODO Move this to a separate file?
 @app.route('/manageaccount/success', methods=['POST'])
 def manage_account():
     """
@@ -518,12 +517,6 @@ def password_check():
     Returns
     -------
     """
-    # data = json.loads(request.data.decode())
-    # Need Something to Check if current logged in account exist in database
-    # I am assuming user_id is stored in localStorage
-    # Hard coded this part, this part should check what
-    # the logged in user object_id is
-
     data = request.form.to_dict()
     current_user = data['u_id']
     user_object = User.objects.get(id=current_user)
@@ -563,8 +556,8 @@ def upload_actual_photo():
     -------
     None
     """
-    photo_details = request.form.to_dict()
-    return dumps(create_photo_entry(photo_details))
+    these_photo_details = request.form.to_dict()
+    return dumps(create_photo_entry(these_photo_details))
 
 @app.route('/user/updatephoto', methods=['GET'])
 @validate_token
@@ -593,7 +586,6 @@ def photo_details_edit():
 @validate_token
 def update_photo():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     Accepts parameters related to EDITING photo details, verifies the parameters,
@@ -614,9 +606,9 @@ def update_photo():
     -------
     success or error
     """
-    photo_details = request.form.to_dict()
+    these_photo_details = request.form.to_dict()
     # Update either price, title, keywords or add discount
-    return dumps(update_photo_details(mongo, photo_details))
+    return dumps(update_photo_details(these_photo_details))
 
 @app.route('/user/updatephoto/deleted', methods=['GET'])
 @validate_token
@@ -645,7 +637,6 @@ def check_deleted():
 @validate_token
 def user_remove_photo():
     '''
-    TODO: Update to mongoengine
     Description
     -----------
     Remove a photo that a user has uploaded
@@ -667,18 +658,14 @@ def user_remove_photo():
     identifier = {
         '_id': ObjectId(img_id)
     }
-    res = remove_photo(mongo.db.photos, u_id, identifier)
-    if res is True:
-        return dumps({'success': 'true'})
-    else:
-        return dumps({'success': 'false'})
+    res = remove_photo(u_id, identifier)
+    return dumps({'success': str(res)})
 
 
 @app.route('/user/profile/uploadphoto', methods=['POST'])
 @validate_token
 def upload_photo():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     Parameters
@@ -686,6 +673,7 @@ def upload_photo():
     img_path : string
         e.g. http://imagesite.com/img.png
     token : string
+    extension : string
     Returns
     -------
     {}
@@ -695,9 +683,18 @@ def upload_photo():
     '''
     token = request.form.get('token')
     img_path = request.form.get('img_path')
-    thumbnail_and_filetype = update_user_thumbnail(img_path)
+    extension = request.form.get('extension')
+    thumbnail_and_filetype = update_user_thumbnail(img_path, extension)
     u_id = token_functions.get_uid(token)
-    db.update_user(mongo, u_id, 'profilePic', thumbnail_and_filetype)
+    user = lib.user.user.User.objects.get(id=u_id)
+    if not user:
+        raise Error.UserDNE("Could not find user " + u_id)
+    user.update_user_thumbnail(thumbnail_and_filetype)
+    try:
+        user.save()
+    except mongoengine.ValidationError:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Could not update thumbnail")
     # Update the database...
     return dumps({
         'success': 'True'
@@ -926,9 +923,9 @@ def photo_liked():
     """
     photo_id = request.args.get("p_id")
     user_id = request.args.get("u_id")
-    isLiked = is_photo_liked(photo_id, user_id, mongo)
+    is_liked = is_photo_liked(photo_id, user_id, mongo)
     return dumps({
-        "isLiked": isLiked,
+        "isLiked": is_liked,
     })
 
 
@@ -1020,7 +1017,7 @@ def get_verified_user():
     }
     """
     token = request.args.get("token")
-    if token == None:
+    if token is None:
         return dumps({
             "u_id": "",
         })

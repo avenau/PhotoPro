@@ -4,10 +4,11 @@ Create and modify photos which are uploaded by a user
 """
 import base64
 import datetime
+import traceback
 from io import BytesIO
+import mongoengine
 from bson.objectid import ObjectId
 from PIL import Image, ImageSequence
-from io import BytesIO
 
 
 from lib.photo.validate_photo import validate_photo
@@ -151,28 +152,39 @@ def get_photo_edit(photo_id, token):
 
 
 # Update details of a photo object
-def update_photo_details(mongo, photo_details):
+def update_photo_details(photo_details):
     """
     Update photo details in the database, validates photo details
+    modifable_categories = ["title", "price", "tags", "albums", "discount"]
     @param mongo(object): Mongo databse
     @param photo_details(object): object containing values to change
     @returns: response body
     """
-    modify = ["title", "price", "tags", "albums", "discount"]
 
     photo_details = reformat_lists(photo_details)
-    validate_photo(photo_details)
-    validate_discount(photo_details["discount"])
 
+    # Get the User's id
     user_uid = get_uid(photo_details['token'])
-    # Get the photo object id
-    photoId = photo_details["photoId"]
-    # validate_photo_user(mongo, photoId, user_uid)
+    # Get the photo
+    photo = lib.photo.photo.Photo.objects.get(id=photo_details['photoId'])
+
+    # Check the user has permission to edit the photo
+    if user_uid != str(photo.get_user()):
+        raise PermissionError("User does not have permission to edit photo")
 
 
-    for i in modify:
-        mongo.db.photos.update({"_id": ObjectId(photoId)},
-                               {"$set": {i: photo_details[i]}})
+    photo.set_title(photo_details['title'])
+    photo.set_price(photo_details['price'])
+    photo.set_tags(photo_details['tags'])
+    photo.set_albums(photo_details['albums'])
+    photo.set_discount(photo_details['discount'])
+
+    # Save the photo
+    try:
+        photo.save()
+    except mongoengine.ValidationError:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Could not update photo")
 
     return {
         "success": "true"
