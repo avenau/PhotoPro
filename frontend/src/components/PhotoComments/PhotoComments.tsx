@@ -8,10 +8,17 @@ interface CommentProps {
     p_id: string;
 }
 
+interface CommentObject {
+    content: string,
+    datePosted: string,
+    commenter: string,
+}
+
 export default function PhotoComments(props: CommentProps) {
-    const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState<CommentObject[]>([]);
     const [commentDate, setDate] = useState(new Date());
     const [commentContent, setContent] = useState("");
+    const [status, setStatus] = useState(false);
     const addComments = async (comment: string) => {
         console.log("ADD COMMENTS");
         //console.log(comment);
@@ -48,8 +55,8 @@ export default function PhotoComments(props: CommentProps) {
         await axios
             .get(`/comments/get_comments?p_id=${photoId}`)
             .then((response) => {
-                /*console.log(response.data);
-                var tempComments: object[] = [];
+                console.log(response.data);
+                var tempComments: CommentObject[] = [];
                 console.log(response.data.comments);
                 for (let comment of response.data.comments) {
                     console.log("Hi");
@@ -59,26 +66,28 @@ export default function PhotoComments(props: CommentProps) {
                 console.log("COMMENT TEST!");
                 console.log(tempComments);
                 setComments(tempComments);
+                console.log("Printing Comments");
+                console.log(comments);
+                setStatus(response.data.status);
 
-                console.log(comments);*/
-
-                console.log(response.data);
-                var tempComments = [];
+                /*console.log(response.data);
                 console.log(response.data.comments);
                 for (let comment of response.data.comments) {
                     console.log("Hi");
                     addComments(comment);
+                    console.log(comment);
 
                 }
                 console.log("COMMENT TEST!");
                 console.log(comments);
+                setStatus(response.data.status);*/
 
             });
     }
 
     useEffect(() => {
         getComments(props.p_id);
-    }, []);
+    }, [status]);
 
 
 
@@ -99,10 +108,10 @@ export default function PhotoComments(props: CommentProps) {
                 </Form >
                 <Row>
                     {comments.map((comment) => (
-                        <><Row>
-                            <CommentMessage message={comment['content']} author={comment['commenter']} datePosted={comment['datePosted']} />
+                        <Row>
+                            <CommentMessage message={comment.content} author={comment.commenter} datePosted={comment.datePosted} />
                         </Row>
-                        </>
+
                     ))}
 
                 </Row>

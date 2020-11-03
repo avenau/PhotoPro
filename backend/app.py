@@ -1081,7 +1081,7 @@ def get_comments():
     #print(get_all_comments(photo_id, mongo))
     all_comments = get_all_comments(photo_id, mongo)
     
-    return dumps({"comments" : all_comments})
+    return dumps({"comments" : all_comments, "status" : True})
 
 @app.route('/get_current_user', methods=['GET'])
 def get_verified_user():

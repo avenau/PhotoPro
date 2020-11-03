@@ -3,7 +3,7 @@ import { Row } from "react-bootstrap";
 interface MessageProp {
     message: string;
     author: string
-    datePosted: Date;
+    datePosted: string;
 }
 
 export default function CommentMessage(props: MessageProp) {
