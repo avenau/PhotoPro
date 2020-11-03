@@ -26,7 +26,7 @@ class Photo(Document):
     Photo definition and methods
     '''
     # Title of the photo
-    title = StringField(required=True)
+    title = StringField(required=True, validation=validation.validate_title)
     # Price of the photo
     price = IntField(required=True, validation=validation.validate_price)
     # List of Albums references that the photo is associated with
@@ -34,7 +34,7 @@ class Photo(Document):
     # List of Collection references that the photo is associated with
     collections = ListField(ReferenceField('collection.Collection'))
     # List of Tags, updated to be unique on save
-    tags = ListField(StringField())
+    tags = ListField(StringField(), validation=validation.validate_tags)
     # Metadata of the photo
     metadata = StringField()
     # Discounted price of the photo
@@ -276,8 +276,12 @@ class Photo(Document):
             return find_photo(f"{self.get_id()}_t_w{extension}")
 
 
-    def get_photo(self):
-        pass
+    def is_photo_owner(self, this_user):
+        '''
+        Check if the user is the owner of the photo
+        @return boolean
+        '''
+        return this_user is self.get_user()
 
     def clean(self):
         '''
