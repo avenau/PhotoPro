@@ -26,7 +26,7 @@ def is_photo_liked(photo_id, user_id):
     if not this_photo:
         raise PhotoDNE("Photo does not exist " + photo_id)
     # Check to see if the user is in the list of likes
-    if this_photo in this_user.get_likes():
+    if this_photo in this_user.get_liked():
         is_liked = True
 
     return is_liked

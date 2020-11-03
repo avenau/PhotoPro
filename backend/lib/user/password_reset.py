@@ -14,12 +14,6 @@ def password_reset_request(email):
     Given an email address, if the user is a registered user, semd an email
     with a link that they can access temporarily to change their password
     """
-    # TODO:
-    # this needs to create some kind of reset code to authenticate password
-    # changes. If possible this should be either added to an array somewhere or
-    # just directly to the DB for a limited amount of time before it is either
-    # used and removed or auto removed
-
     reset_code = md5(f"{email}{random()}".encode()).hexdigest()[:6]
     reset_codes.append({"email": email, "reset_code": reset_code})
 
