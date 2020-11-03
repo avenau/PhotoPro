@@ -142,7 +142,7 @@ def make_thumbnail_svg(img_data, name):
     png_bytes = cairosvg.svg2png(img_data)
     # This shouldn't really be done in this function 
     # Change if time (Allan)
-    save_photo(png_bytes, name + ".png")
+    make_watermarked_copy(png_bytes, name, ".png")
     png_version = Image.open(BytesIO(png_bytes))
     buf = BytesIO()
     png_version.save(buf, png_version.format)
