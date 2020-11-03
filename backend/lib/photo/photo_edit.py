@@ -112,7 +112,7 @@ def make_thumbnail(img_data, filename_thumbnail):
     thumb.thumbnail((300, 200))
     buffer = BytesIO()
     thumb.save(buffer, thumb.format)
-    save_photo(img_data, filename_thumbnail)
+    save_photo(buffer.getvalue(), filename_thumbnail)
     return buffer.getvalue()
 
 def make_thumbnail_gif(img_data, filename_thumbnail):
