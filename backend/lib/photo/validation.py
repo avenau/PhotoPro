@@ -10,6 +10,7 @@ Note that mongoengine provides basic validation
         title = StringField(validation=validation.validate_title)
 '''
 import mongoengine
+import traceback
 from lib.Error import ValidationError
 
 
@@ -21,6 +22,7 @@ def validate_price(price):
     try:
         mongoengine.IntField().validate(price)
     except mongoengine.ValidationError:
+        print(traceback.print_exc())
         raise ValidationError("Price field is not an integer")
 
     # Our own custom validation
@@ -32,9 +34,11 @@ def validate_discount(discount):
     '''
     Validate the discount changes
     '''
-    mongoengine.IntField().validate(discount)
-    if not isinstance(discount, int):
-        raise ValidationError("Discount must be of type integer")
+    try:
+        mongoengine.IntField().validate(discount)
+    except mongoengine.ValidationError:
+        print(traceback.print_exc())
+        raise ValidationError("Discount is not a valid integer")
     if discount < 0:
         raise ValidationError("Discount must be greater than 0")
     if discount > 100:

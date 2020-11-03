@@ -24,7 +24,7 @@ class Catalogue(Document):
     created_by = ReferenceField('user.User')
     deleted = BooleanField(default=False)
     tags = ListField(StringField())
-    meta = {'allow_inheritance': True}
+    meta = {'allow_inheritance': True, 'abstract': True}
 
 
     def get_title(self):

@@ -146,35 +146,6 @@ class User(Document):
             raise ValueError("Password must be a byte literal")
         return self.get_password() == b_password
 
-    """
-    PRIVATE DETAILS NEEDED?
-    def get_private_fname(self):
-        '''
-        Get whether firstname is private or not
-        '''
-        return self.priv_f_name
-
-    def set_private_fname(self, is_private):
-        '''
-        Set privacy of first name
-        @param is_private: boolean
-        '''
-        self.priv_f_name = is_private
-
-    def get_private_lname(self):
-        '''
-        Get whether last name is private or not
-        '''
-        return self.priv_l_name
-
-    def set_private_lname(self, is_private):
-        '''
-        Set private of last name
-        @param is_private: boolean
-        '''
-        self.priv_l_name = is_private
-    """
-
     def get_profile_pic(self):
         '''
         Get the profile picture of the user
@@ -214,21 +185,6 @@ class User(Document):
         @param about_me: string
         '''
         self.about_me = about_me
-
-    """
-    def get_dob(self):
-        '''
-        Get date of birth of the user
-        '''
-        return self.DOB
-
-    def set_dob(self, dob):
-        '''
-        Set the date of birth
-        @param dob: datetime
-        '''
-        self.DOB = dob
-    """
 
     def get_location(self):
         '''

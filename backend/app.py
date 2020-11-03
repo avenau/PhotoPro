@@ -19,21 +19,19 @@ from werkzeug.exceptions import HTTPException
 # JAJAC made functions
 
 # Comments
-from lib.comments.comment_photo import comments_photo
-from lib.comments.get_comments import get_all_comments
-from lib.photo.fs_interactions import find_photo
+from lib.comment.comment_photo import comments_photo
+from lib.comment.get_comments import get_all_comments
 
 # Photo
-from lib.photo.photo_edit import create_photo_entry, update_photo_details, get_photo_edit
+from lib.photo.photo_edit import create_photo_entry, update_photo_details
+from lib.photo.photo_edit import get_photo_edit
 from lib.photo.remove_photo import remove_photo
 from lib.photo.photo import Photo
 
 # Photo details
-from lib.photo_details.photo_details import get_photo_details
-from lib.photo_details.photo_likes import is_photo_liked, update_likes_mongo
+from lib.photo_details.photo_likes import is_photo_liked
 
 # Profile
-from lib.profile.profile_details import get_user_details
 from lib.profile.upload_photo import update_user_thumbnail
 
 # Search
@@ -55,11 +53,8 @@ from lib.welcome.popular_images import get_popular_images
 # Other/utils
 from lib.token_decorator import validate_token
 import lib.token_functions as token_functions
-from lib import db
 from lib import Error
 import lib
-
-
 
 # Config
 from config import DevelopmentConfig, defaultHandler
@@ -236,8 +231,6 @@ def account_registration():
     )
     this_user.save()
 
-
-    # Insert account details into collection called 'user'
     return dumps({})
 
 
@@ -306,6 +299,7 @@ def buy_credits():
     return dumps({
         'credits_bought': credits_to_add
     })
+
 
 @app.route('/purchases/refundcredits', methods=['POST'])
 @validate_token
@@ -380,7 +374,6 @@ def showdown_getwinner():
     """
     path = get_images.get_showdown_winner_image()
     return dumps({'path': path})
-
 
 
 @app.route('/welcome/popularcontributors', methods=['GET'])
@@ -490,7 +483,7 @@ def manage_account():
     """
     success = False
     data = loads(request.data.decode())
-    user = User.objects.get(id = data['u_id'])
+    user = User.objects.get(id=data['u_id'])
     if user is None:
         raise Error.UserDNE("User with id " + data['u_id'] + "does not exist")
     try:
@@ -502,9 +495,7 @@ def manage_account():
         print(traceback.format_exc())
         success = False
 
-
     return dumps({'success': success})
-
 
 
 @app.route('/manageaccount/confirm', methods=['GET', 'POST'])
@@ -526,7 +517,8 @@ def password_check():
         raise Error.UserDNE("User " + current_user + "does not exist")
 
     # TODO: set the token properly with jwt
-    if bcrypt.check_password_hash(user_object.get_password(), data['password']):
+    if bcrypt.check_password_hash(user_object.get_password(),
+                                  data['password']):
         data['password'] = "true"
     else:
         data['password'] = "false"
@@ -561,6 +553,7 @@ def upload_actual_photo():
     these_photo_details = request.form.to_dict()
     return dumps(create_photo_entry(these_photo_details))
 
+
 @app.route('/user/updatephoto', methods=['GET'])
 @validate_token
 def photo_details_edit():
@@ -584,15 +577,16 @@ def photo_details_edit():
 
     return dumps(get_photo_edit(photo_id, token))
 
+
 @app.route('/user/updatephoto', methods=['PUT'])
 @validate_token
 def update_photo():
     """
     Description
     -----------
-    Accepts parameters related to EDITING photo details, verifies the parameters,
-    creates a database entry for the photo and saves the photo details
-    to backend.
+    Accepts parameters related to EDITING photo details, verifies the
+    parameters, creates a database entry for the photo and saves
+    the photo details to backend.
 
     Parameters
     ----------
@@ -611,6 +605,7 @@ def update_photo():
     these_photo_details = request.form.to_dict()
     # Update either price, title, keywords or add discount
     return dumps(update_photo_details(these_photo_details))
+
 
 @app.route('/user/updatephoto/deleted', methods=['GET'])
 @validate_token
@@ -634,6 +629,7 @@ def check_deleted():
         raise Error.PhotoDNE("Could not find photo" + photo_id)
 
     return dumps({"deleted": this_photo.is_deleted()})
+
 
 @app.route('/user/updatephoto', methods=['DELETE'])
 @validate_token
@@ -741,6 +737,7 @@ def search_user():
 
     return dumps(user_search(data, mongo))
 
+
 @app.route('/search/photo', methods=['GET'])
 def search_photo():
     """
@@ -776,6 +773,7 @@ def search_photo():
 
     return dumps(photo_search(data, mongo))
 
+
 @app.route('/search/collection', methods=['GET'])
 def search_collection():
     """
@@ -802,6 +800,7 @@ def search_collection():
     data["limit"] = int(data["limit"])
 
     return dumps({[]})
+
 
 @app.route('/search/album', methods=['GET'])
 def search_album():
@@ -834,13 +833,11 @@ def search_album():
 '''
 
 
-
 @app.route('/photo_details', methods=['GET'])
 def photo_details():
     # TODO: Should return photos and comments as well
     # Add to API list
     """
-    TODO: Update to mongoengine
     Description
     -----------
     GET request to retrieve information for a photo
@@ -860,13 +857,13 @@ def photo_details():
         nickname: str (Artist's Nickname)
         email: str
         u_id: str, (Artist of the photo)
-        status : number (0 means not loaded yet, 1 means existing, 2 means does not exist)
+        status : number (0 means not loaded yet, 1 means existing,
+            2 means does not exist)
     }
     """
     photo_id = request.args.get("p_id")
-    current_user = request.args.get("u_id")
     try:
-        p_oid = ObjectId(photo_id)
+        photo = lib.photo.photo.Photo.objects(id=photo_id)
     except InvalidId:
         print("INVALID!!!!")
         return dumps({
@@ -877,52 +874,32 @@ def photo_details():
             "nickname": "",
             "email": "",
             "purchased": "",
-            "photoStr" : "",
-            "metadata" : "",
-            "price" : "",
-            "discount" : "",
-            "deleted" : "",
-            "status" : 2,
+            "photoStr": "",
+            "metadata": "",
+            "price": "",
+            "discount": "",
+            "deleted": "",
+            "status": 2,
         })
-
-    #This is if posts are stored in user entity
-    #artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
-    #p_id_string = st{"status" : 2}r(artist['_id'])
-
-    photo_details = get_photo_details(photo_id, mongo)
-
-    p_id_string = str(photo_details['user'])
-    artist = mongo.db.users.find_one({"_id": photo_details['user']})
-    #print("PRINTING CURRENT USER")
-    #print(current_user)
-
-    if current_user != "" and current_user != "null":
-        current_user_details = get_user_details(current_user, mongo)
-        #purchased = (photo_details['_id'] in current_user_details['purchased'])
-        purchased = (photo_details['_id'] in current_user_details['purchased'])
-    else :
+    user_purchasers = lib.user.User.objects(purchased=photo.id).count()
+    if user_purchasers > 0:
+        purchased = True
+    else:
         purchased = False
-    #TODO: Find out how to send dates over
-    #"posted": photo_details["posted"],
-    
-
-
-    img = find_photo(f"{photo_id}{photo_details['extension']}")
 
     return dumps({
-        "u_id": p_id_string,
-        "title": photo_details['title'],
-        "likes": photo_details["likes"],
-        "tagsList": photo_details["tags"],
-        "nickname": artist['nickname'],
-        "email": artist['email'],
+        "u_id": photo.get_user().id,
+        "title": photo.get_title(),
+        "likes": photo.get_likes(),
+        "tagsList": photo.get_tags(),
+        "nickname": photo.get_nickname(),
+        "email": photo.get_email(),
         "purchased": purchased,
-        "photoStr" : img,
-        "metadata" : photo_details['metadata'],
-        "price" : photo_details["price"],
-        "discount" : photo_details["discount"],
-        "deleted" : photo_details["deleted"],
-        "status" : 1,
+        "metadata": photo.get_metadata(),
+        "price": photo.get_price(),
+        "discount": photo.get_discount(),
+        "deleted": photo.is_deleted(),
+        "status": 1,
 
     })
 
@@ -930,10 +907,10 @@ def photo_details():
 @app.route('/photo_details/isLiked', methods=['GET'])
 def photo_liked():
     """
-    TODO: Update to mongoengine
     Description
     -----------
-    GET request         return dumps({"status" : 2})to retrieve information for a photo
+    GET request
+    dumps({"status" : 2})to retrieve information for a photo
 
     Parameters
     ----------
@@ -948,13 +925,14 @@ def photo_liked():
     """
     photo_id = request.args.get("p_id")
     user_id = request.args.get("u_id")
-    is_liked = is_photo_liked(photo_id, user_id, mongo)
+    is_liked = is_photo_liked(photo_id, user_id)
     return dumps({
         "isLiked": is_liked,
     })
 
 
 @app.route('/photo_details/updateLikes', methods=['POST'])
+@validate_token
 def update_likes():
     """
     TODO: Update to mongoengine
@@ -964,10 +942,9 @@ def update_likes():
 
     Parameters
     ----------
+    token: string
     photoId : string
-    userId : string
-    count : number (Number of Likes)
-    upStatus : boolean (True if liking, false if unliking)
+
 
     Returns
     -------
@@ -975,24 +952,28 @@ def update_likes():
     """
     params = request.form.to_dict()
     photo_id = params.get("photoId")
-    user_id = params.get("userId")
-    new_count = int(params.get("count"))
-    upvote = params.get("upStatus")
-    token = params.get("token")
-    #print("NEW COUNT: " + params.get("count"))
-    try:
-        token_functions.verify_token(token)
-        update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
-        return dumps({
-            "valid": True
-        })
-    except Exception:
-        return dumps({
-            "valid": False
-        })
+    token = request.args.get('token')
+    user_id = token_functions.get_uid(token)
 
-    update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
-    return dumps({})
+    this_user = lib.user.user.User.objects.get(user_id)
+    if not this_user:
+        raise Error.UserDNE("Could not find user " + user_id)
+    this_photo = lib.photo.photo.Photo.objects.get(photo_id)
+    if not this_photo:
+        raise Error.PhotoDNE("Could not find photo " + photo_id)
+
+    # If already liked, remove the like from the photo
+    if this_photo in this_user.get_liked():
+        this_photo.decrement_likes()
+        this_user.remove_liked_photo(this_photo)
+        liked = False
+    # If not already liked, like the photo
+    else:
+        this_photo.increment_likes()
+        this_user.add_liked_photo(this_photo)
+        liked = True
+
+    return dumps({'liked': liked})
 
 
 @app.route('/comments/comment', methods=['POST'])
@@ -1023,7 +1004,8 @@ def comment_photo():
 
     comments_photo(photo_id, user_id, posted, content, mongo)
     return dumps({})
-    
+
+
 @app.route('/comments/get_comments', methods=['GET'])
 def get_comments():
     """
@@ -1034,7 +1016,7 @@ def get_comments():
     Parameters
     ----------
     p_id : string
-    beginning : number 
+    beginning : number
     end : number (-1 if want to return all of comments)
     oldest_to_newest : boolean
 
@@ -1046,15 +1028,14 @@ def get_comments():
     """
     photo_id = request.args.get("p_id")
     print("Get All Comments Test!")
-    #print(get_all_comments(photo_id, mongo))
     all_comments = get_all_comments(photo_id, mongo)
-    
-    return dumps({"comments" : all_comments})
+
+    return dumps({"comments": all_comments})
+
 
 @app.route('/get_current_user', methods=['GET'])
 def get_verified_user():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     Gets user id from token
@@ -1078,6 +1059,7 @@ def get_verified_user():
     return dumps({
         "u_id": u_id,
     })
+
 
 '''
 ---------------
@@ -1113,6 +1095,7 @@ def basic():
         arguments = request.args
     print(arguments)
     return dumps(arguments)
+
 
 if __name__ == '__main__':
     app.run(port=8001, debug=True)

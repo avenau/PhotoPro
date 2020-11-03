@@ -2,17 +2,10 @@
 Collection related methods
 '''
 
-import datetime
-from mongoengine import StringField
-from mongoengine import ListField
-from mongoengine import ReferenceField
-from mongoengine import DateTimeField
 from mongoengine import BooleanField
 from mongoengine import IntField
-from mongoengine import Document
 
 # Own class import
-import lib.photo.photo as photo
 import lib.collection.validation as validation
 import lib.catalogue.catalogue as catalogue
 
@@ -28,7 +21,6 @@ class Collection(catalogue.Catalogue):
     private = BooleanField(default=False)
     price = IntField(default=0, validation=validation.validate_price)
     meta = {'collection': 'collections-mongoengine'}
-
 
     def update_price(self):
         '''

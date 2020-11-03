@@ -14,6 +14,7 @@ from mongoengine import ReferenceField
 # Used as part of 'collection.Collection'
 import lib.collection.collection as collection
 import lib.user.user as user
+import lib.album.album as album
 import lib.photo.validation as validation
 
 
