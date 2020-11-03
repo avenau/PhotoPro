@@ -48,10 +48,15 @@ def password_reset_reset(email, reset_code, new_password, mongo):
     """
     TODO Contact Database
     """
-    if(valid_reset_code(email, reset_code)):
+    if valid_reset_code(email, reset_code):
         try:
+            """
             mongo.db.users.update_one({"email": email},
                                       {"$set": {"password": new_password}})
+            """
+            user = User.objects(email=email).first()
+            user.set_password(new_password)
+            user.save()
         except Exception:
             print("Errors... :-(")
             print(traceback.format_exc())
