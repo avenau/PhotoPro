@@ -152,7 +152,7 @@ def make_thumbnail_svg(img_data, name):
     png_version = Image.open(BytesIO(png_bytes))
     buf = BytesIO()
     png_version.save(buf, png_version.format)
-    make_thumbnail(base64.b64encode(buf.getvalue()).decode("utf-8"), filename_thumbnail)
+    return make_thumbnail(base64.b64encode(buf.getvalue()).decode("utf-8"), filename_thumbnail)
 
 def make_watermarked_copy(img_data, name, extension):
     '''
@@ -163,8 +163,9 @@ def make_watermarked_copy(img_data, name, extension):
     Do not pass an svg or gif directly to this function.
     '''
     watermarked_filename = name + "_w" + extension
-
+    print("1")
     img = Image.open(BytesIO(img_data))
+    print("2")
     img_width, img_height = img.size
 
     # Height and width coords for drawing watermark
@@ -193,6 +194,7 @@ def make_watermarked_copy(img_data, name, extension):
     
     watermarked_img_buf = BytesIO()
     img.save(watermarked_img_buf, format=img.format)
+    img.show()
     save_photo(base64.b64encode(watermarked_img_buf.getvalue()).decode("utf-8"), watermarked_filename)
 
 # TODO: (Allan) DOES NOT WORK
