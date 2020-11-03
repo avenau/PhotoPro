@@ -727,6 +727,7 @@ def search_user():
     offset : int
     limit : int
     orderby : string
+    token : string
 
     Returns
     -------
@@ -762,6 +763,7 @@ def search_photo():
     filetype : string
     priceMin : int
     priceMax : int
+    token : string
 
     Returns
     -------
@@ -795,6 +797,7 @@ def search_collection():
     offset : int
     limit : int
     orderby : string
+    token : string
 
     Returns
     -------
@@ -823,6 +826,7 @@ def search_album():
     offset : int
     limit : int
     orderby : string
+    token : string
 
     Returns
     -------

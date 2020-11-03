@@ -79,6 +79,7 @@ export default class SearchPage extends React.Component<Props, State> {
           filetype: this.state.filetype,
           priceMin: this.state.priceMin,
           priceMax: this.state.priceMax,
+          token: localStorage.getItem("token"),
         },
       })
       .then((res) => {
@@ -107,15 +108,15 @@ export default class SearchPage extends React.Component<Props, State> {
   }
 
   private orderChange(orderid: string) {
-    this.setState({ orderby: orderid, results: [], offset: 0 });
+    this.setState({ orderby: orderid, results: [], offset: 0, atEnd: false });
   }
 
   private typeChange(typeid: string) {
-    this.setState({ filetype: typeid, results: [], offset: 0 });
+    this.setState({ filetype: typeid, results: [], offset: 0, atEnd: false });
   }
 
   private priceChange(priceMin?: number, priceMax?: number) {
-    this.setState({ priceMin, priceMax });
+    this.setState({ priceMin, priceMax, atEnd: false });
   }
 
   render() {
@@ -134,7 +135,7 @@ export default class SearchPage extends React.Component<Props, State> {
         <div className="search-options">
           {type === "photo" ? (
             <TypeFilter
-              filetype="All"
+              filetype={filetype}
               onChange={(typeid) => this.typeChange(typeid)}
             />
           ) : (

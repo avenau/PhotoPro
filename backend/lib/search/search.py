@@ -1,3 +1,4 @@
+from flask_cors import extension
 from lib.collection.collection import Collection
 from lib.user.user import User
 from lib.photo.photo import Photo
@@ -5,6 +6,7 @@ from bson.json_util import dumps
 from json import loads
 
 from lib.photo.fs_interactions import find_photo
+from lib.token_functions import get_uid
 
 def user_search(data):
   res = User.objects().aggregate(
@@ -41,13 +43,26 @@ def user_search(data):
   return res
 
 def photo_search(data):
+  valid_extensions = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
+  if data["filetype"] == "jpgpng":
+    valid_extensions = [".jpg", ".jpeg", ".png"]
+  elif data["filetype"] == "gif":
+    valid_extensions = [".gif"]
+  elif data["filetype"] == "svg":
+    valid_extensions = [".svg"]
+  try:
+        req_user = get_uid(data["token"])
+  except:
+      req_user = ""
   res = Photo.objects().aggregate(
     [
       {
         "$match": {
           "$or": [
-            { "title": {"$regex": data["query"], "$options": "i"}}
-          ]
+            { "title": { "$regex": data["query"], "$options": "i" } },
+            { "tags": { "$in": [data["query"]] } }
+          ],
+          "extension": { "$in": valid_extensions }
         }
       },
       {
@@ -73,8 +88,7 @@ def photo_search(data):
   )
   res = loads(dumps(res))
   for result in res:
-    # TODO add watermark check here
-    result["photoStr"] = find_photo(f"{result['id']}_t{result['extension']}")
+    result["photoStr"] = Photo.objects.get(id=result['id']).get_thumbnail(req_user)
   return res
 
 def collection_search(data):
