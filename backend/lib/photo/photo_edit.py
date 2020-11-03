@@ -6,7 +6,7 @@ import base64
 import datetime
 from io import BytesIO
 from bson.objectid import ObjectId
-from PIL import Image, ImageSequence
+from PIL import Image, ImageSequence, ImageDraw, ImageFont
 from io import BytesIO
 
 
@@ -94,6 +94,11 @@ def process_photo(base64_str, name, extension):
     if extension == ".gif":
         make_thumbnail_gif(base64_str, filename_thumbnail)
 
+    # Watermark
+    if not extension in [".svg", ".gif"]:
+        img_data = base64.b64decode(base64_str)
+        make_watermarked_copy(img_data, name, extension)
+
 
 def make_thumbnail(base64_str, filename_thumbnail):
     '''
@@ -128,6 +133,51 @@ def make_thumbnail_gif(base64_str, filename_thumbnail):
     out.save(buffer, format=thumb.format, save_all=True, append_images=frames[1:], loop=0)
     save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
 
+def make_watermarked_copy(img_data, name, extension):
+    '''
+    Make watermarked copy of png and jpg images.
+
+    Thumbnail before watermark.
+
+    Do not pass an svg or gif to this function.
+    '''
+    watermarked_filename = name + "_w" + extension
+
+    img = Image.open(BytesIO(img_data))
+    img_width, img_height = img.size
+
+    # Height and width coords for drawing watermark
+    coord_ratios = [0.1, 0.25, 0.75, 0.9]
+    w = [img_width*r for r in coord_ratios] # left to right
+    h = [img_height*r for r in coord_ratios] # top to bottom
+
+    draw = ImageDraw.Draw(img)
+    # Draw some rectangles and lines
+    black = (0,0,0)
+    red = (255, 0, 0)
+    green = (0, 255, 0)
+    blue = (0, 0, 255)
+    thickness = max([1, int(img_height/100)])
+    draw.rectangle([w[0], h[0], w[3], h[3]], width=thickness, outline=black)
+    draw.rectangle([w[1], h[1], w[2], h[2]], width=thickness, outline=green)
+    draw.line([w[0], h[0], w[3], h[3]], width=thickness, fill=red)
+    draw.line([w[3], h[0], w[0], h[3]], width=thickness, fill=blue)
+
+    # Write "PhotoPro (c)" in red
+    watermark_text = "PhotoPro (c)"
+    # Following line only works on windows. May need to specify absolute path to font.
+    # font_size = max([1, int(img_height/20)])
+    # font = ImageFont.truetype('arial.ttf', size=font_size)
+    draw.text((w[1], h[0]), watermark_text, fill=red)
+
+    print(watermarked_filename)
+    img.save("w"+extension)
+
+    '''
+    watermarked_img_buf = BytesIO()
+    img.save(watermarked_img_buf, format=img.format)
+    save_photo(base64.b64encode(watermarked_img_buf.getvalue()).decode("utf-8"), filename_thumbnail)
+    '''
 
 def get_photo_edit(mongo, photoId, token):
     """
