@@ -26,11 +26,12 @@ export default function PhotoContents(props: ContentProps) {
   const [photo, setPhoto] = useState("");
   const [purchased, setPurchase] = useState<boolean>();
   const currentUser = localStorage.getItem("u_id") as string;
+  const token = localStorage.getItem("token") as string;
   const [meta, setMeta] = useState("");
   const [price, setPrice] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [deleted, setDeleted] = useState(false);
-  const [loadMessage, setLoadMessage] = useState('Page Still Loading')
+  const [loadMessage, setLoadMessage] = useState("Page Still Loading");
   const updateTags = (tag: string) => {
     if (tag) {
       setTags((tags) => [...tags, tag]);
@@ -40,10 +41,10 @@ export default function PhotoContents(props: ContentProps) {
   };
 
   const getPhotoDetails = async (photoId: string) => {
+    console.log(token);
     await axios
-      .get(`/photo_details?p_id=${photoId}&u_id=${currentUser}`)
+      .get(`/photo_details?p_id=${photoId}&token=${token}`)
       .then((response) => {
-
         //console.log(response.data);
         setArtist(response.data.u_id);
         setNick(response.data.nickname);
@@ -56,7 +57,7 @@ export default function PhotoContents(props: ContentProps) {
         setMeta(response.data.metadata);
         setTitle(response.data.title);
         setPrice(response.data.price);
-        setPhoto(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0, -1));
+        setPhoto(`${response.data.metadata}${response.data.photoStr}`);
 
         //console.log("deleted" + response.data.deleted);
         //console.log(response.status);
@@ -71,13 +72,13 @@ export default function PhotoContents(props: ContentProps) {
     } else if (deleted === true || artist === "") {
       //console.log("IN deleted Section");
       setLoad(false);
-      setLoadMessage('The photo does not exist');
+      setLoadMessage("The photo does not exist");
     } else {
       //console.log("Everything Else");
       setLoad(true);
     }
     if (status === 0) {
-      setLoadMessage('Loading...');
+      setLoadMessage("Loading...");
     }
     console.log("STATUS UPDATE");
     console.log(status);
@@ -93,12 +94,15 @@ export default function PhotoContents(props: ContentProps) {
             <Button className="ml-1">Manage Photo</Button>
           </Link>
           <Price price={price} discount={discount} />
-        </div >
+        </div>
       );
     } else if (purchased === true) {
-      return <div><Button className="ml-1">Download Full Photo</Button>
-        <Price price={price} discount={discount} />
-      </div>;
+      return (
+        <div>
+          <Button className="ml-1">Download Full Photo</Button>
+          <Price price={price} discount={discount} />
+        </div>
+      );
     }
     return (
       <div>
@@ -113,11 +117,7 @@ export default function PhotoContents(props: ContentProps) {
     <div className="PhotoContents">
       <Container className="container">
         <Row className="PhotoRow">
-          <img
-            className="actualPhoto"
-            src={photo}
-            alt="new"
-          />
+          <img className="actualPhoto" src={photo} alt="new" />
         </Row>
         <Row className="PhotoInteraction">
           <LikeButton u_id={currentUser} p_id={props.photoId} />
@@ -151,9 +151,9 @@ export default function PhotoContents(props: ContentProps) {
       <PhotoComments p_id={props.photoId} />
     </div>
   ) : (
-      <div>
-        {" "}
-        <p>{loadMessage}</p>{" "}
-      </div>
-    );
+    <div>
+      {" "}
+      <p>{loadMessage}</p>{" "}
+    </div>
+  );
 }

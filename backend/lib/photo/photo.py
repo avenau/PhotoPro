@@ -10,6 +10,7 @@ from mongoengine import IntField
 from mongoengine import BooleanField
 from mongoengine import Document
 from mongoengine import ReferenceField
+from lib.photo.fs_interactions import find_photo
 
 # Used as part of 'collection.Collection'
 import lib.user.user as user
@@ -41,6 +42,8 @@ class Photo(Document):
     posted = DateTimeField(default=datetime.datetime.now())
     # User reference to the owner of the photo
     user = ReferenceField('user.User')
+    # Photo's extension
+    extension = StringField(validation=validation.validate_extension)
     # Number of likes of the photo
     likes = IntField(default=0)
     # List of Comments associated with the photo
@@ -49,6 +52,12 @@ class Photo(Document):
     deleted = BooleanField(default=False)
     # Metadata of the photo {collection: collection-name}
     meta = {'collection': 'photos-mongoengine'}
+
+    def get_id(self):
+        '''
+        Object id of the photo
+        '''
+        return self.id
 
     def add_tags(self, tags):
         '''
@@ -238,6 +247,31 @@ class Photo(Document):
         Get the collection objects
         '''
         return self.collections
+
+    def get_extension(self):
+        '''
+        Get the collection objects
+        '''
+        return self.extension
+
+    def get_thumbnail(self, u_id):
+        '''
+        Get the watermarked or non watermarked photo based on
+        whether the u_id passed in owns the photo
+        TODO deal with svgs
+        '''
+        try:
+            this_user = user.User.objects.get(id=u_id)
+            if self in this_user.get_purchased() or this_user == self.get_user():
+                return find_photo(f"{self.get_id()}_t{self.get_extension()}")
+            else:
+                return find_photo(f"{self.get_id()}_t_w{self.get_extension()}")
+        except:
+            return find_photo(f"{self.get_id()}_t_w{self.get_extension()}")
+
+
+    def get_photo(self):
+        pass
 
     def clean(self):
         '''

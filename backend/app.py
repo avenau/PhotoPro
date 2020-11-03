@@ -17,8 +17,8 @@ from flask_pymongo import PyMongo
 from werkzeug.exceptions import HTTPException
 
 # Classes
-from lib.photo.photo import Photo
-import lib.user.user as user
+import lib.photo.photo
+import lib.user.user
 import lib.catalogue.catalogue as catalogue
 import lib.album.album as album
 import lib.comment.comment as comment
@@ -41,8 +41,9 @@ from lib.photo_details.photo_likes import is_photo_liked, like_photo
 from lib.profile.upload_photo import update_user_thumbnail
 
 # Search
-from lib.search.user_search import user_search
-from lib.search.photo_search import photo_search
+# from lib.search.user_search import user_search
+# from lib.search.photo_search import photo_search
+from lib.search.search import photo_search, user_search, collection_search
 
 # Showdown
 from lib.showdown import get_images
@@ -223,7 +224,7 @@ def account_registration():
         new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'],
                                                        new_user['extension'])
 
-    this_user = user.User(
+    this_user = lib.user.user.User(
         fname=new_user['fname'],
         lname=new_user['lname'],
         email=new_user['email'],
@@ -261,7 +262,7 @@ def profile_details():
     }
     -------
     """
-    this_user = user.User.objects.get(id=request.args.get("u_id"))
+    this_user = lib.user.user.User.objects.get(id=request.args.get("u_id"))
     if not this_user:
         raise Error.UserDNE("Couldn't find user")
 
@@ -296,7 +297,7 @@ def buy_credits():
     user_id = token_functions.get_uid(token)
     credits_to_add = int(request.form.get("ncredits"))
 
-    this_user = user.User.objects.get(id=user_id)
+    this_user = lib.user.user.User.objects.get(id=user_id)
 
     this_user.add_credits(credits_to_add)
     this_user.save()
@@ -327,7 +328,7 @@ def refund_credits():
     user_id = token_functions.get_uid(token)
     credits_to_refund = int(request.form.get("ncredits"))
 
-    this_user = user.User.objects.get(id=user_id)
+    this_user = lib.user.user.User.objects.get(id=user_id)
     this_user.remove_credits(credits_to_refund)
     try:
         this_user.save()
@@ -447,7 +448,7 @@ def user_info_with_token():
         print("token is an empty string")
         return {}
     u_id = token_functions.get_uid(token)
-    this_user = user.User.objects.get(id=u_id)
+    this_user = lib.user.user.User.objects.get(id=u_id)
     if not this_user:
         raise Error.UserDNE("Could not find user")
     # JSON Doesn't like ObjectId format
@@ -488,7 +489,7 @@ def manage_account():
     """
     success = False
     data = loads(request.data.decode())
-    this_user = user.User.objects.get(id=data['u_id'])
+    this_user = lib.user.user.User.objects.get(id=data['u_id'])
     if this_user is None:
         raise Error.UserDNE("User with id " + data['u_id'] + "does not exist")
     try:
@@ -518,7 +519,7 @@ def password_check():
     """
     data = request.form.to_dict()
     current_user = data['u_id']
-    user_object = user.User.objects.get(id=current_user)
+    user_object = lib.user.user.User.objects.get(id=current_user)
     if user_object is None:
         raise Error.UserDNE("User " + current_user + "does not exist")
 
@@ -630,7 +631,7 @@ def check_deleted():
     {deleted: boolean(string)}
     """
     photo_id = request.args.get('photoId')
-    this_photo = Photo.objects.get(id=photo_id)
+    this_photo = lib.photo.photo.Photo.objects.get(id=photo_id)
     if not this_photo or photo_id == '':
         raise Error.PhotoDNE("Could not find photo" + photo_id)
 
@@ -741,7 +742,7 @@ def search_user():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps(user_search(data, mongo))
+    return dumps(user_search(data))
 
 
 @app.route('/search/photo', methods=['GET'])
@@ -777,7 +778,7 @@ def search_photo():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps(photo_search(data, mongo))
+    return dumps(photo_search(data))
 
 
 @app.route('/search/collection', methods=['GET'])
@@ -851,7 +852,7 @@ def photo_details():
     Parameters
     ----------
     p_id : string
-    u_id : string (Id of current user)
+    token : string
 
     Returns
     -------
@@ -869,7 +870,11 @@ def photo_details():
     """
     photo_id = request.args.get("p_id")
     try:
-        photo = lib.photo.photo.Photo.objects(id=photo_id)
+        req_user = token_functions.get_uid(request.args.get("token"))
+    except:
+        req_user = ""
+    try:
+        photo = lib.photo.photo.Photo.objects.get(id=photo_id)
     except InvalidId:
         print("INVALID!!!!")
         return dumps({
@@ -887,26 +892,26 @@ def photo_details():
             "deleted": "",
             "status": 2,
         })
-    user_purchasers = lib.user.User.objects(purchased=photo.id).count()
+    user_purchasers = lib.user.user.User.objects(purchased=photo.id).count()
     if user_purchasers > 0:
         purchased = True
     else:
         purchased = False
 
     return dumps({
-        "u_id": photo.get_user().id,
+        "u_id": str(photo.get_user().get_id()),
         "title": photo.get_title(),
         "likes": photo.get_likes(),
         "tagsList": photo.get_tags(),
-        "nickname": photo.get_nickname(),
-        "email": photo.get_email(),
+        "nickname": photo.get_user().get_nickname(),
+        "email": photo.get_user().get_email(),
         "purchased": purchased,
         "metadata": photo.get_metadata(),
         "price": photo.get_price(),
         "discount": photo.get_discount(),
         "deleted": photo.is_deleted(),
-        "status": 1,
-
+        "photoStr": photo.get_thumbnail(req_user),
+        "status": 1
     })
 
 

@@ -47,7 +47,8 @@ def create_photo_entry(photo_details):
         price = photo_details['price'],
         user = user,
         tags = photo_details['tags'],
-        metadata = metadata
+        metadata = metadata + ",",
+        extension = extension
     )
     new_photo.save()
 

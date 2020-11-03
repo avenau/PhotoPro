@@ -11,7 +11,7 @@ Note that mongoengine provides basic validation
 '''
 import mongoengine
 import traceback
-from lib.Error import ValidationError
+from lib.Error import ValidationError, ValueError
 
 
 def validate_price(price):
@@ -43,3 +43,13 @@ def validate_discount(discount):
         raise ValidationError("Discount must be greater than 0")
     if discount > 100:
         raise ValidationError("Discount must be less than 100")
+
+def validate_extension(extension):
+    '''
+    Validate extension of the photo
+    '''
+
+    mongoengine.StringField().validate(extension)
+    exts = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
+    if extension not in exts:
+        raise ValueError("Unacceptable file type")
