@@ -8,6 +8,7 @@ from io import BytesIO
 from bson.objectid import ObjectId
 from PIL import Image, ImageSequence, ImageDraw, ImageFont
 from io import BytesIO
+import cairosvg
 
 
 from lib.photo.validate_photo import validate_photo
@@ -67,9 +68,10 @@ def create_photo_entry(mongo, photo_details):
         return {
             "success": "true"
         }
-    except:
+    except Exception as e:
         mongo.db.photos.delete_one({"_id": photo_oid})
-        print("Didn't add to DB")
+        print("Didn't add photo to DB because:")
+        print(e)
         return {
             "success": "false"
         }
@@ -88,12 +90,19 @@ def process_photo(base64_str, name, extension):
     save_photo(base64_str, filename)
     filename_thumbnail = name + "_t" + extension
 
-    # Attach compressed thumbnail to photos
+    # Watermarking and thumbnailing
     if not extension in [".svg", ".gif"]:
-        make_thumbnail(base64_str, filename_thumbnail)
-    if extension == ".gif":
+        img_data = base64.b64decode(base64_str)
+        make_watermarked_copy(img_data, name, extension)
+        thumb_img_data = make_thumbnail(base64_str, filename_thumbnail)
+        make_watermarked_copy(thumb_img_data, name + "_t", extension)
+    elif extension == ".svg":
+        img_data = base64.b64decode(base64_str)
+        thumb_img_data = make_thumbnail_svg(img_data, name)
+        make_watermarked_copy(thumb_img_data, name + "_t", extension)
+    elif extension == ".gif":
         make_thumbnail_gif(base64_str, filename_thumbnail)
-
+    
     # Watermark
     if not extension in [".svg", ".gif"]:
         img_data = base64.b64decode(base64_str)
@@ -112,6 +121,7 @@ def make_thumbnail(base64_str, filename_thumbnail):
     buffer = BytesIO()
     thumb.save(buffer, thumb.format)
     save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
+    return buffer.getvalue()
 
 def make_thumbnail_gif(base64_str, filename_thumbnail):
     '''
@@ -133,13 +143,25 @@ def make_thumbnail_gif(base64_str, filename_thumbnail):
     out.save(buffer, format=thumb.format, save_all=True, append_images=frames[1:], loop=0)
     save_photo(base64.b64encode(buffer.getvalue()).decode("utf-8"), filename_thumbnail)
 
+def make_thumbnail_svg(img_data, name):
+    '''
+    Convert svg to png for thumbnail purposes.
+    '''
+    filename_thumbnail = name + "_t.png"
+    png_bytes = cairosvg.svg2png(img_data)
+    png_version = Image.open(BytesIO(png_bytes))
+    buf = BytesIO()
+    png_version.save(buf, png_version.format)
+    png_version.show()
+    make_thumbnail(base64.b64encode(buf.getvalue()).decode("utf-8"), filename_thumbnail)
+
 def make_watermarked_copy(img_data, name, extension):
     '''
     Make watermarked copy of png and jpg images.
 
     Thumbnail before watermark.
 
-    Do not pass an svg or gif to this function.
+    Do not pass an svg or gif directly to this function.
     '''
     watermarked_filename = name + "_w" + extension
 
@@ -174,7 +196,7 @@ def make_watermarked_copy(img_data, name, extension):
     img.save(watermarked_img_buf, format=img.format)
     save_photo(base64.b64encode(watermarked_img_buf.getvalue()).decode("utf-8"), watermarked_filename)
 
-# TODO: DOES NOT WORK
+# TODO: (Allan) DOES NOT WORK
 """
 def make_watermarked_copy_gif(img_data, name):
     '''
@@ -219,7 +241,6 @@ def make_watermarked_copy_gif(img_data, name):
     out.save(buf, format=img.format, save_all=True, append_images=frames[1:], loop=0)
     save_photo(base64.b64encode(buf.getvalue()).decode("utf-8"), watermarked_filename)
 """
-
 
 def get_photo_edit(mongo, photoId, token):
     """
