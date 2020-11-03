@@ -152,7 +152,6 @@ def make_thumbnail_svg(img_data, name):
     png_version = Image.open(BytesIO(png_bytes))
     buf = BytesIO()
     png_version.save(buf, png_version.format)
-    png_version.show()
     make_thumbnail(base64.b64encode(buf.getvalue()).decode("utf-8"), filename_thumbnail)
 
 def make_watermarked_copy(img_data, name, extension):
