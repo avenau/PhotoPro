@@ -169,15 +169,57 @@ def make_watermarked_copy(img_data, name, extension):
     # font_size = max([1, int(img_height/20)])
     # font = ImageFont.truetype('arial.ttf', size=font_size)
     draw.text((w[1], h[0]), watermark_text, fill=red)
-
-    print(watermarked_filename)
-    img.save("w"+extension)
-
-    '''
+    
     watermarked_img_buf = BytesIO()
     img.save(watermarked_img_buf, format=img.format)
-    save_photo(base64.b64encode(watermarked_img_buf.getvalue()).decode("utf-8"), filename_thumbnail)
+    save_photo(base64.b64encode(watermarked_img_buf.getvalue()).decode("utf-8"), watermarked_filename)
+
+# TODO: DOES NOT WORK
+"""
+def make_watermarked_copy_gif(img_data, name):
     '''
+    Make watermarked copy of gif.
+
+    Thumbnail before watermark.
+
+    Only pass gifs to this function.
+    '''
+    watermarked_filename = name + "_w.gif"
+
+    img = Image.open(BytesIO(img_data))
+    img_width, img_height = img.size
+
+    # Height and width coords for drawing watermark
+    coord_ratios = [0.1, 0.25, 0.75, 0.9]
+    w = [img_width*r for r in coord_ratios] # left to right
+    h = [img_height*r for r in coord_ratios] # top to bottom
+    black = (0,0,0)
+    red = (255, 0, 0)
+    green = (0, 255, 0)
+    blue = (0, 0, 255)
+    thickness = max([1, int(img_height/100)])
+    frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
+    for frame in frames:
+        draw = ImageDraw.Draw(frame)
+        # Draw some rectangles and lines
+        draw.rectangle([w[0], h[0], w[3], h[3]], width=thickness, outline=black)
+        draw.rectangle([w[1], h[1], w[2], h[2]], width=thickness, outline=green)
+        draw.line([w[0], h[0], w[3], h[3]], width=thickness, fill=red)
+        draw.line([w[3], h[0], w[0], h[3]], width=thickness, fill=blue)
+        # Write "PhotoPro (c)" in red
+        watermark_text = "PhotoPro (c)"
+        # Following line only works on windows. May need to specify absolute path to font.
+        # font_size = max([1, int(img_height/20)])
+        # font = ImageFont.truetype('arial.ttf', size=font_size)
+        draw.text((w[1], h[0]), watermark_text, fill=red)
+    
+    out = frames[0]
+    out.info = img.info
+    buf = BytesIO()
+    out.save(buf, format=img.format, save_all=True, append_images=frames[1:], loop=0)
+    save_photo(base64.b64encode(buf.getvalue()).decode("utf-8"), watermarked_filename)
+"""
+
 
 def get_photo_edit(mongo, photoId, token):
     """
