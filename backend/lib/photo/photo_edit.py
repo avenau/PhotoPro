@@ -98,7 +98,7 @@ def process_photo(base64_str, name, extension):
         make_watermarked_copy(thumb_img_data, name + "_t", extension)
     elif extension == ".svg":
         thumb_img_data = make_thumbnail_svg(img_data, name)
-        make_watermarked_copy(thumb_img_data, name + "_t", extension)
+        make_watermarked_copy(thumb_img_data, name + "_t", ".png")
     elif extension == ".gif":
         make_thumbnail_gif(img_data, filename_thumbnail)
 
