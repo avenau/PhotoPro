@@ -21,6 +21,7 @@ export default function PhotoContents(props: ContentProps) {
   const [isLoaded, setLoad] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [artist, setArtist] = useState("");
+  const [status, setStatus] = useState(0);
   //TODO
   const [photo, setPhoto] = useState("");
   const [purchased, setPurchase] = useState<boolean>();
@@ -29,6 +30,7 @@ export default function PhotoContents(props: ContentProps) {
   const [price, setPrice] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [deleted, setDeleted] = useState(false);
+  const [loadMessage, setLoadMessage] = useState('Page Still Loading')
   const updateTags = (tag: string) => {
     if (tag) {
       setTags((tags) => [...tags, tag]);
@@ -50,10 +52,12 @@ export default function PhotoContents(props: ContentProps) {
         setTags(response.data.tagsList);
         setPurchase(response.data.purchased);
         setDeleted(response.data.deleted);
+        setStatus(response.data.status);
         setMeta(response.data.metadata);
         setTitle(response.data.title);
         setPrice(response.data.price);
         setPhoto(response.data.metadata + response.data.photoStr.replace("b'", "").slice(0, -1));
+
         //console.log("deleted" + response.data.deleted);
         //console.log(response.status);
       });
@@ -64,15 +68,21 @@ export default function PhotoContents(props: ContentProps) {
     if (purchased === true) {
       //console.log("Purchased Section");
       setLoad(true);
-    } else if (deleted === true || localStorage.getItem('u_id') === null || artist === "") {
+    } else if (deleted === true || artist === "") {
       //console.log("IN deleted Section");
       setLoad(false);
+      setLoadMessage('The photo does not exist');
     } else {
       //console.log("Everything Else");
       setLoad(true);
     }
+    if (status === 0) {
+      setLoadMessage('Loading...');
+    }
+    console.log("STATUS UPDATE");
+    console.log(status);
     //console.log("Purchased: " + purchased);
-  }, [purchased, deleted]);
+  }, [purchased, deleted, status]);
 
   function DetermineButton() {
     if (artist === currentUser) {
@@ -143,7 +153,7 @@ export default function PhotoContents(props: ContentProps) {
   ) : (
       <div>
         {" "}
-        <p>Photo does not exist!</p>{" "}
+        <p>{loadMessage}</p>{" "}
       </div>
     );
 }

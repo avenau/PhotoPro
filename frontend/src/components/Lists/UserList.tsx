@@ -4,7 +4,7 @@ import UserHeader from "../UserHeader/UserHeader";
 import "./UserList.scss";
 
 interface Props extends RouteComponentProps {
-  profiles: Profile[];
+  users: Profile[];
 }
 
 interface Profile {
@@ -18,9 +18,10 @@ interface Profile {
 
 class UserList extends React.Component<Props> {
   render() {
+    console.log("listed users");
     return (
       <>
-        {this.props.profiles.map((profile) => (
+        {this.props.users.map((profile) => (
           <div
             onClick={(e) => {
               e.preventDefault();

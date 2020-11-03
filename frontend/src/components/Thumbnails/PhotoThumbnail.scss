@@ -1,0 +1,23 @@
+.photo-thumbnail {
+  width: 100%;
+  height: auto;
+}
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  color: white;
+  font-weight: bold;
+  font-size: 1.3rem;
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  &:hover {
+    opacity: 1;
+  }
+}
