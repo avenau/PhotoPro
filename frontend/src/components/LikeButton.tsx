@@ -6,12 +6,13 @@ import axios from "axios";
 interface LikeProps {
   u_id: string;
   p_id: string;
+  like_count: number;
 }
 
 //TODO: Make Like Button Update Database
 //Get like count on its own
 export default function LikeButton(props: LikeProps) {
-  const [likeCount, setCount] = useState(0);
+  const [likeCount, setCount] = useState(props.like_count);
   const [likeStatus, setStatus] = useState("light");
   const [isLoaded, setLoad] = useState(false);
   const [currentUser, setUser] = useState("No ID");
@@ -22,9 +23,7 @@ export default function LikeButton(props: LikeProps) {
   const updateLike = async (
     event: React.MouseEvent,
     count: number,
-    status: string,
     photoId: string,
-    userId: string
   ) => {
     if (event) {
       event.preventDefault();
@@ -50,7 +49,7 @@ export default function LikeButton(props: LikeProps) {
               //console.log("UPDATE LIKES NOT SUCCESSFUL");
               throw new Error();
             } else if (r.status === 200) {
-              if (status != "light") {
+              if (r.data.liked === false) {
                 setCount(count - 1);
                 count = count - 1;
                 setStatus("light");
@@ -111,11 +110,11 @@ export default function LikeButton(props: LikeProps) {
 
   useEffect(() => {
     getCurrentUser();
-    getLikeCount(props.p_id);
+    //getLikeCount(props.p_id);
     isLiked(props.p_id, currentUser);
 
     setLoad(true);
-  }, [isLoaded, userLoggedin, currentUser]);
+  }, [isLoaded, userLoggedin, currentUser, likeCount]);
 
   const isLiked = async (photoId: string, userId: string) => {
     //console.log("User Logged in: " + userLoggedin);
@@ -161,7 +160,7 @@ export default function LikeButton(props: LikeProps) {
       <Button
         variant={likeStatus}
         onClick={(e) =>
-          updateLike(e, likeCount, likeStatus, props.p_id, currentUser)
+          updateLike(e, likeCount, props.p_id)
         }
       >
         <svg

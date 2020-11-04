@@ -3,7 +3,6 @@ Photo Class for mongoengine
 '''
 
 import datetime
-from flask_cors import extension
 from mongoengine import StringField
 from mongoengine import ListField
 from mongoengine import DateTimeField
