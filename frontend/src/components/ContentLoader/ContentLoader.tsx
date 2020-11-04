@@ -90,8 +90,6 @@ export default class ContentLoader extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("rendering content");
-
     return (
       <>
         <InfiniteScroll
