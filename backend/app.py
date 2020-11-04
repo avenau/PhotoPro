@@ -20,10 +20,14 @@ from werkzeug.exceptions import HTTPException
 import lib.photo.photo
 import lib.user.user
 import lib.catalogue.catalogue as catalogue
+import lib.collection.collection as collection
 import lib.album.album as album
 import lib.comment.comment as comment
 
 # JAJAC made functions
+
+# Collections
+import lib.collection.collection_functions as collection_functions
 
 # Comments
 import lib.comment.comment_photo as comment_photo
@@ -1089,13 +1093,9 @@ def _get_collection():
         tags: [string],
     }
     '''
-    collection_id = request.args.get("collection_id")
-    this_collection = collection.Collection.objects.get(id=collection_id)
-    if not this_collection:
-        print(traceback.format_exc())
-        raise Error.ValueError("Collection not found")
-
-    return dumps(this_collection.get_collection_json)
+    collection_id = request.args.get('collection_id')
+    _collection = collection.Collection.objects.get(id=collection_id)
+    return dumps(collection_functions.get_collection(_collection))
 
 @app.route('/collection/create', methods=['POST'])
 @validate_token
@@ -1109,9 +1109,6 @@ def _create_collection():
     ----------
     token: string
     title: string,
-    --TODO: photos: [Photo]--,
-    deleted: boolean,
-    private: boolean (Optional),
     price, int
     tags: [string],
 
@@ -1119,20 +1116,17 @@ def _create_collection():
     ----------
     { 'collection_id': string }
     '''
+    # Get Parameters
     params = request.form.to_dict()
     u_id = token_functions.get_uid(params['token'])
-    this_user = user.User.objects.get(id=u_id)
-
-    new_collection = collection.Collection(
-                title=params['title'],
-                private=params['private'],
-                created_by=this_user,
-                price=params['price'],
-                tags=params['tags']
-            )
-    new_collection.save()
-
-    return dumps({'collection_id': str(new_collection.id)})
+    # Get Objects
+    _user = user.User.objects.get(id=u_id)
+    collection_id = collection_functions.create_collection(_user,
+                                                           params['title'],
+                                                           params['price'],
+                                                           params['tags'])
+    # Return Collection ID
+    return dumps({'collection_id': collection_id})
 
 
 @app.route('/collection/delete', methods=['DELETE'])
@@ -1152,19 +1146,19 @@ def _delete_collection():
     ----------
     { 'collection_id': string }
     '''
-    token = request.args.get('token')
+    # Get arguments
+    u_id = token_functions.get_uid(request.args.get('token'))
     collection_id = request.args.get('collection_id')
 
-    u_id = token_function.get_uid(token)
+    # Get Objects
     _user = user.User.objects.get(id=u_id)
     _collection = collection.Collection.get(id=collection_id)
-    if _user is not _collection.get_created_by():
-        return dumps({'success': 'false'})
 
-    _collection.delete()
-    return dumps({'success': 'true'})
+    # Return success
+    ret = collection_functions.delete_collection(_user, _collection)
+    return dumps({'success': ret})
 
-@app.route('collection/getphotos', methods=['GET'])
+@app.route('/collection/getphotos', methods=['GET'])
 @validate_token
 def _get_collection_photos():
     '''
@@ -1181,24 +1175,23 @@ def _get_collection_photos():
     ----------
     { 'collection_id': string }
     '''
-    # Variables
-    token = request.args.get('token')
+    # Get Arguments
+    u_id = token_functions.get_uid(request.args.get('token'))
     collection_id = request.args.get('collection_id')
-    u_id = token_functions.get_uid(token)
+
+    # Get Objects
     _collection = collection.Collection.get(id=collection_id)
+    _user = user.User.get(id=u_id)
 
     # List of photos
-    photos = []
-    for _photo in _collection.get_photos():
-        photos.append(_photo.get_thumbnail(u_id))
+    photos = collection_fuctions.get_collection_photos(_user, _collection)
 
     return dumps({'photos': photos})
 
-@app.route('collection/addphoto', methods=['UPDATE'])
+@app.route('/collection/addphoto', methods=['UPDATE'])
 @validate_token
 def _add_collection_photo():
     '''
-    TODO!!!
     Description
     -----------
     Add a photo to the collection
@@ -1207,28 +1200,56 @@ def _add_collection_photo():
     ----------
     token: string
     collection_id: string
-    photo: {
-        title: str,
-        price: str,
-        u_id: str,
-        tags: str[],
-        albums: str[],
-        photo: str,
-        extension: str
-    }
+    photo_id: string
 
     Returns
     ----------
-    { 'collection_id': string }
+    { 'success': boolean }
+    '''
+
+    # Get arguments
+    u_id = token_functions.get_uid(request.args.get('token'))
+    collection_id = request.args.get('collection_id')
+    photo_id = token_functions.get('photo_id')
+
+    _collection = collection.Collection.get(id=collection_id)
+    _photo = photo.Photo.get(id=photo_id)
+    _user = user.User.get(id=u_id)
+
+    ret = collection_functions.add_collection_photo(_user, _photo, _collection)
+    return dumps({'success': ret})
+
+@app.route('/collection/removephoto', methods=['UPDATE'])
+@validate_token
+def _remove_collection_photo():
+    '''
+    Description
+    -----------
+    Remove a photo from a Collection
+
+    Parameters
+    ----------
+    token: string
+    collection_id: string
+    photo_id: string
+
+    Returns
+    ----------
+    { 'success': boolean }
     '''
 
     # Variables
-    token = request.args.get('token')
+    u_id = token_functions.get_uid(request.args.get('token'))
     collection_id = request.args.get('collection_id')
-    u_id = token_functions.get_uid(token)
-    _collection = collection.Collection.get(id=collection_id)
+    photo_id = token_functions.get('photo_id')
 
-    _photo = photo.Photo(
+    _user = user.User.get(id=u_id)
+    _collection = collection.Collection.get(id=collection_id)
+    _photo = photo.Photo.get(id=photo_id)
+
+    collection_functions.remove_collection_photo(_user, _photo, _collection)
+
+    return dumps({'success': ret})
 
 
 '''
