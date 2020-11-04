@@ -1,14 +1,5 @@
 #!/bin/bash
 
-# Help features
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]
-then
-    echo "Usage: prepare.sh [OPTION]"
-    echo "  -d,         Start in development mode"
-    echo "  -l,         Use local database"
-    echo "  -h, --help  Show help options"
-    exit 0
-fi
 
 dev=0
 localfs=0
@@ -25,6 +16,14 @@ do
   then
     localfs=1
     continue
+  fi
+  if [ "$arg" = "-h" ] || [ "$arg" = "--help" ]
+  then
+      echo "Usage: prepare.sh [OPTION]"
+      echo "  -d,         Start in development mode"
+      echo "  -l,         Use local database"
+      echo "  -h, --help  Show help options"
+      exit 0
   fi
   if [[ "$arg" =~ ^- ]]
   then

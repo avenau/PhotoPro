@@ -9,9 +9,12 @@ from mongoengine import connect
 from mongoengine.connection import _get_db
 
 # Local stuff
-from lib.collection.collection import Collection
-from lib.photo.photo import Photo
-from lib.user.user import User
+import lib.photo.photo as photo
+import lib.user.user as user
+import lib.catalogue.catalogue as catalogue
+import lib.album.album as album
+import lib.collection.collection as collection
+import lib.comment.comment as comment
 import lib.Error as Error
 
 # Global test objects
@@ -26,16 +29,16 @@ def clean_database():
     '''
     connect(DATABASE_NAME)
     # Delete the photos
-    for photo in Photo.objects:
-        photo.delete()
+    for this_photo in photo.Photo.objects:
+        this_photo.delete()
 
     # Delete the collections
-    for collection in Collection.objects:
-        collection.delete()
+    for this_collection in collection.Collection.objects:
+        this_collection.delete()
 
     # Delete the users
-    for user in User.objects:
-        user.delete()
+    for this_user in user.User.objects:
+        this_user.delete()
 
     # Drop the mongo collection
     database = _get_db()
@@ -54,7 +57,7 @@ def test_user_creation():
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password, salt)
 
-    my_user = User(
+    my_user = user.User(
         fname="Joe",
         lname="Aczel",
         email="j.aczel@student.unsw.edu.au",
@@ -64,11 +67,11 @@ def test_user_creation():
     )
     my_user.validate()
     my_user.save()
-    assert User.objects[0].fname == my_user.fname
-    assert User.objects[0].lname == my_user.lname
-    assert User.objects[0].email == my_user.email
-    assert User.objects[0].nickname == my_user.nickname
-    assert User.objects[0].password == my_user.password == hashed
+    assert user.User.objects[0].fname == my_user.fname
+    assert user.User.objects[0].lname == my_user.lname
+    assert user.User.objects[0].email == my_user.email
+    assert user.User.objects[0].nickname == my_user.nickname
+    assert user.User.objects[0].password == my_user.password == hashed
 
 
 def test_user_password():
@@ -79,7 +82,7 @@ def test_user_password():
     password = b"super secret password"
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password, salt)
-    my_user = User(
+    my_user = user.User(
         fname="Bob",
         lname="Jane",
         email="bjanetmart@gmail.com",
@@ -101,7 +104,7 @@ def test_user_extension_validation():
     password = b"super secret password"
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password, salt)
-    my_user = User(
+    my_user = user.User(
         fname="Bob",
         lname="Jane",
         email="bjanetmart@gmail.com",
@@ -110,7 +113,7 @@ def test_user_extension_validation():
         extension='.jpg'
     )
     my_user.save()
-    other_user = User(
+    other_user = user.User(
         fname="Bob2",
         lname="Jane2",
         email="bjanetmart2@gmail.com",
@@ -135,7 +138,7 @@ def test_user_credits():
     password = b"super secret password"
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password, salt)
-    my_user = User(
+    my_user = user.User(
         fname="Bob",
         lname="Jane",
         email="bjanetmart@gmail.com",
@@ -165,7 +168,7 @@ def test_user_photo_removal():
     password = b"super secret password"
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password, salt)
-    my_user = User(
+    my_user = user.User(
         fname="Bob",
         lname="Jane",
         email="bjanetmart@gmail.com",
@@ -175,7 +178,7 @@ def test_user_photo_removal():
         credits=50
     )
     my_user.save()
-    my_photo = Photo(
+    my_photo = photo.Photo(
         title='New Photo',
         price=50,
         user=my_user

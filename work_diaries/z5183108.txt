@@ -66,3 +66,69 @@ Read more documentation!!! Be more patient.
 
 NEXT
 Continue working on account creation and connect to backend.
+
+=======================Week 4 (Wed 7 Oct - Wed 14 Oct)=======================
+
+We continued working on our sprint. I finished my account creation page, which also involved uploading
+data to the databse. Joe worked on the photo feed. Allan worked on login/out of accounts (tokens). Aven 
+on manage account. Coen on recovering password and profile.
+
+PLANNED
+Finish account creation. Photo feed, login, logout, profile, recover password. (Front end only)
+
+FINISHED
+Finish account creation. All of the above features, preliminary version of front end.
+
+CHALLENGES
+Git! And React Router.
+
+REFLECTION
+Be more engaged in listening during meetings (esp. about tokens and user management)
+
+NEXT
+Next sprint to be determined.
+
+=======================Week 5 (Wed 14 Oct - Wed 21 Oct)=======================
+
+PLANNED
+Add tags, add other metadata to photos, finish price edit on photos.
+
+FINISHED
+Separated app configuration settings to another file.
+Backend validation of photo values.
+Helped Allan with photo upload.
+Extracted upload page into separate components.
+
+CHALLENGES
+Extracting components.
+Configuring directory structure.
+
+REFLECTION
+I need to manage my time properly. Aim to finish most of the work by Monday at latest.
+
+NEXT
+Finish price edit story.
+Photo details edit.
+Price discount change.
+Fix directory structure.
+If time, work on watermarking.
+
+=======================Week 6 (Wed 21 Oct - Wed 28 Oct)=======================
+
+PLANNED
+I aimed to finish my user stories on editing price, and other photo details. I also completed fixing some of the directory structure.
+Most of our other stories revolved around displaying photos on the various pages, photo details, search; CRUD photos in backend.
+Joe focused on researching MongoEngine as a more high level way of interacting with our DB.
+
+FINISHED
+I was able to finish what I planned. CRUD for photos in backend were completed!
+
+CHALLENGES
+I had some troubles at first with reusing the components from the upload page.
+
+REFLECTION
+I need to manage my time properly. Aim to finish most of the work by Monday at latest. Dealing with high coupling. 
+
+NEXT
+- Finish creating albums from upload and edit page.
+- Also editing albums from profile page.

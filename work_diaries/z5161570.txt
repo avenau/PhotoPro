@@ -11,8 +11,39 @@ I added all of the user stories and acceptance criteria that the team has writte
 We met in the lab and allocated tasks to be completed by next week. I will write up the background for the proposal and duplicate the user story text.
 I created as base example of integrating python flask with react and essentially created the basis for the project, expanding on Joe's previous creation. I also created a video walkthrough of this creation for the team.
 
----------------- Week 2 ----------------
+---------------- Week 3 ----------------
 I wrote the background section, copied all of the user story text, and explained the novelty features for the proposal.
 Joe and I assisted in storyboarding but this was mainly completed by Allan, Aven and Joanne.
 I made some minor adjustments to the base example I created last week and added that to the repo as our starting point.
 In the lab we planned our first sprint and brainstormed our new novelty feature.
+
+---------------- Week 4 ----------------
+I began working on JAJAC-16.
+I set up frontend routing for different pages.
+I set up default backend connections through axios.
+
+---------------- Week 5 ----------------
+I completed JAJAC-16.
+I completed JAJAC-19.
+I set up the transfer of errors between backend and frontend services.
+I demonstrated the Forgot password and profile page aspects in demo A.
+I worked with the team to complete our first retrospective.
+I worked with the team to plan sprint 2.
+I configured eslint for style checking on the frontend.
+
+---------------- Week 6 ----------------
+I finished JAJAC-6, user search functionality.
+I worked with the team to plan sprint 3.
+I fixed a bug where each page load triggered 10+ of the same API call.
+I fixed a bug with the toolbar where logged in state was not being correctly saved.
+I began work on JAJAC-8.
+
+---------------- Week 7 ----------------
+I fixed a react bug with App.tsx where state was being set before component mounted.
+I completed JAJAC-8.
+I fixed a firefox bug with user search hover behaviour.
+I began work on JAJAC4, JAJAC-7, JAJAC-51.
+I set up the remote filesystem api behaviour for images
+I updated GIF thumbnails to be an animated version of the GIF rather than a static image.
+
+---------------- Week 7 ----------------
