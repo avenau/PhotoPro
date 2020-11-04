@@ -12,11 +12,7 @@ from PIL import Image, ImageSequence, ImageDraw
 import cairosvg
 
 
-from lib.photo.validate_photo import validate_photo
-from lib.photo.validate_photo import validate_photo_user
 from lib.photo.validate_photo import reformat_lists
-from lib.photo.validate_photo import validate_extension
-from lib.photo.validate_photo import validate_discount
 from lib.token_functions import get_uid
 from lib.photo.fs_interactions import find_photo, save_photo
 import lib.Error as Error
@@ -134,7 +130,7 @@ def make_thumbnail_svg(img_data, name):
     '''
     filename_thumbnail = name + "_t.png"
     png_bytes = cairosvg.svg2png(img_data)
-    # This shouldn't really be done in this function 
+    # This shouldn't really be done in this function
     # Change if time (Allan)
     make_watermarked_copy(png_bytes, name, ".png")
     png_version = Image.open(BytesIO(png_bytes))
@@ -177,7 +173,7 @@ def make_watermarked_copy(img_data, name, extension):
     # font_size = max([1, int(img_height/20)])
     # font = ImageFont.truetype('arial.ttf', size=font_size)
     draw.text((w[1], h[0]), watermark_text, fill=red)
-    
+
     watermarked_img_buf = BytesIO()
     img.save(watermarked_img_buf, format=img.format)
     save_photo(watermarked_img_buf.getvalue(), watermarked_filename)
@@ -220,7 +216,7 @@ def make_watermarked_copy_gif(img_data, name):
         # font_size = max([1, int(img_height/20)])
         # font = ImageFont.truetype('arial.ttf', size=font_size)
         draw.text((w[1], h[0]), watermark_text, fill=red)
-    
+
     out = frames[0]
     out.info = img.info
     buf = BytesIO()

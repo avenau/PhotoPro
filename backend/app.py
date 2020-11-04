@@ -18,6 +18,7 @@ from werkzeug.exceptions import HTTPException
 
 # Classes
 import lib.photo.photo
+from lib.token_functions import get_uid
 import lib.user.user
 import lib.catalogue.catalogue as catalogue
 import lib.album.album as album
@@ -37,8 +38,10 @@ from lib.photo.remove_photo import remove_photo
 # Photo details
 from lib.photo_details.photo_likes import is_photo_liked, like_photo
 
+
 # Profile
 from lib.profile.upload_photo import update_user_thumbnail
+from lib.profile.profile_details import user_photo_search
 
 # Search
 # from lib.search.user_search import user_search
@@ -272,7 +275,8 @@ def profile_details():
         "nickname": this_user.get_nickname(),
         "location": this_user.get_location(),
         "email": this_user.get_email(),
-        "profilePic": this_user.get_profile_pic()
+        "profilePic": this_user.get_profile_pic(),
+        "aboutMe": this_user.get_about_me()
     })
 
 
@@ -782,6 +786,38 @@ def search_photo():
 
     return dumps(photo_search(data))
 
+@app.route('/user/photos', methods=['GET'])
+def _get_photo_from_user():
+    """
+    TODO: Update to mongoengine
+    Description
+    -----------
+    GET request to return many photo details based on a query
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    u_id : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_photo_search(data))
+
 
 @app.route('/search/collection', methods=['GET'])
 def search_collection():
@@ -879,7 +915,7 @@ def photo_details():
         req_user = ""
     try:
         photo = lib.photo.photo.Photo.objects.get(id=photo_id)
-    except InvalidId:
+    except lib.photo.photo.Photo.DoesNotExist:
         print("INVALID!!!!")
         return dumps({
             "u_id": "",
@@ -902,6 +938,26 @@ def photo_details():
         purchased = True
     else:
         purchased = False
+        
+    is_artist = str(photo.get_user().get_id()) == req_user
+    
+    if purchased == False and is_artist == False and photo.is_deleted() == True :
+        return dumps({
+            "u_id": "",
+            "title": "",
+            "likes": "",
+            "tagsList": "",
+            "nickname": "",
+            "email": "",
+            "purchased": False,
+            "metadata": "",
+            "price": "",
+            "discount": "",
+            "deleted": photo.is_deleted(),
+            "photoStr": "",
+            "status": 1,
+            "is_artist" : is_artist,
+        })
 
     return dumps({
         "u_id": str(photo.get_user().get_id()),
@@ -916,7 +972,8 @@ def photo_details():
         "discount": photo.get_discount(),
         "deleted": photo.is_deleted(),
         "photoStr": photo.get_thumbnail(req_user),
-        "status": 1
+        "status": 1,
+        "is_artist" : is_artist,
     })
 
 
@@ -968,11 +1025,11 @@ def update_likes():
     """
     params = request.form.to_dict()
     photo_id = params.get("photoId")
-    token = request.args.get('token')
-    user_id = token_functions.get_uid(token)
-
+    token = params.get("token")
+    print("TOKEN CALL")
+    print(token)
+    user_id = token_functions.get_uid(token) 
     liked = like_photo(user_id, photo_id)
-
     return dumps({'liked': liked})
 
 
@@ -1029,8 +1086,8 @@ def get_comments():
                      datePosted : date}]
     }
     """
-    photo_id = request.args.get("p_id")
-    all_comments = get_all_comments(photo_id)
+    #photo_id = request.args.get("p_id")
+    #all_comments = get_all_comments(photo_id)
 
     return dumps({"comments" : all_comments, "status" : True})
 

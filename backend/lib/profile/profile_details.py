@@ -1,25 +1,46 @@
-from ..Error import UserDNE, TokenError
 from bson.objectid import ObjectId
-from bson.errors import InvalidId
+from lib.user.user import User
+from lib.photo.photo import Photo
+from bson.json_util import dumps
+from json import loads
 
+from lib.photo.fs_interactions import find_photo
+from lib.token_functions import get_uid
 
-def get_user_details(u_id, mongo):
-    '''
-    Get the user Document straight from the mongo database
-    @param u_id(string): The _id of the user
-    @param mongo(object): The user collection in Mongo
-    @return user(object): The user document straight from Mongo
-    '''
-    # Need to convert to an ObjectId to use in the Database
+def user_photo_search(data):
     try:
-        oid = ObjectId(u_id)
-    except InvalidId:
-        print("u_id is not a valid ObjectId. Look closely at it")
-        print(u_id)
-        raise TokenError("u_id is not a valid ObjectId." + u_id)
-
-    user = mongo.db.users.find_one({"_id": oid})
-    if user is None:
-        print("O NO!!!")
-        raise UserDNE("User not found")
-    return user
+        req_user = get_uid(data["token"])
+    except:
+        req_user = ""
+    try:
+        id = ObjectId(data["u_id"])
+    except:
+        id = ""
+    res = Photo.objects().aggregate(
+        [
+            {
+                "$match": {
+                    "user": id,
+                    "deleted": False
+                }
+            },
+            {
+                "$project": {
+                    "title": 1,
+                    "price": 1,
+                    "discount": 1,
+                    "metadata": 1,
+                    "extension": 1,
+                    "user": {"$toString": "$user"},
+                    "id": {"$toString": "$_id"},
+                    "_id": 0,
+                }
+            },
+            {"$skip": data["offset"]},
+            {"$limit": data["limit"]},
+        ]
+    )
+    res = loads(dumps(res))
+    for result in res:
+        result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(req_user)
+    return res

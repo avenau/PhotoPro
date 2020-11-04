@@ -22,6 +22,7 @@ export default function PhotoContents(props: ContentProps) {
   const [tags, setTags] = useState<string[]>([]);
   const [artist, setArtist] = useState("");
   const [status, setStatus] = useState(0);
+  const [is_artist, setIsArtist] = useState(false);
   //TODO
   const [photo, setPhoto] = useState("");
   const [purchased, setPurchase] = useState<boolean>();
@@ -48,6 +49,7 @@ export default function PhotoContents(props: ContentProps) {
         //console.log(response.data);
         setArtist(response.data.u_id);
         setNick(response.data.nickname);
+        setIsArtist(response.data.is_artist);
         setEmail(response.data.email);
         setLikes(response.data.likes);
         setTags(response.data.tagsList);
@@ -72,35 +74,38 @@ export default function PhotoContents(props: ContentProps) {
     } else if (deleted === true || artist === "") {
       //console.log("IN deleted Section");
       setLoad(false);
-      setLoadMessage("The photo does not exist");
+      setLoadMessage("The photo does not exist!");
     } else {
       //console.log("Everything Else");
       setLoad(true);
     }
     if (status === 0) {
-      setLoadMessage("Loading...");
+      setLoadMessage("Loading Photos...");
     }
     console.log("STATUS UPDATE");
     console.log(status);
     //console.log("Purchased: " + purchased);
-  }, [purchased, deleted, status]);
+  }, [purchased, deleted, status, is_artist]);
 
   function DetermineButton() {
-    if (artist === currentUser) {
+    console.log("IS ARTIST");
+    console.log(is_artist);
+    console.log("IS PURCHASED");
+    console.log(purchased);
+
+    if (is_artist === true) {
       return (
         <div>
           <Button>Download Full Photo</Button>
           <Link to={`/edit/${props.photoId}`}>
             <Button className="ml-1">Manage Photo</Button>
           </Link>
-          <Price price={price} discount={discount} />
         </div>
       );
     } else if (purchased === true) {
       return (
         <div>
           <Button className="ml-1">Download Full Photo</Button>
-          <Price price={price} discount={discount} />
         </div>
       );
     }
@@ -120,7 +125,7 @@ export default function PhotoContents(props: ContentProps) {
           <img className="actualPhoto" src={photo} alt="new" />
         </Row>
         <Row className="PhotoInteraction">
-          <LikeButton u_id={currentUser} p_id={props.photoId} />
+          <LikeButton u_id={currentUser} p_id={props.photoId} like_count={likes} />
           <BookmarkButton u_id={currentUser} p_id={props.photoId} />
           <DetermineButton />
         </Row>
@@ -151,9 +156,9 @@ export default function PhotoContents(props: ContentProps) {
       <PhotoComments p_id={props.photoId} />
     </div>
   ) : (
-    <div>
-      {" "}
-      <p>{loadMessage}</p>{" "}
-    </div>
-  );
+      <div>
+        {" "}
+        <p>{loadMessage}</p>{" "}
+      </div>
+    );
 }
