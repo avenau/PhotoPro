@@ -20,6 +20,7 @@ interface State {
   location: string;
   email: string;
   userId: string;
+  aboutMe?: string;
   dne: boolean;
   profilePic: string[];
 }
@@ -149,6 +150,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           nickname={this.state.nickname}
           location={this.state.location}
           email={this.state.email}
+          aboutMe={this.state.aboutMe}
           profilePic={this.state.profilePic}
           className="user-header"
         />

@@ -261,7 +261,8 @@ def profile_details():
         nickname,
         location,
         email,
-        profilePic
+        profilePic,
+        aboutMe
     }
     -------
     """
