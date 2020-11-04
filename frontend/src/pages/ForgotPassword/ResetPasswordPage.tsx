@@ -117,6 +117,7 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
             validPass={(valid) => {
               this.setState({ validPass: valid });
             }}
+            required={true}
           />
           <Button variant="primary" type="submit">
             Submit

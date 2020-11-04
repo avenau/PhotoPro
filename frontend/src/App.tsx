@@ -115,12 +115,6 @@ class App extends React.Component<Props, State> {
           />
           <ProtectedRoute
             valid={this.state.valid}
-            exact
-            path="/manage_confirmation"
-            component={ManageConfirmation}
-          />
-          <ProtectedRoute
-            valid={this.state.valid}
             path="/edit/:photo_id"
             component={EditPhoto}
           />

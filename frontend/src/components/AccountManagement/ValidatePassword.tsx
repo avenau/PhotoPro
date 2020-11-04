@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Container from 'react-bootstrap/Container';
 
-export default function ValidatePassword(props: { validPass: (arg0: boolean) => void; setPassword: (arg0: string) => void }) {
+export default function ValidatePassword(props: { validPass: (arg0: boolean) => void; setPassword: (arg0: string) => void; required: boolean}) {
   const [matchMessage, setMatchMessage] = useState('Enter password');
   const [passInput, setPassInput] = useState('');
   const [confirmInput, setConfirmInput] = useState('');
@@ -82,11 +82,11 @@ export default function ValidatePassword(props: { validPass: (arg0: boolean) => 
     <>
       <Form.Group controlId="password">
         <Form.Label>Password</Form.Label>
-        <Form.Control required type="password" placeholder="Enter password" onChange={validatePassword} />
+        <Form.Control required={props.required} type="password" placeholder="Enter password" onChange={validatePassword} />
       </Form.Group>
       <Form.Group controlId="confirmPassword">
         <Form.Label>Confirm password</Form.Label>
-        <Form.Control required type="password" placeholder="Confirm password" onChange={validatePassword} />
+        <Form.Control required={props.required} type="password" placeholder="Confirm password" onChange={validatePassword} />
         <Form.Text>{matchMessage}</Form.Text>
       </Form.Group>
       <Container>
