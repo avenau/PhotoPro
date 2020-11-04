@@ -261,7 +261,8 @@ def profile_details():
         nickname,
         location,
         email,
-        profilePic
+        profilePic,
+        aboutMe
     }
     -------
     """
@@ -786,39 +787,6 @@ def search_photo():
 
     return dumps(photo_search(data))
 
-@app.route('/user/photos', methods=['GET'])
-def _get_photo_from_user():
-    """
-    TODO: Update to mongoengine
-    Description
-    -----------
-    GET request to return many photo details based on a query
-
-    Parameters
-    ----------
-    offset : int
-    limit : int
-    token : string
-    u_id : string
-
-    Returns
-    -------
-    {
-        title : string
-        price : int
-        discount : int
-        photoStr : string
-        metadata : string
-        id : string
-    }
-    """
-    data = request.args.to_dict()
-    data["offset"] = int(data["offset"])
-    data["limit"] = int(data["limit"])
-
-    return dumps(user_photo_search(data))
-
-
 @app.route('/search/collection', methods=['GET'])
 def search_collection():
     """
@@ -872,12 +840,42 @@ def search_album():
     """
     return dumps({[]})
 
-
 '''
 -------------------
 - End Search Routes -
 -------------------
 '''
+
+@app.route('/user/photos', methods=['GET'])
+def _get_photo_from_user():
+    """
+    Description
+    -----------
+    GET request to return many photo details based on a query
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_photo_search(data))
 
 
 @app.route('/photo_details', methods=['GET'])
@@ -938,9 +936,9 @@ def photo_details():
         purchased = True
     else:
         purchased = False
-        
+
     is_artist = str(photo.get_user().get_id()) == req_user
-    
+
     if purchased == False and is_artist == False and photo.is_deleted() == True :
         return dumps({
             "u_id": "",
@@ -1028,7 +1026,7 @@ def update_likes():
     token = params.get("token")
     print("TOKEN CALL")
     print(token)
-    user_id = token_functions.get_uid(token) 
+    user_id = token_functions.get_uid(token)
     liked = like_photo(user_id, photo_id)
     return dumps({'liked': liked})
 

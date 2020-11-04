@@ -17,6 +17,7 @@ interface Props {
   location: string;
   email: string;
   className: string;
+  aboutMe?: string;
 }
 
 export default class UserHeader extends React.Component<Props> {
@@ -106,6 +107,11 @@ export default class UserHeader extends React.Component<Props> {
           <div>@{this.props.nickname}</div>
           <div>Based in {this.props.location}</div>
           <div>{this.props.email}</div>
+          {this.props.aboutMe !== undefined && this.props.aboutMe !== "" ? (
+            <div>About me: {this.props.aboutMe}</div>
+          ) : (
+            <></>
+          )}
         </div>
         {this.getEditButton()}
         {this.getFollowButton()}
