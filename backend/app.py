@@ -76,7 +76,7 @@ mongoengine.connect('angular-flask-muckaround')
 
 
 @app.route('/verifytoken', methods=['GET'])
-def verify_token():
+def _verify_token():
     """
     Verify that the token matches the secret
     Parameters
@@ -109,7 +109,7 @@ def verify_token():
 
 
 @app.route('/login', methods=['POST'])
-def process_login():
+def _process_login():
     """
     Logs into the system
     Parameters
@@ -135,7 +135,7 @@ def process_login():
 
 
 @app.route('/passwordreset/request', methods=['POST'])
-def auth_password_reset_request():
+def _auth_password_reset_request():
     """
     Given an email address, if the user is a registered user, send an email
     with a link that they can access temporarily to change their password
@@ -158,7 +158,7 @@ def auth_password_reset_request():
 
 
 @app.route('/passwordreset/reset', methods=['POST'])
-def auth_passwordreset_reset():
+def _auth_passwordreset_reset():
     """
     Given a reset code, change user's password
 
@@ -185,7 +185,7 @@ def auth_passwordreset_reset():
 
 
 @app.route('/accountregistration', methods=['POST'])
-def account_registration():
+def _account_registration():
     """
     Description
     -----------
@@ -241,7 +241,7 @@ def account_registration():
 
 
 @app.route('/profiledetails', methods=['GET'])
-def profile_details():
+def _profile_details():
     """
     Description
     -----------
@@ -278,7 +278,7 @@ def profile_details():
 
 @app.route('/purchases/buycredits', methods=['POST'])
 @validate_token
-def buy_credits():
+def _buy_credits():
     """
     Description
     -----------
@@ -309,7 +309,7 @@ def buy_credits():
 
 @app.route('/purchases/refundcredits', methods=['POST'])
 @validate_token
-def refund_credits():
+def _refund_credits():
     """
     Description
     -----------
@@ -342,7 +342,7 @@ def refund_credits():
 
 # Returns the two showdown images for the day
 @app.route('/showdown/getImages', methods=['GET'])
-def get_showdown_images():
+def _get_showdown_images():
     """
     Description
     -----------
@@ -364,7 +364,7 @@ def get_showdown_images():
 
 
 @app.route('/showdown/getwinner', methods=['GET'])
-def showdown_getwinner():
+def _showdown_getwinner():
     """
     Description
     -----------
@@ -383,7 +383,7 @@ def showdown_getwinner():
 
 
 @app.route('/welcome/popularcontributors', methods=['GET'])
-def welcome_get_contributors():
+def _welcome_get_contributors():
     """
     Description
     -----------
@@ -405,7 +405,7 @@ def welcome_get_contributors():
 
 
 @app.route('/welcome/getPopularImages', methods=['GET'])
-def welcome_get_popular_images():
+def _welcome_get_popular_images():
     """
     Description
     -----------
@@ -427,7 +427,7 @@ def welcome_get_popular_images():
 
 
 @app.route('/userdetails', methods=['GET'])
-def user_info_with_token():
+def _user_info_with_token():
     """
     Description
     -----------
@@ -465,7 +465,7 @@ def user_info_with_token():
 
 
 @app.route('/manageaccount/success', methods=['POST'])
-def manage_account():
+def _manage_account():
     """
     Description
     -----------
@@ -506,7 +506,7 @@ def manage_account():
 
 
 @app.route('/manageaccount/confirm', methods=['GET', 'POST'])
-def password_check():
+def _password_check():
     """
     Description
     -----------
@@ -536,7 +536,7 @@ def password_check():
 
 @app.route('/user/uploadphoto', methods=['POST'])
 @validate_token
-def upload_actual_photo():
+def _upload_actual_photo():
     """
     Description
     -----------
@@ -563,7 +563,7 @@ def upload_actual_photo():
 
 @app.route('/user/updatephoto', methods=['GET'])
 @validate_token
-def photo_details_edit():
+def _photo_details_edit():
     """
     Description
     -----------
@@ -587,7 +587,7 @@ def photo_details_edit():
 
 @app.route('/user/updatephoto', methods=['PUT'])
 @validate_token
-def update_photo():
+def _update_photo():
     """
     Description
     -----------
@@ -616,7 +616,7 @@ def update_photo():
 
 @app.route('/user/updatephoto/deleted', methods=['GET'])
 @validate_token
-def check_deleted():
+def _check_deleted():
     """
     Description
     -----------
@@ -640,7 +640,7 @@ def check_deleted():
 
 @app.route('/user/updatephoto', methods=['DELETE'])
 @validate_token
-def user_remove_photo():
+def _user_remove_photo():
     '''
     Description
     -----------
@@ -669,7 +669,7 @@ def user_remove_photo():
 
 @app.route('/user/profile/uploadphoto', methods=['POST'])
 @validate_token
-def upload_photo():
+def _upload_photo():
     """
     Description
     -----------
@@ -714,7 +714,7 @@ def upload_photo():
 
 
 @app.route('/search/user', methods=['GET'])
-def search_user():
+def _search_user():
     """
     TODO: Update to mongoengine
     Description
@@ -747,7 +747,7 @@ def search_user():
 
 
 @app.route('/search/photo', methods=['GET'])
-def search_photo():
+def _search_photo():
     """
     TODO: Update to mongoengine
     Description
@@ -784,7 +784,7 @@ def search_photo():
 
 
 @app.route('/search/collection', methods=['GET'])
-def search_collection():
+def _search_collection():
     """
     TODO: Update to mongoengine
     Description
@@ -813,7 +813,7 @@ def search_collection():
 
 
 @app.route('/search/album', methods=['GET'])
-def search_album():
+def _search_album():
     """
     TODO: Update to mongoengine
     Description
@@ -845,7 +845,7 @@ def search_album():
 
 
 @app.route('/photo_details', methods=['GET'])
-def photo_details():
+def _photo_details():
     # TODO: Should return photos and comments as well
     # Add to API list
     """
@@ -920,7 +920,7 @@ def photo_details():
 
 
 @app.route('/photo_details/isLiked', methods=['GET'])
-def photo_liked():
+def _photo_liked():
     """
     Description
     -----------
@@ -948,7 +948,7 @@ def photo_liked():
 
 @app.route('/photo_details/updateLikes', methods=['POST'])
 @validate_token
-def update_likes():
+def _update_likes():
     """
     Description
     -----------
@@ -977,7 +977,7 @@ def update_likes():
 
 @app.route('/comments/comment', methods=['POST'])
 @validate_token
-def comment_on_photo():
+def _comment_on_photo():
     """
     Description
     -----------
@@ -1007,7 +1007,7 @@ def comment_on_photo():
 
 @app.route('/comments/get_comments', methods=['GET'])
 @validate_token
-def get_comments():
+def _get_comments():
     """
     Description
     -----------
@@ -1035,7 +1035,7 @@ def get_comments():
 
 
 @app.route('/get_current_user', methods=['GET'])
-def get_verified_user():
+def _get_verified_user():
     """
     Description
     -----------
@@ -1061,6 +1061,175 @@ def get_verified_user():
         "u_id": u_id,
     })
 
+'''
+---------------------
+- Collection Routes -
+---------------------
+'''
+@app.route('/collection/get', methods=['GET'])
+def _get_collection():
+    '''
+    Description
+    -----------
+    Get a Collection as a json object
+
+    Parameters
+    ----------
+    collection_id: string
+
+    Returns
+    ----------
+    {
+        title: string,
+        photos: [Photo],
+        creation_date: datetime,
+        deleted: boolean,
+        private: boolean,
+        price, int
+        tags: [string],
+    }
+    '''
+    collection_id = request.args.get("collection_id")
+    this_collection = collection.Collection.objects.get(id=collection_id)
+    if not this_collection:
+        print(traceback.format_exc())
+        raise Error.ValueError("Collection not found")
+
+    return dumps(this_collection.get_collection_json)
+
+@app.route('/collection/create', methods=['POST'])
+@validate_token
+def _create_collection():
+    '''
+    Description
+    -----------
+    Create a new collection
+
+    Parameters
+    ----------
+    token: string
+    title: string,
+    --TODO: photos: [Photo]--,
+    deleted: boolean,
+    private: boolean (Optional),
+    price, int
+    tags: [string],
+
+    Returns
+    ----------
+    { 'collection_id': string }
+    '''
+    params = request.form.to_dict()
+    u_id = token_functions.get_uid(params['token'])
+    this_user = user.User.objects.get(id=u_id)
+
+    new_collection = collection.Collection(
+                title=params['title'],
+                private=params['private'],
+                created_by=this_user,
+                price=params['price'],
+                tags=params['tags']
+            )
+    new_collection.save()
+
+    return dumps({'collection_id': str(new_collection.id)})
+
+
+@app.route('/collection/delete', methods=['DELETE'])
+@validate_token
+def _delete_collection():
+    '''
+    Description
+    -----------
+    Create a new collection
+
+    Parameters
+    ----------
+    token: string
+    collection_id: string
+
+    Returns
+    ----------
+    { 'collection_id': string }
+    '''
+    token = request.args.get('token')
+    collection_id = request.args.get('collection_id')
+
+    u_id = token_function.get_uid(token)
+    _user = user.User.objects.get(id=u_id)
+    _collection = collection.Collection.get(id=collection_id)
+    if _user is not _collection.get_created_by():
+        return dumps({'success': 'false'})
+
+    _collection.delete()
+    return dumps({'success': 'true'})
+
+@app.route('collection/getphotos', methods=['GET'])
+@validate_token
+def _get_collection_photos():
+    '''
+    Description
+    -----------
+    Create a new collection
+
+    Parameters
+    ----------
+    token: string
+    collection_id: string
+
+    Returns
+    ----------
+    { 'collection_id': string }
+    '''
+    # Variables
+    token = request.args.get('token')
+    collection_id = request.args.get('collection_id')
+    u_id = token_functions.get_uid(token)
+    _collection = collection.Collection.get(id=collection_id)
+
+    # List of photos
+    photos = []
+    for _photo in _collection.get_photos():
+        photos.append(_photo.get_thumbnail(u_id))
+
+    return dumps({'photos': photos})
+
+@app.route('collection/addphoto', methods=['UPDATE'])
+@validate_token
+def _add_collection_photo():
+    '''
+    TODO!!!
+    Description
+    -----------
+    Add a photo to the collection
+
+    Parameters
+    ----------
+    token: string
+    collection_id: string
+    photo: {
+        title: str,
+        price: str,
+        u_id: str,
+        tags: str[],
+        albums: str[],
+        photo: str,
+        extension: str
+    }
+
+    Returns
+    ----------
+    { 'collection_id': string }
+    '''
+
+    # Variables
+    token = request.args.get('token')
+    collection_id = request.args.get('collection_id')
+    u_id = token_functions.get_uid(token)
+    _collection = collection.Collection.get(id=collection_id)
+
+    _photo = photo.Photo(
+
 
 '''
 ---------------
@@ -1071,7 +1240,7 @@ def get_verified_user():
 
 @app.route('/testdecorator', methods=['GET'])
 @validate_token
-def test_decorator():
+def _test_decorator():
     '''
     Testing decorator for validating token
     Use this decorator to verify the token is
@@ -1084,7 +1253,7 @@ def test_decorator():
 
 
 @app.route('/', methods=['GET'])
-def basic():
+def _basic():
     """
     Basic Test route
     """

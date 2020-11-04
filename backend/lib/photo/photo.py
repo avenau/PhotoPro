@@ -111,11 +111,39 @@ class Photo(Document):
         '''
         return self.price
 
+    def get_albums(self):
+        '''
+        Return the list of albums
+        '''
+        albums = []
+        for this_album in self.albums:
+            if not this_album.is_deleted():
+                albums.append(this_album)
+        return albums
+
+    def add_album(self, this_album):
+        '''
+        Add an album reference
+        '''
+        self.albums.append(this_album)
+
+    def remove_album(self, this_album):
+        '''
+        Remove an album reference
+        '''
+        self.albums.remove(this_album)
+
     def set_discount(self, discount):
         '''
         Set a discount on the photo
         '''
         self.discount = discount
+
+    def get_posted(self):
+        '''
+        Return the posted date
+        '''
+        return self.posted
 
     def get_metadata(self):
         '''
@@ -163,8 +191,6 @@ class Photo(Document):
         Save the user object
         '''
         self.likes += 1
-        self.get_user().increment_likes()
-        self.get_user().save()
 
     def decrement_likes(self):
         '''
@@ -172,11 +198,7 @@ class Photo(Document):
         Decrease the likes of the user by one
         Save the user object
         '''
-        if self.likes == 0:
-            return
         self.likes -= 1
-        self.get_user().decrement_likes()
-        self.get_user().save()
 
     def reset_likes(self):
         '''
@@ -262,18 +284,17 @@ class Photo(Document):
         '''
 
         # SVG thumbnails are in png format
-        extension = self.get_extension()
-        if extension == ".svg":
-            extension = ".png"
+        this_extension = self.get_extension()
+        if this_extension == ".svg":
+            this_extension = ".png"
 
         try:
             this_user = user.User.objects.get(id=u_id)
             if self in this_user.get_purchased() or this_user == self.get_user():
-                return find_photo(f"{self.get_id()}_t{extension}")
-            else:
-                return find_photo(f"{self.get_id()}_t_w{extension}")
+                return find_photo(f"{self.get_id()}_t{this_extension}")
+            return find_photo(f"{self.get_id()}_t_w{this_extension}")
         except:
-            return find_photo(f"{self.get_id()}_t_w{extension}")
+            return find_photo(f"{self.get_id()}_t_w{this_extension}")
 
 
     def is_photo_owner(self, this_user):
@@ -282,6 +303,27 @@ class Photo(Document):
         @return boolean
         '''
         return this_user is self.get_user()
+
+    def get_photo_json(self):
+        '''
+        Return object as JSON
+        Any reference fields are returned as object ids
+        '''
+        return {
+                'title': self.get_title(),
+                'price': self.get_price(),
+                'albums': [album.id for album in self.get_albums()],
+                'collection': [coll.id for coll in self.get_collections()],
+                'tags': self.get_tags(),
+                'metadata': self.get_metadata(),
+                'discount': self.get_discount(),
+                'posted': self.get_posted(),
+                'user': self.get_user().id,
+                'extension': self.get_extension(),
+                'likes': self.get_likes(),
+                'comments': [comment.id for comment in self.get_comments()],
+                'deleted': self.is_deleted(),
+                }
 
     def clean(self):
         '''

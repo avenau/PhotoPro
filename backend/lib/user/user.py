@@ -199,7 +199,7 @@ class User(Document):
         '''
         posts = []
         for post in self.posts:
-            if not post.deleted:
+            if not post.is_deleted():
                 posts.append(post)
         return posts
 
@@ -290,6 +290,23 @@ class User(Document):
         if not isinstance(credit, int):
             raise Error.ValueError("Credits must be of type integer.")
         self.credits = self.credits - credit
+
+    def get_user_json(self):
+        '''
+        Return the user as json string
+        '''
+        return {
+            'fname': self.get_fname(),
+            'lname': self.get_lname(),
+            'email': self.get_email(),
+            'nickname': self.get_nickname(),
+            'password': self.get_password(),
+            'profile_pic': self.get_profile_pic(),
+            'extension': self.get_extension(),
+            'about_me': self.get_about_me(),
+            'location': self.get_location(),
+            'posts': [post.id for post in self.get_posts()]
+        }
 
     # User Document validation
     # ------------------------

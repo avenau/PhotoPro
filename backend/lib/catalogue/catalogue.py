@@ -101,6 +101,12 @@ class Catalogue(Document):
         for this_photo in photos:
             self.remove_photo(this_photo)
 
+    def get_creation_date(self):
+        '''
+        Get when the Catalogue was made
+        '''
+        return self.creation_date
+
     def is_deleted(self):
         '''
         Check whether the collection is deleted
