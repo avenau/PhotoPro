@@ -35,7 +35,6 @@ export default class PhotoThumbnail extends React.Component<Props> {
   }
 
   render() {
-    console.log(this.props);
     let purchasable = true;
     if (this.props.user && this.props.user === localStorage.getItem("u_id")) {
       purchasable = false;

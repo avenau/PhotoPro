@@ -1,11 +1,9 @@
-from flask_cors import extension
 from lib.collection.collection import Collection
 from lib.user.user import User
 from lib.photo.photo import Photo
 from bson.json_util import dumps
 from json import loads
 
-from lib.photo.fs_interactions import find_photo
 from lib.token_functions import get_uid
 
 
@@ -61,7 +59,7 @@ def photo_search(data):
                         {"tags": {"$in": [data["query"]]}},
                     ],
                     "extension": {"$in": valid_extensions},
-                    "deleted": {"$eq": False}
+                    "deleted": False
                 }
             },
             {
@@ -69,7 +67,6 @@ def photo_search(data):
                     "title": 1,
                     "price": 1,
                     "discount": 1,
-                    "pathThumb": 1,
                     "metadata": 1,
                     "extension": 1,
                     "user": {"$toString": "$user"},
