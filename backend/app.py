@@ -18,6 +18,7 @@ from werkzeug.exceptions import HTTPException
 
 # Classes
 import lib.photo.photo
+from lib.token_functions import get_uid
 import lib.user.user
 import lib.catalogue.catalogue as catalogue
 import lib.album.album as album
@@ -39,6 +40,7 @@ from lib.photo_details.photo_likes import is_photo_liked, like_photo
 
 # Profile
 from lib.profile.upload_photo import update_user_thumbnail
+from lib.profile.profile_details import user_photo_search
 
 # Search
 # from lib.search.user_search import user_search
@@ -272,7 +274,8 @@ def profile_details():
         "nickname": this_user.get_nickname(),
         "location": this_user.get_location(),
         "email": this_user.get_email(),
-        "profilePic": this_user.get_profile_pic()
+        "profilePic": this_user.get_profile_pic(),
+        "aboutMe": this_user.get_about_me()
     })
 
 
@@ -781,6 +784,38 @@ def search_photo():
     data["limit"] = int(data["limit"])
 
     return dumps(photo_search(data))
+
+@app.route('/user/photos', methods=['GET'])
+def _get_photo_from_user():
+    """
+    TODO: Update to mongoengine
+    Description
+    -----------
+    GET request to return many photo details based on a query
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    u_id : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_photo_search(data))
 
 
 @app.route('/search/collection', methods=['GET'])

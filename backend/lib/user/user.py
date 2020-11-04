@@ -199,8 +199,18 @@ class User(Document):
         '''
         posts = []
         for post in self.posts:
-            if not post.deleted:
+            if not post.is_deleted():
                 posts.append(post)
+        return posts
+
+    def get_posts_id(self):
+        '''
+        Returns all non-deleted posts
+        '''
+        posts = []
+        for post in self.posts:
+            if not post.is_deleted():
+                posts.append(str(post.get_id()))
         return posts
 
     def add_post(self, this_photo):

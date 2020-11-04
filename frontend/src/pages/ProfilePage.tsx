@@ -4,7 +4,9 @@ import { Dropdown } from "react-bootstrap";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Modal from "react-bootstrap/Modal";
+import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
+import InfiniteScroll from "react-infinite-scroller";
 import { RouteComponentProps } from "react-router-dom";
 import AlbumList from "../components/Lists/AlbumList";
 import CollectionList from "../components/Lists/CollectionList";
@@ -25,6 +27,18 @@ interface State {
   userId: string;
   dne: boolean;
   profilePic: string[];
+  photoSearch: requestDetails;
+  collectionSearch: requestDetails;
+  albumSearch: requestDetails;
+  followingSearch: requestDetails;
+  loading: boolean;
+}
+
+interface requestDetails {
+  offset: number;
+  limit: number;
+  results: any[];
+  atEnd: boolean;
 }
 
 export default class ProfilePage extends React.Component<Props, State> {
@@ -32,7 +46,14 @@ export default class ProfilePage extends React.Component<Props, State> {
     super(props);
     const { params } = this.props.match;
     const userId = Object.values(params)[0] as string;
+    const defaultResults = {
+      limit: 5,
+      offset: 0,
+      results: [],
+      atEnd: false,
+    };
     this.state = {
+      loading: false,
       fname: "",
       lname: "",
       nickname: "",
@@ -41,6 +62,10 @@ export default class ProfilePage extends React.Component<Props, State> {
       userId,
       dne: false,
       profilePic: ["", ""],
+      albumSearch: defaultResults,
+      collectionSearch: defaultResults,
+      followingSearch: defaultResults,
+      photoSearch: defaultResults,
     };
   }
 
@@ -115,6 +140,31 @@ export default class ProfilePage extends React.Component<Props, State> {
     this.props.history.goBack();
   }
 
+  private getPhotos() {
+    this.setState({ loading: true });
+    axios
+      .get(`/user/photos`, {
+        params: {
+          u_id: this.state.userId,
+          offset: this.state.photoSearch.offset,
+          limit: this.state.photoSearch.limit,
+          token: localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        this.setState((prevState) => ({
+          loading: false,
+          photoSearch: {
+            results: [...prevState.photoSearch.results, ...res.data],
+            offset: prevState.photoSearch.offset + res.data.length,
+            atEnd: res.data.length < prevState.photoSearch.limit,
+            limit: prevState.photoSearch.limit,
+          },
+        }));
+      })
+      .catch(() => {});
+  }
+
   render() {
     const userId = localStorage.getItem("u_id");
     const currentUser = this.state.userId === userId;
@@ -162,7 +212,22 @@ export default class ProfilePage extends React.Component<Props, State> {
           transition={false}
         >
           <Tab eventKey="showcase" title="Showcase">
-            <PhotoList photos={[]} />
+            <InfiniteScroll
+              hasMore={!this.state.photoSearch.atEnd && !this.state.loading}
+              loadMore={() => this.getPhotos()}
+              loader={
+                <Spinner
+                  animation="border"
+                  role="status"
+                  style={{ display: "block", margin: "40px" }}
+                  key="spin"
+                >
+                  <span className="sr-only">Loading...</span>
+                </Spinner>
+              }
+            >
+              <PhotoList photos={this.state.photoSearch.results} />
+            </InfiniteScroll>
           </Tab>
           <Tab eventKey="albums" title="Albums">
             <AlbumList albums={[]} />
