@@ -9,15 +9,13 @@ interface Props {
   title: string;
   price: number;
   discount: number;
-  photoStr: string;
-  metadata: string;
   purchasable: boolean;
 }
 
 // TODO change from PhotoThumbnail template
 export default class CollectionThumbnail extends React.Component<Props> {
-  private getPic() {
-    return this.props.metadata + this.props.photoStr;
+  private getCollection() {
+    return this.props.title;
   }
 
   private handleBuy(e: React.MouseEvent<HTMLElement, MouseEvent>) {
@@ -38,7 +36,7 @@ export default class CollectionThumbnail extends React.Component<Props> {
     console.log(this.props);
     return (
       <>
-        <Image src={this.getPic()} className="collection-thumbnail" />
+        <Image src={this.getCollection()} className="collection-thumbnail" />
         <div className="overlay">
           <div>{this.props.title}</div>
           <Price price={this.props.price} discount={this.props.discount} />

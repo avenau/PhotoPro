@@ -8,6 +8,7 @@ import mongoengine
 import lib.collection.collection as collection
 import lib.Error as Error
 
+
 def get_collection(_collection):
     '''
     Get the collection referred to by collection_id
@@ -27,11 +28,12 @@ def get_collection(_collection):
 
     return _collection.get_collection_json()
 
-def create_collection(_user, title, price, tags):
+
+def create_collection(_user, title, discount, tags):
     '''
     @param _user: mongoengine.Document.User
     @param title: string
-    @param price: int
+    @param discount: int
     @param tags: [string]
     @return collection_id: string
     '''
@@ -42,7 +44,7 @@ def create_collection(_user, title, price, tags):
     new_collection = collection.Collection(
                 title=title,
                 created_by=_user,
-                price=price,
+                discount=discount,
                 tags=tags)
     try:
         new_collection.save()
@@ -52,6 +54,7 @@ def create_collection(_user, title, price, tags):
         raise Error.ValidationError
 
     return collection_id
+
 
 def delete_collection(_user, _collection):
     '''
@@ -76,6 +79,7 @@ def delete_collection(_user, _collection):
 
     return ret
 
+
 def get_collection_photos(_user, _collection):
     '''
     @param _user : mongoengine.Document.User
@@ -93,6 +97,7 @@ def get_collection_photos(_user, _collection):
     for _photo in _collection.get_photos():
         photos.append(_photo.get_thumbnail(str(_user.id)))
     return photos
+
 
 def add_collection_photo(_user, _photo, _collection):
     '''
@@ -120,6 +125,7 @@ def add_collection_photo(_user, _photo, _collection):
         raise Error.ValidationError("Could not update Collection and Photo")
 
     return True
+
 
 def remove_collection_photo(_user, _photo, _collection):
     '''

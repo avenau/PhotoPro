@@ -155,7 +155,7 @@ export default function Tags(props: any) {
         </Row>
         <Form.Text className="text-muted tagsInfo">
           You can include 1 to 10 keywords. Keywords should describe the main
-          aspects of your photo.
+          aspects of your {props.tagType}.
           <p id="b">
             {tagsLength} Detected keywords (click keyword to delete):{" "}
             {tagButtons}
