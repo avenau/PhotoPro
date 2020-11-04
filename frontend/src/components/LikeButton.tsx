@@ -50,7 +50,7 @@ export default function LikeButton(props: LikeProps) {
               //console.log("UPDATE LIKES NOT SUCCESSFUL");
               throw new Error();
             } else if (r.status === 200) {
-              if (status != "light") {
+              if (r.data.liked === false) {
                 setCount(count - 1);
                 count = count - 1;
                 setStatus("light");
@@ -115,7 +115,7 @@ export default function LikeButton(props: LikeProps) {
     isLiked(props.p_id, currentUser);
 
     setLoad(true);
-  }, [isLoaded, userLoggedin, currentUser]);
+  }, [isLoaded, userLoggedin, currentUser, likeCount]);
 
   const isLiked = async (photoId: string, userId: string) => {
     //console.log("User Logged in: " + userLoggedin);

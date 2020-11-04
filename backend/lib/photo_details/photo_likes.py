@@ -58,10 +58,14 @@ def like_photo(user_id, photo_id):
     if this_photo in this_user.get_liked():
         this_photo.decrement_likes()
         this_user.remove_liked_photo(this_photo)
+        this_photo.save()
+        this_user.save()
         return False
     # If not already liked, like the photo
     else:
         this_photo.increment_likes()
         this_user.add_liked_photo(this_photo)
+        this_photo.save()
+        this_user.save()
         return True
 

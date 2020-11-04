@@ -251,7 +251,7 @@ class User(Document):
         '''
         Add a photo to the photos this user likes
         '''
-        self.likes.add(this_photo)
+        self.likes.append(this_photo)
 
     def remove_liked_photo(self, this_photo):
         '''

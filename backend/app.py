@@ -997,9 +997,9 @@ def photo_liked():
     """
     photo_id = request.args.get("p_id")
     user_id = request.args.get("u_id")
-    #is_liked = is_photo_liked(photo_id, user_id)
+    is_liked = is_photo_liked(photo_id, user_id)
     return dumps({
-        "isLiked": False,
+        "isLiked": is_liked,
     })
 
 
