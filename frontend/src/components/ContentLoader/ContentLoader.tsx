@@ -2,6 +2,7 @@ import axios from "axios";
 import React from "react";
 import Spinner from "react-bootstrap/Spinner";
 import InfiniteScroll from "react-infinite-scroller";
+import _ from "lodash";
 import AlbumList from "../Lists/AlbumList";
 import CollectionList from "../Lists/CollectionList";
 import PhotoList from "../Lists/PhotoList";
@@ -32,12 +33,14 @@ interface State {
 
 export default class ContentLoader extends React.Component<Props, State> {
   constructor(props: Props) {
+    console.log("rerender");
+
     super(props);
     this.state = {
       query: this.props.query,
       loading: false,
       offset: 0,
-      limit: 1,
+      limit: 5,
       results: [],
       atEnd: false,
       orderby: this.props.orderby !== undefined ? this.props.orderby : "recent",
@@ -55,7 +58,7 @@ export default class ContentLoader extends React.Component<Props, State> {
           query: this.state.query,
           offset: this.state.offset,
           limit: this.state.limit,
-          order: this.state.orderby,
+          orderby: this.state.orderby,
           filetype: this.state.filetype,
           priceMin: this.state.priceMin,
           priceMax: this.state.priceMax,
