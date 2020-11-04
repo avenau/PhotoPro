@@ -69,10 +69,20 @@ def photo_search(data):
         valid_extensions = [".gif"]
     elif data["filetype"] == "svg":
         valid_extensions = [".svg"]
+
     try:
         req_user = get_uid(data["token"])
     except:
         req_user = ""
+
+    price_filter = [{"price": {"$gt": float(data["priceMin"])}}]
+
+    if float(data["priceMax"]) != -1:
+        price_filter = [
+            {"price": {"$gt": float(data["priceMin"])}},
+            {"price": {"$lt": float(data["priceMax"])}},
+        ]
+
     res = Photo.objects.aggregate(
         [
             {
@@ -83,6 +93,7 @@ def photo_search(data):
                     ],
                     "extension": {"$in": valid_extensions},
                     "deleted": False,
+                    "$and": price_filter,
                 }
             },
             {

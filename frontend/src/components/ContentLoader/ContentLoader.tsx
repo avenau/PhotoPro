@@ -27,8 +27,8 @@ interface State {
   loading: boolean;
   orderby: string;
   filetype: string;
-  priceMin?: number;
-  priceMax?: number;
+  priceMin: number;
+  priceMax: number;
 }
 
 export default class ContentLoader extends React.Component<Props, State> {
@@ -45,8 +45,8 @@ export default class ContentLoader extends React.Component<Props, State> {
       atEnd: false,
       orderby: this.props.orderby !== undefined ? this.props.orderby : "recent",
       filetype: this.props.filetype !== undefined ? this.props.filetype : "all",
-      priceMin: this.props.priceMin,
-      priceMax: this.props.priceMax,
+      priceMin: this.props.priceMin !== undefined ? this.props.priceMin : 0,
+      priceMax: this.props.priceMax !== undefined ? this.props.priceMax : -1,
     };
   }
 
