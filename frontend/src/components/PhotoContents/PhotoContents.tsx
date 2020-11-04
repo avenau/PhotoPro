@@ -88,10 +88,10 @@ export default function PhotoContents(props: ContentProps) {
   }, [purchased, deleted, status, is_artist]);
 
   function DetermineButton() {
-    /*console.log("IS ARTIST");
+    console.log("IS ARTIST");
     console.log(is_artist);
     console.log("IS PURCHASED");
-    console.log(purchased);*/
+    console.log(purchased);
 
     if (is_artist === true) {
       return (

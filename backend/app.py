@@ -897,11 +897,11 @@ def photo_details():
             "deleted": "",
             "status": 2,
         })
-    purchased = (photo in lib.user.user.User.objects(purchased=photo.id))
-    #if user_purchasers > 0:
-    #    purchased = True
-    #else:
-    #    purchased = False
+    user_purchasers = lib.user.user.User.objects(purchased=photo.id).count()
+    if user_purchasers > 0:
+        purchased = True
+    else:
+        purchased = False
         
     is_artist = str(photo.get_user().get_id()) == req_user
     
@@ -1028,7 +1028,7 @@ def comment_on_photo():
 
 
 @app.route('/comments/get_comments', methods=['GET'])
-#@validate_token
+@validate_token
 def get_comments():
     """
     Description
