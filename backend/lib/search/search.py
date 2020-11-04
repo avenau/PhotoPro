@@ -61,6 +61,7 @@ def photo_search(data):
                         {"tags": {"$in": [data["query"]]}},
                     ],
                     "extension": {"$in": valid_extensions},
+                    "deleted": {"$eq": False}
                 }
             },
             {
