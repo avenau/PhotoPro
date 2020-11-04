@@ -12,11 +12,8 @@ from PIL import Image, ImageSequence, ImageDraw
 import cairosvg
 
 
-from lib.photo.validate_photo import validate_photo
-from lib.photo.validate_photo import validate_photo_user
 from lib.photo.validate_photo import reformat_lists
 from lib.photo.validate_photo import validate_extension
-from lib.photo.validate_photo import validate_discount
 from lib.token_functions import get_uid
 from lib.photo.fs_interactions import find_photo, save_photo
 import lib.Error as Error
