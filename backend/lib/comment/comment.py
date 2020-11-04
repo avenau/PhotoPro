@@ -18,6 +18,11 @@ class Comment(Document):
     posted = DateTimeField(required=True, default=datetime.datetime.now())
     content = StringField(required=True)
     commenter = ReferenceField('user.User', required=True)
+    def get_id(self):
+        '''
+        Object id of the photo
+        '''
+        return self.id
 
     def get_posted(self):
         '''

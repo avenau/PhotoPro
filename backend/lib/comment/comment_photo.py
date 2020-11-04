@@ -25,4 +25,6 @@ def comments_photo(p_id, u_id, content):
         raise PhotoDNE("Could not find photo")
 
     new_comment = comment.Comment(content=content, commenter=this_user)
-    this_photo.add_comment(new_comment)
+    new_comment.save()
+    this_photo.add_comment(new_comment.get_id())
+    this_photo.save()

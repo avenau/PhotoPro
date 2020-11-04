@@ -47,7 +47,8 @@ class Photo(Document):
     # Number of likes of the photo
     likes = IntField(default=0)
     # List of Comments associated with the photo
-    comments = ListField(StringField('comment.Comment'))
+    #comments = ListField(ObjectIdField())
+    comments = ListField(ReferenceField('comment.Comment'))
     # Whether the photo is deleted or not
     deleted = BooleanField(default=False)
     # Metadata of the photo {collection: collection-name}
@@ -194,6 +195,7 @@ class Photo(Document):
         Add a single comment to the photo
         @param comment: string
         '''
+        #Param should be ObjectId
         self.comments.append(this_comment)
 
     def get_comments(self):

@@ -19,6 +19,8 @@ export default function PhotoComments(props: CommentProps) {
     const [commentDate, setDate] = useState(new Date());
     const [commentContent, setContent] = useState("");
     const [status, setStatus] = useState(false);
+    const [limitMessage, setLimitMessage] = useState("");
+    const [validComment, setValidComment] = useState(false);
     const addComments = async (comment: string) => {
         console.log("ADD COMMENTS");
         //console.log(comment);
@@ -47,7 +49,9 @@ export default function PhotoComments(props: CommentProps) {
                 commentDate,
             })
             .then((response) => {
-                console.log(response);
+                //console.log("PRINTING RESPONSE STATUS POST COMMENT");
+                //console.log(response);
+                clearCommentInput();
             })
     }
 
@@ -90,6 +94,25 @@ export default function PhotoComments(props: CommentProps) {
         getComments(props.p_id);
     }, [status]);
 
+    function clearCommentInput() {
+        const commentInput = document.getElementById("CommentInput") as HTMLInputElement;
+        commentInput.value = "";
+        setContent("");
+    }
+
+    const changeFunction = (value: string) => {
+        setContent(value);
+        //console.log("CHANGING");
+        //console.log(value.length);
+        if (value.length >= 8000) {
+            setLimitMessage("Comments MUST be less than 8000 characters long!");
+            setValidComment(true);
+            console.log("OVER 8000");
+        } else {
+            setLimitMessage("");
+            setValidComment(false);
+        }
+    }
 
 
     return (
@@ -98,13 +121,15 @@ export default function PhotoComments(props: CommentProps) {
                 <Form onSubmit={handleSubmit}>
                     <Form.Row id="commentTextArea">
                         <Col>
-                            <Form.Control as="textarea" rows={4} onChange={(e) => setContent(e.target.value)} placeholder="Add a comment..." />
+                            <Form.Control id="CommentInput" as="textarea" rows={4} onChange={(e) => changeFunction(e.target.value)} placeholder="Add a comment..." />
+                            <Form.Text id="WarningMessage" muted>{limitMessage}</Form.Text>
                         </Col>
                         <Col>
-                            <Button variant="primary" type="submit" className="commentButton">
+                            <Button disabled={validComment} variant="primary" type="submit" className="commentButton">
                                 Comment
                             </Button>
                         </Col>
+
                     </Form.Row>
                 </Form >
                 <Row className="CommentDisplay">
