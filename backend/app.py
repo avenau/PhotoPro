@@ -37,6 +37,7 @@ from lib.photo.remove_photo import remove_photo
 # Photo details
 from lib.photo_details.photo_likes import is_photo_liked, like_photo
 
+
 # Profile
 from lib.profile.upload_photo import update_user_thumbnail
 
@@ -896,11 +897,11 @@ def photo_details():
             "deleted": "",
             "status": 2,
         })
-    user_purchasers = lib.user.user.User.objects(purchased=photo.id).count()
-    if user_purchasers > 0:
-        purchased = True
-    else:
-        purchased = False
+    purchased = (photo in lib.user.user.User.objects(purchased=photo.id))
+    #if user_purchasers > 0:
+    #    purchased = True
+    #else:
+    #    purchased = False
         
     is_artist = str(photo.get_user().get_id()) == req_user
     
@@ -961,9 +962,9 @@ def photo_liked():
     """
     photo_id = request.args.get("p_id")
     user_id = request.args.get("u_id")
-    is_liked = is_photo_liked(photo_id, user_id)
+    #is_liked = is_photo_liked(photo_id, user_id)
     return dumps({
-        "isLiked": is_liked,
+        "isLiked": False,
     })
 
 
@@ -991,10 +992,8 @@ def update_likes():
     token = params.get("token")
     print("TOKEN CALL")
     print(token)
-    user_id = token_functions.get_uid(token)
-
+    user_id = token_functions.get_uid(token) 
     liked = like_photo(user_id, photo_id)
-
     return dumps({'liked': liked})
 
 
@@ -1029,7 +1028,7 @@ def comment_on_photo():
 
 
 @app.route('/comments/get_comments', methods=['GET'])
-@validate_token
+#@validate_token
 def get_comments():
     """
     Description
@@ -1051,10 +1050,11 @@ def get_comments():
                      datePosted : date}]
     }
     """
-    photo_id = request.args.get("p_id")
-    all_comments = get_all_comments(photo_id)
+    #photo_id = request.args.get("p_id")
+    #all_comments = get_all_comments(photo_id)
 
-    return dumps({"comments": all_comments})
+    #return dumps({"comments": all_comments})
+    return dumps({"comments" : ""})
 
 
 @app.route('/get_current_user', methods=['GET'])
