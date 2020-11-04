@@ -39,14 +39,16 @@ def like_photo(user_id, photo_id):
     If photo is not liked, like it
     '''
     # Get the User
-    this_user = lib.user.user.User.objects.get(user_id)
+    print("LIKE PHOTO TEST")
+    print(user_id)
+    this_user = user.User.objects.get(id=user_id)
 
     # Check that the user is valid
     if not this_user:
         raise Error.UserDNE("Could not find user " + user_id)
 
     # Get the Photo
-    this_photo = lib.photo.photo.Photo.objects.get(photo_id)
+    this_photo = photo.Photo.objects.get(id=photo_id)
 
     # Check that the photo is valid
     if not this_photo:

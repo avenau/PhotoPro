@@ -988,7 +988,9 @@ def update_likes():
     """
     params = request.form.to_dict()
     photo_id = params.get("photoId")
-    token = request.args.get('token')
+    token = params.get("token")
+    print("TOKEN CALL")
+    print(token)
     user_id = token_functions.get_uid(token)
 
     liked = like_photo(user_id, photo_id)

@@ -163,8 +163,8 @@ class Photo(Document):
         Save the user object
         '''
         self.likes += 1
-        self.get_user().increment_likes()
-        self.get_user().save()
+        #self.get_user().increment_likes()
+        #self.get_user().save()
 
     def decrement_likes(self):
         '''
@@ -175,8 +175,8 @@ class Photo(Document):
         if self.likes == 0:
             return
         self.likes -= 1
-        self.get_user().decrement_likes()
-        self.get_user().save()
+        #self.get_user().decrement_likes()
+        #self.get_user().save()
 
     def reset_likes(self):
         '''
