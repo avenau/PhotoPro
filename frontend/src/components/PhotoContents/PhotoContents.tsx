@@ -72,13 +72,13 @@ export default function PhotoContents(props: ContentProps) {
     } else if (deleted === true || artist === "") {
       //console.log("IN deleted Section");
       setLoad(false);
-      setLoadMessage("The photo does not exist");
+      setLoadMessage("The photo does not exist!");
     } else {
       //console.log("Everything Else");
       setLoad(true);
     }
     if (status === 0) {
-      setLoadMessage("Loading...");
+      setLoadMessage("Loading Photos...");
     }
     console.log("STATUS UPDATE");
     console.log(status);
@@ -151,9 +151,9 @@ export default function PhotoContents(props: ContentProps) {
       <PhotoComments p_id={props.photoId} />
     </div>
   ) : (
-    <div>
-      {" "}
-      <p>{loadMessage}</p>{" "}
-    </div>
-  );
+      <div>
+        {" "}
+        <p>{loadMessage}</p>{" "}
+      </div>
+    );
 }

@@ -879,7 +879,7 @@ def photo_details():
         req_user = ""
     try:
         photo = lib.photo.photo.Photo.objects.get(id=photo_id)
-    except InvalidId:
+    except lib.photo.photo.Photo.DoesNotExist:
         print("INVALID!!!!")
         return dumps({
             "u_id": "",
@@ -901,6 +901,26 @@ def photo_details():
         purchased = True
     else:
         purchased = False
+        
+    is_artist = str(photo.get_user().get_id()) == req_user
+    
+    if purchased == False and is_artist == False and photo.is_deleted() == True :
+        return dumps({
+            "u_id": "",
+            "title": "",
+            "likes": "",
+            "tagsList": "",
+            "nickname": "",
+            "email": "",
+            "purchased": False,
+            "metadata": "",
+            "price": "",
+            "discount": "",
+            "deleted": photo.is_deleted(),
+            "photoStr": "",
+            "status": 1,
+            "is_artist" : is_artist,
+        })
 
     return dumps({
         "u_id": str(photo.get_user().get_id()),
@@ -915,7 +935,8 @@ def photo_details():
         "discount": photo.get_discount(),
         "deleted": photo.is_deleted(),
         "photoStr": photo.get_thumbnail(req_user),
-        "status": 1
+        "status": 1,
+        "is_artist" : is_artist,
     })
 
 
