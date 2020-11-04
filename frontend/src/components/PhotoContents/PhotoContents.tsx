@@ -125,7 +125,7 @@ export default function PhotoContents(props: ContentProps) {
           <img className="actualPhoto" src={photo} alt="new" />
         </Row>
         <Row className="PhotoInteraction">
-          <LikeButton u_id={currentUser} p_id={props.photoId} />
+          <LikeButton u_id={currentUser} p_id={props.photoId} like_count={likes} />
           <BookmarkButton u_id={currentUser} p_id={props.photoId} />
           <DetermineButton />
         </Row>
