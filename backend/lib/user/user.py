@@ -62,7 +62,7 @@ class User(Document):
     # When the user was created
     created = DateTimeField(default=datetime.datetime.now())
     # Meta data about the User collection
-    meta = {"collection": "users-mongoengine"}
+    meta = {"collection": "users"}
 
     # User Methods:
     # -------------

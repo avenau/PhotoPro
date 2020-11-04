@@ -46,6 +46,8 @@ export default function EditPhoto(props: any) {
   });
 
   useEffect(() => {
+    console.log("HEEELLLOOOOOO")
+    console.log(photoId)
     checkDelete(photoId);
     getPhotoDetails(photoId);
   }, []);

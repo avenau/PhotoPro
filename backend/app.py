@@ -637,9 +637,11 @@ def check_deleted():
     """
     photo_id = request.args.get('photoId')
     this_photo = lib.photo.photo.Photo.objects.get(id=photo_id)
+    print('here', this_photo)
     if not this_photo or photo_id == '':
         raise Error.PhotoDNE("Could not find photo" + photo_id)
-
+    
+    print('yo',this_photo.is_deleted())
     return dumps({"deleted": this_photo.is_deleted()})
 
 

@@ -94,6 +94,7 @@ export default function PhotoContents(props: ContentProps) {
     console.log(purchased);
 
     if (is_artist === true) {
+      console.log(props.photoId)
       return (
         <div>
           <Button>Download Full Photo</Button>

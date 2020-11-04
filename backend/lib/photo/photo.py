@@ -103,6 +103,7 @@ class Photo(Document):
         '''
         Set the price of the photo
         '''
+        print('in set price',price)
         self.price = price
 
     def get_price(self):
@@ -110,6 +111,21 @@ class Photo(Document):
         Get the price of the photo. Ignore the discount.
         '''
         return self.price
+    
+    def set_albums(self, albums):
+        '''
+        Given a list of album ObjectIds, set a corresponding
+        list of albums objects from the photo
+        '''
+        # for i in albums:
+            
+        self.albums = albums
+    
+    def get_albums(self):
+        '''
+        Get the list of albums (album id) of the photo
+        '''
+        return self.albums
 
     def set_discount(self, discount):
         '''

@@ -267,19 +267,23 @@ def update_photo_details(photo_details):
 
     # Get the User's id
     user_uid = get_uid(photo_details['token'])
+    print("user id", user_uid)
     # Get the photo
     photo = lib.photo.photo.Photo.objects.get(id=photo_details['photoId'])
-
+    print("user on sys", photo.get_user().get_id())
     # Check the user has permission to edit the photo
-    if user_uid != str(photo.get_user()):
+    if user_uid != str(photo.get_user().get_id()):
         raise PermissionError("User does not have permission to edit photo")
+
+    price = photo_details['price']
+    price = int(price)
 
 
     photo.set_title(photo_details['title'])
-    photo.set_price(photo_details['price'])
-    photo.set_tags(photo_details['tags'])
+    photo.set_price(price)
+    photo.add_tags(photo_details['tags'])
     photo.set_albums(photo_details['albums'])
-    photo.set_discount(photo_details['discount'])
+    photo.set_discount(int(photo_details['discount']))
 
     # Save the photo
     try:
