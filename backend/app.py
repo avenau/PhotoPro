@@ -1086,8 +1086,10 @@ def get_comments():
                      datePosted : date}]
     }
     """
-    #photo_id = request.args.get("p_id")
-    #all_comments = get_all_comments(photo_id)
+    photo_id = request.args.get("p_id")
+    all_comments = get_all_comments(photo_id)
+    print("ROUTE TYPE TEST")
+    print(type(all_comments))
 
     return dumps({"comments" : all_comments, "status" : True})
 
