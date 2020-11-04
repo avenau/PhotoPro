@@ -19,3 +19,36 @@ __Week 4__
 - Worked on JAJAC-63:
   - Implemented frontend design
   - Demoed to group
+
+__Week 5__
+
+- Worked on JAJAC-63
+  - Fixed bugs in Toolbar
+  - Added backend components
+
+__Week 6__
+
+- Worked on JAJAC-64
+  - Users can upload a thumbnail
+  - Thumbnail is converted into base64 string
+  - Updated frontend and backend user validation
+  
+__Week 7__
+
+- Worked on JAJAC-20
+  - User can create a collection
+  - User can update a collection
+  - User can delete a collection
+- Worked on JAJAC-26
+  - User deletes a photo
+  - Upon deletion Collection, Album, User are updated to no longer reference the photo
+- Migrated database from pymongo to mongoengine
+  - Created Photo, User, Collection, Album classes
+  - Implemented getter and setters
+  - Added validation to classes
+  
+__Week 8__
+
+- Continued working on migrating database from pymongo to mongoengine
+  - Reworked `app`.py` to use classes rather than pymongo calls
+  - Reworked validation to be used within classes rather than within methods

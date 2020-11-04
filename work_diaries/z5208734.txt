@@ -20,3 +20,11 @@ In the first meeting we were discussing about what we did on week 2.
 In the second meeting we planned for our first sprint.
 We later decided to use React instead of Angular because Coen and Joanne has some experience in React.
 
+Week 4
+- Learning some React which I had no prior experience to
+- Worked on getting Manage Account working.
+
+Week 5
+- Finished Manage Account, however there were some bugs for different browsers.
+- Started Photo details which is to be completed by the next sprint
+
