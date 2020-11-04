@@ -5,6 +5,7 @@ interface MessageProp {
     author: string
     datePosted: string;
     className: string;
+    author_id: string;
 }
 
 export default function CommentMessage(props: MessageProp) {
@@ -13,6 +14,7 @@ export default function CommentMessage(props: MessageProp) {
         <div className={props.className}>
             <div><b>{props.author}</b></div>
             <div>{props.message}</div>
+            <div>{props.datePosted}</div>
         </div>
     );
 }

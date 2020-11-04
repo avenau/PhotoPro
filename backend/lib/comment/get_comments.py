@@ -26,7 +26,8 @@ def get_all_comments(p_id):
         result.append(dumps({
                 'commenter': comment.get_commenter().get_nickname(),
                 'datePosted': str(comment.get_posted()),
-                'content': comment.get_content()
+                'content': comment.get_content(),
+                'commenter_id': str(comment.get_commenter().get_id()),
             }))
     
     

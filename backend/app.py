@@ -1064,7 +1064,6 @@ def comment_on_photo():
 
 
 @app.route('/comments/get_comments', methods=['GET'])
-@validate_token
 def get_comments():
     """
     Description
@@ -1074,9 +1073,9 @@ def get_comments():
     Parameters
     ----------
     p_id : string
-    beginning : number
-    end : number (-1 if want to return all of comments)
-    oldest_to_newest : boolean
+    offset : number
+    limit : number (-1 if want to return all of comments)
+    old_to_new : boolean
 
     Returns
     -------
@@ -1087,9 +1086,11 @@ def get_comments():
     }
     """
     photo_id = request.args.get("p_id")
+    #offset = request.args.get("offset")
+    #limit = request.args.get("limit")
+    #order = request.args.get("old_to_new")
     all_comments = get_all_comments(photo_id)
-    print("ROUTE TYPE TEST")
-    print(type(all_comments))
+    
 
     return dumps({"comments" : all_comments, "status" : True})
 

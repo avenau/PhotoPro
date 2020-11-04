@@ -12,6 +12,7 @@ interface CommentObject {
     content: string,
     datePosted: string,
     commenter: string,
+    commenter_id: string,
 }
 
 export default function PhotoComments(props: CommentProps) {
@@ -49,8 +50,6 @@ export default function PhotoComments(props: CommentProps) {
                 commentDate,
             })
             .then((response) => {
-                //console.log("PRINTING RESPONSE STATUS POST COMMENT");
-                //console.log(response);
                 clearCommentInput();
                 getComments(photoId);
             })
@@ -96,7 +95,6 @@ export default function PhotoComments(props: CommentProps) {
         if (value.length >= 8000) {
             setLimitMessage("Comments MUST be less than 8000 characters long!");
             setValidComment(true);
-            console.log("OVER 8000");
         } else {
             setLimitMessage("");
             setValidComment(false);
@@ -123,7 +121,7 @@ export default function PhotoComments(props: CommentProps) {
                 </Form >
                 <Row className="CommentDisplay">
                     {comments.map((comment) => (
-                        <CommentMessage className="CommentMessages" message={comment.content} author={comment.commenter} datePosted={comment.datePosted} />
+                        <CommentMessage className="CommentMessages" author_id={comment.commenter_id} message={comment.content} author={comment.commenter} datePosted={comment.datePosted} />
 
 
 
