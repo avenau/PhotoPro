@@ -28,4 +28,6 @@ def get_all_comments(p_id):
                 'datePosted': str(comment.get_posted()),
                 'content': comment.get_content()
             }))
+    
+    
     return result

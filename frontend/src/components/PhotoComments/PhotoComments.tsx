@@ -52,6 +52,7 @@ export default function PhotoComments(props: CommentProps) {
                 //console.log("PRINTING RESPONSE STATUS POST COMMENT");
                 //console.log(response);
                 clearCommentInput();
+                getComments(photoId);
             })
     }
 
@@ -74,18 +75,6 @@ export default function PhotoComments(props: CommentProps) {
                 console.log("Printing Comments");
                 console.log(comments);
                 setStatus(response.data.status);
-
-                /*console.log(response.data);
-                console.log(response.data.comments);
-                for (let comment of response.data.comments) {
-                    console.log("Hi");
-                    addComments(comment);
-                    console.log(comment);
-
-                }
-                console.log("COMMENT TEST!");
-                console.log(comments);
-                setStatus(response.data.status);*/
 
             });
     }
@@ -134,8 +123,8 @@ export default function PhotoComments(props: CommentProps) {
                 </Form >
                 <Row className="CommentDisplay">
                     {comments.map((comment) => (
+                        <CommentMessage className="CommentMessages" message={comment.content} author={comment.commenter} datePosted={comment.datePosted} />
 
-                        <CommentMessage message={comment.content} author={comment.commenter} datePosted={comment.datePosted} />
 
 
                     ))}
