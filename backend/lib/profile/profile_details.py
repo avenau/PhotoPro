@@ -13,7 +13,7 @@ def user_photo_search(data):
     except:
         req_user = ""
     try:
-        id = ObjectId(data["u_id"])
+        id = ObjectId(data["query"])
     except:
         id = ""
     res = Photo.objects().aggregate(

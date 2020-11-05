@@ -1,6 +1,7 @@
 #!/bin/bash
 
 backend=0
+formatter=0
 
 # Parse args
 for arg in $@
@@ -10,10 +11,16 @@ do
     backend=1
     continue
   fi
+  if [ "$arg" = "-f" ]
+  then
+    formatter=1
+    continue
+  fi
   if [ "$arg" = "-h" ] || [ "$arg" = "--help" ]
   then
     echo "Usage: install.sh [OPTION]"
     echo "  -b,         Only install backend requirements"
+    echo "  -f,         Additionally install formatter"
     echo "  -h, --help  Show help options"
     exit 0
   fi
@@ -36,6 +43,10 @@ python3 -m venv env
 source env/bin/activate
 pip3 install -r requirements.txt
 python3 -m pip install -e .
+if [ $formatter -eq 1 ]
+then
+  pip3 install black
+fi
 
 if [ $backend -eq 1 ]
 then

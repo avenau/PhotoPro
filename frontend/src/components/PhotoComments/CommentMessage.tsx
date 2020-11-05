@@ -3,15 +3,18 @@ import { Row } from "react-bootstrap";
 interface MessageProp {
     message: string;
     author: string
-    datePosted: Date;
+    datePosted: string;
+    className: string;
+    author_id: string;
 }
 
 export default function CommentMessage(props: MessageProp) {
 
     return (
-        <div>
-            <Row><p><b>{props.author}</b> </p></Row>
-            <Row>{props.message}</Row>
+        <div className={props.className}>
+            <div><b>{props.author}</b></div>
+            <div>{props.message}</div>
+            <div>{props.datePosted}</div>
         </div>
     );
 }

@@ -265,7 +265,8 @@ def _profile_details():
         nickname,
         location,
         email,
-        profilePic
+        profilePic,
+        aboutMe
     }
     -------
     """
@@ -790,41 +791,8 @@ def _search_photo():
 
     return dumps(photo_search(data))
 
-@app.route('/user/photos', methods=['GET'])
-def _get_photo_from_user():
-    """
-    TODO: Update to mongoengine
-    Description
-    -----------
-    GET request to return many photo details based on a query
-
-    Parameters
-    ----------
-    offset : int
-    limit : int
-    token : string
-    u_id : string
-
-    Returns
-    -------
-    {
-        title : string
-        price : int
-        discount : int
-        photoStr : string
-        metadata : string
-        id : string
-    }
-    """
-    data = request.args.to_dict()
-    data["offset"] = int(data["offset"])
-    data["limit"] = int(data["limit"])
-
-    return dumps(user_photo_search(data))
-
-
 @app.route('/search/collection', methods=['GET'])
-def _search_collection():
+def search_collection():
     """
     TODO: Update to mongoengine
     Description
@@ -853,7 +821,7 @@ def _search_collection():
 
 
 @app.route('/search/album', methods=['GET'])
-def _search_album():
+def search_album():
     """
     TODO: Update to mongoengine
     Description
@@ -884,6 +852,38 @@ def _search_album():
 '''
 
 
+@app.route('/user/photos', methods=['GET'])
+def _get_photo_from_user():
+    """
+    Description
+    -----------
+    GET request to return many photo details based on a query
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_photo_search(data))
+
+
 @app.route('/photo_details', methods=['GET'])
 def _photo_details():
     # TODO: Should return photos and comments as well
@@ -908,8 +908,8 @@ def _photo_details():
         nickname: str (Artist's Nickname)
         email: str
         u_id: str, (Artist of the photo)
-        status : number (0 means not loaded yet, 1 means existing,
-            2 means does not exist)
+        status : number (0 means not loaded yet, 1 means existing, 2 means does not exist)
+        is_owner : bool
     }
     """
     photo_id = request.args.get("p_id")
@@ -929,12 +929,13 @@ def _photo_details():
             "nickname": "",
             "email": "",
             "purchased": "",
-            "photoStr": "",
-            "metadata": "",
-            "price": "",
-            "discount": "",
-            "deleted": "",
-            "status": 2,
+            "photoStr" : "",
+            "metadata" : "",
+            "price" : "",
+            "discount" : "",
+            "deleted" : "",
+            "status" : 2,
+            "is_owner" : False,
         })
     user_purchasers = lib.user.user.User.objects(purchased=photo.id).count()
     if user_purchasers > 0:
@@ -1067,8 +1068,12 @@ def _comment_on_photo():
 
 
 @app.route('/comments/get_comments', methods=['GET'])
+<<<<<<< HEAD
 @validate_token
 def _get_comments():
+=======
+def get_comments():
+>>>>>>> develop
     """
     Description
     -----------
@@ -1077,9 +1082,9 @@ def _get_comments():
     Parameters
     ----------
     p_id : string
-    beginning : number
-    end : number (-1 if want to return all of comments)
-    oldest_to_newest : boolean
+    offset : number
+    limit : number (-1 if want to return all of comments)
+    old_to_new : boolean
 
     Returns
     -------
@@ -1089,11 +1094,14 @@ def _get_comments():
                      datePosted : date}]
     }
     """
-    #photo_id = request.args.get("p_id")
-    #all_comments = get_all_comments(photo_id)
+    photo_id = request.args.get("p_id")
+    #offset = request.args.get("offset")
+    #limit = request.args.get("limit")
+    #order = request.args.get("old_to_new")
+    all_comments = get_all_comments(photo_id)
+    
 
-    #return dumps({"comments": all_comments})
-    return dumps({"comments" : ""})
+    return dumps({"comments" : all_comments, "status" : True})
 
 
 @app.route('/get_current_user', methods=['GET'])

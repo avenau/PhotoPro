@@ -1,14 +1,34 @@
+from json import loads
+from bson.json_util import dumps
+
 from lib.collection.collection import Collection
 from lib.user.user import User
 from lib.photo.photo import Photo
-from bson.json_util import dumps
-from json import loads
 
 from lib.token_functions import get_uid
 
 
+def get_sort_method(sortid):
+    """
+    Get the mongodb sort command associated with the id given
+    """
+    if sortid == "recent":
+        return {"$sort": {"posted": -1}}
+    if sortid == "old":
+        return {"$sort": {"posted": 1}}
+    if sortid == "low":
+        return {"$sort": {"price": 1}}
+    if sortid == "high":
+        return {"$sort": {"price": -1}}
+    if sortid == "az":
+        return {"$sort": {"title": 1, "nickname": 1}}
+    if sortid == "za":
+        return {"$sort": {"title": -1, "nickname": -1}}
+
+
 def user_search(data):
-    res = User.objects().aggregate(
+    sort = get_sort_method(data["orderby"])
+    res = User.objects.aggregate(
         [
             {
                 "$match": {
@@ -26,10 +46,12 @@ def user_search(data):
                     "nickname": 1,
                     "email": 1,
                     "location": 1,
+                    "created": 1,
                     "id": {"$toString": "$_id"},
                     "_id": 0,
                 }
             },
+            sort,
             {"$skip": data["offset"]},
             {"$limit": data["limit"]},
         ]
@@ -39,6 +61,7 @@ def user_search(data):
 
 
 def photo_search(data):
+    sort = get_sort_method(data["orderby"])
     valid_extensions = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
     if data["filetype"] == "jpgpng":
         valid_extensions = [".jpg", ".jpeg", ".png"]
@@ -46,11 +69,21 @@ def photo_search(data):
         valid_extensions = [".gif"]
     elif data["filetype"] == "svg":
         valid_extensions = [".svg"]
+
     try:
         req_user = get_uid(data["token"])
     except:
         req_user = ""
-    res = Photo.objects().aggregate(
+
+    price_filter = [{"price": {"$gt": float(data["priceMin"])}}]
+
+    if float(data["priceMax"]) != -1:
+        price_filter = [
+            {"price": {"$gt": float(data["priceMin"])}},
+            {"price": {"$lt": float(data["priceMax"])}},
+        ]
+
+    res = Photo.objects.aggregate(
         [
             {
                 "$match": {
@@ -59,7 +92,8 @@ def photo_search(data):
                         {"tags": {"$in": [data["query"]]}},
                     ],
                     "extension": {"$in": valid_extensions},
-                    "deleted": False
+                    "deleted": False,
+                    "$and": price_filter,
                 }
             },
             {
@@ -69,11 +103,13 @@ def photo_search(data):
                     "discount": 1,
                     "metadata": 1,
                     "extension": 1,
+                    "posted": 1,
                     "user": {"$toString": "$user"},
                     "id": {"$toString": "$_id"},
                     "_id": 0,
                 }
             },
+            sort,
             {"$skip": data["offset"]},
             {"$limit": data["limit"]},
         ]
@@ -85,7 +121,8 @@ def photo_search(data):
 
 
 def collection_search(data):
-    res = Collection.objects().aggregate(
+    sort = get_sort_method(data["orderby"])
+    res = Collection.objects.aggregate(
         [
             {
                 "$match": {
@@ -103,10 +140,12 @@ def collection_search(data):
                     "nickname": 1,
                     "email": 1,
                     "location": 1,
+                    "created": 1,
                     "id": {"$toString": "$_id"},
                     "_id": 0,
                 }
             },
+            sort,
             {"$skip": data["offset"]},
             {"$limit": data["limit"]},
         ]
