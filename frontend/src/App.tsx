@@ -12,7 +12,7 @@ import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
-import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
+// import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import ProfilePage from "./pages/ProfilePage";
 import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";

@@ -4,7 +4,7 @@ import axios from "axios";
 import { RouteChildrenProps } from "react-router-dom";
 import Toolbar from "../components/Toolbar/Toolbar";
 import UserDetails from "../components/AccountManagement/UserDetails";
-
+import countries from "../constants";
 
 export default function Register(props: RouteChildrenProps) {
   const [validateFeedback, setFeedback] = useState(false);
@@ -16,7 +16,7 @@ export default function Register(props: RouteChildrenProps) {
     email: "",
     nickname: "",
     location: "Australia",
-    aboutMe: ""
+    aboutMe: "",
   });
 
   // Placeholder user details
@@ -26,16 +26,12 @@ export default function Register(props: RouteChildrenProps) {
     email: "Enter email address",
     nickname: "Enter nickname",
     location: "Australia",
-    aboutMe: "Optional"
+    aboutMe: "Optional",
   });
 
   // Password states
   const [validPassword, setValidPass] = useState(false);
   const [password, setPassword] = useState("");
-
-  // Location options
-  var constants = require('../constants');
-  const countries = constants.countries;
 
   // Profile pic stuff
   const [profilePicInput, setProfilePicInput] = useState<HTMLElement | null>();
@@ -48,7 +44,7 @@ export default function Register(props: RouteChildrenProps) {
       if (fileInput && fileInput.files && fileInput.files[0]) {
         const thePhotoFile = fileInput.files[0];
         const photoFileName = thePhotoFile.name;
-        const match = photoFileName.toLowerCase().match(/\.[^\.]*$/);
+        const match = photoFileName.toLowerCase().match(/\.[^.]*$/);
         const photoExtension = match !== null ? match[0] : "";
         const reader = new FileReader();
         reader.readAsDataURL(thePhotoFile);
@@ -76,7 +72,7 @@ export default function Register(props: RouteChildrenProps) {
             profilePic: response[0],
             extension: response[1],
             location: formInput.location,
-            aboutMe: formInput.aboutMe
+            aboutMe: formInput.aboutMe,
           })
           .then((r) => {
             if (r.status !== 200) {
@@ -84,11 +80,7 @@ export default function Register(props: RouteChildrenProps) {
             }
             props.history.push("/login");
           })
-          .catch((e) => {
-            console.log("==========Error occured==========");
-            console.log(e);
-            console.log("=================================");
-          });
+          .catch(() => {});
         setFeedback(true);
       }
     });
@@ -97,7 +89,7 @@ export default function Register(props: RouteChildrenProps) {
   return (
     <>
       <Toolbar />
-      <br/>
+      <br />
       <Container>
         <h1>Join PhotoPro</h1>
         <UserDetails
@@ -108,7 +100,7 @@ export default function Register(props: RouteChildrenProps) {
           profilePicPreview={profilePicPreview}
           formInput={formInput}
           oDetails={oDetails}
-          required={true}
+          required
           setFormInput={setFormInput}
           setValidPass={setValidPass}
           setPassword={setPassword}
