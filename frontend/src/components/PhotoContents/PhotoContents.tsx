@@ -125,7 +125,11 @@ export default function PhotoContents(props: ContentProps) {
           <img className="actualPhoto" src={photo} alt="new" />
         </Row>
         <Row className="PhotoInteraction">
-          <LikeButton u_id={currentUser} p_id={props.photoId} like_count={likes} />
+          <LikeButton
+            u_id={currentUser}
+            p_id={props.photoId}
+            like_count={likes}
+          />
           <BookmarkButton u_id={currentUser} p_id={props.photoId} />
           <DetermineButton />
         </Row>
@@ -140,9 +144,7 @@ export default function PhotoContents(props: ContentProps) {
         </div>
         <Row className="ContentRow">
           <Col className="Details">
-            <Row>
-              <Button>Tags</Button>
-            </Row>
+            <Row>Tags (click tag to search)</Row>
             <Row>
               {tags.map((tag) => (
                 <>
@@ -156,9 +158,9 @@ export default function PhotoContents(props: ContentProps) {
       <PhotoComments p_id={props.photoId} />
     </div>
   ) : (
-      <div>
-        {" "}
-        <p>{loadMessage}</p>{" "}
-      </div>
-    );
+    <div>
+      {" "}
+      <p>{loadMessage}</p>{" "}
+    </div>
+  );
 }

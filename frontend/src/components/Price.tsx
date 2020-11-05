@@ -7,5 +7,5 @@ interface PriceProps {
 }
 
 export default function Price(props: PriceProps) {
-  return <Button className="ml-1">{props.price} CR</Button>;
+  return <div>Price: {props.price} CR</div>;
 }
