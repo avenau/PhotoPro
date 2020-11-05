@@ -12,6 +12,7 @@ interface Props {
   photoStr: string;
   metadata: string;
   user: string;
+  owns: boolean; // purchased or posted
 }
 
 export default class PhotoThumbnail extends React.Component<Props> {
@@ -35,17 +36,17 @@ export default class PhotoThumbnail extends React.Component<Props> {
   }
 
   render() {
-    let purchasable = true;
-    if (this.props.user && this.props.user === localStorage.getItem("u_id")) {
-      purchasable = false;
-    }
+    // let purchasable = true;
+    // if (this.props.user && this.props.user === localStorage.getItem("u_id")) {
+    //   purchasable = false;
+    // }
     return (
       <>
         <Image src={this.getPic()} className="photo-thumbnail" />
         <div className="overlay">
           <div>{this.props.title}</div>
           <Price price={this.props.price} discount={this.props.discount} />
-          {purchasable ? (
+          {!this.props.owns ? (
             <Button
               onClick={(e) => {
                 this.handleBuy(e);
