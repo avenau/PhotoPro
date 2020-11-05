@@ -1,5 +1,4 @@
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useEffect, useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
 import UserDetails from "../../components/AccountManagement/UserDetails";

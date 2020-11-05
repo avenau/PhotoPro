@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
-import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 
 export default function ValidatePassword(props: {
