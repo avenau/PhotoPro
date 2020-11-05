@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { RouteChildrenProps } from "react-router-dom";
+import { RouteChildrenProps , RouteComponentProps } from "react-router-dom";
 import axios from "axios";
 import {
   Button,
@@ -10,7 +10,7 @@ import {
   Col,
   Image,
 } from "react-bootstrap";
-import { RouteComponentProps } from "react-router-dom";
+
 
 // Functional components
 import Title from "../components/PhotoEdit/Title";
@@ -57,13 +57,13 @@ export default function EditPhoto(props: any) {
     console.log(albums)
     axios
       .put("/user/updatephoto", {
-        title: title,
-        price: price,
+        title,
+        price,
         tags: JSON.stringify(tags),
         albums: JSON.stringify(albums),
-        discount: discount,
-        token: token,
-        photoId: photoId,
+        discount,
+        token,
+        photoId,
       })
       .then((response) => {
         props.history.push(`/photo/${photoId}`);
@@ -81,7 +81,7 @@ export default function EditPhoto(props: any) {
       axios
         .delete("/user/updatephoto", {
           params: {
-            token: token,
+            token,
             imgId: photoId,
           },
         })
@@ -99,8 +99,8 @@ export default function EditPhoto(props: any) {
     axios
       .get("/user/updatephoto/deleted", {
         params: {
-          photoId: photoId,
-          token: token,
+          photoId,
+          token,
         },
       })
       .then((response) => {
@@ -121,8 +121,8 @@ export default function EditPhoto(props: any) {
     axios
       .get("/user/updatephoto", {
         params: {
-          photoId: photoId,
-          token: token,
+          photoId,
+          token,
         },
       })
       .then((response) => {
@@ -165,83 +165,88 @@ export default function EditPhoto(props: any) {
   }
 
     return loading ? (<div>Loading...</div>) : (
-        <>
-        <Toolbar/>
+      <>
+        <Toolbar />
         <Container className="mt-5">
-            <h1>Edit Photo</h1>
-            <Form>
-                <Title 
-                    onChange={(title: string) => setTitle(title)}
-                    deactivateUploadButton={deactivateSaveButton}
-                    activateUploadButton={activateSaveButton}
-                    titleDef={title}/>
-                <p style={{fontSize: "13px"}}> Current photo title: <b>{originalVal.oTitle}</b> </p>
-                <Price
-                    deactivateUploadButton={deactivateSaveButton}
-                    activateUploadButton={activateSaveButton}
-                    onChange={(price: number) => setPrice(price)}
-                    priceDef={price}/>
-                <p style={{fontSize: "13px"}}> Current price: <b>{originalVal.oPrice} credits</b> </p>
-                <Tags
-                    deactivateUploadButton={deactivateSaveButton}
-                    activateUploadButton={activateSaveButton}
-                    tagsList={tags}
-                    setTagsList={(tagsList: any) => setTags(tagsList)}/>
-                <Discount
-                    deactivateUploadButton={deactivateSaveButton}
-                    activateUploadButton={activateSaveButton}
-                    discountDef={discount}
-                    price={price}
-                    oPrice={originalVal.oPrice}
-                    oDiscount={originalVal.oDiscount}
-                    onChange={(discount: number) => setDiscount(discount)}
+          <h1>Edit Photo</h1>
+          <Form>
+            <Title 
+              onChange={(title: string) => setTitle(title)}
+              deactivateUploadButton={deactivateSaveButton}
+              activateUploadButton={activateSaveButton}
+              titleDef={title}
+            />
+            <p style={{fontSize: "13px"}}> Current photo title: <b>{originalVal.oTitle}</b> </p>
+            <Price
+              deactivateUploadButton={deactivateSaveButton}
+              activateUploadButton={activateSaveButton}
+              onChange={(price: number) => setPrice(price)}
+              priceDef={price}
+            />
+            <p style={{fontSize: "13px"}}> Current price: <b>{originalVal.oPrice} credits</b> </p>
+            <Tags
+              deactivateUploadButton={deactivateSaveButton}
+              activateUploadButton={activateSaveButton}
+              tagsList={tags}
+              setTagsList={(tagsList: any) => setTags(tagsList)}
+            />
+            <Discount
+              deactivateUploadButton={deactivateSaveButton}
+              activateUploadButton={activateSaveButton}
+              discountDef={discount}
+              price={price}
+              oPrice={originalVal.oPrice}
+              oDiscount={originalVal.oDiscount}
+              onChange={(discount: number) => setDiscount(discount)}
+            />
+            <Row>
+              <Col xs={6}>
+                <Image
+                  thumbnail
+                  id="imagePreview"
+                  src={imagePreview}
                 />
-                <Row>
-                  <Col xs={6}>
-                    <Image
-                      thumbnail
-                      id="imagePreview"
-                      src={imagePreview}/>
 
-                  </Col>
-                  <Col>
-                    <Album 
-                        setSelAlbums={(selAlbums: string[]) => {setAlbums(selAlbums)}}
-                        selectedAlbums={albums}/>
-                  </Col>
-                </Row>
-                <br/>
-                <Row>
-                    <Col>
-                        <Button id="saveButton" onClick={() => {setModalSave(true)}}>Save photo</Button>
-                    </Col>
-                    <Col>
-                        <Button id="delete" variant="danger" onClick={() => {setModalDelete(true)}}>Delete photo</Button>
-                    </Col>
-                </Row>
-                <br/>
-            </Form>
-            <Modal show={modalSave} onHide={() => {setModalSave(false)}} animation={false}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Save photo</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Are you sure you want to make changes to your photo?!</Modal.Body>
-                <Modal.Footer>
-                <Button id="saveConfirmed" variant="primary" onClick={(e) => {handleSave(e)}}>Save photo</Button>
-                <Button id="cancelSave" variant="secondary" onClick={() => {setModalSave(false)}}>Cancel</Button>
-                </Modal.Footer>
-            </Modal>
-            <Modal show={modalDelete} onHide={() => {setModalDelete(false)}} animation={false}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Delete photo</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Are you sure you want to delete your photo? You cannot recover your photo after deletion</Modal.Body>
-                <Modal.Footer>
-                    <Button id="deleteConfirmed" variant="danger" onClick={(e) => {handleDelete(e)}}>Delete photo</Button>
-                    <Button id="cancelDelete" variant="secondary" onClick={() => {setModalDelete(false)}}>Cancel</Button>
-                </Modal.Footer>
-            </Modal>
+              </Col>
+              <Col>
+                <Album 
+                  setSelAlbums={(selAlbums: string[]) => {setAlbums(selAlbums)}}
+                  selectedAlbums={albums}
+                />
+              </Col>
+            </Row>
+            <br />
+            <Row>
+              <Col>
+                <Button id="saveButton" onClick={() => {setModalSave(true)}}>Save photo</Button>
+              </Col>
+              <Col>
+                <Button id="delete" variant="danger" onClick={() => {setModalDelete(true)}}>Delete photo</Button>
+              </Col>
+            </Row>
+            <br />
+          </Form>
+          <Modal show={modalSave} onHide={() => {setModalSave(false)}} animation={false}>
+            <Modal.Header closeButton>
+              <Modal.Title>Save photo</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure you want to make changes to your photo?!</Modal.Body>
+            <Modal.Footer>
+              <Button id="saveConfirmed" variant="primary" onClick={(e) => {handleSave(e)}}>Save photo</Button>
+              <Button id="cancelSave" variant="secondary" onClick={() => {setModalSave(false)}}>Cancel</Button>
+            </Modal.Footer>
+          </Modal>
+          <Modal show={modalDelete} onHide={() => {setModalDelete(false)}} animation={false}>
+            <Modal.Header closeButton>
+              <Modal.Title>Delete photo</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure you want to delete your photo? You cannot recover your photo after deletion</Modal.Body>
+            <Modal.Footer>
+              <Button id="deleteConfirmed" variant="danger" onClick={(e) => {handleDelete(e)}}>Delete photo</Button>
+              <Button id="cancelDelete" variant="secondary" onClick={() => {setModalDelete(false)}}>Cancel</Button>
+            </Modal.Footer>
+          </Modal>
         </Container>
-        </>
+      </>
     )
 }

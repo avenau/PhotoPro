@@ -7,8 +7,8 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import axios from "axios";
+import Toolbar from "../../components/Toolbar/Toolbar";
 import "./PurchasesPage.css";
 
 class PurchasesPage extends React.Component<RouteChildrenProps, any> {
@@ -24,7 +24,7 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
     axios
       .get("/userdetails", {
         params: {
-          token: token,
+          token,
         },
       })
       .then((res) => {
@@ -65,8 +65,8 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
           </Row>
           {/* TODO: Actually display purchases here */}
           <Tabs defaultActiveKey="photos" transition={false}>
-            <Tab eventKey="photos" title="Photos"></Tab>
-            <Tab eventKey="albums" title="Albums"></Tab>
+            <Tab eventKey="photos" title="Photos" />
+            <Tab eventKey="albums" title="Albums" />
           </Tabs>
         </Container>
       </div>

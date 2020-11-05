@@ -17,10 +17,10 @@ export default function Album(props: any) {
 
     useEffect(() => {
         axios.get('/albums', {params:
-            {token: token}}
+            {token}}
         ).then((res) => {
             console.log(res)
-            var albumOptions = res.data.albumList
+            const albumOptions = res.data.albumList
             console.log(albumOptions)
             // for (var i = 0; i < albumOptions.length; i++) {
             //     albumOptions[i].push(false)
@@ -35,8 +35,8 @@ export default function Album(props: any) {
         console.log(event.currentTarget)
         console.log(event.currentTarget.checked)
         const album = event.currentTarget.id 
-        const checked = event.currentTarget.checked
-        var tempSelected = [...props.selectedAlbums]
+        const {checked} = event.currentTarget
+        let tempSelected = [...props.selectedAlbums]
         if (checked === true) {
             // Add album to list
             tempSelected = [...props.selectedAlbums, album]            
@@ -79,7 +79,7 @@ export default function Album(props: any) {
             title: newAlbumTitle
         })
         .then((res) => {
-            const albumId = res.data.albumId
+            const {albumId} = res.data
             props.selectedAlbums.push(albumId)
             albums.push([albumId, newAlbumTitle])
             setNewAlbumCard(false)
@@ -91,59 +91,68 @@ export default function Album(props: any) {
     }
 
     return (
-    <>
+      <>
         { newAlbumCard ?
         (<Card className="text-center">
-            <br/>
-            <Card.Title>Create new album</Card.Title>
-            <Card.Text>
+          <br />
+          <Card.Title>Create new album</Card.Title>
+          <Card.Text>
             <small className="text-muted">You can edit the title later on your profile page</small>
-            <br/>
+            <br />
             <small className="text-muted">Album name must be between 1 to 40 characters long</small>
+          </Card.Text>
+          <Form.Group className="newAlbum">
+            <Form.Control id="newAlbumInput" placeholder="Enter album title" onChange={(e) => setNewAlbum(e.target.value)} />
+            <Card.Text>
+              <small className="text-muted">{errMsg}</small>
             </Card.Text>
-            <Form.Group className="newAlbum">
-                <Form.Control id="newAlbumInput" placeholder="Enter album title" onChange={(e) => setNewAlbum(e.target.value)}/>
-                <Card.Text>
-                    <small className="text-muted">{errMsg}</small>
-                </Card.Text>
-                <br/>
-                <Row>
-                <Col>
-                    <Button variant="secondary" onClick={(e) => {
+            <br />
+            <Row>
+              <Col>
+                <Button
+                  variant="secondary"
+                  onClick={(e) => {
                         setNewAlbumCard(false)
                         setDisable(true)
-                        }}> Cancel</Button>
-                </Col>
-                <Col>
-                    <Button disabled={disable} onClick={(e) => {
+                        }}
+                > Cancel
+                </Button>
+              </Col>
+              <Col>
+                <Button
+                  disabled={disable}
+                  onClick={(e) => {
                         createNewAlbum(e)
                         setDisable(true)
-                        }}>Add photo to new album</Button>
-                </Col>
-                </Row>
-            </Form.Group>
+                        }}
+                >Add photo to new album
+                </Button>
+              </Col>
+            </Row>
+          </Form.Group>
         </Card>) :
         (<Card className="text-center">
-        <Card.Body>
-        <Card.Title>Add photo to album(s)</Card.Title>
-        <Form.Group className="albumSelection">
-            {albums.map((album)=> {
+          <Card.Body>
+            <Card.Title>Add photo to album(s)</Card.Title>
+            <Form.Group className="albumSelection">
+              {albums.map((album)=> {
                 return <Form.Check
-                type="checkbox"
-                defaultChecked={props.selectedAlbums.includes(album[0])}
-                label={album[1]}
-                id={album[0]}
-                key={album[0]}
-                onClick={(e: React.FormEvent<HTMLInputElement>) => {addAlbums(e)}}/>
+                  type="checkbox"
+                  defaultChecked={props.selectedAlbums.includes(album[0])}
+                  label={album[1]}
+                  id={album[0]}
+                  key={album[0]}
+                  onClick={(e: React.FormEvent<HTMLInputElement>) => {addAlbums(e)}}
+                />
             })}
-            <Card.Text>
-            <small className="text-muted">or create a new album to add to</small>
-            </Card.Text>
-            <Button onClick={(e) => {setNewAlbumCard(true)}}> Create a new album</Button>
-        </Form.Group>
-        </Card.Body>
-    </Card>)
+              <Card.Text>
+                <small className="text-muted">or create a new album to add to</small>
+              </Card.Text>
+              <Button onClick={(e) => {setNewAlbumCard(true)}}> Create a new album</Button>
+            </Form.Group>
+          </Card.Body>
+        </Card>)
     }
-    </>
+      </>
     )
 }

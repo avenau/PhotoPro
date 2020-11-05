@@ -149,7 +149,7 @@ export default function Tags(props: any) {
               onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) =>
                 handleTagEnterPress(e)
               }
-            ></Form.Control>
+            />
           </Col>
           <Button onClick={handleAddTags}>Add Tags</Button>
         </Row>

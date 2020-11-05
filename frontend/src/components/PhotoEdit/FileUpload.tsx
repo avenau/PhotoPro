@@ -53,19 +53,20 @@ export default function FileUpload(props: InterfaceFile ) {
     }
 
     return (
-        <>
+      <>
         <Form.Group>
-            <Form.File 
-                id="photo" 
-                label="Select A Photo" 
-                accept=".jpg, .png, .gif, .svg, .raw"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e)}/>
-            <Form.Text className="text-muted">
-                We accept .jpg, .png, .gif, .svg, and .raw images.
-                <p className="error">{fileErrMsg}</p>
-            </Form.Text>
+          <Form.File 
+            id="photo" 
+            label="Select A Photo" 
+            accept=".jpg, .png, .gif, .svg, .raw"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e)}
+          />
+          <Form.Text className="text-muted">
+            We accept .jpg, .png, .gif, .svg, and .raw images.
+            <p className="error">{fileErrMsg}</p>
+          </Form.Text>
         </Form.Group>
         
-        </>
+      </>
     )
 }

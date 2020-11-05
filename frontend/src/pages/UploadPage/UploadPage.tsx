@@ -2,13 +2,13 @@ import React from "react";
 import "./UploadPage.css";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import { RouteChildrenProps } from "react-router-dom";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Toolbar from "../../components/Toolbar/Toolbar";
 
 // Functional components
 import Title from "../../components/PhotoEdit/Title";
@@ -71,7 +71,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
           photo: response[0],
           // The file extension e.g. ".jpg" or ".gif"
           extension: response[1],
-          token: token,
+          token,
         })
         .then((response) => {
           console.log(response);
@@ -104,20 +104,20 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
             <Title
               deactivateUploadButton={this.deactivateUploadButton}
               activateUploadButton={this.activateUploadButton}
-              onChange={(title: string) => this.setState({ title: title })}
-              titleDef={""}
+              onChange={(title: string) => this.setState({ title })}
+              titleDef=""
             />
             <Price
               deactivateUploadButton={this.deactivateUploadButton}
               activateUploadButton={this.activateUploadButton}
-              onChange={(price: number) => this.setState({ price: price })}
+              onChange={(price: number) => this.setState({ price })}
             />
             <Tags
               deactivateUploadButton={this.deactivateUploadButton}
               activateUploadButton={this.activateUploadButton}
               tagsList={this.state.tagsList}
               setTagsList={(tagsList: any) =>
-                this.setState({ tagsList: tagsList })
+                this.setState({ tagsList })
               }
             />
             <FileUpload
