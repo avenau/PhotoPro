@@ -6,12 +6,9 @@ import Tabs from "react-bootstrap/Tabs";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { RouteComponentProps } from "react-router-dom";
-import AlbumList from "../components/Lists/AlbumList";
-import CollectionList from "../components/Lists/CollectionList";
-import UserList from "../components/Lists/UserList";
-import PhotoList from "../components/Lists/PhotoList";
 import Toolbar from "../components/Toolbar/Toolbar";
 import UserHeader from "../components/UserHeader/UserHeader";
+import ContentLoader from "../components/ContentLoader/ContentLoader";
 import "./Profile.scss";
 
 interface Props extends RouteComponentProps {}
@@ -23,6 +20,7 @@ interface State {
   location: string;
   email: string;
   userId: string;
+  aboutMe?: string;
   dne: boolean;
   profilePic: string[];
 }
@@ -152,6 +150,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           nickname={this.state.nickname}
           location={this.state.location}
           email={this.state.email}
+          aboutMe={this.state.aboutMe}
           profilePic={this.state.profilePic}
           className="user-header"
         />
@@ -161,18 +160,34 @@ export default class ProfilePage extends React.Component<Props, State> {
           id="uncontrolled-tab-example"
           transition={false}
         >
-          <Tab eventKey="showcase" title="Showcase">
-            <PhotoList photos={[]} />
+          <Tab eventKey="showcase" title="Showcase" unmountOnExit>
+            <ContentLoader
+              query={this.state.userId}
+              route="/user/photos"
+              type="photo"
+            />
           </Tab>
-          <Tab eventKey="albums" title="Albums">
-            <AlbumList albums={[]} />
+          <Tab eventKey="albums" title="Albums" unmountOnExit>
+            <ContentLoader
+              query={this.state.userId}
+              route="/user/albums"
+              type="album"
+            />
           </Tab>
-          <Tab eventKey="collections" title="Collections">
-            <CollectionList collections={[]} />
+          <Tab eventKey="collections" title="Collections" unmountOnExit>
+            <ContentLoader
+              query={this.state.userId}
+              route="/user/collections"
+              type="collection"
+            />
           </Tab>
           {currentUser ? (
-            <Tab eventKey="following" title="Following">
-              <UserList users={[]} />
+            <Tab eventKey="following" title="Following" unmountOnExit>
+              <ContentLoader
+                query={this.state.userId}
+                route="/user/following"
+                type="user"
+              />
             </Tab>
           ) : (
             <></>

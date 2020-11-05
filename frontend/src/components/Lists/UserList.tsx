@@ -18,7 +18,6 @@ interface Profile {
 
 class UserList extends React.Component<Props> {
   render() {
-    console.log("listed users");
     return (
       <>
         {this.props.users.map((profile) => (

@@ -21,9 +21,10 @@ export default function Album(props: any) {
         ).then((res) => {
             console.log(res)
             var albumOptions = res.data.albumList
-            for (var i = 0; i < albumOptions.length; i++) {
-                albumOptions[i].push(false)
-            }
+            console.log(albumOptions)
+            // for (var i = 0; i < albumOptions.length; i++) {
+            //     albumOptions[i].push(false)
+            // }
             setAlbums(albumOptions)
         }).catch((err) => {
             console.log(err)

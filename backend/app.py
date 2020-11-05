@@ -6,8 +6,8 @@ Handle requests to and from server and web app client
 
 # Pip functions
 import traceback
-import requests
-from flask.helpers import send_file
+import mongoengine
+import datetime
 from json import dumps, loads
 from bson.objectid import ObjectId, InvalidId
 from flask import Flask, request
@@ -17,29 +17,37 @@ from flask_mail import Mail
 from flask_pymongo import PyMongo
 from werkzeug.exceptions import HTTPException
 
+# Classes
+import lib.photo.photo
+from lib.token_functions import get_uid
+import lib.user.user
+import lib.catalogue.catalogue as catalogue
+import lib.album.album
+import lib.comment.comment as comment
+
 # JAJAC made functions
 
 # Comments
-from lib.comments.comment_photo import comments_photo
-from lib.comments.get_comments import get_all_comments
-from lib.photo.fs_interactions import find_photo
+import lib.comment.comment_photo as comment_photo
+from lib.comment.get_comments import get_all_comments
 
 # Photo
-from lib.photo.photo_edit import create_photo_entry, update_photo_details, get_photo_edit
+from lib.photo.photo_edit import create_photo_entry, update_photo_details
+from lib.photo.photo_edit import get_photo_edit
 from lib.photo.remove_photo import remove_photo
 
 # Photo details
-from lib.photo_details.photo_details import get_photo_details
-from lib.photo_details.photo_likes import is_photo_liked, update_likes_mongo
-import lib.photo_details.photo_details as photo_details_lib
+from lib.photo_details.photo_likes import is_photo_liked, like_photo
+
 
 # Profile
-from lib.profile.profile_details import get_user_details
 from lib.profile.upload_photo import update_user_thumbnail
+from lib.profile.profile_details import user_photo_search
 
 # Search
-from lib.search.user_search import user_search
-from lib.search.photo_search import photo_search
+# from lib.search.user_search import user_search
+# from lib.search.photo_search import photo_search
+from lib.search.search import photo_search, user_search, collection_search
 
 # Showdown
 from lib.showdown import get_images
@@ -47,7 +55,6 @@ from lib.showdown import get_images
 # User
 from lib.user.validate_login import login
 import lib.user.password_reset as password_reset
-import lib.user.validate_registration as val_reg
 
 # Welcome
 from lib.welcome.contributors import get_popular_contributors_images
@@ -56,9 +63,8 @@ from lib.welcome.popular_images import get_popular_images
 # Other/utils
 from lib.token_decorator import validate_token
 import lib.token_functions as token_functions
-from lib import db
-
-
+from lib import Error
+import lib
 
 # Config
 from config import DevelopmentConfig, defaultHandler
@@ -70,6 +76,7 @@ app.register_error_handler(HTTPException, defaultHandler)
 CORS(app)
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
+mongoengine.connect('angular-flask-muckaround')
 
 
 @app.route('/verifytoken', methods=['GET'])
@@ -126,7 +133,9 @@ def process_login():
     email = request.form.get("email")
     password = request.form.get("password")
 
-    return dumps(login(mongo, bcrypt, email, password))
+    ret = login(bcrypt, email, password)
+
+    return dumps(ret)
 
 
 @app.route('/passwordreset/request', methods=['POST'])
@@ -207,7 +216,6 @@ def account_registration():
     None
     """
     new_user = request.form.to_dict()
-    val_reg.valid_registration(mongo, new_user)
 
     # Make some hashbrowns
     hashed_password = bcrypt.generate_password_hash(new_user["password"])
@@ -217,18 +225,22 @@ def account_registration():
     if new_user.get('profilePic') == "":
         new_user['profilePic'] = ["", ""]
     else:
-        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'], new_user['extension'])
+        new_user['profilePic'] = update_user_thumbnail(new_user['profilePic'],
+                                                       new_user['extension'])
 
-    # Add collections and other user owned entities
-    new_user['posts'] = []
-    new_user['albums'] = []
-    new_user['collections'] = []
-    new_user['likes'] = []
-    new_user['purchased'] = []
-    new_user['credits'] = 0
+    this_user = lib.user.user.User(
+        fname=new_user['fname'],
+        lname=new_user['lname'],
+        email=new_user['email'],
+        nickname=new_user['nickname'],
+        password=new_user['password'],
+        profile_pic=new_user['profilePic'],
+        extension=new_user['extension'],
+        about_me=new_user['aboutMe'],
+        location=new_user['location']
+    )
+    this_user.save()
 
-    # Insert account details into collection called 'user'
-    mongo.db.users.insert(new_user)
     return dumps({})
 
 
@@ -249,20 +261,26 @@ def profile_details():
         lname,
         nickname,
         location,
-        email
+        email,
+        profilePic,
+        aboutMe
     }
     -------
     """
-    details = get_user_details(request.args.get("u_id"), mongo)
+    this_user = lib.user.user.User.objects.get(id=request.args.get("u_id"))
+    if not this_user:
+        raise Error.UserDNE("Couldn't find user")
 
     return dumps({
-        "fname": details['fname'],
-        "lname": details['lname'],
-        "nickname": details["nickname"],
-        "location": details["location"],
-        "email": details["email"],
-        "profilePic": details["profilePic"]
+        "fname": this_user.get_fname(),
+        "lname": this_user.get_lname(),
+        "nickname": this_user.get_nickname(),
+        "location": this_user.get_location(),
+        "email": this_user.get_email(),
+        "profilePic": this_user.get_profile_pic(),
+        "aboutMe": this_user.get_about_me()
     })
+
 
 @app.route('/purchases/buycredits', methods=['POST'])
 @validate_token
@@ -285,20 +303,15 @@ def buy_credits():
     user_id = token_functions.get_uid(token)
     credits_to_add = int(request.form.get("ncredits"))
 
-    # Validate credits_to_add
-    if credits_to_add < 1:
-        raise ValueError("You need to buy at least 1 credit.")
+    this_user = lib.user.user.User.objects.get(id=user_id)
 
-    query = {"_id": ObjectId(user_id)}
-
-    user_details = get_user_details(user_id, mongo)
-    current_credits = user_details['credits']
-    set_credits = {"$set": {"credits": current_credits + credits_to_add}}
-    mongo.db.users.update_one(query, set_credits)
+    this_user.add_credits(credits_to_add)
+    this_user.save()
 
     return dumps({
         'credits_bought': credits_to_add
     })
+
 
 @app.route('/purchases/refundcredits', methods=['POST'])
 @validate_token
@@ -321,19 +334,12 @@ def refund_credits():
     user_id = token_functions.get_uid(token)
     credits_to_refund = int(request.form.get("ncredits"))
 
-
-    query = {"_id": ObjectId(user_id)}
-    user_details = get_user_details(user_id, mongo)
-    current_credits = user_details['credits']
-
-    # Validate credits_to_refund
-    if credits_to_refund < 1:
-        raise ValueError("You need to buy at least 1 credit.")
-    if credits_to_refund > current_credits:
-        raise ValueError("You can't refund more credits than you own.")
-
-    set_credits = {"$set": {"credits": current_credits - credits_to_refund}}
-    mongo.db.users.update_one(query, set_credits)
+    this_user = lib.user.user.User.objects.get(id=user_id)
+    this_user.remove_credits(credits_to_refund)
+    try:
+        this_user.save()
+    except mongoengine.ValidationError:
+        raise Error.ValidationError("User has insufficient credits")
 
     return dumps({
         'credits_refunded': credits_to_refund
@@ -380,7 +386,6 @@ def showdown_getwinner():
     """
     path = get_images.get_showdown_winner_image()
     return dumps({'path': path})
-
 
 
 @app.route('/welcome/popularcontributors', methods=['GET'])
@@ -448,23 +453,23 @@ def user_info_with_token():
     if token == '':
         print("token is an empty string")
         return {}
-    u_id = token_functions.verify_token(token)
-    user = get_user_details(u_id['u_id'], mongo)
+    u_id = token_functions.get_uid(token)
+    this_user = lib.user.user.User.objects.get(id=u_id)
+    if not this_user:
+        raise Error.UserDNE("Could not find user")
     # JSON Doesn't like ObjectId format
     return dumps({
-        'fname': user['fname'],
-        'lname': user['lname'],
-        'email': user['email'],
-        'nickname': user['nickname'],
-        'credits': user['credits'],
-        'DOB': user['DOB'],
-        'location': user['location'],
-        'aboutMe': user['aboutMe'],
-        'profilePic': user['profilePic']
+        'fname': this_user.get_fname(),
+        'lname': this_user.get_lname(),
+        'email': this_user.get_email(),
+        'nickname': this_user.get_nickname(),
+        'credits': this_user.get_credits(),
+        'location': this_user.get_location(),
+        'aboutMe': this_user.get_about_me(),
+        'profilePic': this_user.get_profile_pic()
     })
 
 
-# TODO Move this to a separate file?
 @app.route('/manageaccount/success', methods=['POST'])
 def manage_account():
     """
@@ -488,45 +493,22 @@ def manage_account():
     -------
     {'success: boolean}
     """
-    '''
-    Need Something to Check if current logged in account exist in database
-    I am assuming user_id is stored in localStorage
-    Hard coded this part, this part should check what the logged in
-    user object_id is
-    '''
     success = False
+    data = loads(request.data.decode())
+    this_user = lib.user.user.User.objects.get(id=data['u_id'])
+    if this_user is None:
+        raise Error.UserDNE("User with id " + data['u_id'] + "does not exist")
     try:
-        data = loads(request.data.decode())
-        current_user = data['u_id']
-        find_userdb = {"_id": ObjectId(current_user)}
         for key, value in data.items():
-            if (value == "" or key == "u_id"):
-                continue
-            if key == "password":
-                hashed_password= bcrypt.generate_password_hash(value)
-                mongo.db.users.update_one(find_userdb, {"$set": {
-                                                            key:
-                                                            hashed_password}})
-            elif key == "profilePic":
-                img_and_filetype = update_user_thumbnail(value)
-                mongo.db.users.update_one(find_userdb, {"$set": {
-                                                            key:
-                                                            img_and_filetype}})
-            else:
-                change_userdb = {"$set": {key: value}}
-                mongo.db.users.update_one(find_userdb, change_userdb)
-
+            lib.user.helper_functions.update_value(bcrypt, this_user,
+                                                   key, value)
         success = True
-
-    # TODO: Catching too general using Exception. Replace with e.g. ValueError
     except Exception:
         print("Errors... :-(")
         print(traceback.format_exc())
         success = False
 
-
     return dumps({'success': success})
-
 
 
 @app.route('/manageaccount/confirm', methods=['GET', 'POST'])
@@ -541,49 +523,19 @@ def password_check():
     Returns
     -------
     """
-    # data = json.loads(request.data.decode())
-    # Need Something to Check if current logged in account exist in database
-    # I am assuming user_id is stored in localStorage
-    # Hard coded this part, this part should check what
-    # the logged in user object_id is
-
     data = request.form.to_dict()
     current_user = data['u_id']
-    user_object = mongo.db.users.find_one({"_id": ObjectId(current_user)})
-    current_password = user_object['password']
+    user_object = lib.user.user.User.objects.get(id=current_user)
+    if user_object is None:
+        raise Error.UserDNE("User " + current_user + "does not exist")
 
     # TODO: set the token properly with jwt
-    if bcrypt.check_password_hash(current_password, data['password']):
+    if bcrypt.check_password_hash(user_object.get_password(),
+                                  data['password']):
         data['password'] = "true"
     else:
         data['password'] = "false"
     print(data)
-
-    return data
-
-
-@app.route('/get_user_info', methods=['GET', 'POST'])
-def get_user():
-    """
-    Description
-    -----------
-
-    Parameters
-    ----------
-
-    Returns
-    -------
-    """
-    data = request.form.to_dict()
-    current_uid = data['u_id']
-    current_user = mongo.db.users.find_one({"_id": ObjectId(current_uid)})
-    data['fname'] = current_user['fname']
-    data['lname'] = current_user['lname']
-    data['email'] = current_user['email']
-    data['nickname'] = current_user['nickname']
-    data['dob'] = current_user['DOB']
-    data['location'] = current_user['location']
-    data['aboutMe'] = current_user['aboutMe']
 
     return data
 
@@ -611,8 +563,9 @@ def upload_actual_photo():
     -------
     None
     """
-    photo_details = request.form.to_dict()
-    return dumps(create_photo_entry(mongo, photo_details))
+    these_photo_details = request.form.to_dict()
+    return dumps(create_photo_entry(these_photo_details))
+
 
 @app.route('/user/updatephoto', methods=['GET'])
 @validate_token
@@ -632,10 +585,11 @@ def photo_details_edit():
     success or error
     """
 
-    photoId = request.args.get('photoId')
+    photo_id = request.args.get('photoId')
     token = request.args.get('token')
 
-    return dumps(get_photo_edit(mongo, photoId, token))
+    return dumps(get_photo_edit(photo_id, token))
+
 
 @app.route('/user/updatephoto', methods=['PUT'])
 @validate_token
@@ -643,9 +597,9 @@ def update_photo():
     """
     Description
     -----------
-    Accepts parameters related to EDITING photo details, verifies the parameters,
-    creates a database entry for the photo and saves the photo details
-    to backend.
+    Accepts parameters related to EDITING photo details, verifies the
+    parameters, creates a database entry for the photo and saves
+    the photo details to backend.
 
     Parameters
     ----------
@@ -661,9 +615,10 @@ def update_photo():
     -------
     success or error
     """
-    photo_details = request.form.to_dict()
+    these_photo_details = request.form.to_dict()
     # Update either price, title, keywords or add discount
-    return dumps(update_photo_details(mongo, photo_details))
+    return dumps(update_photo_details(these_photo_details))
+
 
 @app.route('/user/updatephoto/deleted', methods=['GET'])
 @validate_token
@@ -681,10 +636,15 @@ def check_deleted():
     -------
     {deleted: boolean(string)}
     """
-    photoId = request.args.get("photoId")
-    res = mongo.db.photos.find_one({"_id": ObjectId(photoId)}, {"deleted": 1})
+    photo_id = request.args.get('photoId')
+    this_photo = lib.photo.photo.Photo.objects.get(id=photo_id)
+    print('here', this_photo)
+    if not this_photo or photo_id == '':
+        raise Error.PhotoDNE("Could not find photo" + photo_id)
+    
+    print('yo',this_photo.is_deleted())
+    return dumps({"deleted": this_photo.is_deleted()})
 
-    return dumps({"deleted": res["deleted"]})
 
 @app.route('/user/updatephoto', methods=['DELETE'])
 @validate_token
@@ -711,11 +671,8 @@ def user_remove_photo():
     identifier = {
         '_id': ObjectId(img_id)
     }
-    res = remove_photo(mongo.db.photos, u_id, identifier)
-    if res is True:
-        return dumps({'success': 'true'})
-    else:
-        return dumps({'success': 'false'})
+    res = remove_photo(u_id, identifier)
+    return dumps({'success': str(res)})
 
 
 @app.route('/user/profile/uploadphoto', methods=['POST'])
@@ -729,6 +686,7 @@ def upload_photo():
     img_path : string
         e.g. http://imagesite.com/img.png
     token : string
+    extension : string
     Returns
     -------
     {}
@@ -738,9 +696,18 @@ def upload_photo():
     '''
     token = request.form.get('token')
     img_path = request.form.get('img_path')
-    thumbnail_and_filetype = update_user_thumbnail(img_path)
+    extension = request.form.get('extension')
+    thumbnail_and_filetype = update_user_thumbnail(img_path, extension)
     u_id = token_functions.get_uid(token)
-    db.update_user(mongo, u_id, 'profilePic', thumbnail_and_filetype)
+    user = lib.user.user.User.objects.get(id=u_id)
+    if not user:
+        raise Error.UserDNE("Could not find user " + u_id)
+    user.update_user_thumbnail(thumbnail_and_filetype)
+    try:
+        user.save()
+    except mongoengine.ValidationError:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Could not update thumbnail")
     # Update the database...
     return dumps({
         'success': 'True'
@@ -757,6 +724,7 @@ def upload_photo():
 @app.route('/search/user', methods=['GET'])
 def search_user():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many user details based on a query
@@ -767,6 +735,7 @@ def search_user():
     offset : int
     limit : int
     orderby : string
+    token : string
 
     Returns
     -------
@@ -782,11 +751,13 @@ def search_user():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps(user_search(data, mongo))
+    return dumps(user_search(data))
+
 
 @app.route('/search/photo', methods=['GET'])
 def search_photo():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many photo details based on a query
@@ -800,6 +771,7 @@ def search_photo():
     filetype : string
     priceMin : int
     priceMax : int
+    token : string
 
     Returns
     -------
@@ -816,11 +788,12 @@ def search_photo():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps(photo_search(data, mongo))
+    return dumps(photo_search(data))
 
 @app.route('/search/collection', methods=['GET'])
 def search_collection():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many user details based on a query
@@ -831,6 +804,7 @@ def search_collection():
     offset : int
     limit : int
     orderby : string
+    token : string
 
     Returns
     -------
@@ -844,9 +818,11 @@ def search_collection():
 
     return dumps({[]})
 
+
 @app.route('/search/album', methods=['GET'])
 def search_album():
     """
+    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many album details based on a query
@@ -857,6 +833,7 @@ def search_album():
     offset : int
     limit : int
     orderby : string
+    token : string
 
     Returns
     -------
@@ -866,13 +843,42 @@ def search_album():
     """
     return dumps({[]})
 
-
 '''
 -------------------
 - End Search Routes -
 -------------------
 '''
 
+@app.route('/user/photos', methods=['GET'])
+def _get_photo_from_user():
+    """
+    Description
+    -----------
+    GET request to return many photo details based on a query
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_photo_search(data))
 
 
 @app.route('/photo_details', methods=['GET'])
@@ -887,7 +893,7 @@ def photo_details():
     Parameters
     ----------
     p_id : string
-    u_id : string (Id of current user)
+    token : string
 
     Returns
     -------
@@ -900,13 +906,17 @@ def photo_details():
         email: str
         u_id: str, (Artist of the photo)
         status : number (0 means not loaded yet, 1 means existing, 2 means does not exist)
+        is_owner : bool
     }
     """
     photo_id = request.args.get("p_id")
-    current_user = request.args.get("u_id")
     try:
-        p_oid = ObjectId(photo_id)
-    except InvalidId:
+        req_user = token_functions.get_uid(request.args.get("token"))
+    except:
+        req_user = ""
+    try:
+        photo = lib.photo.photo.Photo.objects.get(id=photo_id)
+    except lib.photo.photo.Photo.DoesNotExist:
         print("INVALID!!!!")
         return dumps({
             "u_id": "",
@@ -922,55 +932,59 @@ def photo_details():
             "discount" : "",
             "deleted" : "",
             "status" : 2,
+            "is_owner" : False,
+        })
+    user_purchasers = lib.user.user.User.objects(purchased=photo.id).count()
+    if user_purchasers > 0:
+        purchased = True
+    else:
+        purchased = False
+
+    is_artist = str(photo.get_user().get_id()) == req_user
+
+    if purchased == False and is_artist == False and photo.is_deleted() == True :
+        return dumps({
+            "u_id": "",
+            "title": "",
+            "likes": "",
+            "tagsList": "",
+            "nickname": "",
+            "email": "",
+            "purchased": False,
+            "metadata": "",
+            "price": "",
+            "discount": "",
+            "deleted": photo.is_deleted(),
+            "photoStr": "",
+            "status": 1,
+            "is_artist" : is_artist,
         })
 
-    #This is if posts are stored in user entity
-    #artist = mongo.db.users.find_one({"posts": [ObjectId(photo_id)]})
-    #p_id_string = st{"status" : 2}r(artist['_id'])
-
-    photo_details = get_photo_details(photo_id, mongo)
-
-    p_id_string = str(photo_details['user'])
-    artist = mongo.db.users.find_one({"_id": photo_details['user']})
-    #print("PRINTING CURRENT USER")
-    #print(current_user)
-
-    if current_user != "" and current_user != "null":
-        current_user_details = get_user_details(current_user, mongo)
-        #purchased = (photo_details['_id'] in current_user_details['purchased'])
-        purchased = (photo_details['_id'] in current_user_details['purchased'])
-    else :
-        purchased = False
-    #TODO: Find out how to send dates over
-    #"posted": photo_details["posted"],
-    
-
-
-    img = find_photo(f"{photo_id}{photo_details['extension']}")
-
     return dumps({
-        "u_id": p_id_string,
-        "title": photo_details['title'],
-        "likes": photo_details["likes"],
-        "tagsList": photo_details["tags"],
-        "nickname": artist['nickname'],
-        "email": artist['email'],
+        "u_id": str(photo.get_user().get_id()),
+        "title": photo.get_title(),
+        "likes": photo.get_likes(),
+        "tagsList": photo.get_tags(),
+        "nickname": photo.get_user().get_nickname(),
+        "email": photo.get_user().get_email(),
         "purchased": purchased,
-        "photoStr" : img,
-        "metadata" : photo_details['metadata'],
-        "price" : photo_details["price"],
-        "discount" : photo_details["discount"],
-        "deleted" : photo_details["deleted"],
-        "status" : 1,
-
+        "metadata": photo.get_metadata(),
+        "price": photo.get_price(),
+        "discount": photo.get_discount(),
+        "deleted": photo.is_deleted(),
+        "photoStr": photo.get_thumbnail(req_user),
+        "status": 1,
+        "is_artist" : is_artist,
     })
+
 
 @app.route('/photo_details/isLiked', methods=['GET'])
 def photo_liked():
     """
     Description
     -----------
-    GET request         return dumps({"status" : 2})to retrieve information for a photo
+    GET request
+    dumps({"status" : 2})to retrieve information for a photo
 
     Parameters
     ----------
@@ -985,12 +999,14 @@ def photo_liked():
     """
     photo_id = request.args.get("p_id")
     user_id = request.args.get("u_id")
-    isLiked = is_photo_liked(photo_id, user_id, mongo)
+    is_liked = is_photo_liked(photo_id, user_id)
     return dumps({
-        "isLiked": isLiked,
+        "isLiked": is_liked,
     })
 
+
 @app.route('/photo_details/updateLikes', methods=['POST'])
+@validate_token
 def update_likes():
     """
     Description
@@ -999,38 +1015,28 @@ def update_likes():
 
     Parameters
     ----------
+    token: string
     photoId : string
-    userId : string
-    count : number (Number of Likes)
-    upStatus : boolean (True if liking, false if unliking)
 
     Returns
     -------
-    None
+    {
+        'liked': boolean
+    }
     """
     params = request.form.to_dict()
     photo_id = params.get("photoId")
-    user_id = params.get("userId")
-    new_count = int(params.get("count"))
-    upvote = params.get("upStatus")
     token = params.get("token")
-    #print("NEW COUNT: " + params.get("count"))
-    try:
-        token_functions.verify_token(token)
-        update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
-        return dumps({
-            "valid": True
-        })
-    except Exception:
-        return dumps({
-            "valid": False
-        })
+    print("TOKEN CALL")
+    print(token)
+    user_id = token_functions.get_uid(token)
+    liked = like_photo(user_id, photo_id)
+    return dumps({'liked': liked})
 
-    update_likes_mongo(photo_id, user_id, new_count, upvote, mongo)
-    return dumps({})
 
 @app.route('/comments/comment', methods=['POST'])
-def comment_photo():
+@validate_token
+def comment_on_photo():
     """
     Description
     -----------
@@ -1050,13 +1056,14 @@ def comment_photo():
     """
     params = request.form.to_dict()
     photo_id = params.get("photoId")
-    user_id = params.get("currentUser")
-    posted = params.get("commentDate")
     content = params.get("commentContent")
+    token = params.get("token")
+    user_id = token_functions.get_uid(token)
 
-    comments_photo(photo_id, user_id, posted, content, mongo)
+    comment_photo.comments_photo(photo_id, user_id, content)
     return dumps({})
-    
+
+
 @app.route('/comments/get_comments', methods=['GET'])
 def get_comments():
     """
@@ -1067,22 +1074,27 @@ def get_comments():
     Parameters
     ----------
     p_id : string
-    beginning : number 
-    end : number (-1 if want to return all of comments)
-    oldest_to_newest : boolean
+    offset : number
+    limit : number (-1 if want to return all of comments)
+    old_to_new : boolean
 
     Returns
     -------
     {
-        comments : [{author : string, comment : string, datePosted : date}]
+        comments: [{commenter: string,
+                     comment : string,
+                     datePosted : date}]
     }
     """
     photo_id = request.args.get("p_id")
-    print("Get All Comments Test!")
-    #print(get_all_comments(photo_id, mongo))
-    all_comments = get_all_comments(photo_id, mongo)
+    #offset = request.args.get("offset")
+    #limit = request.args.get("limit")
+    #order = request.args.get("old_to_new")
+    all_comments = get_all_comments(photo_id)
     
-    return dumps({"comments" : all_comments})
+
+    return dumps({"comments" : all_comments, "status" : True})
+
 
 @app.route('/get_current_user', methods=['GET'])
 def get_verified_user():
@@ -1102,7 +1114,7 @@ def get_verified_user():
     }
     """
     token = request.args.get("token")
-    if token == None:
+    if token is None:
         return dumps({
             "u_id": "",
         })
@@ -1135,16 +1147,15 @@ def albums():
     token = request.args.get('token')
     u_id = token_functions.verify_token(token)["u_id"]
 
-    # List of album ids
-    albums = mongo.db.users.find_one({'_id': ObjectId(u_id)}, {'albums': 1})['albums']
+    # List of album objects
+    user = lib.user.user.User.objects.get(id=u_id)
+    albums = user.get_albums()
 
     # Find the titles of the albums and place in dictionary
     # {albumid: title, albumid, title2: albumid:...}
     albumList = list()
-    for i in albums:
-        title = mongo.db.albums.find_one({'_id': i}, {'title': 1})['title']
-        print(title)
-        albumList.append((str(i), title))
+    for i in albums:  
+        albumList.append((str(i.get_id()), i.get_title()))
 
     return dumps({"albumList": albumList})
 
@@ -1170,26 +1181,28 @@ def add_album():
     """
     token = request.form.get('token')
     u_id = token_functions.verify_token(token)["u_id"]
+    user = lib.user.user.User.objects.get(id=u_id)
+    if not user:
+        raise Error.UserDNE("Could not find User " + user_uid)
     
-    # TODO validate title length
-    # Validate title, must not already exist in the DB
-    title = request.form.get('title')
+    album = lib.album.album.Album(
+        title=request.form.get('title'),
+        photos=[],
+        creation_date=datetime.datetime.now(),
+        created_by=user,
+        deleted=False,
+        tags=[],
+    )
+    try:
+        album.save()
+    except mongoengine.ValidationError:
+        print(traceback.format_exc())
+        raise Error.ValidationError
     
+    user.add_album(album)
+    user.save()
 
-    # Create new album
-    album = mongo.db.albums.insert_one({
-        "title": title,
-        "discount": 0.0,
-        "photos": [],
-        "user": ObjectId(u_id)
-    })
-    albumId = album.inserted_id
-    print(albumId)
-    # Current albums
-
-    mongo.db.users.update_one({'_id': ObjectId(u_id)}, {"$push": {"albums": ObjectId(albumId)}})
-
-    return dumps({"albumId": str(albumId)})
+    return dumps({"albumId": str(album.get_id())})
 '''
 ---------------
 - Test Routes -
@@ -1224,6 +1237,7 @@ def basic():
         arguments = request.args
     print(arguments)
     return dumps(arguments)
+
 
 if __name__ == '__main__':
     app.run(port=8001, debug=True)

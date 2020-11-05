@@ -8,10 +8,20 @@ interface CommentProps {
     p_id: string;
 }
 
+interface CommentObject {
+    content: string,
+    datePosted: string,
+    commenter: string,
+    commenter_id: string,
+}
+
 export default function PhotoComments(props: CommentProps) {
-    const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState<CommentObject[]>([]);
     const [commentDate, setDate] = useState(new Date());
     const [commentContent, setContent] = useState("");
+    const [status, setStatus] = useState(false);
+    const [limitMessage, setLimitMessage] = useState("");
+    const [validComment, setValidComment] = useState(false);
     const addComments = async (comment: string) => {
         console.log("ADD COMMENTS");
         //console.log(comment);
@@ -22,7 +32,7 @@ export default function PhotoComments(props: CommentProps) {
     }
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         setDate(new Date());
-        let currentUser = localStorage.getItem('u_id');
+        let token = localStorage.getItem('token');
         let photoId = props.p_id;
         /* photoId: string
          userId: string(Commenter)
@@ -30,26 +40,28 @@ export default function PhotoComments(props: CommentProps) {
          content: string*/
         event.preventDefault();
         event.stopPropagation();
-        console.log(currentUser);
+        console.log(token);
         console.log(photoId);
         axios.post('/comments/comment',
             {
-                currentUser,
+                token,
                 photoId,
                 commentContent,
                 commentDate,
             })
             .then((response) => {
-                console.log(response);
+                clearCommentInput();
+                getComments(photoId);
             })
     }
 
     const getComments = async (photoId: string) => {
+        let token = localStorage.getItem('token');
         await axios
-            .get(`/comments/get_comments?p_id=${photoId}`)
+            .get(`/comments/get_comments?p_id=${photoId}&token=${token}`)
             .then((response) => {
-                /*console.log(response.data);
-                var tempComments: object[] = [];
+                console.log(response.data);
+                var tempComments: CommentObject[] = [];
                 console.log(response.data.comments);
                 for (let comment of response.data.comments) {
                     console.log("Hi");
@@ -59,27 +71,35 @@ export default function PhotoComments(props: CommentProps) {
                 console.log("COMMENT TEST!");
                 console.log(tempComments);
                 setComments(tempComments);
-
-                console.log(comments);*/
-
-                console.log(response.data);
-                var tempComments = [];
-                console.log(response.data.comments);
-                for (let comment of response.data.comments) {
-                    console.log("Hi");
-                    addComments(comment);
-
-                }
-                console.log("COMMENT TEST!");
+                console.log("Printing Comments");
                 console.log(comments);
+                setStatus(response.data.status);
 
             });
     }
 
     useEffect(() => {
         getComments(props.p_id);
-    }, []);
+    }, [status]);
 
+    function clearCommentInput() {
+        const commentInput = document.getElementById("CommentInput") as HTMLInputElement;
+        commentInput.value = "";
+        setContent("");
+    }
+
+    const changeFunction = (value: string) => {
+        setContent(value);
+        //console.log("CHANGING");
+        //console.log(value.length);
+        if (value.length >= 8000) {
+            setLimitMessage("Comments MUST be less than 8000 characters long!");
+            setValidComment(true);
+        } else {
+            setLimitMessage("");
+            setValidComment(false);
+        }
+    }
 
 
     return (
@@ -88,21 +108,23 @@ export default function PhotoComments(props: CommentProps) {
                 <Form onSubmit={handleSubmit}>
                     <Form.Row id="commentTextArea">
                         <Col>
-                            <Form.Control as="textarea" rows={4} onChange={(e) => setContent(e.target.value)} placeholder="Add a comment..." />
+                            <Form.Control id="CommentInput" as="textarea" rows={4} onChange={(e) => changeFunction(e.target.value)} placeholder="Add a comment..." />
+                            <Form.Text id="WarningMessage" muted>{limitMessage}</Form.Text>
                         </Col>
                         <Col>
-                            <Button variant="primary" type="submit" className="commentButton">
+                            <Button disabled={validComment} variant="primary" type="submit" className="commentButton">
                                 Comment
                             </Button>
                         </Col>
+
                     </Form.Row>
                 </Form >
-                <Row>
+                <Row className="CommentDisplay">
                     {comments.map((comment) => (
-                        <><Row>
-                            <CommentMessage message={comment['content']} author={comment['commenter']} datePosted={comment['datePosted']} />
-                        </Row>
-                        </>
+                        <CommentMessage className="CommentMessages" author_id={comment.commenter_id} message={comment.content} author={comment.commenter} datePosted={comment.datePosted} />
+
+
+
                     ))}
 
                 </Row>

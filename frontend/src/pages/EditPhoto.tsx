@@ -45,6 +45,8 @@ export default function EditPhoto(props: any) {
   });
 
   useEffect(() => {
+    console.log("HEEELLLOOOOOO")
+    console.log(photoId)
     checkDelete(photoId);
     getPhotoDetails(photoId);
   }, []);
@@ -52,6 +54,7 @@ export default function EditPhoto(props: any) {
   function handleSave(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
     const token = localStorage.getItem("token");
+    console.log(albums)
     axios
       .put("/user/updatephoto", {
         title: title,
@@ -199,6 +202,7 @@ export default function EditPhoto(props: any) {
                       thumbnail
                       id="imagePreview"
                       src={imagePreview}/>
+
                   </Col>
                   <Col>
                     <Album 
