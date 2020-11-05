@@ -96,6 +96,9 @@ export default function PhotoContents(props: ContentProps) {
         token: token,
         photoId: props.photoId,
       })
+      .then((response) => {
+        console.log(response);
+      })
       .catch(() => {});
   }
 
