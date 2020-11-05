@@ -282,7 +282,7 @@ class Photo(Document):
         Check if the user is the owner of the photo
         @return boolean
         '''
-        return this_user is self.get_user()
+        return this_user == self.get_user()
 
     def clean(self):
         '''
