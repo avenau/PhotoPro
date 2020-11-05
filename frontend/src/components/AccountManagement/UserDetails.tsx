@@ -8,7 +8,6 @@ import FileUpload from "../PhotoEdit/FileUpload";
 import ValidatePassword from "./ValidatePassword";
 
 export default function UserDetails(props: any) {
-  console.log(props);
   return (
     <Form
       noValidate

@@ -58,7 +58,6 @@ export default function ManageAccount(props: any) {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    const form = event.currentTarget;
     event.preventDefault();
     event.stopPropagation();
     setShow(true);
@@ -152,9 +151,9 @@ export default function ManageAccount(props: any) {
         />
         {/* Added animation={false} due to bug in bootstrap-React
           https://github.com/react-bootstrap/react-bootstrap/issues/5075 */}
-        <Modal show={showModal} onHide={() => setShow(true)} animation={false}>
-          <Modal.Header closeButton className="ma-20" />
-          <Form onSubmit={(e) => checkPassword(e)}>
+        <Modal show={showModal} onHide={() => setShow(false)} animation={false}>
+          <Modal.Header closeButton />
+          <Form onSubmit={(e) => checkPassword(e)} className="p-3">
             <Form.Group controlId="passwordForm">
               <Form.Label>
                 Are you sure you want to make these changes?
@@ -173,7 +172,7 @@ export default function ManageAccount(props: any) {
             </Form.Group>
             <Button variant="primary" type="submit">
               Save Change
-            </Button>
+            </Button>{" "}
             <Button
               variant="primary"
               onClick={() => {
@@ -181,7 +180,7 @@ export default function ManageAccount(props: any) {
               }}
             >
               Cancel
-            </Button>
+            </Button>{" "}
           </Form>
         </Modal>
       </Container>
