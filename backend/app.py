@@ -46,7 +46,7 @@ from lib.profile.profile_details import user_photo_search
 # Search
 # from lib.search.user_search import user_search
 # from lib.search.photo_search import photo_search
-from lib.search.search import photo_search, user_search, collection_search
+from lib.search.search import album_search, photo_search, user_search, collection_search
 
 # Showdown
 from lib.showdown import get_images
@@ -499,7 +499,7 @@ def manage_account():
     if this_user is None:
         raise Error.UserDNE("User with id " + this_user + "does not exist")
     try:
-        
+
         for key, value in data.items():
             lib.user.helper_functions.update_value(bcrypt, this_user,
                                                    key, value)
@@ -534,7 +534,7 @@ def password_check():
     token = data['token']
     user_id = token_functions.get_uid(token)
     user_object = lib.user.user.User.objects.get(id=user_id)
-    
+
     if user_object is None:
         raise Error.UserDNE("User with token" + token + "does not exist")
 
@@ -730,7 +730,6 @@ def upload_photo():
 @app.route('/search/user', methods=['GET'])
 def search_user():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many user details based on a query
@@ -763,7 +762,6 @@ def search_user():
 @app.route('/search/photo', methods=['GET'])
 def search_photo():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many photo details based on a query
@@ -799,7 +797,6 @@ def search_photo():
 @app.route('/search/collection', methods=['GET'])
 def search_collection():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many user details based on a query
@@ -815,20 +812,22 @@ def search_collection():
     Returns
     -------
     {
-        TODO
+        title : string,
+        created_by : string,
+        created: Date,
+        id : string
     }
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps({[]})
+    return dumps(collection_search(data))
 
 
 @app.route('/search/album', methods=['GET'])
 def search_album():
     """
-    TODO: Update to mongoengine
     Description
     -----------
     GET request to return many album details based on a query
@@ -844,10 +843,17 @@ def search_album():
     Returns
     -------
     {
-        TODO
+        title : string,
+        created_by : string,
+        created: Date,
+        id : string
     }
     """
-    return dumps({[]})
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(album_search(data))
 
 '''
 -------------------
@@ -1097,7 +1103,7 @@ def get_comments():
     #limit = request.args.get("limit")
     #order = request.args.get("old_to_new")
     all_comments = get_all_comments(photo_id)
-    
+
 
     return dumps({"comments" : all_comments, "status" : True})
 

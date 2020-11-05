@@ -3,6 +3,8 @@ Methods relating to getting search results
 """
 from json import loads
 from bson.json_util import dumps
+from bson.objectid import ObjectId
+from lib.album.album import Album
 
 from lib.collection.collection import Collection
 from lib.user.user import User
@@ -16,9 +18,9 @@ def get_sort_method(sortid):
     Get the mongodb sort command associated with the id given
     """
     if sortid == "recent":
-        return {"$sort": {"posted": -1}}
+        return {"$sort": {"created": -1}}
     if sortid == "old":
-        return {"$sort": {"posted": 1}}
+        return {"$sort": {"created": 1}}
     if sortid == "low":
         return {"$sort": {"price": 1}}
     if sortid == "high":
@@ -112,7 +114,7 @@ def photo_search(data):
                     "discount": 1,
                     "metadata": 1,
                     "extension": 1,
-                    "posted": 1,
+                    "created": "$posted",
                     "user": {"$toString": "$user"},
                     "id": {"$toString": "$_id"},
                     "_id": 0,
@@ -125,6 +127,7 @@ def photo_search(data):
     )
     res = loads(dumps(res))
     for result in res:
+        print(result)
         result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(req_user)
     return res
 
@@ -134,25 +137,30 @@ def collection_search(data):
     Search collections collection
     """
     sort = get_sort_method(data["orderby"])
+    try:
+        req_user = get_uid(data["token"])
+    except:
+        req_user = ""
     res = Collection.objects.aggregate(
         [
             {
                 "$match": {
                     "$or": [
-                        {"fname": {"$regex": data["query"], "$options": "i"}},
-                        {"lname": {"$regex": data["query"], "$options": "i"}},
-                        {"nickname": {"$regex": data["query"], "$options": "i"}},
+                        {"title": {"$regex": data["query"], "$options": "i"}},
+                        {"tags": {"$in": [data["query"]]}},
+                    ],
+                    "deleted": False,
+                    "$or": [
+                        {"private": False},
+                        {"created_by": ObjectId(req_user)}
                     ]
                 }
             },
             {
                 "$project": {
-                    "fname": 1,
-                    "lname": 1,
-                    "nickname": 1,
-                    "email": 1,
-                    "location": 1,
-                    "created": 1,
+                    "title": 1,
+                    "created_by": 1,
+                    "created": "$creation_date",
                     "id": {"$toString": "$_id"},
                     "_id": 0,
                 }
@@ -162,5 +170,40 @@ def collection_search(data):
             {"$limit": data["limit"]},
         ]
     )
+    # TODO Possibly return first X photos for thumbnail
+    res = loads(dumps(res))
+    return res
+
+def album_search(data):
+    """
+    Search albums collection
+    """
+    sort = get_sort_method(data["orderby"])
+    res = Album.objects.aggregate(
+        [
+            {
+                "$match": {
+                    "$or": [
+                        {"title": {"$regex": data["query"], "$options": "i"}},
+                        {"tags": {"$in": [data["query"]]}},
+                    ],
+                    "deleted": False,
+                }
+            },
+            {
+                "$project": {
+                    "title": 1,
+                    "created_by": 1,
+                    "created": "$creation_date",
+                    "id": {"$toString": "$_id"},
+                    "_id": 0,
+                }
+            },
+            sort,
+            {"$skip": data["offset"]},
+            {"$limit": data["limit"]},
+        ]
+    )
+    # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
     return res
