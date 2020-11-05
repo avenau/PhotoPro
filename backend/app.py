@@ -390,7 +390,7 @@ def buy_photo():
 
     print("here")
     return dumps({
-        "success": True
+        "purchased": True
     })
 
 
@@ -1006,6 +1006,7 @@ def photo_details():
             "is_artist" : is_artist,
         })
 
+    print("returning full details")
     return dumps({
         "u_id": str(photo.get_user().get_id()),
         "title": photo.get_title(),
