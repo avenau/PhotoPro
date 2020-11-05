@@ -53,6 +53,7 @@ from lib.showdown import get_images
 
 # User
 from lib.user.validate_login import login
+import lib.user.helper_functions
 import lib.user.password_reset as password_reset
 
 # Welcome
@@ -75,7 +76,7 @@ app.register_error_handler(HTTPException, defaultHandler)
 CORS(app)
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
-mongoengine.connect('angular-flask-muckaround')
+mongoengine.connect('angular-flask-muckaround', host=app.config["MONGO_URI"])
 
 
 @app.route('/verifytoken', methods=['GET'])
@@ -201,13 +202,9 @@ def account_registration():
     'email': str,
     'nickname': str,
     'password': str,
-    'privFName': str,
-    'privLName':  str,
-    'privEmail': str,
     'profilePic': base64,
     'extension': str,
     'aboutMe': str,
-    'DOB': str,
     'location': str
 
     Returns
@@ -215,7 +212,7 @@ def account_registration():
     None
     """
     new_user = request.form.to_dict()
-
+    print(new_user)
     # Make some hashbrowns
     hashed_password = bcrypt.generate_password_hash(new_user["password"])
     new_user["password"] = hashed_password
@@ -235,8 +232,8 @@ def account_registration():
         password=new_user['password'],
         profile_pic=new_user['profilePic'],
         extension=new_user['extension'],
-        about_me=new_user['aboutMe'],
-        location=new_user['location']
+        location=new_user['location'],
+        about_me=new_user['aboutMe']
     )
     this_user.save()
 
@@ -277,7 +274,6 @@ def profile_details():
         "location": this_user.get_location(),
         "email": this_user.get_email(),
         "profilePic": this_user.get_profile_pic(),
-        "aboutMe": this_user.get_about_me()
     })
 
 
@@ -493,11 +489,17 @@ def manage_account():
     {'success: boolean}
     """
     success = False
-    data = loads(request.data.decode())
-    this_user = lib.user.user.User.objects.get(id=data['u_id'])
+    data = request.form.to_dict()
+    u_id = token_functions.get_uid(data["token"])
+    this_user = lib.user.user.User.objects.get(id=u_id)
+
+    if data.get('profilePic') != "":
+            data['profilePic'] = update_user_thumbnail(data['profilePic'], data['extension'])
+
     if this_user is None:
-        raise Error.UserDNE("User with id " + data['u_id'] + "does not exist")
+        raise Error.UserDNE("User with id " + this_user + "does not exist")
     try:
+        
         for key, value in data.items():
             lib.user.helper_functions.update_value(bcrypt, this_user,
                                                    key, value)
@@ -511,24 +513,31 @@ def manage_account():
 
 
 @app.route('/manageaccount/confirm', methods=['GET', 'POST'])
+@validate_token
 def password_check():
     """
     Description
     -----------
+    Checks if the user has entered their password correctly
+    to verify that they can change their details.
 
     Parameters
     ----------
+    token: string
+    password: string
 
     Returns
     -------
+    password: boolean
     """
     data = request.form.to_dict()
-    current_user = data['u_id']
-    user_object = lib.user.user.User.objects.get(id=current_user)
+    token = data['token']
+    user_id = token_functions.get_uid(token)
+    user_object = lib.user.user.User.objects.get(id=user_id)
+    
     if user_object is None:
-        raise Error.UserDNE("User " + current_user + "does not exist")
+        raise Error.UserDNE("User with token" + token + "does not exist")
 
-    # TODO: set the token properly with jwt
     if bcrypt.check_password_hash(user_object.get_password(),
                                   data['password']):
         data['password'] = "true"
