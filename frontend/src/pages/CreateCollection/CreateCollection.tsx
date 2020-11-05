@@ -7,7 +7,7 @@ import axios from "axios";
 
 import Toolbar from "../../components/Toolbar/Toolbar";
 import Discount from '../../components/Collection/Discount';
-import PhotoList from '../../components/Collection/PhotoList';
+import ContentLoader from "../../components/ContentLoader/ContentLoader"
 
 import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
@@ -16,6 +16,7 @@ class CreateCollection extends React.Component<RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
     super(props);
     this.state = {
+      u_id: localStorage.getItem("token"),
       title: '',
       discount: 0,
       photos: [],
@@ -24,6 +25,17 @@ class CreateCollection extends React.Component<RouteChildrenProps, any> {
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
     this.deactivateCreateButton = this.deactivateCreateButton.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState = ({
+        photos: this.getPhotos()
+    })
+  }
+
+  // Get the photos that the user created
+  getPhotos(){
+      return []
   }
 
   handleSubmit(event: React.FormEvent<HTMLElement>) {
@@ -85,6 +97,11 @@ class CreateCollection extends React.Component<RouteChildrenProps, any> {
             setTagsList={(tags: any) =>
               this.setState({ tags: tags })
             }
+          />
+          <ContentLoader
+            query={this.state.userId}
+            route="/user/photos"
+            type="photo"
           />
           <Button id="createButton" className="mt-2" type="submit">
             Create Collection
