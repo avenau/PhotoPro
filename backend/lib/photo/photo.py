@@ -52,7 +52,7 @@ class Photo(Document):
     # Whether the photo is deleted or not
     deleted = BooleanField(default=False)
     # Metadata of the photo {collection: collection-name}
-    meta = {'collection': 'photos-mongoengine'}
+    meta = {'collection': 'photos'}
 
     def get_id(self):
         '''
