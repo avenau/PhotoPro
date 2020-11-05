@@ -46,4 +46,7 @@ I began work on JAJAC4, JAJAC-7, JAJAC-51.
 I set up the remote filesystem api behaviour for images
 I updated GIF thumbnails to be an animated version of the GIF rather than a static image.
 
----------------- Week 7 ----------------
+---------------- Week 8 ----------------
+I completed JAJAC-7, JAJAC-13, JAJAC-52, JAJAC-51.
+I added missing functionality on profile to display anything a user has uploaded.
+I added ordering and filetype filtering to search.
