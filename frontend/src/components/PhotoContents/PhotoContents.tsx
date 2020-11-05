@@ -102,6 +102,24 @@ export default function PhotoContents(props: ContentProps) {
       .catch(() => {});
   }
 
+  const downloadPhoto = (e: React.MouseEvent) => {
+    axios
+      .get("/download", {
+        params: {
+          token: token,
+          photo_id: props.photoId,
+        },
+      })
+      .then((r) => {
+        const link = document.createElement("a");
+        link.href = `data:image/jpg;base64,${r.data}`;
+        link.setAttribute("download", "example.jpg");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      });
+  };
+
   function DetermineButton() {
     console.log("IS ARTIST");
     console.log(is_artist);
@@ -111,7 +129,7 @@ export default function PhotoContents(props: ContentProps) {
     if (is_artist === true) {
       return (
         <div>
-          <Button>Download Full Photo</Button>
+          <Button onClick={(e) => downloadPhoto(e)}>Download Full Photo</Button>
           <Link to={`/edit/${props.photoId}`}>
             <Button className="ml-1">Manage Photo</Button>
           </Link>
@@ -120,7 +138,9 @@ export default function PhotoContents(props: ContentProps) {
     } else if (purchased === true) {
       return (
         <div>
-          <Button className="ml-1">Download Full Photo</Button>
+          <Button onClick={(e) => downloadPhoto(e)} className="ml-1">
+            Download Full Photo
+          </Button>
         </div>
       );
     }

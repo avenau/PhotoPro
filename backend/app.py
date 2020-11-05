@@ -393,6 +393,28 @@ def buy_photo():
         "purchased": True
     })
 
+@app.route('/download', methods=['GET'])
+@validate_token
+def download_full_photo():
+    """
+    Description
+    -----------
+    Download full photo
+
+    Parameters
+    ----------
+    token: str
+    photo_id: str
+
+    Returns
+    -------
+    base64: str
+    """
+    photo_id = request.args.get("photo_id")
+    print(photo_id)
+    return dumps({
+        "temp": "temp"
+    })
 
 # Returns the two showdown images for the day
 @app.route('/showdown/getImages', methods=['GET'])
