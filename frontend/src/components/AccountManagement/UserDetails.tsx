@@ -13,6 +13,7 @@ export default function UserDetails(props: any) {
       noValidate
       validated={props.validateFeedback}
       onSubmit={props.handleSubmit}
+      className="p-4"
     >
       <Form.Group>
         <Form.Label>First name</Form.Label>
