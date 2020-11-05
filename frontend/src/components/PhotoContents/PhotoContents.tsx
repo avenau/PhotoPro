@@ -87,6 +87,18 @@ export default function PhotoContents(props: ContentProps) {
     //console.log("Purchased: " + purchased);
   }, [purchased, deleted, status, is_artist]);
 
+  function purchasePhoto(e: any) {
+    if (e) {
+      e.preventDefault();
+    }
+    axios
+      .post("/purchasephoto", {
+        token: token,
+        photoId: props.photoId,
+      })
+      .catch(() => {});
+  }
+
   function DetermineButton() {
     console.log("IS ARTIST");
     console.log(is_artist);
@@ -112,7 +124,9 @@ export default function PhotoContents(props: ContentProps) {
     return (
       <div>
         <Button className="ml-1">Download Watermarked Photo</Button>
-        <Button className="ml-1">Purchase Photo</Button>
+        <Button className="ml-1" onClick={(e) => purchasePhoto(e)}>
+          Purchase Photo
+        </Button>
         <Price price={price} discount={discount} />
       </div>
     );

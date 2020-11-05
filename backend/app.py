@@ -344,6 +344,46 @@ def refund_credits():
         'credits_refunded': credits_to_refund
     })
 
+@app.route('/purchasephoto', methods=['POST'])
+@validate_token
+def buy_photo():
+    """
+    Description
+    -----------
+    User buys photo.
+
+    Parameters
+    ----------
+    token: str,
+    photoId: str
+
+    Returns
+    -------
+    {'bought': boolean}
+    """
+    token = request.form.get("token")
+    user_id = token_functions.get_uid(token)
+    photo_id = request.form.get("token")
+
+    this_user = lib.user.user.User.objects.get(id=user_id)
+    this_photo = lib.photo.photo.Photo.objects.get(id=photo_id)
+
+    # Catch invalid actions
+    if this_photo in this_user.get_purchased():
+        raise Error.ValidationError("You can't purchase a photo that you've already purchased'.")
+    elif this_photo.is_photo_owner(this_user):
+        raise Error.ValidationError("You can't purchase a photo that you posted yourself.")
+    elif this_photo.is_deleted():
+        raise Error.ValidationError("You can't purchase a deleted photo.")
+
+    photo_price = this_photo.get_discouted_price()
+    user_credits = this_user.get_credits()
+
+    if photo_price > user_credits:
+        raise Error.ValueError("You don't have enough credits to buy this photo.")
+    else:
+        this_user.add_purchased(this_photo)
+
 
 # Returns the two showdown images for the day
 @app.route('/showdown/getImages', methods=['GET'])
