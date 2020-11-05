@@ -25,7 +25,7 @@ export default function PhotoContents(props: ContentProps) {
   const [is_artist, setIsArtist] = useState(false);
   //TODO
   const [photo, setPhoto] = useState("");
-  const [purchased, setPurchase] = useState<boolean>();
+  const [purchased, setPurchased] = useState<boolean>();
   const currentUser = localStorage.getItem("u_id") as string;
   const token = localStorage.getItem("token") as string;
   const [meta, setMeta] = useState("");
@@ -53,7 +53,7 @@ export default function PhotoContents(props: ContentProps) {
         setEmail(response.data.email);
         setLikes(response.data.likes);
         setTags(response.data.tagsList);
-        setPurchase(response.data.purchased);
+        setPurchased(response.data.purchased);
         setDeleted(response.data.deleted);
         setStatus(response.data.status);
         setMeta(response.data.metadata);
@@ -97,7 +97,7 @@ export default function PhotoContents(props: ContentProps) {
         photoId: props.photoId,
       })
       .then((response) => {
-        console.log(response);
+        setPurchased(response.data.purchased);
       })
       .catch(() => {});
   }
