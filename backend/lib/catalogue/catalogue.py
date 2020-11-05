@@ -68,7 +68,7 @@ class Catalogue(Document):
         '''
         return self.photos
 
-    def add_photo(self, new_photo, list_type="collection"):
+    def add_photo(self, new_photo):
         '''
         Add a single photo to the collection by default.
         Adds this collection to the photo

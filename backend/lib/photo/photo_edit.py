@@ -299,27 +299,3 @@ def update_photo_details(photo_details):
     return {
         "success": "true"
     }
-
-def add_to_album(mongo, albums, photoId):
-    """
-    Add photo id to an album collection
-    @param mongo(object): Mongo database
-    @param albums(str): list of album ids
-    @param photoId(str): photo id string
-    @returns: response body
-    """
-    for album in albums:
-        print('here')
-        mongo.db.albums.update_one({"_id": album}, {"$push": {"photos": photoId}})
-
-def remove_from_album(mongo, photoId, newAlbums):
-    """
-    Remove photo from albums which have been deselected
-    """
-    # Remove photo id from photos array in Album collection which have been deselected
-    currAlbums = mongo.db.photos.find_one({"_id": ObjectId(photoId)}, {"albums": 1})["albums"]
-
-    deleteAlbums = [album for album in currAlbums if album not in newAlbums]
-
-    for i in deleteAlbums:
-        mongo.db.albums.update_one({},{"$pull": { "albums": { "$in": [photoId]}}})
