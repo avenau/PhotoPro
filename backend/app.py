@@ -44,7 +44,12 @@ from lib.photo_details.photo_likes import is_photo_liked, like_photo
 
 # Profile
 from lib.profile.upload_photo import update_user_thumbnail
-from lib.profile.profile_details import user_photo_search
+from lib.profile.profile_details import (
+    user_album_search,
+    user_collection_search,
+    user_following_search,
+    user_photo_search,
+)
 
 # Search
 # from lib.search.user_search import user_search
@@ -412,6 +417,134 @@ def profile_details():
             "profilePic": this_user.get_profile_pic(),
         }
     )
+
+
+@app.route("/user/photos", methods=["GET"])
+def _get_photo_from_user():
+    """
+    Description
+    -----------
+    GET request to return photos created by a user
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_photo_search(data))
+
+
+@app.route("/user/collections", methods=["GET"])
+def _get_collection_from_user():
+    """
+    Description
+    -----------
+    GET request to return collections created by a user
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    -------
+    {
+        title : string
+        authorId : string
+        author : string
+        created : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_collection_search(data))
+
+
+@app.route("/user/albums", methods=["GET"])
+def _get_album_from_user():
+    """
+    Description
+    -----------
+    GET request to return albums created by a user
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    -------
+    {
+        title : string
+        authorId : string
+        author : string
+        discount : int
+        created : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_album_search(data))
+
+
+@app.route("/user/following", methods=["GET"])
+def _get_following_from_user():
+    """
+    Description
+    -----------
+    GET request to return users the current user is following
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    -------
+    {
+        fname : string
+        lname : string
+        nickname : string
+        email : string
+        location : string
+        created : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_following_search(data))
 
 
 """
@@ -883,47 +1016,10 @@ def search_album():
 
 
 """
--------------------
-- End Search Routes -
--------------------
-"""
-"""
 ----------------------
 - Photo Details Routes -
 ----------------------
 """
-
-
-@app.route("/user/photos", methods=["GET"])
-def _get_photo_from_user():
-    """
-    Description
-    -----------
-    GET request to return many photo details based on a query
-
-    Parameters
-    ----------
-    offset : int
-    limit : int
-    token : string
-    query : string
-
-    Returns
-    -------
-    {
-        title : string
-        price : int
-        discount : int
-        photoStr : string
-        metadata : string
-        id : string
-    }
-    """
-    data = request.args.to_dict()
-    data["offset"] = int(data["offset"])
-    data["limit"] = int(data["limit"])
-
-    return dumps(user_photo_search(data))
 
 
 @app.route("/photo_details", methods=["GET"])

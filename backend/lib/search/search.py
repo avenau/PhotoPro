@@ -158,7 +158,7 @@ def collection_search(data):
             {
                 "$project": {
                     "title": 1,
-                    "created_by": 1,
+                    "authorId": {"$toString": "$created_by"},
                     "created": "$creation_date",
                     "id": {"$toString": "$_id"},
                     "_id": 0,
@@ -171,6 +171,9 @@ def collection_search(data):
     )
     # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
+    for result in res:
+        result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
+
     return res
 
 
@@ -193,8 +196,9 @@ def album_search(data):
             {
                 "$project": {
                     "title": 1,
-                    "created_by": 1,
+                    "authorId": {"$toString": "$created_by"},
                     "created": "$creation_date",
+                    "discount": 1,
                     "id": {"$toString": "$_id"},
                     "_id": 0,
                 }
@@ -206,4 +210,6 @@ def album_search(data):
     )
     # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
+    for result in res:
+        result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
     return res

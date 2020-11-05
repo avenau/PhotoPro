@@ -11,4 +11,5 @@ disable=
     too-many-public-methods,
     too-many-instance-attributes,
     unused-import,
-    raise-missing-from
+    raise-missing-from,
+    bare-except
