@@ -75,7 +75,7 @@ app.register_error_handler(HTTPException, defaultHandler)
 CORS(app)
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
-mongoengine.connect('angular-flask-muckaround')
+mongoengine.connect('angular-flask-muckaround', host=app.config["MONGO_URI"])
 
 
 @app.route('/verifytoken', methods=['GET'])
