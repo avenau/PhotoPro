@@ -15,26 +15,38 @@ export default function UserDetails(props: any) {
       onSubmit={props.handleSubmit}
       className="p-4"
     >
-      <Form.Group>
-        <Form.Label>First name</Form.Label>
-        <Form.Control
-          required={props.required}
-          placeholder={props.oDetails.fname}
-          onChange={(e) =>
-            props.setFormInput({ ...props.formInput, fname: e.target.value })
-          }
-        />
-      </Form.Group>
-      <Form.Group>
-        <Form.Label>Last name</Form.Label>
-        <Form.Control
-          required={props.required}
-          placeholder={props.oDetails.lname}
-          onChange={(e) =>
-            props.setFormInput({ ...props.formInput, lname: e.target.value })
-          }
-        />
-      </Form.Group>
+      <Form.Row>
+        <Col>
+          <Form.Group>
+            <Form.Label>First name</Form.Label>
+            <Form.Control
+              required={props.required}
+              placeholder={props.oDetails.fname}
+              onChange={(e) =>
+                props.setFormInput({
+                  ...props.formInput,
+                  fname: e.target.value,
+                })
+              }
+            />
+          </Form.Group>
+        </Col>
+        <Col>
+          <Form.Group>
+            <Form.Label>Last name</Form.Label>
+            <Form.Control
+              required={props.required}
+              placeholder={props.oDetails.lname}
+              onChange={(e) =>
+                props.setFormInput({
+                  ...props.formInput,
+                  lname: e.target.value,
+                })
+              }
+            />
+          </Form.Group>
+        </Col>
+      </Form.Row>
       <Form.Group>
         <Form.Label>Email address</Form.Label>
         <Form.Control
