@@ -47,12 +47,9 @@ class Catalogue(Document):
 
     def update_tags(self):
         '''
-        Create a unique set of all tags in all photos
+        Create a unique set of tags for the collection
         '''
         tags = set(self.tags)
-        for this_photo in self.photos:
-            for tag in this_photo.tags:
-                tags.add(tag)
         self.tags = list(tags)
 
     def get_photos(self):
@@ -136,4 +133,6 @@ class Catalogue(Document):
         self.created_by = this_user
 
     def clean(self):
-        self.update_tags()
+        '''
+        Additional validation
+        '''

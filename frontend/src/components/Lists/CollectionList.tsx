@@ -1,6 +1,6 @@
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import CollectionThumbnail from '../Thumbnails/CollectionThumbnail'
+import CollectionThumbnail from '../Thumbnails/CollectionThumbnail';
 interface Props extends RouteComponentProps {
   collections: Collection[];
 }
@@ -24,7 +24,7 @@ class CollectionList extends React.Component<Props> {
               this.props.history.push(`/collection/${collection.id}`);
             }}
             className="collection-result"
-            key={collection.id}
+            key={collection.title}
           >
             <CollectionThumbnail {...collection} />
           </div>

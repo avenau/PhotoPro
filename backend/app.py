@@ -270,7 +270,10 @@ def _profile_details():
     }
     -------
     """
-    this_user = lib.user.user.User.objects.get(id=request.args.get("u_id"))
+    u_id = request.args.get('u_id')
+    if not u_id or u_id == '':
+        raise Error.UserDNE("Couldn't find user")
+    this_user = lib.user.user.User.objects.get(id=u_id)
     if not this_user:
         raise Error.UserDNE("Couldn't find user")
 
@@ -1159,6 +1162,40 @@ def _get_collection():
     _collection = collection.Collection.objects.get(id=collection_id)
     return dumps(collection_functions.get_collection(_collection))
 
+@app.route('/collection/getall', methods=['GET'])
+def _get_all_collections():
+    '''
+    Description
+    -----------
+    For a given user_id, get all collections associated
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    ------
+    [{
+        title: string,
+        photos: [Photo],
+        creation_date: datetime,
+        deleted: boolean,
+        private: boolean,
+        price, int
+        tags: [string],
+    }]
+    '''
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    _user = user.User.objects.get(id=data['query'])
+    _collections = collection.Collection.objects(user=_user)
+    return collection.Collection.objects.to_json()
+
 @app.route('/collection/create', methods=['POST'])
 @validate_token
 def _create_collection():
@@ -1172,7 +1209,7 @@ def _create_collection():
     token: string
     title: string,
     discount, int
-    tags: [string],
+    tags: JSON([string]),
 
     Returns
     ----------
@@ -1186,7 +1223,7 @@ def _create_collection():
     collection_id = collection_functions.create_collection(_user,
                                                            params['title'],
                                                            params['discount'],
-                                                           params['tags'])
+                                                           loads(params['tags']))
     # Return Collection ID
     return dumps({'collection_id': collection_id})
 

@@ -87,7 +87,7 @@ class Collection(lib.catalogue.catalogue.Catalogue):
         return {
             'title': self.get_title(),
             'photos': [this_photo.id for this_photo in self.get_photos()],
-            'creation_date': self.get_creation_date(),
+            'creation_date': str(self.get_creation_date()),
             'deleted': self.is_deleted(),
             'private': self.is_private(),
             'price': self.get_price(),

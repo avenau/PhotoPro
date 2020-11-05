@@ -99,7 +99,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert("Navigating to new collection");
+              this.props.history.push("/createcollection");
             }}
           >
             Create a Collection
@@ -177,7 +177,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Tab eventKey="collections" title="Collections" unmountOnExit>
             <ContentLoader
               query={this.state.userId}
-              route="/user/collections"
+              route="/collection/getall"
               type="collection"
             />
           </Tab>

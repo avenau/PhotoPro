@@ -11,16 +11,27 @@ import ContentLoader from "../../components/ContentLoader/ContentLoader"
 
 import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
+interface State {
+  u_id: string,
+  token: string,
+  title: string,
+  discount: number,
+  photos: string[],
+  tags: string[],
+  dne: boolean
+}
 
-class CreateCollection extends React.Component<RouteChildrenProps, any> {
+class CreateCollection extends React.Component<RouteChildrenProps, State> {
   constructor(props: RouteChildrenProps) {
     super(props);
     this.state = {
-      u_id: localStorage.getItem("token"),
+      u_id: String(localStorage.getItem('u_id')),
+      token: String(localStorage.getItem('token')),
       title: '',
       discount: 0,
       photos: [],
-      tags: []
+      tags: [],
+      dne: false
     }
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -35,23 +46,21 @@ class CreateCollection extends React.Component<RouteChildrenProps, any> {
   }
 
   handleSubmit(event: React.FormEvent<HTMLElement>) {
-    console.log("SUBMITTING");
+    console.log(this.state.tags);
     event.preventDefault();
     if (this.state.tags.length < 1) {
       return;
     }
-    const token = localStorage.getItem("token");
     axios
       .post("/collection/create", {
         title: this.state.title,
         discount: this.state.discount,
         tags: JSON.stringify(this.state.tags),
-        token: token
+        token: this.state.token
       })
       .then((res) => {
         console.log(res);
-        const uid = localStorage.getItem('u_id');
-        this.props.history.push(`/user/${uid}`);
+        this.props.history.push(`/user/${this.state.u_id}`);
       })
       .catch((err) => {
         console.log(err);
@@ -66,6 +75,13 @@ class CreateCollection extends React.Component<RouteChildrenProps, any> {
   deactivateCreateButton() {
     const btn = document.getElementById("createButton");
     return btn?.setAttribute("disabled", "true");
+  }
+
+  // Pass in a list of photos and add new photo to list
+  addPhotoToList(newPhotoId: string) {
+    this.setState((prevState) => ({
+      photos: [...prevState.photos, newPhotoId]
+    }));
   }
 
   render() {
@@ -90,14 +106,15 @@ class CreateCollection extends React.Component<RouteChildrenProps, any> {
             deactivateUploadButton={this.deactivateCreateButton}
             activateUploadButton={this.activateCreateButton}
             tagsList={this.state.tags}
-            setTagsList={(tags: any) =>
+            setTagsList={(tags: string[]) =>
               this.setState({ tags: tags })
             }
           />
           <ContentLoader
-            query={this.state.userId}
+            query={this.state.u_id}
             route="/user/photos"
             type="photo"
+            addPhotoId={(newPhotoId: string) => this.addPhotoToList(newPhotoId)}
           />
           <Button id="createButton" className="mt-2" type="submit">
             Create Collection
