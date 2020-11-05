@@ -13,8 +13,6 @@ export default function Tags(props: any) {
   const [tagsLength, setTagsLength] = useState(0)
 
   useEffect(() => {
-    console.log('out here tags')
-    console.log(props.tagsList)
     if (props.tagsList != undefined) {
       refreshTagButtons(props.tagsList)
       refreshTagsErr(props.tagsList)

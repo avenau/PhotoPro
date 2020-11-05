@@ -19,12 +19,7 @@ export default function Album(props: any) {
         axios.get('/albums', {params:
             {token}}
         ).then((res) => {
-            console.log(res)
             const albumOptions = res.data.albumList
-            console.log(albumOptions)
-            // for (var i = 0; i < albumOptions.length; i++) {
-            //     albumOptions[i].push(false)
-            // }
             setAlbums(albumOptions)
         }).catch((err) => {
             console.log(err)
@@ -32,8 +27,6 @@ export default function Album(props: any) {
     }, [])
 
     function addAlbums(event: React.FormEvent<HTMLInputElement>) {
-        console.log(event.currentTarget)
-        console.log(event.currentTarget.checked)
         const album = event.currentTarget.id 
         const {checked} = event.currentTarget
         let tempSelected = [...props.selectedAlbums]
@@ -47,8 +40,6 @@ export default function Album(props: any) {
             tempSelected.splice(index, 1)
             props.setSelAlbums(tempSelected)
         }
-        
-        console.log(tempSelected)
     }
 
     function setNewAlbum(album: string) {
@@ -72,8 +63,6 @@ export default function Album(props: any) {
     }
 
     function createNewAlbum(event: React.FormEvent<HTMLElement>) {
-        console.log('in create new album')
-        
         axios.post('/albums', {
             token,
             title: newAlbumTitle

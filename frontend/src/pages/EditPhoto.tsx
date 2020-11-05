@@ -45,8 +45,6 @@ export default function EditPhoto(props: any) {
   });
 
   useEffect(() => {
-    console.log("HEEELLLOOOOOO")
-    console.log(photoId)
     checkDelete(photoId);
     getPhotoDetails(photoId);
   }, []);
@@ -54,7 +52,6 @@ export default function EditPhoto(props: any) {
   function handleSave(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
     const token = localStorage.getItem("token");
-    console.log(albums)
     axios
       .put("/user/updatephoto", {
         title,
@@ -104,7 +101,6 @@ export default function EditPhoto(props: any) {
         },
       })
       .then((response) => {
-        console.log(response);
         if (response.data.deleted === true) {
           // Do not navigate to deleted page
           props.history.goBack();
@@ -126,7 +122,6 @@ export default function EditPhoto(props: any) {
         },
       })
       .then((response) => {
-        console.log(response.data);
         if (response.data.deleted === true) {
           // Do not navigate to deleted page
           props.history.goBack();
