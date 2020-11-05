@@ -124,8 +124,13 @@ def photo_search(data):
         ]
     )
     res = loads(dumps(res))
+    this_user = User.objects.get(id=req_user)
     for result in res:
-        result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(req_user)
+        cur_photo = Photo.objects.get(id=result["id"])
+        result["photoStr"] = cur_photo.get_thumbnail(req_user)
+        result["owns"] = (cur_photo in this_user.get_purchased()) or (cur_photo.is_photo_owner(this_user))
+        print(result["owns"])
+
     return res
 
 
