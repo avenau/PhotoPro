@@ -112,7 +112,7 @@ export default function PhotoContents(props: ContentProps) {
       })
       .then((r) => {
         const link = document.createElement("a");
-        link.href = `data:image/jpg;base64,${r.data}`;
+        link.href = `data:image/jpg;base64,${r.data.base64_img}`;
         link.setAttribute("download", "example.jpg");
         document.body.appendChild(link);
         link.click();

@@ -399,7 +399,7 @@ def download_full_photo():
     """
     Description
     -----------
-    Download full photo
+    Download full photo identified by photo_id.
 
     Parameters
     ----------
@@ -408,12 +408,15 @@ def download_full_photo():
 
     Returns
     -------
-    base64: str
+    metadata: str
+    base64_img: str
+    extension: str
     """
     photo_id = request.args.get("photo_id")
     print(photo_id)
     return dumps({
-        "temp": "temp"
+
+        "base64_img": "temp"
     })
 
 # Returns the two showdown images for the day
