@@ -2,7 +2,6 @@ import axios from "axios";
 import React from "react";
 import Spinner from "react-bootstrap/Spinner";
 import InfiniteScroll from "react-infinite-scroller";
-import _ from "lodash";
 import AlbumList from "../Lists/AlbumList";
 import CollectionList from "../Lists/CollectionList";
 import PhotoList from "../Lists/PhotoList";
@@ -33,8 +32,6 @@ interface State {
 
 export default class ContentLoader extends React.Component<Props, State> {
   constructor(props: Props) {
-    console.log("rerender");
-
     super(props);
     this.state = {
       query: this.props.query,

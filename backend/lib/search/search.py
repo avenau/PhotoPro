@@ -1,3 +1,6 @@
+"""
+Methods relating to getting search results
+"""
 from json import loads
 from bson.json_util import dumps
 
@@ -27,6 +30,9 @@ def get_sort_method(sortid):
 
 
 def user_search(data):
+    """
+    Search user collection
+    """
     sort = get_sort_method(data["orderby"])
     res = User.objects.aggregate(
         [
@@ -61,6 +67,9 @@ def user_search(data):
 
 
 def photo_search(data):
+    """
+    Search photo collection
+    """
     sort = get_sort_method(data["orderby"])
     valid_extensions = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
     if data["filetype"] == "jpgpng":
@@ -121,6 +130,9 @@ def photo_search(data):
 
 
 def collection_search(data):
+    """
+    Search collections collection
+    """
     sort = get_sort_method(data["orderby"])
     res = Collection.objects.aggregate(
         [
