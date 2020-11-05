@@ -1,41 +1,36 @@
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import UserHeader from "../UserHeader/UserHeader";
+import CollectionThumbnail from "../Thumbnails/CollectionThumbnail";
+import "./CollectionList.scss";
 
 interface Props extends RouteComponentProps {
-  collections: Profile[];
+  collections: Collection[];
 }
 
-interface Profile {
-  fname: string;
-  lname: string;
-  nickname: string;
-  email: string;
-  location: string;
+interface Collection {
   id: string;
+  title: string;
+  authorId: string;
+  author: string;
 }
 
 class CollectionList extends React.Component<Props> {
   render() {
     return (
-      <>
-        {this.props.collections.map((profile) => (
+      <div className="collection-results">
+        {this.props.collections.map((collection) => (
           <div
             onClick={(e) => {
               e.preventDefault();
-              this.props.history.push(`/user/${profile.id}`);
+              this.props.history.push(`/collection/${collection.id}`);
             }}
-            className="result-container"
-            key={profile.id}
+            key={collection.id}
+            className="collection-result"
           >
-            <UserHeader
-              name={`${profile.fname} ${profile.lname}`}
-              currentUser={profile.id === localStorage.getItem("u_id")}
-              {...profile}
-            />
+            <CollectionThumbnail {...collection} />
           </div>
         ))}
-      </>
+      </div>
     );
   }
 }

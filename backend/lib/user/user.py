@@ -59,6 +59,10 @@ class User(Document):
     credits = IntField(default=0, validation=validation.validate_credit)
     # When the user was created
     created = DateTimeField(default=datetime.datetime.now())
+    # List of the searches made by the user, ordered with recent searches first
+    searches = ListField(StringField())
+    # Reference to all users this user is following
+    following = ListField(ReferenceField("User"))
     # Meta data about the User collection
     meta = {"collection": "users"}
 
@@ -242,7 +246,7 @@ class User(Document):
         """
         Add album object to album list
         """
-        print('in add album')
+        print("in add album")
         print(album.to_json())
         self.albums.append(album)
 
@@ -320,6 +324,21 @@ class User(Document):
         if not isinstance(credit, int):
             raise Error.ValueError("Credits must be of type integer.")
         self.credits = self.credits - credit
+
+    def add_search(self, search):
+        """
+        Add search to user's list of searches
+        @param: search: string
+        """
+        # Don't add search if it is empty string
+        if search == "" or (len(self.searches) > 0 and search == self.searches[0]):
+            return
+
+        # Ensure search list keeps 10 most recent results
+        if len(self.searches) >= 10:
+            self.searches.pop()
+
+        self.searches.insert(0, search)
 
     # User Document validation
     # ------------------------
