@@ -83,6 +83,9 @@ def photo_search(data):
 
     try:
         req_user = get_uid(data["token"])
+        this_user = User.objects.get(id=req_user)
+        this_user.add_search(data["query"])
+        this_user.save()
     except:
         req_user = ""
 
@@ -127,7 +130,6 @@ def photo_search(data):
     )
     res = loads(dumps(res))
     for result in res:
-        print(result)
         result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(req_user)
     return res
 
@@ -150,10 +152,7 @@ def collection_search(data):
                         {"tags": {"$in": [data["query"]]}},
                     ],
                     "deleted": False,
-                    "$or": [
-                        {"private": False},
-                        {"created_by": ObjectId(req_user)}
-                    ]
+                    "$or": [{"private": False}, {"created_by": ObjectId(req_user)}],
                 }
             },
             {
@@ -173,6 +172,7 @@ def collection_search(data):
     # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
     return res
+
 
 def album_search(data):
     """
