@@ -28,14 +28,10 @@ class CreateCollection extends React.Component<RouteChildrenProps, any> {
   }
 
   componentDidMount() {
-    this.setState = ({
-        photos: this.getPhotos()
-    })
   }
 
   // Get the photos that the user created
   getPhotos(){
-      return []
   }
 
   handleSubmit(event: React.FormEvent<HTMLElement>) {

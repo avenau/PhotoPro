@@ -1068,12 +1068,8 @@ def _comment_on_photo():
 
 
 @app.route('/comments/get_comments', methods=['GET'])
-<<<<<<< HEAD
 @validate_token
-def _get_comments():
-=======
 def get_comments():
->>>>>>> develop
     """
     Description
     -----------
