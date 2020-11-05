@@ -44,7 +44,7 @@ def clean_database():
     database = _get_db()
     database.drop_collection('photos-mongoengine')
     database.drop_collection('collections-mongoengine')
-    database.drop_collection('users-mongoengine')
+    database.drop_collection('users')
 
 
 def create_users():

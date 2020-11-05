@@ -14,12 +14,12 @@ export default function PhotoDetails() {
     const photoId = window.location.pathname.split("/")[2];
 
     return (
-        <div>
-            <Toolbar />
-            <PhotoContents photoId={photoId} />
+      <div>
+        <Toolbar />
+        <PhotoContents photoId={photoId} />
 
 
-        </div>
+      </div>
     );
 
 }

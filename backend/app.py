@@ -21,10 +21,13 @@ import lib.photo.photo
 from lib.token_functions import get_uid
 import lib.user.user
 import lib.catalogue.catalogue as catalogue
-import lib.album.album as album
+import lib.album.album
 import lib.comment.comment as comment
 
 # JAJAC made functions
+
+# Albums
+from lib.album.album_edit import create_album, get_albums
 
 # Comments
 import lib.comment.comment_photo as comment_photo
@@ -78,6 +81,11 @@ mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 mongoengine.connect('angular-flask-muckaround', host=app.config["MONGO_URI"])
 
+'''
+--------------------------
+- Account Management Routes -
+--------------------------
+'''
 
 @app.route('/verifytoken', methods=['GET'])
 def verify_token():
@@ -187,7 +195,6 @@ def auth_passwordreset_reset():
                                             hashed_password, mongo)
     )
 
-
 @app.route('/accountregistration', methods=['POST'])
 def account_registration():
     """
@@ -239,6 +246,130 @@ def account_registration():
 
     return dumps({})
 
+@app.route('/userdetails', methods=['GET'])
+def user_info_with_token():
+    """
+    Description
+    -----------
+    GET request to get user details using a token
+
+    Parameters
+    ----------
+    token : string
+
+    Returns
+    -------
+    {fname:str, lname:str, nickname:str,
+     email:str, DOB:str, location:str, aboutMe:str}
+
+    """
+    token = request.args.get('token')
+    if token == '':
+        print("token is an empty string")
+        return {}
+    u_id = token_functions.get_uid(token)
+    this_user = lib.user.user.User.objects.get(id=u_id)
+    if not this_user:
+        raise Error.UserDNE("Could not find user")
+    # JSON Doesn't like ObjectId format
+    return dumps({
+        'fname': this_user.get_fname(),
+        'lname': this_user.get_lname(),
+        'email': this_user.get_email(),
+        'nickname': this_user.get_nickname(),
+        'credits': this_user.get_credits(),
+        'location': this_user.get_location(),
+        'aboutMe': this_user.get_about_me(),
+        'profilePic': this_user.get_profile_pic()
+    })
+
+@app.route('/manageaccount/success', methods=['POST'])
+def manage_account():
+    """
+    Description
+    -----------
+    Takes a user object and updates key:value pairs in the database
+
+    Parameters
+    ----------
+    user:object
+
+    e.g.
+    user {
+        u_id: string,
+        password: string,
+        profilePic: string,
+        ...:...,
+    }
+
+    Returns
+    -------
+    {'success: boolean}
+    """
+    success = False
+    data = request.form.to_dict()
+    u_id = token_functions.get_uid(data["token"])
+    this_user = lib.user.user.User.objects.get(id=u_id)
+
+    if data.get('profilePic') != "":
+            data['profilePic'] = update_user_thumbnail(data['profilePic'], data['extension'])
+
+    if this_user is None:
+        raise Error.UserDNE("User with id " + this_user + "does not exist")
+    try:
+        
+        for key, value in data.items():
+            lib.user.helper_functions.update_value(bcrypt, this_user,
+                                                   key, value)
+        success = True
+    except Exception:
+        print("Errors... :-(")
+        print(traceback.format_exc())
+        success = False
+
+    return dumps({'success': success})
+
+
+@app.route('/manageaccount/confirm', methods=['GET', 'POST'])
+@validate_token
+def password_check():
+    """
+    Description
+    -----------
+    Checks if the user has entered their password correctly
+    to verify that they can change their details.
+
+    Parameters
+    ----------
+    token: string
+    password: string
+
+    Returns
+    -------
+    password: boolean
+    """
+    data = request.form.to_dict()
+    token = data['token']
+    user_id = token_functions.get_uid(token)
+    user_object = lib.user.user.User.objects.get(id=user_id)
+    
+    if user_object is None:
+        raise Error.UserDNE("User with token" + token + "does not exist")
+
+    if bcrypt.check_password_hash(user_object.get_password(),
+                                  data['password']):
+        data['password'] = "true"
+    else:
+        data['password'] = "false"
+    print(data)
+
+    return data
+
+'''
+--------------------
+- Profile Routes -
+--------------------
+'''
 
 @app.route('/profiledetails', methods=['GET'])
 def profile_details():
@@ -276,7 +407,11 @@ def profile_details():
         "profilePic": this_user.get_profile_pic(),
     })
 
-
+'''
+--------------------
+- Purchases Routes -
+--------------------
+'''
 @app.route('/purchases/buycredits', methods=['POST'])
 @validate_token
 def buy_credits():
@@ -340,6 +475,11 @@ def refund_credits():
         'credits_refunded': credits_to_refund
     })
 
+'''
+--------------------
+- Main Feed Routes -
+--------------------
+'''
 
 # Returns the two showdown images for the day
 @app.route('/showdown/getImages', methods=['GET'])
@@ -426,128 +566,11 @@ def welcome_get_popular_images():
         'popular_images': images
     })
 
-
-@app.route('/userdetails', methods=['GET'])
-def user_info_with_token():
-    """
-    Description
-    -----------
-    GET request to get user details using a token
-
-    Parameters
-    ----------
-    token : string
-
-    Returns
-    -------
-    {fname:str, lname:str, nickname:str,
-     email:str, DOB:str, location:str, aboutMe:str}
-
-    """
-    token = request.args.get('token')
-    if token == '':
-        print("token is an empty string")
-        return {}
-    u_id = token_functions.get_uid(token)
-    this_user = lib.user.user.User.objects.get(id=u_id)
-    if not this_user:
-        raise Error.UserDNE("Could not find user")
-    # JSON Doesn't like ObjectId format
-    return dumps({
-        'fname': this_user.get_fname(),
-        'lname': this_user.get_lname(),
-        'email': this_user.get_email(),
-        'nickname': this_user.get_nickname(),
-        'credits': this_user.get_credits(),
-        'location': this_user.get_location(),
-        'aboutMe': this_user.get_about_me(),
-        'profilePic': this_user.get_profile_pic()
-    })
-
-
-@app.route('/manageaccount/success', methods=['POST'])
-def manage_account():
-    """
-    Description
-    -----------
-    Takes a user object and updates key:value pairs in the database
-
-    Parameters
-    ----------
-    user:object
-
-    e.g.
-    user {
-        u_id: string,
-        password: string,
-        profilePic: string,
-        ...:...,
-    }
-
-    Returns
-    -------
-    {'success: boolean}
-    """
-    success = False
-    data = request.form.to_dict()
-    u_id = token_functions.get_uid(data["token"])
-    this_user = lib.user.user.User.objects.get(id=u_id)
-
-    if data.get('profilePic') != "":
-            data['profilePic'] = update_user_thumbnail(data['profilePic'], data['extension'])
-
-    if this_user is None:
-        raise Error.UserDNE("User with id " + this_user + "does not exist")
-    try:
-        
-        for key, value in data.items():
-            lib.user.helper_functions.update_value(bcrypt, this_user,
-                                                   key, value)
-        success = True
-    except Exception:
-        print("Errors... :-(")
-        print(traceback.format_exc())
-        success = False
-
-    return dumps({'success': success})
-
-
-@app.route('/manageaccount/confirm', methods=['GET', 'POST'])
-@validate_token
-def password_check():
-    """
-    Description
-    -----------
-    Checks if the user has entered their password correctly
-    to verify that they can change their details.
-
-    Parameters
-    ----------
-    token: string
-    password: string
-
-    Returns
-    -------
-    password: boolean
-    """
-    data = request.form.to_dict()
-    token = data['token']
-    user_id = token_functions.get_uid(token)
-    user_object = lib.user.user.User.objects.get(id=user_id)
-    
-    if user_object is None:
-        raise Error.UserDNE("User with token" + token + "does not exist")
-
-    if bcrypt.check_password_hash(user_object.get_password(),
-                                  data['password']):
-        data['password'] = "true"
-    else:
-        data['password'] = "false"
-    print(data)
-
-    return data
-
-
+'''
+--------------------------
+- Upload/Edit Photo Routes -
+--------------------------
+'''
 @app.route('/user/uploadphoto', methods=['POST'])
 @validate_token
 def upload_actual_photo():
@@ -648,7 +671,7 @@ def check_deleted():
     this_photo = lib.photo.photo.Photo.objects.get(id=photo_id)
     if not this_photo or photo_id == '':
         raise Error.PhotoDNE("Could not find photo" + photo_id)
-
+    
     return dumps({"deleted": this_photo.is_deleted()})
 
 
@@ -725,7 +748,6 @@ def upload_photo():
 - Search Routes -
 ---------------
 '''
-
 
 @app.route('/search/user', methods=['GET'])
 def search_user():
@@ -854,7 +876,11 @@ def search_album():
 - End Search Routes -
 -------------------
 '''
-
+'''
+----------------------
+- Photo Details Routes -
+----------------------
+'''
 @app.route('/user/photos', methods=['GET'])
 def _get_photo_from_user():
     """
@@ -1128,15 +1154,73 @@ def get_verified_user():
     return dumps({
         "u_id": u_id,
     })
+'''
+---------------
+- Album Routes -
+---------------
+'''
+@app.route('/albums', methods=['GET'])
+@validate_token
+def albums():
+    """
+    Description
+    -----------
+    Gets albums of a user
 
+    Parameters
+    ----------
+    token : string
 
+    Returns
+    -------
+    {
+        albumList: [
+            [albumId: title],
+            [albumId: title]
+            ...
+        ]
+    }
+    """
+
+    token = request.args.get('token')
+    u_id = token_functions.verify_token(token)["u_id"]
+
+    user = lib.user.user.User.objects.get(id=u_id)
+    
+    return dumps(get_albums(user))
+
+@app.route('/albums', methods=['POST'])
+@validate_token
+def add_album():
+    """
+    Description
+    -----------
+    Add album to user
+
+    Parameters
+    ----------
+    token : string
+    title: string
+
+    Returns
+    -------
+    {
+        albumId: int 
+    } 
+
+    """
+    token = request.form.get('token')
+    u_id = token_functions.verify_token(token)["u_id"]
+    user = lib.user.user.User.objects.get(id=u_id)
+    if not user:
+        raise Error.UserDNE("Could not find User " + user_uid)
+
+    return dumps(create_album(request.form.get('title'), user))
 '''
 ---------------
 - Test Routes -
 ---------------
 '''
-
-
 @app.route('/testdecorator', methods=['GET'])
 @validate_token
 def test_decorator():

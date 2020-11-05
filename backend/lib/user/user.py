@@ -14,6 +14,7 @@ from mongoengine.fields import DateTimeField
 
 import lib.photo.photo as photo
 import lib.collection.collection as collection
+import lib.album.album as album
 import lib.user.validate_login as validate_login
 import lib.user.validate_registration as validate_registration
 import lib.user.validation as validation
@@ -46,11 +47,8 @@ class User(Document):
     location = StringField(validation=validate_registration.valid_location)
     # Array of Photo references that the user has posted
     posts = ListField(ReferenceField("photo.Photo"))
-    """
-    # TODO:
-    # User's albums that they've created
-    # albums = ListField()
-    """
+    # Array of Album references that the user has created
+    albums = ListField(ReferenceField("album.Album"))
     # Array of Collection references that the user has created
     collections = ListField(ReferenceField("collection.Collection"))
     # Array of liked Photo references
@@ -62,7 +60,7 @@ class User(Document):
     # When the user was created
     created = DateTimeField(default=datetime.datetime.now())
     # Meta data about the User collection
-    meta = {"collection": "users-mongoengine"}
+    meta = {"collection": "users"}
 
     # User Methods:
     # -------------
@@ -239,6 +237,24 @@ class User(Document):
             if not coll.deleted:
                 collections.append(coll)
         return collections
+
+    def add_album(self, album):
+        """
+        Add album object to album list
+        """
+        print('in add album')
+        print(album.to_json())
+        self.albums.append(album)
+
+    def get_albums(self):
+        """
+        Get non-deleted albums
+        """
+        albums = []
+        for album in self.albums:
+            if not album.deleted:
+                albums.append(album)
+        return albums
 
     def get_liked(self):
         """

@@ -19,13 +19,20 @@ class Catalogue(Document):
     '''
     Catalogue class
     '''
-    title = StringField(required=True, max_length=200)
+
+    title = StringField(required=True, max_length=200, unique=True)
     photos = ListField(ReferenceField('photo.Photo'))
     creation_date = DateTimeField(default=datetime.datetime.now())
     created_by = ReferenceField('user.User')
     deleted = BooleanField(default=False)
     tags = ListField(StringField())
     meta = {'allow_inheritance': True, 'abstract': True}
+
+    def get_id(self):
+        '''
+        Object id of the catalogue object
+        '''
+        return self.id
 
     def get_title(self):
         '''
@@ -63,7 +70,7 @@ class Catalogue(Document):
 
     def add_photo(self, new_photo):
         '''
-        Add a single photo to the collection
+        Add a single photo to the collection by default.
         Adds this collection to the photo
         '''
         self.photos.append(new_photo)
@@ -77,21 +84,8 @@ class Catalogue(Document):
         '''
         for this_photo in new_photos:
             self.photos.append(this_photo)
-            this_photo.add_collection(self)
-
-    def remove_photo(self, old_photo):
-        '''
-        Remove a photo from this collection
-        Remove this collection from the photo
-        @param photo: Photo(Document)
-        '''
-        if self in old_photo.collections:
-            old_photo.collections.remove(self)
-            old_photo.save()
-        if old_photo in self.photos:
-            self.photos.remove(old_photo)
-            self.save()
-
+            new_photo.add_collection(self)
+    
     def remove_photos(self, photos):
         '''
         Remove a list of photos from this collection

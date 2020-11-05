@@ -16,6 +16,8 @@ class Album(catalogue.Catalogue):
     '''
     discount = IntField(default=0,
                         validation=validation.validate_discount)
+    
+    meta = {'collection': 'albums'}
 
     def get_discount(self):
         '''
@@ -28,6 +30,26 @@ class Album(catalogue.Catalogue):
         Set the price of the album
         '''
         self.discount = discount
+
+    def add_photo(self, photo):
+        self.photos.append(photo)
+
+    def remove_photo(self, photo):
+        self.photos.remove(photo)
+
+    def remove_photo(self, old_photo):
+        '''
+        Remove a photo from this collection
+        Remove this collection from the photo
+        @param photo: Photo(Document)
+        '''
+        if self in old_photo.albums:
+            old_photo.albums.remove(self)
+            old_photo.save()
+        
+        if old_photo in self.photos:
+            self.photos.remove(old_photo)
+            self.save()
 
     def clean(self):
         '''
