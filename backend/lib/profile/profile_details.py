@@ -42,6 +42,8 @@ def user_photo_search(data):
     # If signed in
     if req_user:
         req_user_obj = User.objects.get(id=req_user)
+    else:
+        req_user_obj = None
 
     for result in res:
         cur_photo = Photo.objects.get(id=result["id"])
