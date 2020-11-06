@@ -11,7 +11,6 @@ import axios from "axios";
 import Toolbar from "../../components/Toolbar/Toolbar";
 import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import "./PurchasesPage.css";
-import { AsyncLocalStorage } from "async_hooks";
 
 class PurchasesPage extends React.Component<RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
