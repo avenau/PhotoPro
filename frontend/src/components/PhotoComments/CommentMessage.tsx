@@ -12,6 +12,7 @@ interface MessageProp {
   author_id: string;
   comment_id: string;
   photo_id: string;
+  get_comments: Function;
 
 }
 
@@ -48,7 +49,7 @@ export default function CommentMessage(props: MessageProp) {
         p_id,
       })
       .then((response) => {
-
+        //props.get_comments();
       })
   }
 

@@ -1209,8 +1209,9 @@ def comment_on_photo():
     content = params.get("commentContent")
     token = params.get("token")
     user_id = token_functions.get_uid(token)
-
-    comment_photo.comments_photo(photo_id, user_id, content)
+    
+    current_date = datetime.now()
+    comment_photo.comments_photo(photo_id, user_id, content, current_date)
     return dumps({})
 
 

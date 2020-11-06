@@ -122,7 +122,7 @@ export default function PhotoComments(props: CommentProps) {
         </Form>
         <Row className="CommentDisplay">
           {comments.map((comment) => (
-            <CommentMessage className="CommentMessages" author_id={comment.commenter_id} message={comment.content} author={comment.commenter} exact_date={comment.exact_time} time_after={comment.time_after} comment_id={comment.comment_id} photo_id={props.p_id} />
+            <CommentMessage className="CommentMessages" author_id={comment.commenter_id} message={comment.content} author={comment.commenter} exact_date={comment.exact_time} time_after={comment.time_after} comment_id={comment.comment_id} photo_id={props.p_id} get_comments={getComments} />
 
           ))}
 

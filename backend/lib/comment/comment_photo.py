@@ -10,7 +10,7 @@ import lib.user.user as user
 import lib.photo.photo as photo
 
 
-def comments_photo(p_id, u_id, content):
+def comments_photo(p_id, u_id, content, current_date):
     '''
     Create a comment and attach it to the photo
     '''
@@ -24,7 +24,7 @@ def comments_photo(p_id, u_id, content):
         print(traceback.format_exc)
         raise PhotoDNE("Could not find photo")
 
-    new_comment = comment.Comment(content=content, commenter=this_user)
+    new_comment = comment.Comment(content=content, commenter=this_user, posted=current_date)
     new_comment.save()
     this_photo.add_comment(new_comment.get_id())
     this_photo.save()
