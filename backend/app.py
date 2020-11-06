@@ -709,7 +709,7 @@ def buy_photo():
 #TODO: unfinished
 @app.route('/purchasealbum', methods=['POST'])
 @validate_token
-def buy_photo():
+def buy_album():
     """
     Description
     -----------
