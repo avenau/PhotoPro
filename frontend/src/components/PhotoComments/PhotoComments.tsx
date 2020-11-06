@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
 import CommentMessage from "./CommentMessage";
 import "./PhotoComments.scss";
 import axios from 'axios';
@@ -26,6 +26,7 @@ export default function PhotoComments(props: CommentProps) {
   const [status, setStatus] = useState(false);
   const [limitMessage, setLimitMessage] = useState("");
   const [validComment, setValidComment] = useState(false);
+  const [new_to_old, setOrder] = useState(true);
   //const [profilePic, setProfilePic] = useState(["", ""]);
   const addComments = async (comment: string) => {
     console.log("ADD COMMENTS");
@@ -63,7 +64,7 @@ export default function PhotoComments(props: CommentProps) {
   const getComments = async (photoId: string) => {
     const token = localStorage.getItem('token');
     await axios
-      .get(`/comments/get_comments?p_id=${photoId}&token=${token}`)
+      .get(`/comments/get_comments?p_id=${photoId}&new_to_old=${new_to_old}`)
       .then((response) => {
         console.log(response.data);
         const tempComments: CommentObject[] = [];
@@ -104,6 +105,16 @@ export default function PhotoComments(props: CommentProps) {
     }
   }
 
+  const sortCommentNewest = async () => {
+    setOrder(true);
+    getComments(props.p_id);
+  }
+
+  const sortCommentOldest = async () => {
+    setOrder(false);
+    getComments(props.p_id);
+  }
+
 
   return (
     <div className="PhotoComments">
@@ -122,6 +133,38 @@ export default function PhotoComments(props: CommentProps) {
 
           </Form.Row>
         </Form>
+        <Dropdown>
+          <br />
+          <Dropdown.Toggle
+            variant="outline-dark"
+            id="dropdown-custom-components"
+            style={{
+              fontSize: "12pt",
+              padding: "0rem 0.2rem",
+              lineHeight: "20pt",
+            }}
+          >
+            <span>Sort Comments By</span>
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item
+              as="button"
+              onClick={() => {
+                sortCommentNewest();
+              }}
+            >
+              Newest To Oldest
+                    </Dropdown.Item>
+            <Dropdown.Item
+              as="button"
+              onClick={() => {
+                sortCommentOldest();
+              }}
+            >
+              Oldest To Newest
+                  </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
         <Row className="CommentDisplay">
           {comments.map((comment) => (
             <CommentMessage className="CommentMessages" author_id={comment.commenter_id} message={comment.content} author={comment.commenter} exact_date={comment.exact_time} time_after={comment.time_after} comment_id={comment.comment_id} photo_id={props.p_id} get_comments={getComments} profile_pic={comment.profile_pic} />

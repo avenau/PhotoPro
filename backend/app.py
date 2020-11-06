@@ -1227,7 +1227,7 @@ def get_comments():
     p_id : string
     offset : number
     limit : number (-1 if want to return all of comments)
-    old_to_new : boolean
+    new_to_old : boolean
 
     Returns
     -------
@@ -1240,11 +1240,10 @@ def get_comments():
     photo_id = request.args.get("p_id")
     # offset = request.args.get("offset")
     # limit = request.args.get("limit")
-    # order = request.args.get("old_to_new")
+    order = request.args.get("new_to_old")
     current_date = datetime.now()
-    print("PRINTING CURRENT DATE")
     print(current_date)
-    all_comments = get_all_comments(photo_id, current_date)
+    all_comments = get_all_comments(photo_id, current_date, order)
 
     return dumps({"comments": all_comments, "status": True})
     

@@ -8,7 +8,7 @@ from json import dumps
 from datetime import datetime, date, timedelta
 import math
 
-def get_all_comments(p_id, current_date):
+def get_all_comments(p_id, current_date, order):
     '''
     Get all comments for a photo
     @param p_id: string(photo id)
@@ -26,6 +26,15 @@ def get_all_comments(p_id, current_date):
     comments = this_photo.get_comments()
     result = []
     
+    
+    def takeDate(elem):
+        seconds = datetime.now() - elem.get_posted()
+        return seconds.total_seconds()
+    
+    if (order == "true"):
+        comments.sort(key=takeDate, reverse=True)
+    else:
+        comments.sort(key=takeDate, reverse=False)
     
     for comment in comments:
 
@@ -64,7 +73,6 @@ def get_all_comments(p_id, current_date):
         
         comment_id = str(comment.get_id())
         
-        
         result.append(dumps({
                 'commenter': comment.get_commenter().get_nickname(),
                 'datePosted': str(comment.get_posted()),
@@ -75,6 +83,7 @@ def get_all_comments(p_id, current_date):
                 'comment_id': comment_id,
                 'profile_pic': comment.get_commenter().get_profile_pic(),
             }))
+        
     
     
     return result
