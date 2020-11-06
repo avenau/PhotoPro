@@ -555,6 +555,36 @@ def _get_following_from_user():
 
     return dumps(user_following_search(data))
 
+@app.route("/user/purchasedphotos", methods=["GET"])
+def _get_purchased_photos_from_user():
+    """
+    Description
+    -----------
+    GET request to return photos purchased by user, including deleted ones.
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(user_photo_search(data))
 
 """
 --------------------
