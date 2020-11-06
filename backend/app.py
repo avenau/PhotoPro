@@ -587,9 +587,6 @@ def _get_purchased_photos_from_user():
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
-
-    req_user = get_uid(request.args.get("token"))
-
     return dumps(get_purchased_photos(data))
 
 """
