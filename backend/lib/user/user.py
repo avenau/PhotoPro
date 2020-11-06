@@ -59,6 +59,10 @@ class User(Document):
     credits = IntField(default=0, validation=validation.validate_credit)
     # When the user was created
     created = DateTimeField(default=datetime.datetime.now())
+    # List of the searches made by the user, ordered with recent searches first
+    searches = ListField(StringField())
+    # Reference to all users this user is following
+    following = ListField(ReferenceField("User"))
     # Meta data about the User collection
     meta = {"collection": "users"}
 
@@ -238,12 +242,10 @@ class User(Document):
                 collections.append(coll)
         return collections
 
-    def add_album(self, album):
+    def add_album(self, _album):
         """
         Add album object to album list
         """
-        print('in add album')
-        print(album.to_json())
         self.albums.append(album)
 
     def get_albums(self):
@@ -251,9 +253,9 @@ class User(Document):
         Get non-deleted albums
         """
         albums = []
-        for album in self.albums:
-            if not album.deleted:
-                albums.append(album)
+        for _album in self.albums:
+            if not _album.deleted:
+                albums.append(_album)
         return albums
 
     def get_liked(self):
@@ -321,22 +323,20 @@ class User(Document):
             raise Error.ValueError("Credits must be of type integer.")
         self.credits = self.credits - credit
 
-    def get_user_json(self):
-        '''
-        Return the user as json string
-        '''
-        return {
-            'fname': self.get_fname(),
-            'lname': self.get_lname(),
-            'email': self.get_email(),
-            'nickname': self.get_nickname(),
-            'password': self.get_password(),
-            'profile_pic': self.get_profile_pic(),
-            'extension': self.get_extension(),
-            'about_me': self.get_about_me(),
-            'location': self.get_location(),
-            'posts': [post.id for post in self.get_posts()]
-        }
+    def add_search(self, search):
+        """
+        Add search to user's list of searches
+        @param: search: string
+        """
+        # Don't add search if it is empty string
+        if search == "" or (len(self.searches) > 0 and search == self.searches[0]):
+            return
+
+        # Ensure search list keeps 10 most recent results
+        if len(self.searches) >= 10:
+            self.searches.pop()
+
+        self.searches.insert(0, search)
 
     # User Document validation
     # ------------------------

@@ -1,11 +1,13 @@
-from bson.objectid import ObjectId
-from lib.user.user import User
-from lib.photo.photo import Photo
-from bson.json_util import dumps
 from json import loads
 
-from lib.photo.fs_interactions import find_photo
+from bson.json_util import dumps
+from bson.objectid import ObjectId
+from lib.album.album import Album
+from lib.collection.collection import Collection
+from lib.photo.photo import Photo
 from lib.token_functions import get_uid
+from lib.user.user import User
+
 
 def user_photo_search(data):
     try:
@@ -18,12 +20,7 @@ def user_photo_search(data):
         id = ""
     res = Photo.objects().aggregate(
         [
-            {
-                "$match": {
-                    "user": id,
-                    "deleted": False
-                }
-            },
+            {"$match": {"user": id, "deleted": False}},
             {
                 "$project": {
                     "title": 1,
@@ -44,3 +41,93 @@ def user_photo_search(data):
     for result in res:
         result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(req_user)
     return res
+<<<<<<< HEAD
+=======
+
+
+def user_collection_search(data):
+    try:
+        req_user = get_uid(data["token"])
+    except:
+        req_user = ""
+    res = Collection.objects.aggregate(
+        [
+            {
+                "$match": {
+                    "deleted": False,
+                    "$or": [{"private": False}, {"created_by": ObjectId(req_user)}],
+                    "created_by": ObjectId(data["query"]),
+                }
+            },
+            {
+                "$project": {
+                    "title": 1,
+                    "authorId": {"$toString": "$created_by"},
+                    "created": "$creation_date",
+                    "id": {"$toString": "$_id"},
+                    "_id": 0,
+                }
+            },
+            {"$skip": data["offset"]},
+            {"$limit": data["limit"]},
+        ]
+    )
+    # TODO Possibly return first X photos for thumbnail
+    res = loads(dumps(res))
+    for result in res:
+        result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
+    return res
+
+
+def user_album_search(data):
+    res = Album.objects.aggregate(
+        [
+            {"$match": {"created_by": ObjectId(data["query"]), "deleted": False}},
+            {
+                "$project": {
+                    "title": 1,
+                    "authorId": {"$toString": "$created_by"},
+                    "created": "$creation_date",
+                    "discount": 1,
+                    "id": {"$toString": "$_id"},
+                    "_id": 0,
+                }
+            },
+            {"$skip": data["offset"]},
+            {"$limit": data["limit"]},
+        ]
+    )
+    # TODO Possibly return first X photos for thumbnail
+    res = loads(dumps(res))
+    for result in res:
+        result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
+    return res
+
+
+def user_following_search(data):
+    try:
+        req_user = get_uid(data["token"])
+    except:
+        req_user = ""
+    res = User.objects().aggregate(
+        [
+            {"$unwind": "$following"},
+            {
+                "$project": {
+                    "fname": 1,
+                    "lname": 1,
+                    "nickname": 1,
+                    "email": 1,
+                    "location": 1,
+                    "created": 1,
+                    "id": {"$toString": "$_id"},
+                    "_id": 0,
+                }
+            },
+            {"$skip": data["offset"]},
+            {"$limit": data["limit"]},
+        ]
+    )
+    res = loads(dumps(res))
+    return res
+>>>>>>> develop

@@ -1,41 +1,37 @@
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import UserHeader from "../UserHeader/UserHeader";
+import AlbumThumbnail from "../Thumbnails/AlbumThumbnail";
+import "./AlbumList.scss";
 
 interface Props extends RouteComponentProps {
-  albums: Profile[];
+  albums: Album[];
 }
 
-interface Profile {
-  fname: string;
-  lname: string;
-  nickname: string;
-  email: string;
-  location: string;
+interface Album {
   id: string;
+  title: string;
+  discount: number;
+  authorId: string;
+  author: string;
 }
 
 class AlbumList extends React.Component<Props> {
   render() {
     return (
-      <>
-        {this.props.albums.map((profile) => (
+      <div className="album-results">
+        {this.props.albums.map((album) => (
           <div
             onClick={(e) => {
               e.preventDefault();
-              this.props.history.push(`/user/${profile.id}`);
+              this.props.history.push(`/album/${album.id}`);
             }}
-            className="result-container"
-            key={profile.id}
+            key={album.id}
+            className="album-result"
           >
-            <UserHeader
-              name={`${profile.fname} ${profile.lname}`}
-              currentUser={profile.id === localStorage.getItem("u_id")}
-              {...profile}
-            />
+            <AlbumThumbnail {...album} />
           </div>
         ))}
-      </>
+      </div>
     );
   }
 }

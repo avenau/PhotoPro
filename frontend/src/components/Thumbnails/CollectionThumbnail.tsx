@@ -1,26 +1,32 @@
 import React from "react";
 import Image from "react-bootstrap/Image";
-import paperclip from '../../static/paperclip.png'
+
+import { Link } from "react-router-dom";
+import Thumbnail from "../../static/catalouge.png";
+
 import "./CollectionThumbnail.scss";
 
 interface Props {
   id: string;
   title: string;
-  price: number;
-  discount: number;
-  purchasable: boolean;
+  authorId: string;
+  author: string;
 }
 
-// TODO change from PhotoThumbnail template
 export default class CollectionThumbnail extends React.Component<Props> {
-  private getCollection() {
-    return this.props.title;
-  }
-
   render() {
     return (
       <>
-        <Image src={paperclip} className="collection-thumbnail" />
+        <Image src={Thumbnail} className="collection-thumbnail" />
+        <div className="collection-overlay">
+          <div>{this.props.title}</div>
+          <Link
+            to={`/user/${this.props.authorId}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            By @{this.props.author}
+          </Link>
+        </div>
       </>
     );
   }
