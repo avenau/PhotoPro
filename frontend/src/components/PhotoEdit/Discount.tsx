@@ -49,23 +49,24 @@ export default function Discount(props: IDiscount) {
 
 
     return(
-        <>
-            <Form.Group controlId="exampleForm.ControlSelect2">
-            <Form.Label>Discount</Form.Label>
-            <Form.Control required type="number" onChange={(e) => setDiscount(Number(e.target.value))}/>
-            <Form.Text className="text-muted titleInfo">
-                Discount must be a percentage between 0 to 100. 
-                Discount is rounded down.
-                <p className="error">{discountErrMsg}</p>
-            </Form.Text>
-            </Form.Group>
-            <p style={{fontSize: "13px"}}> 
-            Current discount: <b>{props.oDiscount}% off </b>of {props.oPrice} credits ...
-            <b>{calDiscount(props.oDiscount, props.oPrice)} credits.</b></p>
-            {valid ?
-            <p style={{fontSize: "13px"}}>{props.discountDef}% off original price: <s>{props.price} credits</s> ... NOW <b>{discountedPrice} credits.</b></p>
+      <>
+        <Form.Group controlId="exampleForm.ControlSelect2">
+          <Form.Label>Discount</Form.Label>
+          <Form.Control required type="number" onChange={(e) => setDiscount(Number(e.target.value))} />
+          <Form.Text className="text-muted titleInfo">
+            Discount must be a percentage between 0 to 100. 
+            Discount is rounded down.
+            <p className="error">{discountErrMsg}</p>
+          </Form.Text>
+        </Form.Group>
+        <p style={{fontSize: "13px"}}> 
+          Current discount: <b>{props.oDiscount}% off </b>of {props.oPrice} credits ...
+          <b>{calDiscount(props.oDiscount, props.oPrice)} credits.</b>
+        </p>
+        {valid ?
+          <p style={{fontSize: "13px"}}>{props.discountDef}% off original price: <s>{props.price} credits</s> ... NOW <b>{discountedPrice} credits.</b></p>
             : <></>
             }
-        </>
+      </>
     )
 }

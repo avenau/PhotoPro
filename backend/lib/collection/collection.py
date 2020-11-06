@@ -74,6 +74,20 @@ class Collection(lib.catalogue.catalogue.Catalogue):
         '''
         self.discount = discount
 
+    def remove_photo(self, old_photo):
+        '''
+        Remove a photo from this collection
+        Remove this collection from the photo
+        @param photo: Photo(Document)
+        '''
+        if self in old_photo.collections:
+            old_photo.collections.remove(self)
+            old_photo.save()
+
+        if old_photo in self.photos:
+            self.photos.remove(old_photo)
+            self.save()
+
     def delete_collection(self):
         '''
         Delete the collection

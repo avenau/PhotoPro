@@ -5,7 +5,7 @@ import LikeButton from "../LikeButton";
 import "./PhotoContents.scss";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import PhotoComments from "../../components/PhotoComments/PhotoComments";
+import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../Tags";
 
@@ -23,7 +23,7 @@ export default function PhotoContents(props: ContentProps) {
   const [artist, setArtist] = useState("");
   const [status, setStatus] = useState(0);
   const [is_artist, setIsArtist] = useState(false);
-  //TODO
+  // TODO
   const [photo, setPhoto] = useState("");
   const [purchased, setPurchase] = useState<boolean>();
   const currentUser = localStorage.getItem("u_id") as string;
@@ -46,7 +46,7 @@ export default function PhotoContents(props: ContentProps) {
     await axios
       .get(`/photo_details?p_id=${photoId}&token=${token}`)
       .then((response) => {
-        //console.log(response.data);
+        // console.log(response.data);
         setArtist(response.data.u_id);
         setNick(response.data.nickname);
         setIsArtist(response.data.is_artist);
@@ -61,22 +61,22 @@ export default function PhotoContents(props: ContentProps) {
         setPrice(response.data.price);
         setPhoto(`${response.data.metadata}${response.data.photoStr}`);
 
-        //console.log("deleted" + response.data.deleted);
-        //console.log(response.status);
+        // console.log("deleted" + response.data.deleted);
+        // console.log(response.status);
       });
   };
 
   useEffect(() => {
     getPhotoDetails(props.photoId);
     if (purchased === true) {
-      //console.log("Purchased Section");
+      // console.log("Purchased Section");
       setLoad(true);
     } else if (deleted === true || artist === "") {
-      //console.log("IN deleted Section");
+      // console.log("IN deleted Section");
       setLoad(false);
       setLoadMessage("The photo does not exist!");
     } else {
-      //console.log("Everything Else");
+      // console.log("Everything Else");
       setLoad(true);
     }
     if (status === 0) {
@@ -84,7 +84,7 @@ export default function PhotoContents(props: ContentProps) {
     }
     console.log("STATUS UPDATE");
     console.log(status);
-    //console.log("Purchased: " + purchased);
+    // console.log("Purchased: " + purchased);
   }, [purchased, deleted, status, is_artist]);
 
   function DetermineButton() {
@@ -94,6 +94,7 @@ export default function PhotoContents(props: ContentProps) {
     console.log(purchased);
 
     if (is_artist === true) {
+      console.log(props.photoId)
       return (
         <div>
           <Button>Download Full Photo</Button>
@@ -102,7 +103,7 @@ export default function PhotoContents(props: ContentProps) {
           </Link>
         </div>
       );
-    } else if (purchased === true) {
+    } if (purchased === true) {
       return (
         <div>
           <Button className="ml-1">Download Full Photo</Button>
@@ -156,9 +157,9 @@ export default function PhotoContents(props: ContentProps) {
       <PhotoComments p_id={props.photoId} />
     </div>
   ) : (
-      <div>
-        {" "}
-        <p>{loadMessage}</p>{" "}
-      </div>
+    <div>
+      {" "}
+      <p>{loadMessage}</p>{" "}
+    </div>
     );
 }

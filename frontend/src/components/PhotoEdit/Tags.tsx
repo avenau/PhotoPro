@@ -13,8 +13,6 @@ export default function Tags(props: any) {
   const [tagsLength, setTagsLength] = useState(0)
 
   useEffect(() => {
-    console.log('out here tags')
-    console.log(props.tagsList)
     if (props.tagsList != undefined) {
       refreshTagButtons(props.tagsList)
       refreshTagsErr(props.tagsList)
@@ -149,7 +147,7 @@ export default function Tags(props: any) {
               onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) =>
                 handleTagEnterPress(e)
               }
-            ></Form.Control>
+            />
           </Col>
           <Button onClick={handleAddTags}>Add Tags</Button>
         </Row>
