@@ -41,8 +41,6 @@ def user_photo_search(data):
     for result in res:
         result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(req_user)
     return res
-<<<<<<< HEAD
-=======
 
 
 def user_collection_search(data):
@@ -130,4 +128,3 @@ def user_following_search(data):
     )
     res = loads(dumps(res))
     return res
->>>>>>> develop
