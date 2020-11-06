@@ -13,11 +13,8 @@ def get_purchased_photos(data):
     except:
         raise Error.UserDNE("Couldn't identify you.")
 
-    print(u_id)
-
     skip = data["offset"]
     limit = data["limit"]
-    print("before")
     user_obj = User.objects.get(id=u_id)
     purchased_photos = user_obj.get_all_purchased()[skip:skip+limit]
 
