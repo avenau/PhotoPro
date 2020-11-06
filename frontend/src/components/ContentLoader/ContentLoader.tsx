@@ -63,6 +63,7 @@ export default class ContentLoader extends React.Component<Props, State> {
         },
       })
       .then((res) => {
+        console.log(res)
         this.setState((prevState) => ({
           loading: false,
           results: [...prevState.results, ...res.data],
