@@ -355,7 +355,7 @@ def password_check():
     token = data['token']
     user_id = token_functions.get_uid(token)
     user_object = lib.user.user.User.objects.get(id=user_id)
-    
+
     if user_object is None:
         raise Error.UserDNE("User with token" + token + "does not exist")
 
@@ -400,7 +400,7 @@ def _profile_details():
     u_id = request.args.get('u_id')
     if not u_id or u_id == '':
         raise Error.UserDNE("Couldn't find user")
-    this_user = lib.user.user.User.objects.get(id=u_id)
+    this_user = user.User.objects.get(id=u_id)
     if not this_user:
         raise Error.UserDNE("Couldn't find user")
 
@@ -413,11 +413,14 @@ def _profile_details():
         "profilePic": this_user.get_profile_pic(),
     })
 
+
 '''
 --------------------
 - Purchases Routes -
 --------------------
 '''
+
+
 @app.route('/purchases/buycredits', methods=['POST'])
 @validate_token
 def _buy_credits():
@@ -571,6 +574,7 @@ def _welcome_get_popular_images():
     return dumps({
         'popular_images': images
     })
+
 
 @app.route('/userdetails', methods=['GET'])
 def _user_info_with_token():
@@ -785,7 +789,7 @@ def _check_deleted():
     this_photo = photo.Photo.objects.get(id=photo_id)
     if not this_photo or photo_id == '':
         raise Error.PhotoDNE("Could not find photo" + photo_id)
-    
+
     return dumps({"deleted": this_photo.is_deleted()})
 
 
@@ -1525,6 +1529,7 @@ def albums():
 
     return dumps(get_albums(_user))
 
+
 @app.route('/albums', methods=['POST'])
 @validate_token
 def add_album():
@@ -1545,6 +1550,7 @@ def add_album():
     }
 
     """
+    print("Title of album is " + request.form.get('title'))
     token = request.form.get('token')
     u_id = token_functions.verify_token(token)["u_id"]
     _user = lib.user.user.User.objects.get(id=u_id)
