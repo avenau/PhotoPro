@@ -22,7 +22,7 @@ import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 import DownloadExample from "./pages/DownloadExample";
-import CreateCollection from "./pages/CreateCollection/CreateCollection";
+import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
 
 interface Props {}
 
@@ -140,8 +140,8 @@ class App extends React.Component<Props, State> {
           <ProtectedRoute
             valid={this.state.valid}
             exact
-            path="/createcollection"
-            component={CreateCollection}
+            path="/managealbum"
+            component={ManageAlbum}
           />
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}

@@ -12,25 +12,34 @@ import ContentLoader from "../../components/ContentLoader/ContentLoader"
 import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
 
+interface Props {
+  uId: string,
+  token: string,
+  title: string,
+  discount: number,
+  tags: string[],
+  albumId: string,
+}
+
 interface State {
   uId: string,
   token: string,
   title: string,
   discount: number,
-  photos: string[],
   tags: string[],
+  albumId: string,
 }
 
-class CreateCollection extends React.Component<RouteChildrenProps, State> {
-  constructor(props: RouteChildrenProps) {
+class ManageAlbum extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       uId: String(localStorage.getItem('u_id')),
       token: String(localStorage.getItem('token')),
       title: '',
       discount: 0,
-      photos: [],
       tags: [],
+      albumId: props.albumId ? props.albumId : ''
     }
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -38,10 +47,31 @@ class CreateCollection extends React.Component<RouteChildrenProps, State> {
   }
 
   componentDidMount() {
+    this.getAlbum()
   }
 
-  // Get the photos that the user created
-  getPhotos(){
+  getAlbum(){
+    if (this.state.albumId != '') {
+      axios
+      .get('/album', 
+        params: {
+          token: this.state.token,
+          albumId: this.state.albumId
+      })
+      .then((res) => {
+        console.log(res);
+        /*
+        if (album) {
+          this.setState ({
+            'title': album.title,
+            'discount': album.discount,
+            'tags': album.tags
+          });
+        }
+        */
+      })
+    }
+
   }
 
   handleSubmit(event: React.FormEvent<HTMLElement>) {
@@ -51,7 +81,7 @@ class CreateCollection extends React.Component<RouteChildrenProps, State> {
       return;
     }
     axios
-      .post("/collection/create", {
+    .post("/albums/update", {
         title: this.state.title,
         discount: this.state.discount,
         tags: JSON.stringify(this.state.tags),
@@ -83,15 +113,32 @@ class CreateCollection extends React.Component<RouteChildrenProps, State> {
     }));
   }
 
+  getButton(){
+    if (this.albumId == '') {
+      return (
+        <Button id="createButton" className="mt-2" type="submit">
+          Create Album
+        </Button>
+      )
+    } else {
+      return (
+        <Button id="createButton" className="mt-2" type="submit">
+          Update Album
+        </Button>
+      )
+
+    }
+  }
+
   render() {
     return (
-      <div className="createCollectionPage">
+      <div className="createAlbumPage">
         <Toolbar />
         <Container className="mt-5">
-          <h1>Create Collection</h1>
+          <h1>Album</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Title 
-              titleType="Collection"
+              titleType="Album"
               deactivateUpdateButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}
               onChange={(title: string) => this.setState({ title: title })}
@@ -103,7 +150,7 @@ class CreateCollection extends React.Component<RouteChildrenProps, State> {
               onChange={(discount: number) => this.setState({ discount: discount })}
             />
             <Tags 
-              tagType="Collection"
+              tagType="Album"
               deactivateUploadButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}
               tagsList={this.state.tags}
@@ -115,13 +162,11 @@ class CreateCollection extends React.Component<RouteChildrenProps, State> {
               type="photo"
               addPhotoId={(newPhotoId: string) => this.addPhotoToList(newPhotoId)}
             />
-            <Button id="createButton" className="mt-2" type="submit">
-              Create Collection
-            </Button>
+            {this.getButton()}
           </Form>
         </Container>
       </div>
   )}
 };
 
-export default CreateCollection;
+export default ManageAlbum;

@@ -31,6 +31,7 @@ import lib.collection.collection_functions as collection_functions
 
 # Albums
 from lib.album.album_edit import create_album, get_albums
+from lib.album.album_functions import update_album
 
 # Comments
 import lib.comment.comment_photo as comment_photo
@@ -1587,6 +1588,39 @@ def _remove_collection_photo():
 ---------------
 """
 
+@app.route('/album', methods=['GET'])
+@validate_token
+def _get_album():
+    '''
+    Description
+    -----------
+
+    Get a single album
+
+    Parameters
+    ----------
+
+    token: string
+    albumId: string
+
+    Returns
+
+    title: string
+    discount: integer
+    tags: [string]
+    '''
+    token = request.args.get('token')
+    _user = user.User.objects.get(id=token_functions.get_uid(token))
+    _album = album.Album.objects.get(id=request.args.get('album_id'))
+    if _album.get_user() != _user:
+        raise Error.ValidationError("User does not own this album")
+
+    return {
+                'title': _album.get_title(),
+                'discount': _album.get_discount(),
+                'tags': _album.get_tags()
+            }
+
 
 @app.route("/albums", methods=["GET"])
 @validate_token
@@ -1647,6 +1681,44 @@ def _add_album():
         raise Error.UserDNE("Could not find User " + u_id)
 
     return dumps(create_album(request.form.get('title'), _user))
+
+@app.route("/albums/update", methods=["PUT"])
+@validate_token
+def _update_album():
+    """
+    Description
+    -----------
+    Add album to user
+
+    Parameters
+    ----------
+    token : string
+    album_id : string
+    title: string
+    discount: integer
+    tags: list[]
+
+    Returns
+    -------
+    None
+
+    """
+    # Get Parameters
+    params = request.form.to_dict()
+    u_id = token_functions.get_uid(params['token'])
+    album_id = params['album_id']
+    # Get Objects
+    _user = user.User.objects.get(id=u_id)
+    _album = album.Album.objects.get.id(album_id)
+    if _album.get_created_by() != _user:
+        raise Error.ValidationError("User does not have permission to edit album")
+    ret = update_album(_album,
+                       params['title'],
+                       params['discount'],
+                       loads(params['tags']))
+
+    return {'success': 'true'} if ret else {'success': 'false'}
+
 
 
 """
