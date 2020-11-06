@@ -8,7 +8,7 @@ import PhotoList from "../Lists/PhotoList";
 import UserList from "../Lists/UserList";
 
 interface Props {
-  query: string;
+  query: string | string[];
   route: string;
   type: "photo" | "album" | "collection" | "user";
   orderby?: string;
@@ -18,7 +18,7 @@ interface Props {
 }
 
 interface State {
-  query: string;
+  query: string | string[];
   offset: number;
   limit: number;
   results: any[];
@@ -33,8 +33,10 @@ interface State {
 export default class ContentLoader extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+    console.log('in content loader')
+    console.log(props)
     this.state = {
-      query: this.props.query,
+      query: JSON.stringify(this.props.query),
       loading: false,
       offset: 0,
       limit: 5,
@@ -49,6 +51,7 @@ export default class ContentLoader extends React.Component<Props, State> {
 
   private getResults() {
     this.setState({ loading: true });
+    console.log('content loader', this.state.query)
     axios
       .get(this.props.route, {
         params: {

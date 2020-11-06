@@ -340,6 +340,12 @@ class User(Document):
 
         self.searches.insert(0, search)
 
+    def get_searches(self):
+        """
+        Get user searches
+        @param: search: string
+        """
+        return self.searches
     # User Document validation
     # ------------------------
     def clean(self):

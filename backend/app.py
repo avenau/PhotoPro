@@ -65,6 +65,7 @@ import lib.user.helper_functions
 import lib.user.password_reset as password_reset
 
 # Welcome
+from lib.welcome.recommend import recommend_keywords, recommend_photos
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
 
@@ -702,6 +703,56 @@ def welcome_get_popular_images():
     images = get_popular_images()
     return dumps({"popular_images": images})
 
+@app.route("/welcome/recommend/compute", methods=["GET"])
+@validate_token
+def welcome_compute_recommend():
+    """
+    Description
+    -----------
+    Use user data to recommend photos to the user on the main feed
+
+    Parameters
+    ----------
+    token: str
+
+    Returns
+    -------
+    photo
+
+    """
+    u_id = get_uid(request.args.get("token"))
+    return dumps(recommend_keywords(u_id))
+@app.route("/welcome/recommend", methods=["GET"])
+@validate_token
+def welcome_recommend_photos():
+    """
+    Description
+    -----------
+    Get recommended photos for a registered user.
+    
+    Parameters
+    ----------
+    query : string[] // list of recommended topics
+    offset : int
+    limit : int
+    orderby : string
+    token : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+    return dumps(recommend_photos(data))
 
 """
 --------------------------
