@@ -32,6 +32,7 @@ from lib.album.album_edit import create_album, get_albums
 # Comments
 import lib.comment.comment_photo as comment_photo
 from lib.comment.get_comments import get_all_comments
+from datetime import datetime
 
 # Photo
 from lib.photo.photo_edit import create_photo_entry, update_photo_details
@@ -1239,9 +1240,43 @@ def get_comments():
     # offset = request.args.get("offset")
     # limit = request.args.get("limit")
     # order = request.args.get("old_to_new")
-    all_comments = get_all_comments(photo_id)
+    current_date = datetime.now()
+    print("PRINTING CURRENT DATE")
+    print(current_date)
+    all_comments = get_all_comments(photo_id, current_date)
 
     return dumps({"comments": all_comments, "status": True})
+    
+@app.route("/comments/delete_comments", methods=["GET"])
+@validate_token
+def delete_comments():
+    """
+    Description
+    -----------
+    Delete A Comment
+
+    Parameters
+    ----------
+    c_id : string
+    p_id : string
+    token : string
+
+    Returns
+    -------
+    {
+    }
+    """
+    comment_id = request.args.get("c_id")
+    photo_id = request.args.get("p_id")
+    # offset = request.args.get("offset")
+    # limit = request.args.get("limit")
+    # order = request.args.get("old_to_new")
+    current_date = datetime.now()
+    print("PRINTING CURRENT DATE")
+    print(current_date)
+    all_comments = get_all_comments(photo_id, current_date)
+
+    return dumps({})
 
 
 @app.route("/get_current_user", methods=["GET"])
