@@ -12,14 +12,14 @@ import ContentLoader from "../../components/ContentLoader/ContentLoader"
 import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
 
-interface Props {
-  uId: string,
-  token: string,
-  title: string,
-  discount: number,
-  tags: string[],
+interface Params extends RouteChildrenProps {
+
+}
+
+interface Props extends Params {
   albumId: string,
 }
+
 
 interface State {
   uId: string,
@@ -27,19 +27,22 @@ interface State {
   title: string,
   discount: number,
   tags: string[],
-  albumId: string,
+  albumId?: string,
 }
 
 class ManageAlbum extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+    // Hacky attempt
+    let album_id = window.location.pathname.split("/")[2];
+    album_id = album_id ? album_id : '';
     this.state = {
       uId: String(localStorage.getItem('u_id')),
       token: String(localStorage.getItem('token')),
       title: '',
       discount: 0,
       tags: [],
-      albumId: props.albumId ? props.albumId : ''
+      albumId: album_id
     }
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -53,22 +56,21 @@ class ManageAlbum extends React.Component<Props, State> {
   getAlbum(){
     if (this.state.albumId != '') {
       axios
-      .get('/album', 
+      .get('/album', {
         params: {
           token: this.state.token,
-          albumId: this.state.albumId
+          albumId: this.state.albumId,
+        }
       })
       .then((res) => {
-        console.log(res);
-        /*
-        if (album) {
+        console.log(res.data);
+        if (res.data) {
           this.setState ({
-            'title': album.title,
-            'discount': album.discount,
-            'tags': album.tags
+            'title': res.data.title,
+            'discount': res.data.discount,
+            'tags': res.data.tags
           });
         }
-        */
       })
     }
 
@@ -106,15 +108,8 @@ class ManageAlbum extends React.Component<Props, State> {
     return btn?.setAttribute("disabled", "true");
   }
 
-  // Pass in a list of photos and add new photo to list
-  addPhotoToList(newPhotoId: string) {
-    this.setState((prevState) => ({
-      photos: [...prevState.photos, newPhotoId]
-    }));
-  }
-
   getButton(){
-    if (this.albumId == '') {
+    if (this.state.albumId == '') {
       return (
         <Button id="createButton" className="mt-2" type="submit">
           Create Album
@@ -142,12 +137,13 @@ class ManageAlbum extends React.Component<Props, State> {
               deactivateUpdateButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}
               onChange={(title: string) => this.setState({ title: title })}
-              titleDef=''
+              titleDef={this.state.title}
             />
             <Discount
               deactivateCreateButton={this.deactivateCreateButton}
               activateCreateButton={this.activateCreateButton}
               onChange={(discount: number) => this.setState({ discount: discount })}
+              discountDef={this.state.discount}
             />
             <Tags 
               tagType="Album"
@@ -155,12 +151,6 @@ class ManageAlbum extends React.Component<Props, State> {
               activateUploadButton={this.activateCreateButton}
               tagsList={this.state.tags}
               setTagsList={(tags: string[]) => this.setState({ tags: tags })}
-            />
-            <ContentLoader
-              query={this.state.uId}
-              route="/user/photos"
-              type="photo"
-              addPhotoId={(newPhotoId: string) => this.addPhotoToList(newPhotoId)}
             />
             {this.getButton()}
           </Form>

@@ -94,13 +94,28 @@ class App extends React.Component<Props, State> {
             path="/forgotpassword/reset"
             component={ResetPasswordPage}
           />
-          <Route path="/user/:user_id" component={ProfilePage} />
-          <Route path="/search/:type" component={SearchPage} />
-          <Route path="/downloadexample" component={DownloadExample} />
+          <Route 
+            path="/user/:user_id" 
+            component={ProfilePage}
+          />
+          <Route 
+            path="/search/:type" 
+            component={SearchPage} 
+          />
+          <Route 
+            path="/downloadexample" 
+            component={DownloadExample}
+          />
           <Route
             valid={this.state.valid}
             path="/photo/:photo_id"
             component={PhotoDetails}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/album/:album_id"
+            component={ManageAlbum}
           />
           <ProtectedRoute
             valid={this.state.valid}
@@ -136,12 +151,6 @@ class App extends React.Component<Props, State> {
             exact
             path="/purchases/refundcredits"
             component={RefundCreditsPage}
-          />
-          <ProtectedRoute
-            valid={this.state.valid}
-            exact
-            path="/managealbum"
-            component={ManageAlbum}
           />
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}

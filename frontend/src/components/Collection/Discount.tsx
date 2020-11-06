@@ -23,7 +23,7 @@ export default function Discount(props: any) {
   return(
       <>
       <Form.Group controlId="price">
-          <Form.Label>Collection Price in Credits</Form.Label>
+          <Form.Label>Album Discount in Credits</Form.Label>
           <Form.Control required placeholder={props.discountDef}
                                  type="number"
                                  onChange={(discount) =>

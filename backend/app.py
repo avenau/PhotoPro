@@ -1610,9 +1610,12 @@ def _get_album():
     tags: [string]
     '''
     token = request.args.get('token')
+    album_id = request.args.get('album_id')
+    print("REACHED")
+    print(album_id)
     _user = user.User.objects.get(id=token_functions.get_uid(token))
-    _album = album.Album.objects.get(id=request.args.get('album_id'))
-    if _album.get_user() != _user:
+    _album = album.Album.objects.get(id=request.args.get('albumId'))
+    if _album.get_created_by() != _user:
         raise Error.ValidationError("User does not own this album")
 
     return {
