@@ -132,3 +132,26 @@ I need to manage my time properly. Aim to finish most of the work by Monday at l
 NEXT
 - Finish creating albums from upload and edit page.
 - Also editing albums from profile page.
+
+=======================Week 7 (Wed 28 Oct - Wed 4 Oct)=======================
+
+PLANNED
+I planned on finishing creating abums from upload and edit page.
+I planned on editing albums from the profile page.
+
+FINISHED
+I was able to finish creating albums and selecting and deselecting albums from upload and edit page.
+I converted Manage photo to use the same form component as register page, and added profile upload functionality.
+
+CHALLENGES
+I had trouble integrating my part with the mongo engine functionality. And also juggling my other responsibilities (time management)
+
+REFLECTION
+Do not get too deep into a task without asking for help. This is bad for efficiency. We are a team, and we help each other.
+
+NEXT
+- Finish recommend similar for main feed
+- Finish recommend artist
+- Help out with bug fixes and github issues
+- Docstrings
+
