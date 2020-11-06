@@ -702,7 +702,59 @@ def buy_photo():
     seller.add_credits(int(0.80*photo_price))
     seller.save()
 
-    print("here")
+    return dumps({
+        "purchased": True
+    })
+
+#TODO: unfinished
+@app.route('/purchasealbum', methods=['POST'])
+@validate_token
+def buy_photo():
+    """
+    Description
+    -----------
+    User buys photos in album which they do not already own.
+
+    Parameters
+    ----------
+    token: str,
+    albumId: str
+
+    Returns
+    -------
+    {'bought': boolean}
+    """
+    token = request.form.get("token")
+    try:
+        user_id = token_functions.get_uid(token)
+    except:
+        raise Error.ValidationError("You need to log in to purchase an album.")
+
+    album_id = request.form.get("albumId")
+    buyer = lib.user.user.User.objects.get(id=user_id)
+    album = lib.album.album.Album.objects.get(id=album_id)
+    # 
+    seller = lib.user.user.User.objects.get(id=this_album.get_user().created_by)
+    photo_price = this_photo.get_discounted_price()
+    user_credits = buyer.get_credits()
+
+    # Catch invalid actions
+    if this_photo in buyer.get_purchased():
+        raise Error.ValidationError("You can't purchase a photo that you've already purchased'.")
+    elif this_photo.is_photo_owner(buyer):
+        raise Error.ValidationError("You can't purchase a photo that you posted yourself.")
+    elif this_photo.is_deleted():
+        raise Error.ValidationError("You can't purchase a deleted photo.")
+    elif photo_price > user_credits:
+        raise Error.ValueError("You don't have enough credits to buy this photo.")
+
+    # Do the purchase
+    buyer.remove_credits(photo_price)
+    buyer.add_purchased(this_photo)
+    buyer.save()
+    seller.add_credits(int(0.80*photo_price))
+    seller.save()
+
     return dumps({
         "purchased": True
     })
