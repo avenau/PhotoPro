@@ -59,9 +59,12 @@ def get_all_comments(p_id, current_date):
             minute_diff = math.trunc(time_diff_sec/60)
             time_after = str(minute_diff) + " minutes ago"
         else:
+            #For Debugging, probably gonna set it to "moments ago"
             time_after = str(math.trunc(time_diff_sec)) + " seconds ago"
         
-        #time_after = str(minutes_ago) + " minutes ago"
+        comment_id = str(comment.get_id())
+        
+        
         result.append(dumps({
                 'commenter': comment.get_commenter().get_nickname(),
                 'datePosted': str(comment.get_posted()),
@@ -69,6 +72,7 @@ def get_all_comments(p_id, current_date):
                 'commenter_id': str(comment.get_commenter().get_id()),
                 'exact_time': comment.get_posted().strftime("%d/%b/%Y %H:%M"),
                 'time_after': time_after,
+                'comment_id': comment_id,
             }))
     
     

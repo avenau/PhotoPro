@@ -232,10 +232,18 @@ class Photo(Document):
     def add_comment(self, this_comment):
         '''
         Add a single comment to the photo
-        @param comment: string
+        @param comment: ObjectId
         '''
         #Param should be ObjectId
         self.comments.append(this_comment)
+        
+    def delete_comment(self, this_comment):
+        '''
+        Remove a single comment to the photo
+        @param comment: ObjectId
+        '''
+        self.comments.remove(this_comment)
+    
 
     def get_comments(self):
         '''

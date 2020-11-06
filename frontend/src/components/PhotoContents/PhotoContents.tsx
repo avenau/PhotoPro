@@ -88,10 +88,10 @@ export default function PhotoContents(props: ContentProps) {
   }, [purchased, deleted, status, is_artist]);
 
   function DetermineButton() {
-    console.log("IS ARTIST");
+    /*console.log("IS ARTIST");
     console.log(is_artist);
     console.log("IS PURCHASED");
-    console.log(purchased);
+    console.log(purchased);*/
 
     if (is_artist === true) {
       console.log(props.photoId)
@@ -157,9 +157,9 @@ export default function PhotoContents(props: ContentProps) {
       <PhotoComments p_id={props.photoId} />
     </div>
   ) : (
-    <div>
-      {" "}
-      <p>{loadMessage}</p>{" "}
-    </div>
+      <div>
+        {" "}
+        <p>{loadMessage}</p>{" "}
+      </div>
     );
 }

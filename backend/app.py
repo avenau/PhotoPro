@@ -1247,8 +1247,8 @@ def get_comments():
 
     return dumps({"comments": all_comments, "status": True})
     
-@app.route("/comments/delete_comments", methods=["GET"])
-@validate_token
+@app.route("/comments/delete_comments", methods=["POST"])
+#@validate_token
 def delete_comments():
     """
     Description
@@ -1263,18 +1263,15 @@ def delete_comments():
 
     Returns
     -------
-    {
-    }
+    None
     """
-    comment_id = request.args.get("c_id")
-    photo_id = request.args.get("p_id")
-    # offset = request.args.get("offset")
-    # limit = request.args.get("limit")
-    # order = request.args.get("old_to_new")
-    current_date = datetime.now()
-    print("PRINTING CURRENT DATE")
-    print(current_date)
-    all_comments = get_all_comments(photo_id, current_date)
+    params = request.form.to_dict()
+    comment_id = params.get("c_id")
+    photo_id = params.get("p_id")
+    token = params.get("token")
+    
+    token_functions.verify_token(token)
+    comment_photo.delete_photos(photo_id, comment_id)
 
     return dumps({})
 
