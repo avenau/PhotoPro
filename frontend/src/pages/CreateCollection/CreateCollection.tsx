@@ -11,27 +11,26 @@ import ContentLoader from "../../components/ContentLoader/ContentLoader"
 
 import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
+
 interface State {
-  u_id: string,
+  uId: string,
   token: string,
   title: string,
   discount: number,
   photos: string[],
   tags: string[],
-  dne: boolean
 }
 
 class CreateCollection extends React.Component<RouteChildrenProps, State> {
   constructor(props: RouteChildrenProps) {
     super(props);
     this.state = {
-      u_id: String(localStorage.getItem('u_id')),
+      uId: String(localStorage.getItem('u_id')),
       token: String(localStorage.getItem('token')),
       title: '',
       discount: 0,
       photos: [],
       tags: [],
-      dne: false
     }
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -60,7 +59,7 @@ class CreateCollection extends React.Component<RouteChildrenProps, State> {
       })
       .then((res) => {
         console.log(res);
-        this.props.history.push(`/user/${this.state.u_id}`);
+        this.props.history.push(`/user/${this.state.uId}`);
       })
       .catch((err) => {
         console.log(err);
@@ -89,36 +88,36 @@ class CreateCollection extends React.Component<RouteChildrenProps, State> {
       <div className="createCollectionPage">
         <Toolbar />
         <Container className="mt-5">
-        <h1>Create Collection</h1>
+          <h1>Create Collection</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
-          <Title titleType="Collection"
-            deactivateUpdateButton={this.deactivateCreateButton}
-            activateUploadButton={this.activateCreateButton}
-            onChange={(title: string) => this.setState({ title: title })}
-            titleDef={''}
-          />
-          <Discount
-            deactivateCreateButton={this.deactivateCreateButton}
-            activateCreateButton={this.activateCreateButton}
-            onChange={(discount: number) => this.setState({ discount: discount })}
-          />
-          <Tags tagType="Collection"
-            deactivateUploadButton={this.deactivateCreateButton}
-            activateUploadButton={this.activateCreateButton}
-            tagsList={this.state.tags}
-            setTagsList={(tags: string[]) =>
-              this.setState({ tags: tags })
-            }
-          />
-          <ContentLoader
-            query={this.state.u_id}
-            route="/user/photos"
-            type="photo"
-            addPhotoId={(newPhotoId: string) => this.addPhotoToList(newPhotoId)}
-          />
-          <Button id="createButton" className="mt-2" type="submit">
-            Create Collection
-          </Button>
+            <Title 
+              titleType="Collection"
+              deactivateUpdateButton={this.deactivateCreateButton}
+              activateUploadButton={this.activateCreateButton}
+              onChange={(title: string) => this.setState({ title: title })}
+              titleDef=''
+            />
+            <Discount
+              deactivateCreateButton={this.deactivateCreateButton}
+              activateCreateButton={this.activateCreateButton}
+              onChange={(discount: number) => this.setState({ discount: discount })}
+            />
+            <Tags 
+              tagType="Collection"
+              deactivateUploadButton={this.deactivateCreateButton}
+              activateUploadButton={this.activateCreateButton}
+              tagsList={this.state.tags}
+              setTagsList={(tags: string[]) => this.setState({ tags: tags })}
+            />
+            <ContentLoader
+              query={this.state.uId}
+              route="/user/photos"
+              type="photo"
+              addPhotoId={(newPhotoId: string) => this.addPhotoToList(newPhotoId)}
+            />
+            <Button id="createButton" className="mt-2" type="submit">
+              Create Collection
+            </Button>
           </Form>
         </Container>
       </div>

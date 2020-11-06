@@ -1194,6 +1194,7 @@ def _get_all_collections():
 
     _user = user.User.objects.get(id=data['query'])
     _collections = collection.Collection.objects(user=_user)
+    print(collection.Collection.objects(created_by=_user).to_json())
     return collection.Collection.objects.to_json()
 
 @app.route('/collection/create', methods=['POST'])
