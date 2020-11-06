@@ -8,7 +8,7 @@ import PhotoList from "../Lists/PhotoList";
 import UserList from "../Lists/UserList";
 
 interface Props {
-  query: string | string[];
+  query: string;
   route: string;
   type: "photo" | "album" | "collection" | "user";
   orderby?: string;
@@ -18,7 +18,7 @@ interface Props {
 }
 
 interface State {
-  query: string | string[];
+  query: string;
   offset: number;
   limit: number;
   results: any[];
@@ -33,10 +33,8 @@ interface State {
 export default class ContentLoader extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    console.log('in content loader')
-    console.log(props)
     this.state = {
-      query: JSON.stringify(this.props.query),
+      query: this.props.query,
       loading: false,
       offset: 0,
       limit: 5,
