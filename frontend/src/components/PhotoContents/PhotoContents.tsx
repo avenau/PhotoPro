@@ -88,9 +88,8 @@ export default function PhotoContents(props: ContentProps) {
   }, [purchased, deleted, status, is_artist]);
 
   function purchasePhoto(e: any) {
-    if (e) {
-      e.preventDefault();
-    }
+    e.preventDefault();
+    e.stopPropagation();
     axios
       .post("/purchasephoto", {
         token: token,
@@ -102,7 +101,9 @@ export default function PhotoContents(props: ContentProps) {
       .catch(() => {});
   }
 
-  const downloadPhoto = (e: React.MouseEvent) => {
+  function downloadPhoto(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     axios
       .get("/download", {
         params: {
@@ -122,7 +123,7 @@ export default function PhotoContents(props: ContentProps) {
         link.click();
         link.remove();
       });
-  };
+  }
 
   function DetermineButton() {
     console.log("IS ARTIST");
