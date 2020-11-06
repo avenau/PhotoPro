@@ -362,9 +362,12 @@ def buy_photo():
     {'bought': boolean}
     """
     token = request.form.get("token")
-    user_id = token_functions.get_uid(token)
-    photo_id = request.form.get("photoId")
+    try:
+        user_id = token_functions.get_uid(token)
+    except:
+        raise Error.ValidationError("You need to log in to purchase a photo.")
 
+    photo_id = request.form.get("photoId")
     buyer = lib.user.user.User.objects.get(id=user_id)
     this_photo = lib.photo.photo.Photo.objects.get(id=photo_id)
     seller = lib.user.user.User.objects.get(id=this_photo.get_user().get_id())
@@ -399,7 +402,8 @@ def download_full_photo():
     """
     Description
     -----------
-    Download full photo identified by photo_id.
+    Download full-res photo identified by photo_id.
+    Returns watermarked or non-watermarked image depending on the token's u_id.
 
     Parameters
     ----------
@@ -412,11 +416,23 @@ def download_full_photo():
     base64_img: str
     extension: str
     """
+    token = request.args.get("token")
     photo_id = request.args.get("photo_id")
-    print(photo_id)
-    return dumps({
+    print("They want to download photo " + photo_id)
+    try:
+        req_user = token_functions.get_uid(token)
+    except:
+        req_user = ""
 
-        "base64_img": "temp"
+    requested_photo_object = lib.photo.photo.Photo.objects.get(id=photo_id) 
+    requested_metadata = requested_photo_object.get_metadata()
+    requested_b64 = requested_photo_object.get_full_image(req_user)
+    requested_extension = requested_photo_object.get_extension()
+
+    return dumps({
+        "metadata": requested_metadata,
+        "base64_img": requested_b64,
+        "extension": requested_extension
     })
 
 # Returns the two showdown images for the day
