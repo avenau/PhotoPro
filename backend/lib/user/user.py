@@ -263,9 +263,15 @@ class User(Document):
         """
         self.likes.remove(this_photo)
 
+    def get_all_purchased(self):
+        """
+        Get the photos that the user has purchased, including deleted ones
+        """
+        return self.purchased
+
     def get_purchased(self):
         """
-        Get the photos that the user has purchased
+        Get the photos that the user has purchased, excluding deleted ones
         """
         purchased = []
         for item in self.purchased:
