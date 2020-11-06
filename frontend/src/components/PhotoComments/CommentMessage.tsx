@@ -1,5 +1,6 @@
 import React from "react";
 import { Row } from "react-bootstrap";
+
 interface MessageProp {
     message: string;
     author: string
@@ -11,10 +12,10 @@ interface MessageProp {
 export default function CommentMessage(props: MessageProp) {
 
     return (
-        <div className={props.className}>
-            <div><b>{props.author}</b></div>
-            <div>{props.message}</div>
-            <div>{props.datePosted}</div>
-        </div>
+      <div className={props.className}>
+        <div><b>{props.author}</b></div>
+        <div>{props.message}</div>
+        <div>{props.datePosted}</div>
+      </div>
     );
 }

@@ -52,7 +52,7 @@ class Photo(Document):
     # Whether the photo is deleted or not
     deleted = BooleanField(default=False)
     # Metadata of the photo {collection: collection-name}
-    meta = {'collection': 'photos-mongoengine'}
+    meta = {'collection': 'photos'}
 
     def get_id(self):
         '''
@@ -103,6 +103,7 @@ class Photo(Document):
         '''
         Set the price of the photo
         '''
+        print('in set price',price)
         self.price = price
 
     def get_price(self):
@@ -110,12 +111,78 @@ class Photo(Document):
         Get the price of the photo. Ignore the discount.
         '''
         return self.price
+    def add_album(self, album):
+        '''
+        Add album to photo albums list
+        '''
+        self.albums.append(album)
+
+    def set_albums(self, albums):
+        '''
+        Given a list of album ids(str).
+        - Reset the corresponding list of albums objects from the photo
+        - Remove photo from album if not selected
+        '''
+
+        # Albums needed to remove; any album no longer appearing as selected
+        remove = [alb_rm for alb_rm in self.albums if str(alb_rm.id) not in albums] 
+        for alb_rm in remove:
+            alb_rm.remove_photo(self)
+            alb_rm.save()
+
+        # Update list of albums for current photo
+        # Add photo to albums in list
+        album_replace = []
+        for id in albums:
+            album_obj = album.Album.objects.get(id=id)
+            album_replace.append(album_obj)
+            if self not in album_obj.photos:
+                # Add photo to Album document
+                album_obj.add_photo(self)
+                album_obj.save()
+
+        self.albums = album_replace
+        self.save()
+
+    def get_albums(self):
+        '''
+        Get the list of albums (album id) of the photo
+        '''
+        return self.albums
+
+    def get_albums(self):
+        '''
+        Return the list of albums
+        '''
+        albums = []
+        for this_album in self.albums:
+            if not this_album.is_deleted():
+                albums.append(this_album)
+        return albums
+
+    def add_album(self, this_album):
+        '''
+        Add an album reference
+        '''
+        self.albums.append(this_album)
+
+    def remove_album(self, this_album):
+        '''
+        Remove an album reference
+        '''
+        self.albums.remove(this_album)
 
     def set_discount(self, discount):
         '''
         Set a discount on the photo
         '''
         self.discount = discount
+
+    def get_posted(self):
+        '''
+        Return the posted date
+        '''
+        return self.posted
 
     def get_metadata(self):
         '''
@@ -163,8 +230,6 @@ class Photo(Document):
         Save the user object
         '''
         self.likes += 1
-        #self.get_user().increment_likes()
-        #self.get_user().save()
 
     def decrement_likes(self):
         '''
@@ -172,11 +237,7 @@ class Photo(Document):
         Decrease the likes of the user by one
         Save the user object
         '''
-        if self.likes == 0:
-            return
         self.likes -= 1
-        #self.get_user().decrement_likes()
-        #self.get_user().save()
 
     def reset_likes(self):
         '''
@@ -263,18 +324,17 @@ class Photo(Document):
         '''
 
         # SVG thumbnails are in png format
-        extension = self.get_extension()
-        if extension == ".svg":
-            extension = ".png"
+        this_extension = self.get_extension()
+        if this_extension == ".svg":
+            this_extension = ".png"
 
         try:
             this_user = user.User.objects.get(id=u_id)
             if self in this_user.get_purchased() or this_user == self.get_user():
-                return find_photo(f"{self.get_id()}_t{extension}")
-            else:
-                return find_photo(f"{self.get_id()}_t_w{extension}")
+                return find_photo(f"{self.get_id()}_t{this_extension}")
+            return find_photo(f"{self.get_id()}_t_w{this_extension}")
         except:
-            return find_photo(f"{self.get_id()}_t_w{extension}")
+            return find_photo(f"{self.get_id()}_t_w{this_extension}")
 
     def get_full_image(self, u_id):
         '''
@@ -304,6 +364,27 @@ class Photo(Document):
         @return boolean
         '''
         return this_user == self.get_user()
+
+    def get_photo_json(self):
+        '''
+        Return object as JSON
+        Any reference fields are returned as object ids
+        '''
+        return {
+                'title': self.get_title(),
+                'price': self.get_price(),
+                'albums': [album.id for album in self.get_albums()],
+                'collection': [coll.id for coll in self.get_collections()],
+                'tags': self.get_tags(),
+                'metadata': self.get_metadata(),
+                'discount': self.get_discount(),
+                'posted': self.get_posted(),
+                'user': self.get_user().id,
+                'extension': self.get_extension(),
+                'likes': self.get_likes(),
+                'comments': [comment.id for comment in self.get_comments()],
+                'deleted': self.is_deleted(),
+                }
 
     def clean(self):
         '''

@@ -15,6 +15,7 @@ interface Props {
   filetype?: string;
   priceMin?: number;
   priceMax?: number;
+  addPhotoId?: (newPhotoId: string) => void;
 }
 
 interface State {
@@ -77,7 +78,10 @@ export default class ContentLoader extends React.Component<Props, State> {
   private getList() {
     switch (this.props.type) {
       case "photo":
-        return <PhotoList photos={this.state.results} />;
+        return <PhotoList photos={this.state.results}
+                          addPhotoId={(newPhotoId: string) =>
+                                        this.props.addPhotoId?.(newPhotoId)
+                                    }/>
       case "album":
         return <AlbumList albums={this.state.results} />;
       case "collection":

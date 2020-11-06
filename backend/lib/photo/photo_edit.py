@@ -48,20 +48,17 @@ def create_photo_entry(photo_details):
         extension = extension
     )
     new_photo.save()
-
-    # Process photo and upload
-    photo_oid = new_photo.id
-    name = str(photo_oid)
+    new_photo.set_albums(photo_details["albums"])
+    print(new_photo.get_id())
     try:
-        process_photo(base64_str, name, extension)
-
-        # Add photo to user's posts
+        process_photo(base64_str, str(new_photo.get_id()), extension)
         user.add_post(new_photo)
         user.save()
         return {
             "success": "true"
         }
-    except:
+    except Exception as e:
+        print(e)
         return {
             "success": "false"
         }
@@ -241,11 +238,18 @@ def get_photo_edit(photo_id, token):
     # Get image from FS API
     img = find_photo(f"{photo_id}{extension}")
 
+    albums = list()
+
+    for i in photo.get_albums():
+        albums.append(str(i.id))
+
+    print(albums)
+
     return {
         "title": photo.get_title(),
         "price": photo.get_price(),
         "tags": photo.get_tags(),
-        "albums": photo.get_albums(),
+        "albums": albums,
         "discount": photo.get_discount(),
         "photoStr": img,
         "metadata": photo.get_metadata(),
@@ -267,23 +271,27 @@ def update_photo_details(photo_details):
 
     # Get the User's id
     user_uid = get_uid(photo_details['token'])
+
     # Get the photo
     photo = lib.photo.photo.Photo.objects.get(id=photo_details['photoId'])
 
     # Check the user has permission to edit the photo
-    if user_uid != str(photo.get_user()):
+    if user_uid != str(photo.get_user().get_id()):
         raise PermissionError("User does not have permission to edit photo")
 
-
+    
+    print(photo_details["albums"])
     photo.set_title(photo_details['title'])
-    photo.set_price(photo_details['price'])
-    photo.set_tags(photo_details['tags'])
+    photo.set_price(int(photo_details['price']))
+    photo.add_tags(photo_details['tags'])
     photo.set_albums(photo_details['albums'])
-    photo.set_discount(photo_details['discount'])
+    photo.set_discount(int(photo_details['discount']))
 
     # Save the photo
     try:
+
         photo.save()
+        print('saved')
     except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError("Could not update photo")

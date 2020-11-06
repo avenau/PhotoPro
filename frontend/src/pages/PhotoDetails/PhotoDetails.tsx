@@ -11,7 +11,6 @@ import PhotoContents from "../../components/PhotoContents/PhotoContents";
 
 export default function PhotoDetails() {
   const photoId = window.location.pathname.split("/")[2];
-
   return (
     <div>
       <Toolbar />

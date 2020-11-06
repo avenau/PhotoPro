@@ -13,8 +13,6 @@ export default function Tags(props: any) {
   const [tagsLength, setTagsLength] = useState(0)
 
   useEffect(() => {
-    console.log('out here tags')
-    console.log(props.tagsList)
     if (props.tagsList != undefined) {
       refreshTagButtons(props.tagsList)
       refreshTagsErr(props.tagsList)
@@ -149,13 +147,13 @@ export default function Tags(props: any) {
               onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) =>
                 handleTagEnterPress(e)
               }
-            ></Form.Control>
+            />
           </Col>
           <Button onClick={handleAddTags}>Add Tags</Button>
         </Row>
         <Form.Text className="text-muted tagsInfo">
           You can include 1 to 10 keywords. Keywords should describe the main
-          aspects of your photo.
+          aspects of your {props.tagType}.
           <p id="b">
             {tagsLength} Detected keywords (click keyword to delete):{" "}
             {tagButtons}

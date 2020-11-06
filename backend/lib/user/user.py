@@ -14,6 +14,7 @@ from mongoengine.fields import DateTimeField
 
 import lib.photo.photo as photo
 import lib.collection.collection as collection
+import lib.album.album as album
 import lib.user.validate_login as validate_login
 import lib.user.validate_registration as validate_registration
 import lib.user.validation as validation
@@ -46,11 +47,8 @@ class User(Document):
     location = StringField(validation=validate_registration.valid_location)
     # Array of Photo references that the user has posted
     posts = ListField(ReferenceField("photo.Photo"))
-    """
-    # TODO:
-    # User's albums that they've created
-    # albums = ListField()
-    """
+    # Array of Album references that the user has created
+    albums = ListField(ReferenceField("album.Album"))
     # Array of Collection references that the user has created
     collections = ListField(ReferenceField("collection.Collection"))
     # Array of liked Photo references
@@ -61,8 +59,12 @@ class User(Document):
     credits = IntField(default=0, validation=validation.validate_credit)
     # When the user was created
     created = DateTimeField(default=datetime.datetime.now())
+    # List of the searches made by the user, ordered with recent searches first
+    searches = ListField(StringField())
+    # Reference to all users this user is following
+    following = ListField(ReferenceField("User"))
     # Meta data about the User collection
-    meta = {"collection": "users-mongoengine"}
+    meta = {"collection": "users"}
 
     # User Methods:
     # -------------
@@ -240,6 +242,22 @@ class User(Document):
                 collections.append(coll)
         return collections
 
+    def add_album(self, _album):
+        """
+        Add album object to album list
+        """
+        self.albums.append(album)
+
+    def get_albums(self):
+        """
+        Get non-deleted albums
+        """
+        albums = []
+        for _album in self.albums:
+            if not _album.deleted:
+                albums.append(_album)
+        return albums
+
     def get_liked(self):
         """
         Get the photos that this user likes
@@ -310,6 +328,21 @@ class User(Document):
         if not isinstance(credit, int):
             raise Error.ValueError("Credits must be of type integer.")
         self.credits = self.credits - credit
+
+    def add_search(self, search):
+        """
+        Add search to user's list of searches
+        @param: search: string
+        """
+        # Don't add search if it is empty string
+        if search == "" or (len(self.searches) > 0 and search == self.searches[0]):
+            return
+
+        # Ensure search list keeps 10 most recent results
+        if len(self.searches) >= 10:
+            self.searches.pop()
+
+        self.searches.insert(0, search)
 
     # User Document validation
     # ------------------------

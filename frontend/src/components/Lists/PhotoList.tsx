@@ -5,6 +5,7 @@ import "./PhotoList.scss";
 
 interface Props extends RouteComponentProps {
   photos: Photo[];
+  addPhotoId?: (newPhotoId: string) => void;
 }
 
 interface Photo {
@@ -26,7 +27,11 @@ class PhotoList extends React.Component<Props> {
           <div
             onClick={(e) => {
               e.preventDefault();
-              this.props.history.push(`/photo/${photo.id}`);
+              if (!this.props.addPhotoId){
+                this.props.history.push(`/photo/${photo.id}`);
+              } else {
+                this.props.addPhotoId(photo.id)
+              }
             }}
             key={photo.id}
             className="photo-result"

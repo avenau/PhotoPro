@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect , useState } from "react";
+
 import { Alert, Button, Modal, Toast } from "react-bootstrap";
 import axios from "axios";
 
@@ -9,8 +9,8 @@ interface LikeProps {
   like_count: number;
 }
 
-//TODO: Make Like Button Update Database
-//Get like count on its own
+// TODO: Make Like Button Update Database
+// Get like count on its own
 export default function LikeButton(props: LikeProps) {
   const [likeCount, setCount] = useState(props.like_count);
   const [likeStatus, setStatus] = useState("light");
@@ -31,7 +31,7 @@ export default function LikeButton(props: LikeProps) {
     console.log(count);
     if (userLoggedin === true) {
       const token = localStorage.getItem("token");
-      let upStatus = likeStatus === "light" ? true : false;
+      const upStatus = likeStatus === "light";
       if (
         localStorage.getItem("token") !== null &&
         localStorage.getItem("token") !== ""
@@ -43,18 +43,18 @@ export default function LikeButton(props: LikeProps) {
           })
           .then((r) => {
             if (r.status !== 200) {
-              //console.log("UPDATE LIKES NOT SUCCESSFUL");
+              // console.log("UPDATE LIKES NOT SUCCESSFUL");
               throw new Error();
             } else if (r.status === 200) {
               if (r.data.liked === false) {
                 setCount(count - 1);
-                count = count - 1;
+                count -= 1;
                 setStatus("light");
                 setContent("You successfully unliked this photo!");
                 setShow(true);
               } else {
                 setCount(count + 1);
-                count = count + 1;
+                count += 1;
                 setStatus("primary");
                 setContent("You successfully liked this photo!");
                 setShow(true);
@@ -90,7 +90,7 @@ export default function LikeButton(props: LikeProps) {
       await axios
         .get(`/verifytoken?token=${localStorage.getItem("token")}`)
         .then(async (response) => {
-          //console.log("verify value: " + response.data.valid);
+          // console.log("verify value: " + response.data.valid);
           if (response.data.valid === true) {
             await axios
               .get(`/get_current_user?token=${localStorage.getItem("token")}`)
@@ -107,14 +107,14 @@ export default function LikeButton(props: LikeProps) {
 
   useEffect(() => {
     getCurrentUser();
-    //getLikeCount(props.p_id);
+    // getLikeCount(props.p_id);
     isLiked(props.p_id, currentUser);
 
     setLoad(true);
   }, [isLoaded, userLoggedin, currentUser, likeCount]);
 
   const isLiked = async (photoId: string, userId: string) => {
-    //console.log("User Logged in: " + userLoggedin);
+    // console.log("User Logged in: " + userLoggedin);
     if (userLoggedin === true) {
       await axios
         .get(`/photo_details/isLiked?p_id=${photoId}&u_id=${userId}`)
@@ -129,7 +129,7 @@ export default function LikeButton(props: LikeProps) {
   function AlertMessages() {
     return (
       <div className="alertToast">
-        {/*<Toast show={show} onClose={() => setShow(false)}>
+        {/* <Toast show={show} onClose={() => setShow(false)}>
                     <Toast.Header>
                         <img
                             src="holder.js/20x20?text=%20"
@@ -139,7 +139,7 @@ export default function LikeButton(props: LikeProps) {
                         <strong className="mr-auto">PhotoPro</strong>
                     </Toast.Header>
                     <Toast.Body>{alertContent}</Toast.Body>
-        </Toast>*/}
+        </Toast> */}
 
         <Modal show={show} onHide={closeAlert}>
           <Modal.Header closeButton>

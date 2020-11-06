@@ -12,7 +12,7 @@ import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
-import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
+// import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import ProfilePage from "./pages/ProfilePage";
 import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
@@ -22,6 +22,7 @@ import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 import DownloadExample from "./pages/DownloadExample";
+import CreateCollection from "./pages/CreateCollection/CreateCollection";
 
 interface Props {}
 
@@ -115,12 +116,6 @@ class App extends React.Component<Props, State> {
           />
           <ProtectedRoute
             valid={this.state.valid}
-            exact
-            path="/manage_confirmation"
-            component={ManageConfirmation}
-          />
-          <ProtectedRoute
-            valid={this.state.valid}
             path="/edit/:photo_id"
             component={EditPhoto}
           />
@@ -141,6 +136,12 @@ class App extends React.Component<Props, State> {
             exact
             path="/purchases/refundcredits"
             component={RefundCreditsPage}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/createcollection"
+            component={CreateCollection}
           />
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}

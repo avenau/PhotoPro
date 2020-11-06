@@ -24,7 +24,7 @@ export default function PhotoComments(props: CommentProps) {
     const [validComment, setValidComment] = useState(false);
     const addComments = async (comment: string) => {
         console.log("ADD COMMENTS");
-        //console.log(comment);
+        // console.log(comment);
         // console.log(JSON.parse(comment));
         setComments(comments.concat(JSON.parse(comment)));
 
@@ -32,12 +32,12 @@ export default function PhotoComments(props: CommentProps) {
     }
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         setDate(new Date());
-        let token = localStorage.getItem('token');
-        let photoId = props.p_id;
+        const token = localStorage.getItem('token');
+        const photoId = props.p_id;
         /* photoId: string
          userId: string(Commenter)
          posted: date
-         content: string*/
+         content: string */
         event.preventDefault();
         event.stopPropagation();
         console.log(token);
@@ -56,14 +56,14 @@ export default function PhotoComments(props: CommentProps) {
     }
 
     const getComments = async (photoId: string) => {
-        let token = localStorage.getItem('token');
+        const token = localStorage.getItem('token');
         await axios
             .get(`/comments/get_comments?p_id=${photoId}&token=${token}`)
             .then((response) => {
                 console.log(response.data);
-                var tempComments: CommentObject[] = [];
+                const tempComments: CommentObject[] = [];
                 console.log(response.data.comments);
-                for (let comment of response.data.comments) {
+                for (const comment of response.data.comments) {
                     console.log("Hi");
                     tempComments.push(JSON.parse(comment));
 
@@ -90,8 +90,8 @@ export default function PhotoComments(props: CommentProps) {
 
     const changeFunction = (value: string) => {
         setContent(value);
-        //console.log("CHANGING");
-        //console.log(value.length);
+        // console.log("CHANGING");
+        // console.log(value.length);
         if (value.length >= 8000) {
             setLimitMessage("Comments MUST be less than 8000 characters long!");
             setValidComment(true);
@@ -103,34 +103,34 @@ export default function PhotoComments(props: CommentProps) {
 
 
     return (
-        <div className="PhotoComments">
-            <Container className="container">
-                <Form onSubmit={handleSubmit}>
-                    <Form.Row id="commentTextArea">
-                        <Col>
-                            <Form.Control id="CommentInput" as="textarea" rows={4} onChange={(e) => changeFunction(e.target.value)} placeholder="Add a comment..." />
-                            <Form.Text id="WarningMessage" muted>{limitMessage}</Form.Text>
-                        </Col>
-                        <Col>
-                            <Button disabled={validComment} variant="primary" type="submit" className="commentButton">
-                                Comment
-                            </Button>
-                        </Col>
+      <div className="PhotoComments">
+        <Container className="container">
+          <Form onSubmit={handleSubmit}>
+            <Form.Row id="commentTextArea">
+              <Col>
+                <Form.Control id="CommentInput" as="textarea" rows={4} onChange={(e) => changeFunction(e.target.value)} placeholder="Add a comment..." />
+                <Form.Text id="WarningMessage" muted>{limitMessage}</Form.Text>
+              </Col>
+              <Col>
+                <Button disabled={validComment} variant="primary" type="submit" className="commentButton">
+                  Comment
+                </Button>
+              </Col>
 
-                    </Form.Row>
-                </Form >
-                <Row className="CommentDisplay">
-                    {comments.map((comment) => (
-                        <CommentMessage className="CommentMessages" author_id={comment.commenter_id} message={comment.content} author={comment.commenter} datePosted={comment.datePosted} />
+            </Form.Row>
+          </Form>
+          <Row className="CommentDisplay">
+            {comments.map((comment) => (
+              <CommentMessage className="CommentMessages" author_id={comment.commenter_id} message={comment.content} author={comment.commenter} datePosted={comment.datePosted} />
 
 
 
                     ))}
 
-                </Row>
-            </Container>
+          </Row>
+        </Container>
 
 
-        </div >
+      </div>
     );
 }
