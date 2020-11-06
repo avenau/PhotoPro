@@ -242,12 +242,10 @@ class User(Document):
                 collections.append(coll)
         return collections
 
-    def add_album(self, album):
+    def add_album(self, _album):
         """
         Add album object to album list
         """
-        print("in add album")
-        print(album.to_json())
         self.albums.append(album)
 
     def get_albums(self):
@@ -255,9 +253,9 @@ class User(Document):
         Get non-deleted albums
         """
         albums = []
-        for album in self.albums:
-            if not album.deleted:
-                albums.append(album)
+        for _album in self.albums:
+            if not _album.deleted:
+                albums.append(_album)
         return albums
 
     def get_liked(self):

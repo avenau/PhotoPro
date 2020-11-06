@@ -22,6 +22,7 @@ import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 import DownloadExample from "./pages/DownloadExample";
+import CreateCollection from "./pages/CreateCollection/CreateCollection";
 
 interface Props {}
 
@@ -135,6 +136,12 @@ class App extends React.Component<Props, State> {
             exact
             path="/purchases/refundcredits"
             component={RefundCreditsPage}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/createcollection"
+            component={CreateCollection}
           />
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}
