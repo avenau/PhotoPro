@@ -13,7 +13,7 @@ def update_value(bcrypt, user, key, value):
     if key == 'fname':
         user.set_fname(value)
     elif key == 'lname':
-        user.setlname(value)
+        user.set_lname(value)
     elif key == 'email':
         user.set_email(value)
     elif key == 'nickname':
@@ -23,9 +23,11 @@ def update_value(bcrypt, user, key, value):
         user.set_password(hashed_password)
     elif key == 'extension':
         user.set_extension(value)
-    elif key == 'about_me':
+    elif key == 'aboutMe':
         user.set_about_me(value)
     elif key == 'location':
         user.set_location(value)
+    elif key == 'profilePic':
+        user.set_profile_pic(value)
 
     user.save()
