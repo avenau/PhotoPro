@@ -67,6 +67,9 @@ from lib.user.validate_login import login
 import lib.user.helper_functions
 import lib.user.password_reset as password_reset
 
+# Purchases
+from lib.purchases.purchases import get_purchased_photos
+
 # Welcome
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
@@ -556,6 +559,7 @@ def _get_following_from_user():
     return dumps(user_following_search(data))
 
 @app.route("/user/purchasedphotos", methods=["GET"])
+@validate_token
 def _get_purchased_photos_from_user():
     """
     Description
@@ -584,7 +588,9 @@ def _get_purchased_photos_from_user():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    return dumps(user_photo_search(data))
+    req_user = get_uid(request.args.get("token"))
+
+    return dumps(get_purchased_photos(data))
 
 """
 --------------------
