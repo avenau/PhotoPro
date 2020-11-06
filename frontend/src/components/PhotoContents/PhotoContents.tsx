@@ -112,8 +112,12 @@ export default function PhotoContents(props: ContentProps) {
       })
       .then((r) => {
         const link = document.createElement("a");
-        link.href = `data:image/jpg;base64,${r.data.base64_img}`;
-        link.setAttribute("download", "example.jpg");
+        link.href = `${r.data.metadata}${r.data.base64_img}`;
+        const titleWithoutSpaces = titleName.replace(/\s+/g, "");
+        link.setAttribute(
+          "download",
+          `${titleWithoutSpaces}${r.data.extension}`
+        );
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -146,7 +150,9 @@ export default function PhotoContents(props: ContentProps) {
     }
     return (
       <div>
-        <Button className="ml-1">Download Watermarked Photo</Button>
+        <Button className="ml-1" onClick={(e) => downloadPhoto(e)}>
+          Download Watermarked Photo
+        </Button>
         <Button className="ml-1" onClick={(e) => purchasePhoto(e)}>
           Purchase Photo
         </Button>
