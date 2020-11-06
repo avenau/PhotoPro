@@ -60,7 +60,7 @@ def get_all_comments(p_id, current_date):
             time_after = str(minute_diff) + " minutes ago"
         else:
             #For Debugging, probably gonna set it to "moments ago"
-            time_after = str(math.trunc(time_diff_sec)) + " seconds ago"
+            time_after = "moments seconds ago"
         
         comment_id = str(comment.get_id())
         
@@ -73,6 +73,7 @@ def get_all_comments(p_id, current_date):
                 'exact_time': comment.get_posted().strftime("%d/%b/%Y %H:%M"),
                 'time_after': time_after,
                 'comment_id': comment_id,
+                'profile_pic': comment.get_commenter().get_profile_pic(),
             }))
     
     

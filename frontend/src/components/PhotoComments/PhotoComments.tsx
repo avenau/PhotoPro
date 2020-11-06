@@ -16,6 +16,7 @@ interface CommentObject {
   exact_time: string,
   time_after: string,
   comment_id: string,
+  profile_pic: string[]
 }
 
 export default function PhotoComments(props: CommentProps) {
@@ -25,6 +26,7 @@ export default function PhotoComments(props: CommentProps) {
   const [status, setStatus] = useState(false);
   const [limitMessage, setLimitMessage] = useState("");
   const [validComment, setValidComment] = useState(false);
+  //const [profilePic, setProfilePic] = useState(["", ""]);
   const addComments = async (comment: string) => {
     console.log("ADD COMMENTS");
     // console.log(comment);
@@ -122,7 +124,7 @@ export default function PhotoComments(props: CommentProps) {
         </Form>
         <Row className="CommentDisplay">
           {comments.map((comment) => (
-            <CommentMessage className="CommentMessages" author_id={comment.commenter_id} message={comment.content} author={comment.commenter} exact_date={comment.exact_time} time_after={comment.time_after} comment_id={comment.comment_id} photo_id={props.p_id} get_comments={getComments} />
+            <CommentMessage className="CommentMessages" author_id={comment.commenter_id} message={comment.content} author={comment.commenter} exact_date={comment.exact_time} time_after={comment.time_after} comment_id={comment.comment_id} photo_id={props.p_id} get_comments={getComments} profile_pic={comment.profile_pic} />
 
           ))}
 
