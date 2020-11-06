@@ -49,6 +49,7 @@ def user_photo_search(data):
         if req_user:
             result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (cur_photo.is_photo_owner(req_user_obj))
 
+    return res
 
 def user_collection_search(data):
     try:
