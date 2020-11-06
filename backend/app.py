@@ -1130,45 +1130,6 @@ def _search_album():
 -------------------
 '''
 
-'''
-----------------------
-- Photo Details Routes -
-----------------------
-'''
-
-
-@app.route('/user/photos', methods=['GET'])
-def _get_photo_from_user():
-    """
-    Description
-    -----------
-    GET request to return many photo details based on a query
-
-    Parameters
-    ----------
-    offset : int
-    limit : int
-    token : string
-    query : string
-
-    Returns
-    -------
-    {
-        title : string
-        price : int
-        discount : int
-        photoStr : string
-        metadata : string
-        id : string
-    }
-    """
-    data = request.args.to_dict()
-    data["offset"] = int(data["offset"])
-    data["limit"] = int(data["limit"])
-
-    return dumps(album_search(data))
-
-
 """
 ----------------------
 - Photo Details Routes -
@@ -1654,9 +1615,9 @@ def _albums():
     token = request.args.get("token")
     u_id = token_functions.verify_token(token)["u_id"]
 
-    user = user.User.objects.get(id=u_id)
+    _user = user.User.objects.get(id=u_id)
 
-    return dumps(get_albums(user))
+    return dumps(get_albums(_user))
 
 
 @app.route("/albums", methods=["POST"])
