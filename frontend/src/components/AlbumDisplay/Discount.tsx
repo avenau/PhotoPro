@@ -24,11 +24,11 @@ export default function Discount(props: any) {
       <>
       <Form.Group controlId="price">
           <Form.Label>Album Discount in Credits</Form.Label>
-          <Form.Control required placeholder={props.discountDef}
-                                 type="number"
-                                 onChange={(discount) =>
-                                   setDiscount(Number(discount.target.value))
-                                 }
+          <Form.Control value={props.discountDef}
+                         type="number"
+                         onChange={(discount) =>
+                           setDiscount(Number(discount.target.value))
+                         }
           >
           </Form.Control>
           <Form.Text className="text-muted priceInfo">

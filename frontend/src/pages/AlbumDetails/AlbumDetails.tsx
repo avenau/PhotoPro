@@ -27,6 +27,7 @@ interface State {
   albumId: string,
   photos?: string[],
   showEdit?: boolean,
+  isOwner: boolean,
 }
 
 class AlbumDetails extends React.Component<Props, State> {
@@ -40,13 +41,13 @@ class AlbumDetails extends React.Component<Props, State> {
       title: '',
       discount: 0,
       tags: [],
-      albumId: albumId
+      albumId: albumId,
+      isOwner: props.isOwner ? true : false,
     }
   }
 
   componentDidMount() {
-    this.getAlbum()
-
+    this.getAlbum();
   }
 
 
@@ -63,8 +64,11 @@ class AlbumDetails extends React.Component<Props, State> {
             title: res.data.title,
             discount: res.data.discount,
             tags: res.data.tags,
-            albumId: res.data.albumId
+            albumId: res.data.albumId,
           });
+          if (this.state.uId == res.data.owner){
+            this.setState({isOwner: true});
+          }
         }
       })
       .catch(() =>{});
@@ -78,7 +82,10 @@ class AlbumDetails extends React.Component<Props, State> {
       <div className="createAlbumPage">
         <Toolbar />
         <Container className="mt-5">
-          <AlbumHeader isOwner={true} albumId={this.state.albumId}/>
+          <AlbumHeader
+            isOwner={this.state.isOwner}
+            albumId={this.state.albumId}
+            token={this.state.token}/>
           <h1>{this.state.title}</h1>
           <AlbumDisplay
             albumTitle={this.state.title}

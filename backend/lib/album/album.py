@@ -34,9 +34,6 @@ class Album(catalogue.Catalogue):
     def add_photo(self, photo):
         self.photos.append(photo)
 
-    def remove_photo(self, photo):
-        self.photos.remove(photo)
-
     def remove_photo(self, old_photo):
         '''
         Remove a photo from this collection
@@ -50,6 +47,13 @@ class Album(catalogue.Catalogue):
         if old_photo in self.photos:
             self.photos.remove(old_photo)
             self.save()
+
+    def delete_album(self):
+        '''
+        Delete the album by calling the super class
+        Essentially an alias
+        '''
+        super().delete_catalogue()
 
     def clean(self):
         '''

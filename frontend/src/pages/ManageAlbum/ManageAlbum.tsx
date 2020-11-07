@@ -6,8 +6,7 @@ import Button from "react-bootstrap/Button";
 import axios from "axios";
 
 import Toolbar from "../../components/Toolbar/Toolbar";
-import Discount from '../../components/Collection/Discount';
-import ContentLoader from "../../components/ContentLoader/ContentLoader"
+import Discount from '../../components/AlbumDisplay/Discount';
 
 import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
@@ -85,7 +84,7 @@ class ManageAlbum extends React.Component<Props, State> {
         console.log(res);
         this.props.history.push(`/user/${this.state.uId}`);
       })
-      .catch((err) => {})
+      .catch();
   }
 
   activateCreateButton() {
@@ -108,7 +107,7 @@ class ManageAlbum extends React.Component<Props, State> {
     } else {
       return (
         <Button id="createButton" className="mt-2" type="submit">
-          Update Album
+          Update Album {'  '}
         </Button>
       )
 
@@ -128,12 +127,14 @@ class ManageAlbum extends React.Component<Props, State> {
               activateUploadButton={this.activateCreateButton}
               onChange={(title: string) => this.setState({ title: title })}
               titleDef={this.state.title}
+              prefill={this.state.title}
             />
             <Discount
               deactivateCreateButton={this.deactivateCreateButton}
               activateCreateButton={this.activateCreateButton}
               onChange={(discount: number) => this.setState({ discount: discount })}
               discountDef={this.state.discount}
+              prefill={this.state.discount}
             />
             <Tags
               tagType="Album"
@@ -141,6 +142,7 @@ class ManageAlbum extends React.Component<Props, State> {
               activateUploadButton={this.activateCreateButton}
               tagsList={this.state.tags}
               setTagsList={(tags: string[]) => this.setState({ tags: tags })}
+              prefill={this.state.tags}
             />
             {this.getButton()}
           </Form>

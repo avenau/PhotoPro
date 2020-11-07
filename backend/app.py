@@ -1787,9 +1787,6 @@ def _get_album():
     '''
     token = request.args.get('token')
     album_id = request.args.get('album_id')
-    print("WOO ALBUM ID")
-    print(album_id)
-    print(token)
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=request.args.get('album_id'))
     if _album.get_created_by() != _user:
@@ -1799,8 +1796,34 @@ def _get_album():
                 'title': _album.get_title(),
                 'discount': _album.get_discount(),
                 'tags': _album.get_tags(),
-                'albumId': album_id
+                'albumId': album_id,
+                'owner': str(_album.get_created_by().get_id())
             }
+
+
+@app.route('/album', methods=['DELETE'])
+@validate_token
+def _delete_album():
+    '''
+    @param token: string
+    @param albumId: string
+    '''
+    print("REACHED DELETE")
+    data = request.form.to_dict()
+    print(data)
+    token = request.args.get('token')
+    album_id = request.args.get('albumId')
+
+    print("REACHED")
+    _user = user.User.objects.get(id=token_functions.get_uid(token))
+    _album = album.Album.objects.get(id=album_id)
+    if _album.get_created_by() != _user:
+        raise Error.ValidationError("User does not have permission to delete")
+    _album.delete_album()
+    _album.save()
+    return dumps({'success': True})
+
+
 
 @app.route('/album/price', methods=["GET"])
 @validate_token
