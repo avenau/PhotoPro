@@ -53,4 +53,5 @@ Changed back end to pass around binary image data as opposed to base64, since bi
 Finish watermarking for all file types except animated gifs.
 Obstacle was that PIL breaks the colours of some gifs after processing or drawing on them. If we want to watermark gifs then I probably can't use PIL for it.
 If we can't watermark animated gifs then we may only be able to display the first frame of the gif with a watermark.
+For next week I plan to implement purchasing and accessing of photos and albums. If I get that finished early then I will help out with other user stories such as feed recommendations, and photo showdown.
 
