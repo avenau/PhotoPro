@@ -1,36 +1,41 @@
 import React from "react";
-import { RouteChildrenProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 
 import Toolbar from "../../components/Toolbar/Toolbar";
-import Discount from '../../components/Collection/Discount';
-import ContentLoader from "../../components/ContentLoader/ContentLoader"
+import Discount from '../../components/AlbumDisplay/Discount';
 
 import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
+
+interface Props extends RouteComponentProps<MatchParams> {}
+interface MatchParams {
+  album_id: string,
+}
 
 interface State {
   uId: string,
   token: string,
   title: string,
   discount: number,
-  photos: string[],
   tags: string[],
+  albumId?: string,
 }
 
-class CreateCollection extends React.Component<RouteChildrenProps, State> {
-  constructor(props: RouteChildrenProps) {
+class ManageAlbum extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
+    const albumId = this.props.match.params.album_id
     this.state = {
       uId: String(localStorage.getItem('u_id')),
       token: String(localStorage.getItem('token')),
       title: '',
       discount: 0,
-      photos: [],
       tags: [],
+      albumId: albumId
     }
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -38,10 +43,27 @@ class CreateCollection extends React.Component<RouteChildrenProps, State> {
   }
 
   componentDidMount() {
+    this.getAlbum()
   }
 
-  // Get the photos that the user created
-  getPhotos(){
+  getAlbum(){
+    const token = this.state.token;
+    const albumId = this.state.albumId;
+    if (this.state.albumId != '') {
+      axios
+      .get(`/album?token=${token}&album_id=${albumId}`)
+      .then((res) => {
+        console.log(res.data);
+        if (res.data) {
+          this.setState ({
+            'title': res.data.title,
+            'discount': res.data.discount,
+            'tags': res.data.tags
+          });
+        }
+      })
+    }
+
   }
 
   handleSubmit(event: React.FormEvent<HTMLElement>) {
@@ -51,19 +73,18 @@ class CreateCollection extends React.Component<RouteChildrenProps, State> {
       return;
     }
     axios
-      .post("/collection/create", {
+    .put("/albums/update", {
         title: this.state.title,
         discount: this.state.discount,
         tags: JSON.stringify(this.state.tags),
-        token: this.state.token
+        token: this.state.token,
+        albumId: this.state.albumId
       })
       .then((res) => {
         console.log(res);
         this.props.history.push(`/user/${this.state.uId}`);
       })
-      .catch((err) => {
-        console.log(err);
-      })
+      .catch();
   }
 
   activateCreateButton() {
@@ -76,52 +97,58 @@ class CreateCollection extends React.Component<RouteChildrenProps, State> {
     return btn?.setAttribute("disabled", "true");
   }
 
-  // Pass in a list of photos and add new photo to list
-  addPhotoToList(newPhotoId: string) {
-    this.setState((prevState) => ({
-      photos: [...prevState.photos, newPhotoId]
-    }));
+  getButton(){
+    if (this.state.albumId == '') {
+      return (
+        <Button id="createButton" className="mt-2" type="submit">
+          Create Album
+        </Button>
+      )
+    } else {
+      return (
+        <Button id="createButton" className="mt-2" type="submit">
+          Update Album {'  '}
+        </Button>
+      )
+
+    }
   }
 
   render() {
     return (
-      <div className="createCollectionPage">
+      <div className="createAlbumPage">
         <Toolbar />
         <Container className="mt-5">
-          <h1>Create Collection</h1>
+          <h1>Album</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
-            <Title 
-              titleType="Collection"
+            <Title
+              titleType="Album"
               deactivateUpdateButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}
               onChange={(title: string) => this.setState({ title: title })}
-              titleDef=''
+              titleDef={this.state.title}
+              prefill={this.state.title}
             />
             <Discount
               deactivateCreateButton={this.deactivateCreateButton}
               activateCreateButton={this.activateCreateButton}
               onChange={(discount: number) => this.setState({ discount: discount })}
+              discountDef={this.state.discount}
+              prefill={this.state.discount}
             />
-            <Tags 
-              tagType="Collection"
+            <Tags
+              tagType="Album"
               deactivateUploadButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}
               tagsList={this.state.tags}
               setTagsList={(tags: string[]) => this.setState({ tags: tags })}
+              prefill={this.state.tags}
             />
-            <ContentLoader
-              query={this.state.uId}
-              route="/user/photos"
-              type="photo"
-              addPhotoId={(newPhotoId: string) => this.addPhotoToList(newPhotoId)}
-            />
-            <Button id="createButton" className="mt-2" type="submit">
-              Create Collection
-            </Button>
+            {this.getButton()}
           </Form>
         </Container>
       </div>
   )}
 };
 
-export default CreateCollection;
+export default ManageAlbum;

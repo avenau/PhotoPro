@@ -52,6 +52,14 @@ class Catalogue(Document):
         '''
         return self.tags
 
+    def add_tags(self, tags):
+        '''
+        Add tags to the list
+        '''
+        self.tags = self.tags + tags
+        # Ensure unique
+        self.update_tags()
+
     def update_tags(self):
         '''
         Create a unique set of tags for the collection

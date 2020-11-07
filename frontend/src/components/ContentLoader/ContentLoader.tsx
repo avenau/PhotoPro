@@ -10,7 +10,7 @@ import UserList from "../Lists/UserList";
 interface Props {
   query: string;
   route: string;
-  type: "photo" | "album" | "collection" | "user";
+  type: "photo" | "album" | "collection" | "user" | "albumPhotos";
   orderby?: string;
   filetype?: string;
   priceMin?: number;
@@ -89,6 +89,11 @@ export default class ContentLoader extends React.Component<Props, State> {
         return <CollectionList collections={this.state.results} />;
       case "user":
         return <UserList users={this.state.results} />;
+      case "albumPhotos":
+        return <PhotoList photos={this.state.results}
+                          addPhotoId={(newPhotoId: string) =>
+                                      this.props.addPhotoId?.(newPhotoId)
+                                    }/>
       default:
         return <div>Error: Invalid seach type: {this.props.type}</div>;
     }

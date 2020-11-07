@@ -31,6 +31,8 @@ import lib.collection.collection_functions as collection_functions
 
 # Albums
 from lib.album.album_edit import create_album, get_albums
+from lib.album.album_functions import update_album
+from lib.album.album_functions import album_photo_search
 
 # Comments
 import lib.comment.comment_photo as comment_photo
@@ -1762,6 +1764,134 @@ def _remove_collection_photo():
 ---------------
 """
 
+@app.route('/album', methods=['GET'])
+@validate_token
+def _get_album():
+    '''
+    Description
+    -----------
+
+    Get a single album
+
+    Parameters
+    ----------
+
+    token: string
+    albumId: string
+
+    Returns
+
+    title: string
+    discount: integer
+    tags: [string]
+    '''
+    token = request.args.get('token')
+    album_id = request.args.get('album_id')
+    _user = user.User.objects.get(id=token_functions.get_uid(token))
+    _album = album.Album.objects.get(id=request.args.get('album_id'))
+    if _album.get_created_by() != _user:
+        raise Error.ValidationError("User does not own this album")
+
+    return {
+                'title': _album.get_title(),
+                'discount': _album.get_discount(),
+                'tags': _album.get_tags(),
+                'albumId': album_id,
+                'owner': str(_album.get_created_by().get_id())
+            }
+
+
+@app.route('/album', methods=['DELETE'])
+@validate_token
+def _delete_album():
+    '''
+    NOT CURRENTLY WORKING
+    @param token: string
+    @param albumId: string
+    '''
+    token = request.args.get('token')
+    album_id = request.args.get('albumId')
+
+    _user = user.User.objects.get(id=token_functions.get_uid(token))
+    _album = album.Album.objects.get(id=album_id)
+    if _album.get_created_by() != _user:
+        raise Error.ValidationError("User does not have permission to delete")
+    _album.delete_album()
+    _album.save()
+    return dumps({'success': True})
+
+
+
+@app.route('/album/price', methods=["GET"])
+@validate_token
+def _get_price():
+    token = request.args.get('token')
+    album_id = request.args.get('albumId')
+
+    _user = user.User.objects.get(id=token_functions.get_uid(token))
+    _album = album.Album.objects.get(id=album_id)
+
+    # Price for the current user 
+    your_price = 0
+    # Price with discounts, no ownership
+    discounted_price = 0
+    # Price without prior ownership, includes discounts
+    original_price = 0
+    # Savings on all discounts and ownership
+    savings = 0
+
+    raw_album_discount = _album.get_discount()
+
+    for _photo in _album.get_photos():
+        if _photo not in _user.get_purchased():
+            your_price += _photo.get_discounted_price()
+        original_price += _photo.get_price()
+        discounted_price += _photo.get_discounted_price()
+
+    # Add the additional album discount
+    your_price = int(your_price - (discounted_price * (raw_album_discount/100)))
+    savings = original_price - your_price
+
+
+
+    return dumps({'yourPrice': str(your_price),
+                  'originalPrice': str(original_price),
+                  'rawAlbumDiscount': str(raw_album_discount),
+                  'savings': str(original_price - your_price)})
+
+
+@app.route('/album/photos', methods=["GET"])
+@validate_token
+def _get_album_photos():
+    """
+    Description
+    -----------
+    GET request to return photos in a particular album
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(album_photo_search(data))
+
 
 @app.route("/albums", methods=["GET"])
 @validate_token
@@ -1818,10 +1948,48 @@ def _add_album():
     token = request.form.get("token")
     u_id = token_functions.verify_token(token)["u_id"]
     _user = lib.user.user.User.objects.get(id=u_id)
-    if not user:
+    if not _user:
         raise Error.UserDNE("Could not find User " + u_id)
 
     return dumps(create_album(request.form.get('title'), _user))
+
+@app.route("/albums/update", methods=["PUT"])
+@validate_token
+def _update_album():
+    """
+    Description
+    -----------
+    Add album to user
+
+    Parameters
+    ----------
+    token : string
+    albumId : string
+    title: string
+    discount: integer
+    tags: list[]
+
+    Returns
+    -------
+    None
+
+    """
+    # Get Parameters
+    params = request.form.to_dict()
+    u_id = token_functions.get_uid(params['token'])
+    album_id = params['albumId']
+    # Get Objects
+    _user = user.User.objects.get(id=u_id)
+    _album = album.Album.objects.get(id=album_id)
+    if _album.get_created_by() != _user:
+        raise Error.ValidationError("User does not have permission to edit album")
+    ret = update_album(_album,
+                       params['title'],
+                       params['discount'],
+                       loads(params['tags']))
+
+    return {'success': 'true'} if ret else {'success': 'false'}
+
 
 
 """
