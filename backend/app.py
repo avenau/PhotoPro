@@ -1787,10 +1787,11 @@ def _get_album():
     '''
     token = request.args.get('token')
     album_id = request.args.get('album_id')
-    print("REACHED")
+    print("WOO ALBUM ID")
     print(album_id)
+    print(token)
     _user = user.User.objects.get(id=token_functions.get_uid(token))
-    _album = album.Album.objects.get(id=request.args.get('albumId'))
+    _album = album.Album.objects.get(id=request.args.get('album_id'))
     if _album.get_created_by() != _user:
         raise Error.ValidationError("User does not own this album")
 
@@ -1800,6 +1801,43 @@ def _get_album():
                 'tags': _album.get_tags(),
                 'albumId': album_id
             }
+
+@app.route('/album/price', methods=["GET"])
+@validate_token
+def _get_price():
+    token = request.args.get('token')
+    album_id = request.args.get('albumId')
+
+    _user = user.User.objects.get(id=token_functions.get_uid(token))
+    _album = album.Album.objects.get(id=album_id)
+
+    # Price for the current user 
+    your_price = 0
+    # Price with discounts, no ownership
+    discounted_price = 0
+    # Price without prior ownership, includes discounts
+    original_price = 0
+    # Savings on all discounts and ownership
+    savings = 0
+
+    raw_album_discount = _album.get_discount()
+
+    for _photo in _album.get_photos():
+        if _photo not in _user.get_purchased():
+            your_price += _photo.get_discounted_price()
+        original_price += _photo.get_price()
+        discounted_price += _photo.get_discounted_price()
+
+    # Add the additional album discount
+    your_price = int(your_price - (discounted_price * (raw_album_discount/100)))
+    savings = original_price - your_price
+
+
+
+    return dumps({'yourPrice': str(your_price),
+                  'originalPrice': str(original_price),
+                  'rawAlbumDiscount': str(raw_album_discount),
+                  'savings': str(original_price - your_price)})
 
 
 @app.route('/album/photos', methods=["GET"])
@@ -1906,7 +1944,7 @@ def _update_album():
     Parameters
     ----------
     token : string
-    album_id : string
+    albumId : string
     title: string
     discount: integer
     tags: list[]
@@ -1919,10 +1957,10 @@ def _update_album():
     # Get Parameters
     params = request.form.to_dict()
     u_id = token_functions.get_uid(params['token'])
-    album_id = params['album_id']
+    album_id = params['albumId']
     # Get Objects
     _user = user.User.objects.get(id=u_id)
-    _album = album.Album.objects.get.id(album_id)
+    _album = album.Album.objects.get(id=album_id)
     if _album.get_created_by() != _user:
         raise Error.ValidationError("User does not have permission to edit album")
     ret = update_album(_album,

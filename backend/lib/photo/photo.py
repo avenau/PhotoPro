@@ -103,7 +103,6 @@ class Photo(Document):
         '''
         Set the price of the photo
         '''
-        print('in set price',price)
         self.price = price
 
     def get_price(self):

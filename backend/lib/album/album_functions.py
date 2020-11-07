@@ -16,11 +16,11 @@ def update_album(_album, title, discount, tags):
     @return success: boolean
     '''
     if title:
-        _album.set_title(title)
+        _album.update_title(title)
     if discount:
-        _album.set_discount(discount)
+        _album.set_discount(int(discount))
     if tags:
-        _album.set_tags(tags)
+        _album.add_tags(tags)
     _album.save()
     return True
 

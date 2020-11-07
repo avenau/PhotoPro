@@ -1,14 +1,19 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Container from "react-bootstrap/Container";
+import AlbumHeader from '../../components/AlbumDisplay/AlbumHeader';
+
+
 import axios from "axios";
 
 import Toolbar from "../../components/Toolbar/Toolbar";
 
-import AlbumDisplay from '../../components/Album/AlbumDisplay';
+import AlbumDisplay from '../../components/AlbumDisplay/AlbumDisplay';
 
 
-interface Props extends RouteComponentProps<MatchParams> {}
+interface Props extends RouteComponentProps<MatchParams> {
+  isOwner: boolean
+}
 interface MatchParams {
   album_id: string,
 }
@@ -20,13 +25,15 @@ interface State {
   discount: number,
   tags: string[],
   albumId: string,
-  photos?: string[]
+  photos?: string[],
+  showEdit?: boolean,
 }
 
 class AlbumDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const albumId = this.props.match.params.album_id
+    console.log(albumId);
     this.state = {
       uId: String(localStorage.getItem('u_id')),
       token: String(localStorage.getItem('token')),
@@ -39,24 +46,24 @@ class AlbumDetails extends React.Component<Props, State> {
 
   componentDidMount() {
     this.getAlbum()
+
   }
 
-  getAlbum(){
+
+
+  private getAlbum(){
+    const albumId = this.state.albumId;
+    const token = this.state.token;
     if (this.state.albumId != '') {
       axios
-      .get('/album', {
-        params: {
-          token: this.state.token,
-          albumId: this.state.albumId,
-        }
-      })
+      .get(`/album?token=${token}&album_id=${albumId}`)
       .then((res) => {
         if (res.data) {
           this.setState ({
-            'title': res.data.title,
-            'discount': res.data.discount,
-            'tags': res.data.tags,
-            'albumId': res.data.albumId
+            title: res.data.title,
+            discount: res.data.discount,
+            tags: res.data.tags,
+            albumId: res.data.albumId
           });
         }
       })
@@ -64,12 +71,15 @@ class AlbumDetails extends React.Component<Props, State> {
     }
   }
 
+
+
   render() {
     return (
       <div className="createAlbumPage">
         <Toolbar />
         <Container className="mt-5">
-          <h1>Album</h1>
+          <AlbumHeader isOwner={true} albumId={this.state.albumId}/>
+          <h1>{this.state.title}</h1>
           <AlbumDisplay
             albumTitle={this.state.title}
             discount={this.state.discount}

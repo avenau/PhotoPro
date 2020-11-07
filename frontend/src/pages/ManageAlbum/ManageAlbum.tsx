@@ -48,14 +48,11 @@ class ManageAlbum extends React.Component<Props, State> {
   }
 
   getAlbum(){
+    const token = this.state.token;
+    const albumId = this.state.albumId;
     if (this.state.albumId != '') {
       axios
-      .get('/album', {
-        params: {
-          token: this.state.token,
-          albumId: this.state.albumId,
-        }
-      })
+      .get(`/album?token=${token}&album_id=${albumId}`)
       .then((res) => {
         console.log(res.data);
         if (res.data) {
@@ -77,11 +74,12 @@ class ManageAlbum extends React.Component<Props, State> {
       return;
     }
     axios
-    .post("/albums/update", {
+    .put("/albums/update", {
         title: this.state.title,
         discount: this.state.discount,
         tags: JSON.stringify(this.state.tags),
-        token: this.state.token
+        token: this.state.token,
+        albumId: this.state.albumId
       })
       .then((res) => {
         console.log(res);
