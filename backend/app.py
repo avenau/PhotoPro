@@ -1805,16 +1805,13 @@ def _get_album():
 @validate_token
 def _delete_album():
     '''
+    NOT CURRENTLY WORKING
     @param token: string
     @param albumId: string
     '''
-    print("REACHED DELETE")
-    data = request.form.to_dict()
-    print(data)
     token = request.args.get('token')
     album_id = request.args.get('albumId')
 
-    print("REACHED")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=album_id)
     if _album.get_created_by() != _user:
