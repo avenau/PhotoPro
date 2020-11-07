@@ -16,7 +16,11 @@ export default function CuratedFeed() {
             }})
             .then((res) => {
                 // Load photos based on computed metrics
-                setLoading(false)
+                // If there are sufficient results
+                console.log(res)
+                if (res.data.success === true) {
+                    setLoading(false)
+                }
             }
             )
             .catch(() => {
@@ -32,7 +36,7 @@ export default function CuratedFeed() {
             <></>
             :
             <>
-            <h1>Your Feed</h1>
+            <h1>Recommended for you</h1>
             <ContentLoader
               query=""
               route="/welcome/recommend"

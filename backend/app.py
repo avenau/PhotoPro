@@ -71,7 +71,7 @@ import lib.user.password_reset as password_reset
 from lib.purchases.purchases import get_purchased_photos
 
 # Welcome
-from lib.welcome.recommend import recommend_keywords, recommend_photos
+from lib.welcome.recommend import generate_recommend, recommend_photos
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
 
@@ -893,7 +893,8 @@ def welcome_compute_recommend():
     """
     Description
     -----------
-    Use user data to recommend photos to the user on the main feed
+    Use user data to recommend photos to the user on the main feed.
+    Return true if the system can recommend at least 3 photos.
 
     Parameters
     ----------
@@ -901,11 +902,12 @@ def welcome_compute_recommend():
 
     Returns
     -------
-    photo
+    success: bool
 
     """
     u_id = get_uid(request.args.get("token"))
-    return dumps(recommend_keywords(u_id))
+    return(generate_recommend(u_id))
+   
 @app.route("/welcome/recommend", methods=["GET"])
 @validate_token
 def welcome_recommend_photos():

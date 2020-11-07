@@ -10,7 +10,128 @@ from lib.token_functions import get_uid
 from lib.photo.photo import Photo
 from bson.objectid import ObjectId
 
+def generate_recommend(u_id, min_photo=3):
+    """
+    Compute photos to recommend for the user and check if sufficient
+    (at least min_photo) results can be generated.
 
+    @param: u_id userid
+    @param: optional, min_photo=3, number of recommended photos needed for results to display.
+    @return: dict(success: bool)
+    """
+    keywords = recommend_keywords(u_id)
+    matching_res = count_res(u_id, keywords)
+    if matching_res < min_photo:
+        return {"success": False}
+    return {"success": True}
+
+def recommend_keywords(u_id):
+    """
+    Get the default or 10 top photo keywords based on recently liked,
+    purchased and searched photos
+    @param: u_id str
+    @returns: list(str(keywords))
+
+    """
+    liked_kw = liked_photo_keywords(u_id)
+    purchased_kw = purchased_photo_keywords(u_id)
+    search_kw = search_history_keywords(u_id)
+
+    kw = liked_kw + purchased_kw + search_kw
+    kw = get_top_keywords(kw)
+    kw = list(set(kw))
+
+    try:
+        user = lib.user.user.User.objects.get(id=u_id)
+        user.set_recommend_keywords(kw)
+        user.save()
+        return kw
+    except:
+        return []
+
+def count_res(u_id,keywords):
+    """
+    Count the number of results returned based on keyword metrics
+    @param: u_id, userid
+    @param: keywords, metrics used to recommend feed
+    """
+    user = lib.user.user.User.objects.get(id=u_id)
+
+    # Array of purchased photos, do not display previously purchased
+    purchased = user.get_purchased()
+    purchased_id = []
+    for i in purchased:
+        p_id = i.get_id()
+        purchased_id.append(ObjectId(p_id))
+
+    res = Photo.objects.aggregate(
+        [
+            {
+                "$match": {
+                    "$or": [
+                        {"title": {"$in": keywords}},
+                        {"tags": {"$in": keywords}},
+                    ],
+                    "deleted": False,
+                    "user": {"$ne": ObjectId(u_id)},
+                    "_id": {"$nin": purchased_id}
+                }
+            },
+            {
+                "$count": "num_recommend"
+            },
+        ]
+    )
+    res = json.loads(dumps(res))
+    num_rec = res[0]["num_recommend"]
+    return num_rec
+
+def recommend_photos(data):
+    u_id = get_uid(data["token"])
+    user = lib.user.user.User.objects.get(id=u_id)
+    keywords = user.get_recommend_keywords()
+    
+    # Array of purchased photos, do not display previously purchased
+    purchased = user.get_purchased()
+    purchased_id = []
+    for i in purchased:
+        p_id = i.get_id()
+        purchased_id.append(ObjectId(p_id))
+
+    res = Photo.objects.aggregate(
+        [
+            {
+                "$match": {
+                    "$or": [
+                        {"title": {"$in": keywords}},
+                        {"tags": {"$in": keywords}},
+                    ],
+                    "deleted": False,
+                    "user": {"$ne": ObjectId(u_id)},
+                    "_id": {"$nin": purchased_id}
+                }
+            },
+            {
+                "$project": {
+                    "title": 1,
+                    "price": 1,
+                    "discount": 1,
+                    "metadata": 1,
+                    "extension": 1,
+                    "created": "$posted",
+                    "user": {"$toString": "$user"},
+                    "id": {"$toString": "$_id"},
+                    "_id": 0,
+                }
+            },
+            {"$skip": data["offset"]},
+            {"$limit": data["limit"]},
+        ]
+    )
+    res = json.loads(dumps(res))
+    for result in res:
+        result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(u_id)
+    return res
 
 def aggregate_photo_keywords(photos):
     """
@@ -59,8 +180,6 @@ def search_history_keywords(u_id):
             keywords.append(i.lower())
     return keywords
 
-
-
 def liked_photo_keywords(u_id, count=10):
     """
     Get tags and titles of count/25 most recently like photos of user
@@ -72,7 +191,6 @@ def liked_photo_keywords(u_id, count=10):
 
     photo_keywords = aggregate_photo_keywords(liked_photos)
     return photo_keywords
-
 
 def purchased_photo_keywords(u_id, count=10):
     """
@@ -86,77 +204,3 @@ def purchased_photo_keywords(u_id, count=10):
     photo_keywords = aggregate_photo_keywords(purchased)
 
     return photo_keywords
-
-
-def recommend_keywords(u_id):
-    """
-    Get the default or 10 top photo keywords based on recently liked,
-    purchased and searched photos
-    @param: u_id str
-    @returns: list(str(keywords))
-
-    """
-    liked_kw = liked_photo_keywords(u_id)
-    purchased_kw = purchased_photo_keywords(u_id)
-    search_kw = search_history_keywords(u_id)
-
-    kw = liked_kw + purchased_kw + search_kw
-    kw = get_top_keywords(kw)
-    kw = list(set(kw))
-    try:
-        user = lib.user.user.User.objects.get(id=u_id)
-        user.set_recommend_keywords(kw)
-        user.save()
-        return {"success": True}
-    except:
-        return {"success": False}
-
-def recommend_photos(data):
-    u_id = get_uid(data["token"])
-    user = lib.user.user.User.objects.get(id=u_id)
-    keywords = user.get_recommend_keywords()
-    print(keywords)
-    
-    valid_extensions = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
-    if data["filetype"] == "jpgpng":
-        valid_extensions = [".jpg", ".jpeg", ".png"]
-    elif data["filetype"] == "gif":
-        valid_extensions = [".gif"]
-    elif data["filetype"] == "svg":
-        valid_extensions = [".svg"]
-
-    res = Photo.objects.aggregate(
-        [
-            {
-                "$match": {
-                    
-                    "$or": [
-                        {"title": {"$in": keywords}},
-                        {"tags": {"$in": keywords}},
-                    ],
-                    "extension": {"$in": valid_extensions},
-                    "deleted": False,
-                    "user": {"$ne": ObjectId(u_id)}
-                }
-            },
-            {
-                "$project": {
-                    "title": 1,
-                    "price": 1,
-                    "discount": 1,
-                    "metadata": 1,
-                    "extension": 1,
-                    "created": "$posted",
-                    "user": {"$toString": "$user"},
-                    "id": {"$toString": "$_id"},
-                    "_id": 0,
-                }
-            },
-            {"$skip": data["offset"]},
-            {"$limit": data["limit"]},
-        ]
-    )
-    res = json.loads(dumps(res))
-    for result in res:
-        result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(u_id)
-    return res
