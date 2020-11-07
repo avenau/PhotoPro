@@ -246,7 +246,7 @@ class User(Document):
         """
         Add album object to album list
         """
-        self.albums.append(album)
+        self.albums.append(_album)
 
     def get_albums(self):
         """
@@ -254,7 +254,7 @@ class User(Document):
         """
         albums = []
         for _album in self.albums:
-            if not _album.deleted:
+            if not _album.is_deleted():
                 albums.append(_album)
         return albums
 

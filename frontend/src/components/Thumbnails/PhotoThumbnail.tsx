@@ -36,12 +36,13 @@ export default class PhotoThumbnail extends React.Component<Props> {
 
   render() {
     let purchasable = true;
+    console.log(this.props);
     if (this.props.user && this.props.user === localStorage.getItem("u_id")) {
       purchasable = false;
     }
     return (
       <>
-        <Image src={this.getPic()} className="photo-thumbnail" />
+        <Image src={this.getPic()} className="photo-thumbnail"/>
         <div className="photo-overlay">
           <div>{this.props.title}</div>
           <Price price={this.props.price} discount={this.props.discount} />

@@ -23,6 +23,7 @@ import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 import DownloadExample from "./pages/DownloadExample";
 import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
+import AlbumDetails from './pages/AlbumDetails/AlbumDetails';
 
 interface Props {}
 
@@ -94,16 +95,16 @@ class App extends React.Component<Props, State> {
             path="/forgotpassword/reset"
             component={ResetPasswordPage}
           />
-          <Route 
-            path="/user/:user_id" 
+          <Route
+            path="/user/:user_id"
             component={ProfilePage}
           />
-          <Route 
-            path="/search/:type" 
-            component={SearchPage} 
+          <Route
+            path="/search/:type"
+            component={SearchPage}
           />
-          <Route 
-            path="/downloadexample" 
+          <Route
+            path="/downloadexample"
             component={DownloadExample}
           />
           <Route
@@ -114,8 +115,12 @@ class App extends React.Component<Props, State> {
           <ProtectedRoute
             valid={this.state.valid}
             exact
-            path="/album/:album_id"
+            path="/album/manage/:album_id"
             component={ManageAlbum}
+          />
+          <Route
+          path="/album/:album_id"
+          component={AlbumDetails}
           />
           <ProtectedRoute
             valid={this.state.valid}

@@ -17,8 +17,6 @@ export default function PhotoDetails() {
       <div>
         <Toolbar />
         <PhotoContents photoId={photoId} />
-
-
       </div>
     );
 

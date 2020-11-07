@@ -1,5 +1,5 @@
 import React from "react";
-import { RouteChildrenProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -12,14 +12,10 @@ import ContentLoader from "../../components/ContentLoader/ContentLoader"
 import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
 
-interface Params extends RouteChildrenProps {
-
+interface Props extends RouteComponentProps<MatchParams> {}
+interface MatchParams {
+  album_id: string,
 }
-
-interface Props extends Params {
-  albumId: string,
-}
-
 
 interface State {
   uId: string,
@@ -33,16 +29,14 @@ interface State {
 class ManageAlbum extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    // Hacky attempt
-    let album_id = window.location.pathname.split("/")[2];
-    album_id = album_id ? album_id : '';
+    const albumId = this.props.match.params.album_id
     this.state = {
       uId: String(localStorage.getItem('u_id')),
       token: String(localStorage.getItem('token')),
       title: '',
       discount: 0,
       tags: [],
-      albumId: album_id
+      albumId: albumId
     }
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -93,9 +87,7 @@ class ManageAlbum extends React.Component<Props, State> {
         console.log(res);
         this.props.history.push(`/user/${this.state.uId}`);
       })
-      .catch((err) => {
-        console.log(err);
-      })
+      .catch((err) => {})
   }
 
   activateCreateButton() {
@@ -132,7 +124,7 @@ class ManageAlbum extends React.Component<Props, State> {
         <Container className="mt-5">
           <h1>Album</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
-            <Title 
+            <Title
               titleType="Album"
               deactivateUpdateButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}
@@ -145,7 +137,7 @@ class ManageAlbum extends React.Component<Props, State> {
               onChange={(discount: number) => this.setState({ discount: discount })}
               discountDef={this.state.discount}
             />
-            <Tags 
+            <Tags
               tagType="Album"
               deactivateUploadButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}

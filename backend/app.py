@@ -32,6 +32,7 @@ import lib.collection.collection_functions as collection_functions
 # Albums
 from lib.album.album_edit import create_album, get_albums
 from lib.album.album_functions import update_album
+from lib.album.album_functions import album_photo_search
 
 # Comments
 import lib.comment.comment_photo as comment_photo
@@ -1621,8 +1622,42 @@ def _get_album():
     return {
                 'title': _album.get_title(),
                 'discount': _album.get_discount(),
-                'tags': _album.get_tags()
+                'tags': _album.get_tags(),
+                'albumId': album_id
             }
+
+
+@app.route('/album/photos', methods=["GET"])
+@validate_token
+def _get_album_photos():
+    """
+    Description
+    -----------
+    GET request to return photos in a particular album
+
+    Parameters
+    ----------
+    offset : int
+    limit : int
+    token : string
+    query : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(album_photo_search(data))
 
 
 @app.route("/albums", methods=["GET"])
@@ -1680,7 +1715,7 @@ def _add_album():
     token = request.form.get("token")
     u_id = token_functions.verify_token(token)["u_id"]
     _user = lib.user.user.User.objects.get(id=u_id)
-    if not user:
+    if not _user:
         raise Error.UserDNE("Could not find User " + u_id)
 
     return dumps(create_album(request.form.get('title'), _user))
