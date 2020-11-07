@@ -53,7 +53,6 @@ def user_photo_search(data):
 
     return res
 
-
 def user_collection_search(data):
     try:
         req_user = get_uid(data["token"])
