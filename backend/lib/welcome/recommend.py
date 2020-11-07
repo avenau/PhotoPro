@@ -83,7 +83,10 @@ def count_res(u_id,keywords):
         ]
     )
     res = json.loads(dumps(res))
-    num_rec = res[0]["num_recommend"]
+    try:
+        num_rec = res[0]["num_recommend"]
+    except:
+        num_rec = 0
     return num_rec
 
 def recommend_photos(data):
@@ -131,6 +134,7 @@ def recommend_photos(data):
     res = json.loads(dumps(res))
     for result in res:
         result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(u_id)
+    print(res)
     return res
 
 def aggregate_photo_keywords(photos):

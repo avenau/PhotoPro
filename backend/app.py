@@ -74,6 +74,7 @@ from lib.purchases.purchases import get_purchased_photos
 from lib.welcome.recommend import generate_recommend, recommend_photos
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
+from lib.welcome.contributors import compute_popular_contributors
 
 # Other/utils
 from lib.token_decorator import validate_token
@@ -860,11 +861,11 @@ def _welcome_get_contributors():
     A list of images
     """
     images = get_popular_contributors_images()
+    token = request.args.get("token")
+
+    
     return dumps(
-        {
-            # Returning a tuple
-            "contributors": images
-        }
+        compute_popular_contributors()
     )
 
 
