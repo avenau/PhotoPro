@@ -28,9 +28,11 @@ class PhotoList extends React.Component<Props> {
             onClick={(e) => {
               e.preventDefault();
               if (!this.props.addPhotoId){
+                console.log('first')
                 this.props.history.push(`/photo/${photo.id}`);
               } else {
                 this.props.addPhotoId(photo.id)
+                console.log('in here')
               }
             }}
             key={photo.id}
