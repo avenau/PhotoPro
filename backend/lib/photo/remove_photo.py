@@ -34,10 +34,11 @@ def remove_photo(u_id, identifier):
 
     '''
     # Get the photo object
-    photo = lib.photo.photo.Photo.objects.get(id=identifier)
+    p_id = str(identifier['_id'])
+    photo = lib.photo.photo.Photo.objects.get(id=p_id)
     if not photo:
         raise Error.PhotoDNE("Couldn't find requested photo")
-    if str(photo.get_user()) != u_id:
+    if str(photo.get_user().get_id()) != u_id:
         raise PermissionError("User does not have permission to edit")
 
     # Delete the photo, database handles the rest
