@@ -25,7 +25,7 @@ export default function PhotoContents(props: ContentProps) {
   const [is_artist, setIsArtist] = useState(false);
   // TODO
   const [photo, setPhoto] = useState("");
-  const [purchased, setPurchase] = useState<boolean>();
+  const [purchased, setPurchased] = useState<boolean>();
   const currentUser = localStorage.getItem("u_id") as string;
   const token = localStorage.getItem("token") as string;
   const [meta, setMeta] = useState("");
@@ -53,7 +53,7 @@ export default function PhotoContents(props: ContentProps) {
         setEmail(response.data.email);
         setLikes(response.data.likes);
         setTags(response.data.tagsList);
-        setPurchase(response.data.purchased);
+        setPurchased(response.data.purchased);
         setDeleted(response.data.deleted);
         setStatus(response.data.status);
         setMeta(response.data.metadata);
@@ -87,6 +87,44 @@ export default function PhotoContents(props: ContentProps) {
     // console.log("Purchased: " + purchased);
   }, [purchased, deleted, status, is_artist]);
 
+  function purchasePhoto(e: any) {
+    e.preventDefault();
+    e.stopPropagation();
+    axios
+      .post("/purchasephoto", {
+        token: token,
+        photoId: props.photoId,
+      })
+      .then((response) => {
+        setPurchased(response.data.purchased);
+      })
+      .catch(() => {});
+  }
+
+  function downloadPhoto(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    axios
+      .get("/download", {
+        params: {
+          token: token,
+          photo_id: props.photoId,
+        },
+      })
+      .then((r) => {
+        const link = document.createElement("a");
+        link.href = `${r.data.metadata}${r.data.base64_img}`;
+        const titleWithoutSpaces = titleName.replace(/\s+/g, "");
+        link.setAttribute(
+          "download",
+          `${titleWithoutSpaces}${r.data.extension}`
+        );
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      });
+  }
+
   function DetermineButton() {
     console.log("IS ARTIST");
     console.log(is_artist);
@@ -94,26 +132,33 @@ export default function PhotoContents(props: ContentProps) {
     console.log(purchased);
 
     if (is_artist === true) {
-      console.log(props.photoId)
+      console.log(props.photoId);
       return (
         <div>
-          <Button>Download Full Photo</Button>
+          <Button onClick={(e) => downloadPhoto(e)}>Download Full Photo</Button>
           <Link to={`/edit/${props.photoId}`}>
             <Button className="ml-1">Manage Photo</Button>
           </Link>
         </div>
       );
-    } if (purchased === true) {
+    }
+    if (purchased === true) {
       return (
         <div>
-          <Button className="ml-1">Download Full Photo</Button>
+          <Button onClick={(e) => downloadPhoto(e)} className="ml-1">
+            Download Full Photo
+          </Button>
         </div>
       );
     }
     return (
       <div>
-        <Button className="ml-1">Download Watermarked Photo</Button>
-        <Button className="ml-1">Purchase Photo</Button>
+        <Button className="ml-1" onClick={(e) => downloadPhoto(e)}>
+          Download Watermarked Photo
+        </Button>
+        <Button className="ml-1" onClick={(e) => purchasePhoto(e)}>
+          Purchase Photo
+        </Button>
         <Price price={price} discount={discount} />
       </div>
     );
@@ -126,7 +171,11 @@ export default function PhotoContents(props: ContentProps) {
           <img className="actualPhoto" src={photo} alt="new" />
         </Row>
         <Row className="PhotoInteraction">
-          <LikeButton u_id={currentUser} p_id={props.photoId} like_count={likes} />
+          <LikeButton
+            u_id={currentUser}
+            p_id={props.photoId}
+            like_count={likes}
+          />
           <BookmarkButton u_id={currentUser} p_id={props.photoId} />
           <DetermineButton />
         </Row>
@@ -141,9 +190,7 @@ export default function PhotoContents(props: ContentProps) {
         </div>
         <Row className="ContentRow">
           <Col className="Details">
-            <Row>
-              <Button>Tags</Button>
-            </Row>
+            <Row>Tags (click tag to search)</Row>
             <Row>
               {tags.map((tag) => (
                 <>
@@ -161,5 +208,5 @@ export default function PhotoContents(props: ContentProps) {
       {" "}
       <p>{loadMessage}</p>{" "}
     </div>
-    );
+  );
 }

@@ -6,7 +6,7 @@ export default function Title(props: any) {
     const [titleErrMsg, setErrMsg] = useState("")
 
     function setTitle(title: string) {
-        if (title.length > 40) { 
+        if (title.length > 40) {
           props.deactivateUploadButton();
           setErrMsg("Please keep your title under 40 characters to be concise. Consider adding more keywords instead.")
         } else {

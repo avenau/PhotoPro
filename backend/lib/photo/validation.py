@@ -46,6 +46,7 @@ def validate_discount(discount):
     if discount > 100:
         raise ValidationError("Discount must be less than 100")
 
+
 def validate_extension(extension):
     '''
     Validate extension of the photo
@@ -59,6 +60,7 @@ def validate_extension(extension):
     exts = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
     if extension not in exts:
         raise ValueError("Unacceptable file type")
+
 
 def validate_tags(tags):
     '''
@@ -83,6 +85,7 @@ def validate_tags(tags):
         if len(tag) > 20:
             raise ValidationError("Tag cannot have more than 20 characters")
 
+
 def validate_title(title):
     '''
     Check the title is not empty
@@ -95,4 +98,3 @@ def validate_title(title):
         raise ValidationError("Title is not a valid string")
     if title is None or len(title) < 1 or len(title) > 40:
         raise ValueError("Title must be between 1 and 40 characters")
-
