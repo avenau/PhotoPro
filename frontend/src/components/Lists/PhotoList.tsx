@@ -16,6 +16,7 @@ interface Photo {
   photoStr: string;
   metadata: string;
   user: string;
+  owns: boolean; // purchased or posted
 }
 
 class PhotoList extends React.Component<Props> {

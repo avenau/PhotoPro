@@ -319,7 +319,7 @@ class Photo(Document):
 
     def get_thumbnail(self, u_id):
         '''
-        Get the watermarked or non watermarked photo based on
+        Get the watermarked or non watermarked thumbnail based on
         whether the u_id passed in owns the photo
         '''
 
@@ -336,13 +336,34 @@ class Photo(Document):
         except:
             return find_photo(f"{self.get_id()}_t_w{this_extension}")
 
+    def get_full_image(self, u_id):
+        '''
+        Get the watermarked or non watermarked full-res image based on
+        whether the u_id passed in owns the photo. For downloading purposes.
+
+        Returns base64 string.
+        '''
+
+        extension = self.get_extension()
+        try:
+            this_user = user.User.objects.get(id=u_id)
+            if self in this_user.get_purchased() or this_user == self.get_user():
+                return find_photo(f"{self.get_id()}{extension}")
+            else:
+                if extension == ".svg":
+                    extension = ".png"
+                return find_photo(f"{self.get_id()}_w{extension}")
+        except:
+            if extension == ".svg":
+                extension = ".png"
+            return find_photo(f"{self.get_id()}_w{extension}")
 
     def is_photo_owner(self, this_user):
         '''
         Check if the user is the owner of the photo
         @return boolean
         '''
-        return this_user is self.get_user()
+        return this_user == self.get_user()
 
     def get_photo_json(self):
         '''

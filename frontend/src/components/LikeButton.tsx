@@ -23,7 +23,7 @@ export default function LikeButton(props: LikeProps) {
   const updateLike = async (
     event: React.MouseEvent,
     count: number,
-    photoId: string,
+    photoId: string
   ) => {
     if (event) {
       event.preventDefault();
@@ -37,13 +37,10 @@ export default function LikeButton(props: LikeProps) {
         localStorage.getItem("token") !== ""
       ) {
         await axios
-          .post(
-            `/photo_details/updateLikes?=${localStorage.getItem("token")}`,
-            {
-              photoId,
-              token,
-            }
-          )
+          .post("/photo_details/updateLikes", {
+            photoId,
+            token,
+          })
           .then((r) => {
             if (r.status !== 200) {
               // console.log("UPDATE LIKES NOT SUCCESSFUL");
@@ -159,9 +156,7 @@ export default function LikeButton(props: LikeProps) {
     <div>
       <Button
         variant={likeStatus}
-        onClick={(e) =>
-          updateLike(e, likeCount, props.p_id)
-        }
+        onClick={(e) => updateLike(e, likeCount, props.p_id)}
       >
         <svg
           width="1em"
