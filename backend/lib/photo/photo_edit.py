@@ -45,7 +45,8 @@ def create_photo_entry(photo_details):
         user = user,
         tags = photo_details['tags'],
         metadata = metadata + ",",
-        extension = extension
+        extension = extension,
+        posted = datetime.datetime.now()
     )
     new_photo.save()
     new_photo.set_albums(photo_details["albums"])
@@ -279,7 +280,7 @@ def update_photo_details(photo_details):
     if user_uid != str(photo.get_user().get_id()):
         raise PermissionError("User does not have permission to edit photo")
 
-    
+
     print(photo_details["albums"])
     photo.set_title(photo_details['title'])
     photo.set_price(int(photo_details['price']))

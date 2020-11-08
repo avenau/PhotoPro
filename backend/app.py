@@ -253,7 +253,8 @@ def _account_registration():
         profile_pic=new_user['profilePic'],
         extension=new_user['extension'],
         location=new_user['location'],
-        about_me=new_user['aboutMe']
+        about_me=new_user['aboutMe'],
+        created=datetime.datetime.now()
     )
     this_user.save()
 
@@ -737,7 +738,7 @@ def buy_album():
     album_id = request.form.get("albumId")
     buyer = lib.user.user.User.objects.get(id=user_id)
     album = lib.album.album.Album.objects.get(id=album_id)
-    # 
+    #
     seller = lib.user.user.User.objects.get(id=this_album.get_user().created_by)
     photo_price = this_photo.get_discounted_price()
     user_credits = buyer.get_credits()
@@ -791,7 +792,7 @@ def download_full_photo():
     except:
         req_user = ""
 
-    requested_photo_object = lib.photo.photo.Photo.objects.get(id=photo_id) 
+    requested_photo_object = lib.photo.photo.Photo.objects.get(id=photo_id)
     requested_metadata = requested_photo_object.get_metadata()
     requested_b64 = requested_photo_object.get_full_image(req_user)
     requested_extension = requested_photo_object.get_extension()
@@ -1424,7 +1425,7 @@ def _comment_on_photo():
     content = params.get("commentContent")
     token = params.get("token")
     user_id = token_functions.get_uid(token)
-    
+
     current_date = datetime.now()
     comment_photo.comments_photo(photo_id, user_id, content, current_date)
     return dumps({})
@@ -1461,7 +1462,7 @@ def _get_comments():
     all_comments = get_all_comments(photo_id, current_date, order)
 
     return dumps({"comments": all_comments, "status": True})
-    
+
 @app.route("/comments/delete_comments", methods=["POST"])
 #@validate_token
 def _delete_comments():
@@ -1484,7 +1485,7 @@ def _delete_comments():
     comment_id = params.get("c_id")
     photo_id = params.get("p_id")
     token = params.get("token")
-    
+
     token_functions.verify_token(token)
     comment_photo.delete_photos(photo_id, comment_id)
 
@@ -1811,7 +1812,7 @@ def _get_price():
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=album_id)
 
-    # Price for the current user 
+    # Price for the current user
     your_price = 0
     # Price with discounts, no ownership
     discounted_price = 0
