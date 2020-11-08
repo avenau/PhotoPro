@@ -22,9 +22,6 @@ def photo_detail_results(photo_id, token):
     except Photo.DoesNotExist:
         raise Error.PhotoDNE("Photo with ID: " + photo_id + " couldn't be found.")
         
-    print("##################")
-    print(req_user)
-    print("##################")
     # If signed in
     if req_user != "":
         this_user = User.objects.get(id=req_user)
@@ -58,18 +55,19 @@ def photo_detail_results(photo_id, token):
 
     return dumps(
         {
-            "u_id": str(this_photo.get_user().get_id()),
+            "artist_id": str(this_photo.get_user().get_id()),
+            "artist_nickname": this_photo.get_user().get_nickname(),
+            "artist_email": this_photo.get_user().get_email(),
             "title": this_photo.get_title(),
-            "likes": this_photo.get_likes(),
-            "tagsList": this_photo.get_tags(),
-            "nickname": this_photo.get_user().get_nickname(),
-            "email": this_photo.get_user().get_email(),
-            "purchased": purchased,
-            "metadata": this_photo.get_metadata(),
             "price": this_photo.get_price(),
             "discount": this_photo.get_discount(),
-            "deleted": this_photo.is_deleted(),
+            "posted": str(this_photo.get_posted())[:10],
+            "n_likes": this_photo.get_likes(),
+            "tagsList": this_photo.get_tags(),
+            "purchased": purchased,
+            "metadata": this_photo.get_metadata(),
             "photoStr": this_photo.get_thumbnail(req_user),
+            "deleted": this_photo.is_deleted(),
             "is_artist": is_artist,
         }
     )

@@ -62,7 +62,7 @@ class PhotoContents extends React.Component<Props, any> {
   componentDidMount() {
     console.log(this.props.photoId);
     axios
-      .get("/photo_details", {
+      .get("/photodetailspage", {
         params: {
           token: localStorage.getItem("token"),
           p_id: this.props.photoId,
@@ -70,18 +70,20 @@ class PhotoContents extends React.Component<Props, any> {
       })
       .then((res) => {
         this.setState({
+          artistId: res.data.artist_id,
+          nickname: res.data.artist_nickname,
+          email: res.data.artist_email,
           title: res.data.title,
-          nickname: res.data.nickname,
-          email: res.data.email,
-          likes: res.data.likes,
-          loading: false,
-          tags: res.data.tagsList,
-          isArtist: res.data.is_artist,
-          purchased: res.data.purchased,
-          photoB64: `${res.data.metadata}${res.data.photoStr}`,
           fullPrice: res.data.price,
           discount: res.data.discount,
+          postedDate: res.data.posted,
+          likes: res.data.n_likes,
+          tags: res.data.tagsList,
+          purchased: res.data.purchased,
+          photoB64: `${res.data.metadata}${res.data.photoStr}`,
           deleted: res.data.deleted,
+          isArtist: res.data.is_artist,
+          loading: false,
         });
       })
       .catch(() => {});
@@ -219,7 +221,9 @@ class PhotoContents extends React.Component<Props, any> {
                 <b>{this.state.title}</b>
               </h2>
             </Row>
-            <Row>by {this.state.nickname}</Row>
+            <Row>
+              by {this.state.nickname} on {this.state.postedDate}
+            </Row>
             <Row>{this.state.email}</Row>
           </div>
           <Row className="ContentRow">
@@ -240,7 +244,7 @@ class PhotoContents extends React.Component<Props, any> {
     ) : (
       <div>
         {" "}
-        <p>{"loadMessage"}</p>{" "}
+        <p>{"Loading..."}</p>{" "}
       </div>
     );
   }

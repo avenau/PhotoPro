@@ -799,7 +799,7 @@ def download_full_photo():
     extension: str
     """
     token = request.args.get("token")
-    photo_id = request.args.get("photo_id")
+    photo_id = request.args.get("photoId")
     print("They want to download photo " + photo_id)
     try:
         req_user = token_functions.get_uid(token)
@@ -1382,14 +1382,13 @@ def _search_album():
 """
 
 
-@app.route("/photo_details", methods=["GET"])
-def _photo_details():
-    # TODO: Should return photos and comments as well
-    # Add to API list
+@app.route("/photodetailspage", methods=["GET"])
+def _photo_details_page():
     """
     Description
     -----------
-    GET request to retrieve information for a photo
+    GET request to retrieve information for the photo details page.
+    Should not be called by anything except the photo details page.
 
     Parameters
     ----------
@@ -1399,15 +1398,20 @@ def _photo_details():
     Returns
     -------
     {
+        artist_id: str,
+        artist_nickname: str,
+        artist_email: str
         title: str,
-        numLikes: number,
-        datePosted: Date,
-        tags: str[],
-        nickname: str (Artist's Nickname)
-        email: str
-        u_id: str, (Artist of the photo)
-        status : number (0 means not loaded yet, 1 means existing, 2 means does not exist)
-        is_owner : bool
+        price: int,
+        discount: int,
+        posted: str (Format 'YYYY-MM-DD'),
+        n_likes: int,
+        tagsList: str[],
+        purchased: bool,
+        metadata: str,
+        photoStr: str,
+        deleted: bool
+        is_artist : bool
     }
     """
     photo_id = request.args.get("p_id")
@@ -1442,6 +1446,38 @@ def _photo_liked():
             "isLiked": is_liked,
         }
     )
+
+@app.route("/comments/get_comments", methods=["GET"])
+def _get_comments():
+    """
+    Description
+    -----------
+    Get Comments of a photo
+
+    Parameters
+    ----------
+    p_id : string
+    offset : number
+    limit : number (-1 if want to return all of comments)
+    new_to_old : boolean
+
+    Returns
+    -------
+    {
+        comments: [{commenter: string,
+                     comment : string,
+                     datePosted : date}]
+    }
+    """
+    photo_id = request.args.get("p_id")
+    # offset = request.args.get("offset")
+    # limit = request.args.get("limit")
+    order = request.args.get("new_to_old")
+    current_date = datetime.now()
+    # print(current_date)
+    all_comments = get_all_comments(photo_id, current_date, order)
+
+    return dumps({"comments": all_comments, "status": True})
 
 
 @app.route("/photo_details/like_photo", methods=["POST"])
@@ -1498,39 +1534,6 @@ def _comment_on_photo():
     current_date = datetime.now()
     comment_photo.comments_photo(photo_id, user_id, content, current_date)
     return dumps({})
-
-
-@app.route("/comments/get_comments", methods=["GET"])
-def _get_comments():
-    """
-    Description
-    -----------
-    Get Comments of a photo
-
-    Parameters
-    ----------
-    p_id : string
-    offset : number
-    limit : number (-1 if want to return all of comments)
-    new_to_old : boolean
-
-    Returns
-    -------
-    {
-        comments: [{commenter: string,
-                     comment : string,
-                     datePosted : date}]
-    }
-    """
-    photo_id = request.args.get("p_id")
-    # offset = request.args.get("offset")
-    # limit = request.args.get("limit")
-    order = request.args.get("new_to_old")
-    current_date = datetime.now()
-    # print(current_date)
-    all_comments = get_all_comments(photo_id, current_date, order)
-
-    return dumps({"comments": all_comments, "status": True})
 
 
 @app.route("/comments/delete_comments", methods=["POST"])
