@@ -27,7 +27,6 @@ export default function PhotoComments(props: CommentProps) {
   const [limitMessage, setLimitMessage] = useState("");
   const [validComment, setValidComment] = useState(false);
   const [new_to_old, setOrder] = useState(true);
-  //const [profilePic, setProfilePic] = useState(["", ""]);
   const addComments = async (comment: string) => {
     setComments(comments.concat(JSON.parse(comment)));
 
@@ -36,10 +35,6 @@ export default function PhotoComments(props: CommentProps) {
     setDate(new Date());
     const token = localStorage.getItem('token');
     const photoId = props.p_id;
-    /* photoId: string
-     userId: string(Commenter)
-     posted: date
-     content: string */
     event.preventDefault();
     event.stopPropagation();
     axios.post('/comments/comment',
@@ -56,7 +51,6 @@ export default function PhotoComments(props: CommentProps) {
   }
 
   const getComments = async (photoId: string) => {
-    const token = localStorage.getItem('token');
     await axios
       .get(`/comments/get_comments?p_id=${photoId}&new_to_old=${new_to_old}`)
       .then((response) => {
