@@ -16,7 +16,6 @@ interface MessageProp {
   photo_id: string;
   get_comments: Function;
   profile_pic: string[];
-
 }
 
 
