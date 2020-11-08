@@ -98,19 +98,21 @@ def like_photo(u_id, photo_id):
 
     # If already liked, remove the like from the photo
     if this_photo in this_user.get_liked():
-        this_photo.decrement_likes()
         this_user.remove_liked_photo(this_photo)
-        this_photo.save()
         this_user.save()
+        this_photo.decrement_likes()
+        this_photo.save()
         # Change PopularPhoto db collection
         do_unlike(this_user, this_photo)
+        print("unlike")
         return False
     # If not already liked, like the photo
     else:
-        this_photo.increment_likes()
         this_user.add_liked_photo(this_photo)
-        this_photo.save()
         this_user.save()
+        this_photo.increment_likes()
+        this_photo.save()
         # Change PopularPhoto db collection
         do_like(this_user, this_photo)
+        print("like")
         return True
