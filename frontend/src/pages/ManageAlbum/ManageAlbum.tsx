@@ -135,6 +135,7 @@ class ManageAlbum extends React.Component<Props, State> {
               onChange={(discount: number) => this.setState({ discount: discount })}
               discountDef={this.state.discount}
               prefill={this.state.discount}
+              currencyType='Credits'
             />
             <Tags
               tagType="Album"
