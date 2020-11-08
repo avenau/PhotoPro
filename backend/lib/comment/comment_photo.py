@@ -47,6 +47,6 @@ def delete_photos(p_id, c_id):
     
     this_photo.delete_comment(this_comment)
     this_photo.save()
-    this_comment.delete()
+    this_comment.de[currentUser, setUser] = useState("No ID");lete()
     #comment.Comment.save()
     

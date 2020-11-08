@@ -39,8 +39,8 @@ def get_all_comments(p_id, current_date, order):
     for comment in comments:
 
         #current_date = datetime.now()
-        print("PRINTING Date Test")
-        print(current_date)
+        #print("PRINTING Date Test")
+        #print(current_date)
         years_ago = current_date.year - comment.get_posted().year
         months_ago = current_date.month - comment.get_posted().month
         days_ago = current_date.day - comment.get_posted().day
@@ -48,8 +48,8 @@ def get_all_comments(p_id, current_date, order):
         minutes_ago = current_date.minute - comment.get_posted().minute
         
         time_diff = current_date - comment.get_posted()
-        print("Printing Time Delta")
-        print(str(time_diff.total_seconds()))
+        #print("Printing Time Delta")
+        #print(str(time_diff.total_seconds()))
         time_diff_sec = time_diff.total_seconds()
         
         if (time_diff_sec >= 31536000):

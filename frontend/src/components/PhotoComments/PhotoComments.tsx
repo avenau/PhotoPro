@@ -29,12 +29,8 @@ export default function PhotoComments(props: CommentProps) {
   const [new_to_old, setOrder] = useState(true);
   //const [profilePic, setProfilePic] = useState(["", ""]);
   const addComments = async (comment: string) => {
-    console.log("ADD COMMENTS");
-    // console.log(comment);
-    // console.log(JSON.parse(comment));
     setComments(comments.concat(JSON.parse(comment)));
 
-    console.log(comments)
   }
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     setDate(new Date());
@@ -46,8 +42,6 @@ export default function PhotoComments(props: CommentProps) {
      content: string */
     event.preventDefault();
     event.stopPropagation();
-    console.log(token);
-    console.log(photoId);
     axios.post('/comments/comment',
       {
         token,
@@ -66,19 +60,12 @@ export default function PhotoComments(props: CommentProps) {
     await axios
       .get(`/comments/get_comments?p_id=${photoId}&new_to_old=${new_to_old}`)
       .then((response) => {
-        console.log(response.data);
         const tempComments: CommentObject[] = [];
-        console.log(response.data.comments);
         for (const comment of response.data.comments) {
-          console.log("Hi");
           tempComments.push(JSON.parse(comment));
 
         }
-        console.log("COMMENT TEST!");
-        console.log(tempComments);
         setComments(tempComments);
-        console.log("Printing Comments");
-        console.log(comments);
         setStatus(response.data.status);
 
       });

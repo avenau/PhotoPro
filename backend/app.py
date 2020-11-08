@@ -1355,33 +1355,6 @@ def _photo_details():
     purchased = user_purchasers > 0
 
     is_artist = str(_photo.get_user().get_id()) == req_user
-
-    if purchased is False and is_artist is False and _photo.is_deleted() is True :
-        return dumps({
-            "u_id": "",
-            "title": "",
-            "likes": "",
-            "tagsList": "",
-            "nickname": "",
-            "email": "",
-            "purchased": False,
-            "metadata": "",
-            "price": "",
-            "discount": "",
-            "deleted": _photo.is_deleted(),
-            "photoStr": "",
-            "status": 1,
-            "is_artist" : is_artist,
-        })
-
-    user_purchasers = user.User.objects(purchased=_photo.id).count()
-    if user_purchasers > 0:
-        purchased = True
-    else:
-        purchased = False
-
-
-    is_artist = str(_photo.get_user().get_id()) == req_user
     if purchased == False and is_artist == False and _photo.is_deleted() == True:
         return dumps(
             {
@@ -1441,14 +1414,37 @@ def _photo_liked():
     }
     """
     photo_id = request.args.get("p_id")
-    user_id = request.args.get("u_id")
-    is_liked = is_photo_liked(photo_id, user_id)
+    token = request.args.get("token")
+    is_liked = is_photo_liked(photo_id, token)
     return dumps(
         {
             "isLiked": is_liked,
         }
     )
 
+@app.route('/photo_details/like_photo', methods=['POST'])
+@validate_token
+def _like_photo():
+    """
+    Description
+    -----------
+    Updates likes and link it to Mongo
+
+    Parameters
+    ----------
+    token: string
+    photoId : string
+
+    Returns
+    -------
+    {}
+    """
+    photo_id = request.form.get("photoId")
+    token = request.form.get("token")
+    #print("APP TOKEN")
+    #print(token)
+    is_liked = like_photo(token, photo_id)
+    return dumps({"liked" : is_liked})
 
 @app.route("/comments/comment", methods=["POST"])
 @validate_token
@@ -1508,14 +1504,14 @@ def _get_comments():
     # limit = request.args.get("limit")
     order = request.args.get("new_to_old")
     current_date = datetime.now()
-    print(current_date)
+    #print(current_date)
     all_comments = get_all_comments(photo_id, current_date, order)
 
     return dumps({"comments": all_comments, "status": True})
     
 @app.route("/comments/delete_comments", methods=["POST"])
 #@validate_token
-def delete_comments():
+def _delete_comments():
     """
     Description
     -----------
