@@ -18,18 +18,21 @@ class PhotoContents extends React.Component<Props, any> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      title: "",
+      artistId: "",
       nickname: "",
       email: "",
-      likes: "",
-      loading: true,
-      tags: [],
-      isArtist: false,
-      purchased: false,
-      photoB64: "",
+      title: "",
       fullPrice: 0,
       discount: 0,
+      postedDate: "",
+      likes: 0,
+      isLiked: false,
+      tags: [],
+      purchased: false,
+      photoB64: "",
       deleted: false,
+      isArtist: false,
+      loading: true,
     };
   }
   // const [titleName, setTitle] = useState("Photo Title");
@@ -210,6 +213,7 @@ class PhotoContents extends React.Component<Props, any> {
               u_id={localStorage.getItem("u_id")!}
               p_id={this.props.photoId}
               like_count={this.state.likes}
+              isLiked={this.state.is_liked}
             />
             <BookmarkButton
               u_id={localStorage.getItem("u_id")!}
