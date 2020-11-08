@@ -10,7 +10,6 @@ interface LikeProps {
   isLiked: boolean;
 }
 
-// TODO: Make Like Button Update Database
 // Get like count on its own
 export default class LikeButton extends React.Component<LikeProps, any> {
   constructor(props: LikeProps) {
@@ -19,20 +18,46 @@ export default class LikeButton extends React.Component<LikeProps, any> {
       likeCount: props.like_count,
       isLiked: props.isLiked,
       // not sure if needed
-      likeStatus: "light",
+      likeStatus: !props.isLiked ? "primary" : "light",
       loading: true,
       alertContent: "No Content",
       showAlert: false,
     };
   }
-  // const [likeCount, setCount] = useState(props.like_count);
-  // const [likeStatus, setStatus] = useState("light");
-  // const [isLoaded, setLoad] = useState(false);
-  // const currentUser = localStorage.getItem("u_id") as string;
-  // const [alertContent, setContent] = useState("No Content");
-  // const [show, setShow] = useState(false);
-  // const closeAlert = () => setShow(false);
-  // const token = localStorage.getItem("token") as string;
+
+  handleLike(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+    e.preventDefault();
+    axios
+      .post("/photo_details/like_photo", {
+        photoId: this.props.p_id,
+        token: localStorage.getItem("token"),
+      })
+      .then((r) => {
+        if (r.data.loggedIn) {
+          if (r.data.liked) {
+            this.setState({
+              likeCount: this.state.likeCount + 1,
+              isLiked: true,
+              alertContent: "You successfully liked this photo!",
+              showAlert: true,
+            });
+          } else {
+            this.setState({
+              likeCount: this.state.likeCount - 1,
+              isLiked: false,
+              alertContent: "You successfully unliked this photo!",
+              showAlert: true,
+            });
+          }
+        } else {
+          this.setState({
+            alertContent: "You must be logged in to like a photo!",
+            showAlert: true,
+          });
+        }
+      })
+      .catch(() => {});
+  }
 
   // const updateLike = async (
   //   event: React.MouseEvent,
@@ -103,18 +128,6 @@ export default class LikeButton extends React.Component<LikeProps, any> {
   alertMessages() {
     return (
       <div className="alertToast">
-        {/* <Toast show={show} onClose={() => setShow(false)}>
-                    <Toast.Header>
-                        <img
-                            src="holder.js/20x20?text=%20"
-                            className="rounded mr-2"
-                            alt=""
-                        />
-                        <strong className="mr-auto">PhotoPro</strong>
-                    </Toast.Header>
-                    <Toast.Body>{alertContent}</Toast.Body>
-        </Toast> */}
-
         <Modal
           show={this.state.showAlert}
           onHide={() => this.setState({ showAlert: false })}
@@ -130,11 +143,12 @@ export default class LikeButton extends React.Component<LikeProps, any> {
   }
 
   render() {
+    console.log(this.state.isLiked);
     return (
       <div>
         <Button
           variant={this.state.isLiked ? "primary" : "light"}
-          // onClick={(e) => updateLike(e, likeCount, props.p_id)}
+          onClick={(e) => this.handleLike(e)}
         >
           <svg
             width="1em"

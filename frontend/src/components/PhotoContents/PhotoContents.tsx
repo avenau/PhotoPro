@@ -72,7 +72,7 @@ class PhotoContents extends React.Component<Props, any> {
         },
       })
       .then((res) => {
-        console.log("liked is " + res.data.is_liked);
+        console.log("isLiked is " + res.data.is_liked);
         this.setState({
           artistId: res.data.artist_id,
           nickname: res.data.artist_nickname,
@@ -90,6 +90,7 @@ class PhotoContents extends React.Component<Props, any> {
           isArtist: res.data.is_artist,
           loading: false,
         });
+        console.log("isLiked is now " + res.data.is_liked);
       })
       .catch(() => {});
   }
@@ -174,9 +175,9 @@ class PhotoContents extends React.Component<Props, any> {
           <Button onClick={(e) => this.downloadPhoto(e)}>
             Download Full Photo
           </Button>
-          <Link to={`/edit/${this.props.photoId}`}>
-            <Button className="ml-1">Manage Photo</Button>
-          </Link>
+          <Button href={`/edit/${this.props.photoId}`} className="ml-1">
+            Manage Photo
+          </Button>
         </div>
       );
     } else if (this.state.purchased) {
@@ -213,7 +214,7 @@ class PhotoContents extends React.Component<Props, any> {
               u_id={localStorage.getItem("u_id")!}
               p_id={this.props.photoId}
               like_count={this.state.likes}
-              isLiked={this.state.is_liked}
+              isLiked={this.state.isLiked}
             />
             <BookmarkButton
               u_id={localStorage.getItem("u_id")!}
@@ -238,7 +239,7 @@ class PhotoContents extends React.Component<Props, any> {
               <Row>
                 {this.state.tags.map((tag: string) => (
                   <>
-                    <Tags tagName={tag} />
+                    <Tags key={tag} tagName={tag} />
                   </>
                 ))}
               </Row>

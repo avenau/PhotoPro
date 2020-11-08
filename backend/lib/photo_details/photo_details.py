@@ -3,7 +3,7 @@ Photo Details
 '''
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
-import lib.Error
+from lib import Error
 from json import dumps
 from lib.photo.photo import Photo
 from lib.user.user import User
@@ -63,7 +63,7 @@ def photo_detail_results(photo_id, token):
             "discount": this_photo.get_discount(),
             "posted": str(this_photo.get_posted())[:10],
             "n_likes": this_photo.get_likes(),
-            "is_liked": is_photo_liked(this_photo, this_user),
+            "is_liked": is_photo_liked(this_photo, this_user) if req_user else False,
             "tagsList": this_photo.get_tags(),
             "purchased": purchased,
             "metadata": this_photo.get_metadata(),
@@ -80,18 +80,16 @@ def is_photo_liked(this_photo, this_user):
     return this_photo in this_user.get_liked()
 
 
-def like_photo(token, photo_id):
+def like_photo(u_id, photo_id):
     """
     Toggle like on a photo
     If photo is already liked, unlike it
     If photo is not liked, like it
-    """
-    u_id = token_functions.get_uid(token)
-        
-    try:
-        this_user = User.objects.get(id=u_id)
-    except:
-        raise Error.UserDNE("Couldn't find db entry for user: " + u_id)
+    """ 
+    if u_id == "":
+        return False
+
+    this_user = User.objects.get(id=u_id)
 
     try:
         this_photo = Photo.objects.get(id=photo_id)

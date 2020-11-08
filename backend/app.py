@@ -1440,11 +1440,7 @@ def _photo_liked():
     photo_id = request.args.get("p_id")
     token = request.args.get("token")
     is_liked = is_photo_liked(photo_id, token)
-    return dumps(
-        {
-            "isLiked": is_liked,
-        }
-    )
+    return dumps({"isLiked": is_liked})
 
 @app.route("/comments/get_comments", methods=["GET"])
 def _get_comments():
@@ -1480,7 +1476,6 @@ def _get_comments():
 
 
 @app.route("/photo_details/like_photo", methods=["POST"])
-@validate_token
 def _like_photo():
     """
     Description
@@ -1498,10 +1493,19 @@ def _like_photo():
     """
     photo_id = request.form.get("photoId")
     token = request.form.get("token")
+    logged_in = True
+    try:
+        u_id = token_functions.get_uid(token)
+    except:
+        u_id = ""
+        logged_in = False
+    
     # print("APP TOKEN")
     # print(token)
-    is_liked = like_photo(token, photo_id)
-    return dumps({"liked": is_liked})
+    liked = like_photo(u_id, photo_id)
+    return dumps({
+                "liked": liked, 
+                "loggedIn": logged_in})
 
 
 @app.route("/comments/comment", methods=["POST"])
