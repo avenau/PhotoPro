@@ -31,10 +31,12 @@ class PopularContributors extends Component<any, any> {
   render() {
     return (
       <>
+      <div style={{display:'flex', justifyContent: 'center'}}>
       <ContentLoader
         query=""
         route="/welcome/popularcontributors"
         type="artist"/>
+      </div>
       </>
     );
   }

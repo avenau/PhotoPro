@@ -1,8 +1,10 @@
 import React from "react";
 import Image from "react-bootstrap/Image";
-import "./PhotoThumbnail.scss";
+import "./ArtistThumbnail.scss";
+// import "./PhotoThumbnail.scss"
 import profilePic from "../../static/profile-pic.png";
 import _ from "lodash";
+
 
 interface Props {
   name: string;
@@ -39,12 +41,10 @@ export default class ArtistThumbnail extends React.Component<
   render() {
     return (
       <>
-      <div className="photo-results">
-        <Image src={this.getPic()} className="photo-thumbnail"/>
-        <div className="photo-overlay">
+        <Image src={this.getPic()} className="artist-thumbnail"/>
+        <div className="artist-overlay">
           <div>{this.props.name}</div>
         </div>
-      </div>
       </>
     );
   }
