@@ -31,10 +31,6 @@ def get_popular_contributors_images(artists=10):
         ]
     )
     res = json.loads(dumps(res))
-    print("HELLO")
-    print(res)
-    print("HELLO")
-
 
     for photo in res:
         # Get the artist thumbnails
