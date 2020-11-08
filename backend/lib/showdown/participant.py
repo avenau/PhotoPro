@@ -11,7 +11,7 @@ import lib.photo.photo as photo
 import lib.user.user as user
 
 
-class Paticipant(Document):
+class Participant(Document):
     """
     Mongoengine Participant definition
     """

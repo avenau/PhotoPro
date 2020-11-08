@@ -47,6 +47,12 @@ class PopularUser(Document):
         """
         self.likes -= 1
 
+    def reset_likes(self):
+        """
+        Set likes to 0
+        """
+        self.likes = 0
+
     # PopularUser Document validation
     # ------------------------
     def clean(self):
