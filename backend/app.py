@@ -1785,6 +1785,8 @@ def _get_album():
     discount: integer
     tags: [string]
     '''
+    params = request.form.to_dict()
+    print(params)
     token = request.args.get('token')
     album_id = request.args.get('album_id')
     _user = user.User.objects.get(id=token_functions.get_uid(token))
@@ -1801,7 +1803,7 @@ def _get_album():
             }
 
 
-@app.route('/album', methods=['DELETE'])
+@app.route('/album/delete', methods=['DELETE'])
 @validate_token
 def _delete_album():
     '''
@@ -1809,10 +1811,11 @@ def _delete_album():
     @param token: string
     @param albumId: string
     '''
-    token = request.args.get('token')
-    album_id = request.args.get('albumId')
+    token = request.args.get("token")
+    u_id = token_functions.get_uid(token)
+    album_id = request.args.get("albumId")
 
-    _user = user.User.objects.get(id=token_functions.get_uid(token))
+    _user = user.User.objects.get(id=u_id)
     _album = album.Album.objects.get(id=album_id)
     if _album.get_created_by() != _user:
         raise Error.ValidationError("User does not have permission to delete")
@@ -1835,7 +1838,7 @@ def _get_price():
     your_price = 0
     # Price with discounts, no ownership
     discounted_price = 0
-    # Price without prior ownership, includes discounts
+    # Price without prior ownership, without discounts
     original_price = 0
     # Savings on all discounts and ownership
     savings = 0
@@ -1851,8 +1854,6 @@ def _get_price():
     # Add the additional album discount
     your_price = int(your_price - (discounted_price * (raw_album_discount/100)))
     savings = original_price - your_price
-
-
 
     return dumps({'yourPrice': str(your_price),
                   'originalPrice': str(original_price),
