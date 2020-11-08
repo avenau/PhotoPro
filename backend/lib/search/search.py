@@ -18,9 +18,9 @@ def get_sort_method(sortid):
     Get the mongodb sort command associated with the id given
     """
     if sortid == "recent":
-        return {"$sort": {"created": -1}}
+        return {"$sort": {"created": -1, "id": -1}}
     if sortid == "old":
-        return {"$sort": {"created": 1}}
+        return {"$sort": {"created": 1, "id": 1}}
     if sortid == "low":
         return {"$sort": {"price": 1}}
     if sortid == "high":
@@ -141,7 +141,7 @@ def photo_search(data):
         result["photoStr"] = cur_photo.get_thumbnail(req_user)
         if req_user:
             result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (cur_photo.is_photo_owner(req_user_obj))
-        
+
 
     return res
 

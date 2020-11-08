@@ -16,10 +16,7 @@ interface Props {
   owns: boolean; // purchased or posted
 }
 
-export default class PhotoThumbnail extends React.Component<
-  Props,
-  { owns: boolean }
-> {
+export default class PhotoThumbnail extends React.Component<Props,{ owns: boolean }> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -71,13 +68,9 @@ export default class PhotoThumbnail extends React.Component<
   }
 
   render() {
-    // let purchasable = true;
-    // if (this.props.user && this.props.user === localStorage.getItem("u_id")) {
-    //   purchasable = false;
-    // }
     return (
       <>
-        <Image src={this.getPic()} className="photo-thumbnail" />
+        <Image src={this.getPic()} className="photo-thumbnail"/>
         <div className="photo-overlay">
           <div>{this.props.title}</div>
           <Price price={this.props.price} discount={this.props.discount} />

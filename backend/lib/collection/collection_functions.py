@@ -1,16 +1,17 @@
-'''
+"""
 Collection related functions.
 Mostly used on the frontend
 @author Joe
-'''
+"""
 import traceback
+import datetime
 import mongoengine
 import lib.collection.collection as collection
 import lib.Error as Error
 
 
 def get_collection(_collection):
-    '''
+    """
     Get the collection referred to by collection_id
     @param collection_id : mongoengine.Document.Collection
     @return{
@@ -22,7 +23,7 @@ def get_collection(_collection):
         price, int
         tags: [string],
     }
-    '''
+    """
     if not _collection:
         raise Error.ValueError("Collection not found")
 
@@ -30,22 +31,24 @@ def get_collection(_collection):
 
 
 def create_collection(_user, title, discount, tags):
-    '''
+    """
     @param _user: mongoengine.Document.User
     @param title: string
     @param discount: int
     @param tags: [string]
     @return collection_id: string
-    '''
-    collection_id = ''
+    """
+    collection_id = ""
     if not _user:
         raise Error.UserDNE("No user found")
 
     new_collection = collection.Collection(
-                title=title,
-                created_by=_user,
-                discount=discount,
-                tags=tags)
+        title=title,
+        created_by=_user,
+        discount=discount,
+        tags=tags,
+        creation_date=datetime.datetime.now(),
+    )
     try:
         new_collection.save()
         collection_id = str(new_collection.id)
@@ -57,11 +60,11 @@ def create_collection(_user, title, discount, tags):
 
 
 def delete_collection(_user, _collection):
-    '''
+    """
     @param _user: mongoengine.Document.User
     @param _collection: mongoengine.Document.Collection
     @return boolean
-    '''
+    """
     ret = False
     if not _user:
         raise Error.UserDNE("User does not exist")
@@ -81,11 +84,11 @@ def delete_collection(_user, _collection):
 
 
 def get_collection_photos(_user, _collection):
-    '''
+    """
     @param _user : mongoengine.Document.User
     @param _collection : mongoengine.Document.Collection
     @return [mongoengine.Document.Photo]
-    '''
+    """
     if not _user:
         raise Error.UserDNE("User does not exist")
     if not _collection:
@@ -100,12 +103,12 @@ def get_collection_photos(_user, _collection):
 
 
 def add_collection_photo(_user, _photo, _collection):
-    '''
+    """
     @param _user : mongoengine.Document.User
     @param _photo: mongoengin.Document.Photo
     @param _collection : mongoengine.Document.Collection
     @return boolean
-    '''
+    """
     if not _user:
         raise Error.UserDNE("User does not exist")
     if not _collection:
@@ -128,12 +131,12 @@ def add_collection_photo(_user, _photo, _collection):
 
 
 def remove_collection_photo(_user, _photo, _collection):
-    '''
+    """
     @param _user : mongoengine.Document.User
     @param _photo: mongoengin.Document.Photo
     @param _collection : mongoengine.Document.Collection
     @return boolean
-    '''
+    """
     if not _user:
         raise Error.UserDNE("User does not exist")
     if not _collection:

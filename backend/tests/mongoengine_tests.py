@@ -6,6 +6,7 @@ from mongoengine import connect
 import lib.photo.photo as photo
 import lib.collection.collection as collection
 import lib.user.user as user
+import lib.album.album as album
 
 connect('angular-flask-muckaround')
 

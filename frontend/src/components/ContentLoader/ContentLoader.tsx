@@ -11,7 +11,7 @@ import ArtistList from "../Lists/ArtistList";
 interface Props {
   query: string;
   route: string;
-  type: "photo" | "album" | "collection" | "user" | "artist";
+  type: "photo" | "album" | "collection" | "user" | "artist" | "albumPhotos";
   orderby?: string;
   filetype?: string;
   priceMin?: number;
@@ -66,7 +66,7 @@ export default class ContentLoader extends React.Component<Props, State> {
         },
       })
       .then((res) => {
-        console.log(res)
+        console.log(res);
         this.setState((prevState) => ({
           loading: false,
           results: [...prevState.results, ...res.data],
@@ -81,10 +81,12 @@ export default class ContentLoader extends React.Component<Props, State> {
   private getList() {
     switch (this.props.type) {
       case "photo":
-        return <PhotoList photos={this.state.results}
-                          addPhotoId={(newPhotoId: string) =>
-                                        this.props.addPhotoId?.(newPhotoId)
-                                    }/>
+        return (
+          <PhotoList
+            photos={this.state.results}
+            addPhotoId={this.props.addPhotoId}
+          />
+        );
       case "album":
         return <AlbumList albums={this.state.results} />;
       case "collection":
@@ -93,6 +95,15 @@ export default class ContentLoader extends React.Component<Props, State> {
         return <UserList users={this.state.results} />;
       case "artist":
         return <ArtistList artists={this.state.results}/>;
+      case "albumPhotos":
+        return (
+          <PhotoList
+            photos={this.state.results}
+            addPhotoId={(newPhotoId: string) =>
+              this.props.addPhotoId?.(newPhotoId)
+            }
+          />
+        );
       default:
         return <div>Error: Invalid seach type: {this.props.type}</div>;
     }

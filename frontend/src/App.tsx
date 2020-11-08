@@ -22,7 +22,8 @@ import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 import DownloadExample from "./pages/DownloadExample";
-import CreateCollection from "./pages/CreateCollection/CreateCollection";
+import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
+import AlbumDetails from './pages/AlbumDetails/AlbumDetails';
 
 interface Props {}
 
@@ -94,13 +95,32 @@ class App extends React.Component<Props, State> {
             path="/forgotpassword/reset"
             component={ResetPasswordPage}
           />
-          <Route path="/user/:user_id" component={ProfilePage} />
-          <Route path="/search/:type" component={SearchPage} />
-          <Route path="/downloadexample" component={DownloadExample} />
+          <Route
+            path="/user/:user_id"
+            component={ProfilePage}
+          />
+          <Route
+            path="/search/:type"
+            component={SearchPage}
+          />
+          <Route
+            path="/downloadexample"
+            component={DownloadExample}
+          />
           <Route
             valid={this.state.valid}
             path="/photo/:photo_id"
             component={PhotoDetails}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/album/manage/:album_id"
+            component={ManageAlbum}
+          />
+          <Route
+          path="/album/:album_id"
+          component={AlbumDetails}
           />
           <ProtectedRoute
             valid={this.state.valid}
@@ -136,12 +156,6 @@ class App extends React.Component<Props, State> {
             exact
             path="/purchases/refundcredits"
             component={RefundCreditsPage}
-          />
-          <ProtectedRoute
-            valid={this.state.valid}
-            exact
-            path="/createcollection"
-            component={CreateCollection}
           />
           <Route path="*" component={DoesNotExistPage} />
           {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}

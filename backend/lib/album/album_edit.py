@@ -4,7 +4,10 @@ Create and modify albums which are uploaded by a user
 """
 import datetime
 import mongoengine
+import traceback
+import lib.Error as Error
 import lib.album
+
 
 def create_album(title, user):
     """
@@ -26,11 +29,12 @@ def create_album(title, user):
     except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError
-    
+
     user.add_album(album)
     user.save()
 
     return {"albumId": str(album.get_id())}
+
 
 def get_albums(user):
     """
@@ -43,7 +47,7 @@ def get_albums(user):
     # Find the titles of the albums and place in dictionary
     # [[albumid: title, albumid], [title2: albumid]:...]
     albumList = list()
-    for i in albums:  
+    for i in albums:
         albumList.append((str(i.get_id()), i.get_title()))
 
     return {"albumList": albumList}

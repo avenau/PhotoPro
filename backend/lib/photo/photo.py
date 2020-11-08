@@ -39,7 +39,7 @@ class Photo(Document):
     # Discounted price of the photo
     discount = IntField(default=0, validation=validation.validate_discount)
     # Posted date of the photo.
-    posted = DateTimeField(default=datetime.datetime.now())
+    posted = DateTimeField(required=True)
     # User reference to the owner of the photo
     user = ReferenceField('user.User')
     # Photo's extension
@@ -103,7 +103,6 @@ class Photo(Document):
         '''
         Set the price of the photo
         '''
-        print('in set price',price)
         self.price = price
 
     def get_price(self):
@@ -125,7 +124,7 @@ class Photo(Document):
         '''
 
         # Albums needed to remove; any album no longer appearing as selected
-        remove = [alb_rm for alb_rm in self.albums if str(alb_rm.id) not in albums] 
+        remove = [alb_rm for alb_rm in self.albums if str(alb_rm.id) not in albums]
         for alb_rm in remove:
             alb_rm.remove_photo(self)
             alb_rm.save()
@@ -254,10 +253,18 @@ class Photo(Document):
     def add_comment(self, this_comment):
         '''
         Add a single comment to the photo
-        @param comment: string
+        @param comment: ObjectId
         '''
         #Param should be ObjectId
         self.comments.append(this_comment)
+
+    def delete_comment(self, this_comment):
+        '''
+        Remove a single comment to the photo
+        @param comment: ObjectId
+        '''
+        self.comments.remove(this_comment)
+
 
     def get_comments(self):
         '''

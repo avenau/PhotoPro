@@ -20,7 +20,9 @@ def generate_recommend(u_id, min_photo=3):
     @return: dict(success: bool)
     """
     keywords = recommend_keywords(u_id)
+    print('keywords', keywords)
     matching_res = count_res(u_id, keywords)
+    print('generate', matching_res)
     if matching_res < min_photo:
         return {"success": False}
     return {"success": True}
@@ -93,7 +95,7 @@ def recommend_photos(data):
     u_id = get_uid(data["token"])
     user = lib.user.user.User.objects.get(id=u_id)
     keywords = user.get_recommend_keywords()
-    
+    print('in keywords', keywords)
     # Array of purchased photos, do not display previously purchased
     purchased = user.get_purchased()
     purchased_id = []
@@ -134,7 +136,6 @@ def recommend_photos(data):
     res = json.loads(dumps(res))
     for result in res:
         result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(u_id)
-    print(res)
     return res
 
 def aggregate_photo_keywords(photos):
