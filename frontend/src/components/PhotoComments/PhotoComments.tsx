@@ -61,13 +61,14 @@ export default function PhotoComments(props: CommentProps) {
       })
       .then((response) => {
         clearCommentInput();
-        getComments(photoId);
+        getComments(photoId, new_to_old);
       })
   }
 
-  const getComments = async (photoId: string) => {
+  //Order is newest to oldest then true
+  const getComments = async (photoId: string, order: boolean) => {
     await axios
-      .get(`/comments/get_comments?p_id=${photoId}&new_to_old=${new_to_old}`)
+      .get(`/comments/get_comments?p_id=${photoId}&new_to_old=${order}`)
       .then((response) => {
         const tempComments: CommentObject[] = [];
         for (const comment of response.data.comments) {
@@ -81,7 +82,7 @@ export default function PhotoComments(props: CommentProps) {
   }
 
   useEffect(() => {
-    getComments(props.p_id);
+    getComments(props.p_id, true);
   }, [status]);
 
   function clearCommentInput() {
@@ -103,12 +104,12 @@ export default function PhotoComments(props: CommentProps) {
 
   const sortCommentNewest = async () => {
     setOrder(true);
-    getComments(props.p_id);
+    getComments(props.p_id, true);
   }
 
   const sortCommentOldest = async () => {
     setOrder(false);
-    getComments(props.p_id);
+    getComments(props.p_id, false);
   }
 
   function CommentMessage(props: MessageProp) {
@@ -141,7 +142,7 @@ export default function PhotoComments(props: CommentProps) {
           p_id,
         })
         .then((response) => {
-          getComments(p_id);
+          getComments(p_id, new_to_old);
         })
     }
 

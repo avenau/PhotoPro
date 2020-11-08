@@ -32,9 +32,9 @@ def get_all_comments(p_id, current_date, order):
         return seconds.total_seconds()
     
     if (order == "true"):
-        comments.sort(key=takeDate, reverse=True)
-    else:
         comments.sort(key=takeDate, reverse=False)
+    else:
+        comments.sort(key=takeDate, reverse=True)
     
     for comment in comments:
 
