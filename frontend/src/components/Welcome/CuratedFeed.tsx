@@ -36,7 +36,7 @@ export default function CuratedFeed() {
             <></>
             :
             <>
-            <h1>Recommended for you</h1>
+            <h3>Recommended for you</h3>
             <ContentLoader
               query=""
               route="/welcome/recommend"
