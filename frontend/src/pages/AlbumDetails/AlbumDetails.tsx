@@ -5,9 +5,7 @@ import AlbumHeader from '../../components/AlbumDisplay/AlbumHeader';
 
 
 import axios from "axios";
-
 import Toolbar from "../../components/Toolbar/Toolbar";
-
 import AlbumDisplay from '../../components/AlbumDisplay/AlbumDisplay';
 
 
