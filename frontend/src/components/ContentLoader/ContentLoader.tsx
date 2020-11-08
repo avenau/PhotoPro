@@ -50,6 +50,7 @@ export default class ContentLoader extends React.Component<Props, State> {
 
   private getResults() {
     this.setState({ loading: true });
+    console.log('content loader', this.state.query)
     axios
       .get(this.props.route, {
         params: {

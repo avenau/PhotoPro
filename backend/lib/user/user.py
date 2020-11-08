@@ -63,6 +63,8 @@ class User(Document):
     searches = ListField(StringField())
     # Reference to all users this user is following
     following = ListField(ReferenceField("User"))
+    # List of keywords, which act as metrics for recommending photos for the user
+    recommend_keywords = ListField(StringField())
     # Meta data about the User collection
     meta = {"collection": "users"}
 
@@ -343,6 +345,25 @@ class User(Document):
             self.searches.pop()
 
         self.searches.insert(0, search)
+
+    def get_searches(self):
+        """
+        Get user searches
+        @param: search: string
+        """
+        return self.searches
+
+    def get_recommend_keywords(self):
+        """
+        Get keywords from photos a user has interacted with or search queries
+        """
+        return self.recommend_keywords
+
+    def set_recommend_keywords(self, keywords):
+        """
+        Set keywords from photos a user has interacted with or search queries
+        """
+        self.recommend_keywords = keywords
 
     # User Document validation
     # ------------------------
