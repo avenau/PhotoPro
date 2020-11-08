@@ -202,16 +202,16 @@ class PhotoContents extends React.Component<Props, any> {
             <img className="actualPhoto" src={this.state.photoB64} />
           </Row>
           <Row className="PhotoInteraction">
-            {/* <LikeButton
-              // u_id={currentUser}
+            <LikeButton
+              u_id={localStorage.getItem("u_id")!}
               p_id={this.props.photoId}
               like_count={this.state.likes}
             />
             <BookmarkButton
-              // u_id={currentUser}
+              u_id={localStorage.getItem("u_id")!}
               p_id={this.props.photoId}
             />
-            <DetermineButton /> */}
+            {this.returnButtons()}
           </Row>
           <div className="ArtistInfo">
             <Row>
