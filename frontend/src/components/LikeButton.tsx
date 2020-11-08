@@ -27,36 +27,43 @@ export default class LikeButton extends React.Component<LikeProps, any> {
 
   handleLike(e: React.MouseEvent<HTMLElement, MouseEvent>) {
     e.preventDefault();
+    const token = localStorage.getItem("token");
     axios
       .post("/photo_details/like_photo", {
         photoId: this.props.p_id,
-        token: localStorage.getItem("token"),
+        token: token,
       })
       .then((r) => {
         if (r.data.loggedIn) {
           if (r.data.liked) {
-            this.setState({
-              likeCount: this.state.likeCount + 1,
-              isLiked: true,
-              alertContent: "You successfully liked this photo!",
-              showAlert: true,
-            });
           } else {
-            this.setState({
-              likeCount: this.state.likeCount - 1,
-              isLiked: false,
-              alertContent: "You successfully unliked this photo!",
-              showAlert: true,
-            });
           }
         } else {
-          this.setState({
-            alertContent: "You must be logged in to like a photo!",
-            showAlert: true,
-          });
         }
       })
       .catch(() => {});
+    if (token) {
+      if (!this.state.isLiked) {
+        this.setState({
+          likeCount: this.state.likeCount + 1,
+          isLiked: true,
+          alertContent: "You successfully liked this photo!",
+          showAlert: true,
+        });
+      } else {
+        this.setState({
+          likeCount: this.state.likeCount - 1,
+          isLiked: false,
+          alertContent: "You successfully unliked this photo!",
+          showAlert: true,
+        });
+      }
+    } else {
+      this.setState({
+        alertContent: "You must be logged in to like a photo!",
+        showAlert: true,
+      });
+    }
   }
 
   // const updateLike = async (
