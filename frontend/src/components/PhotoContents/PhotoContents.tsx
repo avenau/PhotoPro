@@ -168,7 +168,9 @@ class PhotoContents extends React.Component<Props, any> {
       });
   }
 
-  returnButtons() {
+  // Determine whether to show buttons for:
+  // Downloading full/watermarked photo, and managing photo
+  returnDynamicButtons() {
     if (this.state.isArtist) {
       return (
         <div>
@@ -211,16 +213,12 @@ class PhotoContents extends React.Component<Props, any> {
           </Row>
           <Row className="PhotoInteraction">
             <LikeButton
-              u_id={localStorage.getItem("u_id")!}
               p_id={this.props.photoId}
               like_count={this.state.likes}
               isLiked={this.state.isLiked}
             />
-            <BookmarkButton
-              u_id={localStorage.getItem("u_id")!}
-              p_id={this.props.photoId}
-            />
-            {this.returnButtons()}
+            <BookmarkButton p_id={this.props.photoId} />
+            {this.returnDynamicButtons()}
           </Row>
           <div className="ArtistInfo">
             <Row>

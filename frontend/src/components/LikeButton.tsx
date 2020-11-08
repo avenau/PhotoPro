@@ -4,7 +4,6 @@ import { Alert, Button, Modal, Toast } from "react-bootstrap";
 import axios from "axios";
 
 interface LikeProps {
-  u_id: string;
   p_id: string;
   like_count: number;
   isLiked: boolean;
