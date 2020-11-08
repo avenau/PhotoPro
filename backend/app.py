@@ -880,14 +880,9 @@ def _welcome_get_contributors():
     -------
     A list of images
     """
-    images = get_popular_contributors_images()
     return dumps(
-        {
-            # Returning a tuple
-            "contributors": images
-        }
+        get_popular_contributors_images()
     )
-
 
 @app.route("/welcome/getPopularImages", methods=["GET"])
 def _welcome_get_popular_images():
