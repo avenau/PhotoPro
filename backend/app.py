@@ -881,7 +881,8 @@ def _update_likes():
     Returns
     -------
     {
-        "liked" : string (returns if the photo is "liked", "unliked" if photo is unliked and "swap" if the current photo is liked while the other showdown is still liked)
+        "liked" : string (returns if the photo is "liked", "unliked" if photo is unliked and "swap" 
+                    if the current photo is liked while the other showdown is still liked)
     }
     """
     token = request.form.get("token")
@@ -1540,34 +1541,6 @@ def _delete_comments():
     comment_photo.delete_photos(photo_id, comment_id)
 
     return dumps({})
-
-
-@app.route("/get_current_user", methods=["GET"])
-def _get_verified_user():
-    """
-    Description
-    -----------
-    Gets user id from token
-
-    Parameters
-    ----------
-    token : string
-
-    Returns
-    -------
-    {
-        u_id : string
-    }
-    """
-    token = request.args.get("token")
-    if token is None:
-        return dumps(
-            {
-                "u_id": "",
-            }
-        )
-    u_id = token_functions.get_uid(token)
-
 
 """
 ---------------------
