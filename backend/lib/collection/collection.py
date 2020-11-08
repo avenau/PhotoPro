@@ -26,8 +26,7 @@ class Collection(lib.catalogue.catalogue.Catalogue):
     '''
     private = BooleanField(default=False)
     price = IntField(default=0, validation=validation.validate_price)
-    discount = IntField(default=0, validation=validation.validate_discount)
-    meta = {'collection': 'collections-mongoengine'}
+    meta = {'collection': 'collections'}
 
     def get_price(self):
         '''
@@ -61,18 +60,6 @@ class Collection(lib.catalogue.catalogue.Catalogue):
         Set the collection to public
         '''
         self.private = False
-
-    def get_discount(self):
-        '''
-        Get the discount on the Collection
-        '''
-        return self.discount
-
-    def set_discount(self, discount):
-        '''
-        Set the Collection discount
-        '''
-        self.discount = discount
 
     def remove_photo(self, old_photo):
         '''

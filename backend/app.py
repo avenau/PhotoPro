@@ -1524,6 +1524,7 @@ def _get_verified_user():
 ---------------------
 '''
 @app.route('/collection/get', methods=['GET'])
+@validate_token
 def _get_collection():
     '''
     Description
@@ -1532,23 +1533,40 @@ def _get_collection():
 
     Parameters
     ----------
-    collection_id: string
+    token: string
+    collectionId: string
 
     Returns
     ----------
     {
         title: string,
-        photos: [Photo],
-        creation_date: datetime,
-        deleted: boolean,
         private: boolean,
         price, int
         tags: [string],
+        price: int,
+        originalPrice: int
     }
     '''
-    collection_id = request.args.get('collection_id')
+    token = request.args.get('token')
+    collection_id = request.args.get('collectionId')
+    _user = user.User.objects.get(id=token_functions.get_uid(token))
     _collection = collection.Collection.objects.get(id=collection_id)
-    return dumps(collection_functions.get_collection(_collection))
+    owns = _collection.get_created_by() == _user
+    if _collection.is_private() and _collection.get_created_by() != _user:
+        return dumps({}), 401
+    if _collection.is_deleted():
+        raise Error.ValueError("Collection is deleted")
+    user_price, price_without_own = collection_functions.get_user_price(_user, _collection)
+
+    return dumps({ 
+            'title': _collection.get_title(),
+            'private': _collection.is_private(),
+            'price': user_price,
+            'tags': _collection.get_tags(),
+            'price': user_price,
+            'originalPrice': price_without_own,
+            'isOwner': owns})
+
 
 @app.route('/collection/getall', methods=['GET'])
 def _get_all_collections():
@@ -1581,11 +1599,15 @@ def _get_all_collections():
     data["limit"] = int(data["limit"])
 
     _user = user.User.objects.get(id=data['query'])
-    _collections = collection.Collection.objects(user=_user)
-    print(collection.Collection.objects(created_by=_user).to_json())
-    return collection.Collection.objects.to_json()
+    _collections = collection.Collection.objects(created_by=_user, deleted=False)
+    json_collection = []
+    # Add the id as a string
+    for index, col in enumerate(loads(_collections.to_json())):
+        json_collection.append(col)
+        json_collection[index]['id'] = col['_id']['$oid']
+    return dumps(json_collection)
 
-@app.route('/collection/create', methods=['POST'])
+@app.route('/collection', methods=['POST'])
 @validate_token
 def _create_collection():
     '''
@@ -1609,12 +1631,42 @@ def _create_collection():
     u_id = token_functions.get_uid(params['token'])
     # Get Objects
     _user = user.User.objects.get(id=u_id)
-    collection_id = collection_functions.create_collection(_user,
-                                                           params['title'],
-                                                           params['discount'],
-                                                           loads(params['tags']))
+    collection_id = collection_functions.create_collection(_user, params)
+
     # Return Collection ID
     return dumps({'collection_id': collection_id})
+
+@app.route('/collection/update', methods=['PUT'])
+@validate_token
+def _update_collection():
+    '''
+    Update Collection with the following parameters
+
+    Parameters
+    ----------
+    token: string
+    collectionId: string
+    title: string
+    private: boolean
+    tags: string[]
+    '''
+    params = request.form.to_dict()
+    token = request.args.get('token')
+    u_id = token_functions.get_uid(token)
+    collection_id = request.args.get('collectionId')
+    _user = user.User.objects.get(id=u_id)
+    if not _user:
+        raise Error.UserDNE("Could not find user")
+    _collection = collection.Collection.objects.get(id=collection_id)
+    if not _collection:
+        raise Error.ValueError("Could not find Collection")
+    if _user != _collection.get_created_by():
+        raise PermissionError("User not permitted to edit this Collection")
+
+    collection_functions.update_collection(params, _collection)
+
+
+    
 
 
 @app.route('/collection/delete', methods=['DELETE'])
@@ -1628,7 +1680,7 @@ def _delete_collection():
     Parameters
     ----------
     token: string
-    collection_id: string
+    _id: string
 
     Returns
     ----------
@@ -1636,11 +1688,11 @@ def _delete_collection():
     '''
     # Get arguments
     u_id = token_functions.get_uid(request.args.get('token'))
-    collection_id = request.args.get('collection_id')
+    collection_id = request.args.get('_id')
 
     # Get Objects
     _user = user.User.objects.get(id=u_id)
-    _collection = collection.Collection.get(id=collection_id)
+    _collection = collection.Collection.objects.get(id=collection_id)
 
     # Return success
     ret = collection_functions.delete_collection(_user, _collection)
@@ -1790,11 +1842,11 @@ def _delete_album():
     '''
     NOT CURRENTLY WORKING
     @param token: string
-    @param albumId: string
+    @param _id: string
     '''
     token = request.args.get("token")
     u_id = token_functions.get_uid(token)
-    album_id = request.args.get("albumId")
+    album_id = request.args.get("_id")
 
     _user = user.User.objects.get(id=u_id)
     _album = album.Album.objects.get(id=album_id)
@@ -1907,7 +1959,7 @@ def _albums():
     return dumps(get_albums(_user))
 
 
-@app.route("/albums", methods=["POST"])
+@app.route("/album", methods=["POST"])
 @validate_token
 def _add_album():
     """

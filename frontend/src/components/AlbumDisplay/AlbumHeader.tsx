@@ -5,9 +5,10 @@ import './AlbumHeader.scss';
 import axios from "axios";
 
 interface AlbumHeaderProps extends RouteComponentProps {
-    albumId: string;
-    isOwner: boolean;
+    catalogueId: string;
+    isOwner?: boolean;
     token: string;
+    type: 'album' | 'collection';
 }
 
 class AlbumHeader extends React.Component<AlbumHeaderProps> {
@@ -16,7 +17,7 @@ class AlbumHeader extends React.Component<AlbumHeaderProps> {
     this.state={}
   }
   render(){
-    let path = `/album/manage/${this.props.albumId}`
+    let path = `/${this.props.type}/manage/${this.props.catalogueId}`
     return this.props.isOwner ? (
       <div className='album-header-container'>
         <Link
@@ -27,10 +28,10 @@ class AlbumHeader extends React.Component<AlbumHeaderProps> {
           <div
             className='album-header-delete-button'
             onClick={() => axios
-              .delete(`/album/delete`, {
+              .delete(`/${this.props.type}/delete`, {
                 params: {
                   token: this.props.token,
-                  albumId: this.props.albumId,
+                  _id: this.props.catalogueId,
                 }})
               .then(() => this.props.history.push('/'))
               .catch()}>
