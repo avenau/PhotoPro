@@ -26,8 +26,6 @@ def is_photo_liked(photo_id, token):
     except (InvalidSignatureError, DecodeError, TokenError, InvalidTokenError):
         return False
     
-    print("USER ID!")
-    print(user_id)
     is_liked = False
     # Get the user object
     this_user = user.User.objects.get(id=user_id)
