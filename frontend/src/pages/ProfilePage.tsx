@@ -4,12 +4,12 @@ import { Dropdown } from "react-bootstrap";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Modal from "react-bootstrap/Modal";
-import Form from 'react-bootstrap/Form';
 import Button from "react-bootstrap/Button";
 import { RouteComponentProps } from "react-router-dom";
 import Toolbar from "../components/Toolbar/Toolbar";
 import UserHeader from "../components/UserHeader/UserHeader";
 import ContentLoader from "../components/ContentLoader/ContentLoader";
+import CreateCatalogueModal from '../components/ProfilePage/CreateCatalogueModal';
 import "./Profile.scss";
 
 interface Props extends RouteComponentProps {}
@@ -25,6 +25,7 @@ interface State {
   dne: boolean;
   profilePic: string[];
   newAlbum: boolean;
+  newCollection: boolean;
   title: string;
 }
 
@@ -43,9 +44,9 @@ export default class ProfilePage extends React.Component<Props, State> {
       dne: false,
       profilePic: ["", ""],
       newAlbum: false,
+      newCollection: false,
       title: '',
     };
-    this.createAlbum.bind(this);
   }
 
   componentDidMount() {
@@ -69,23 +70,7 @@ export default class ProfilePage extends React.Component<Props, State> {
       });
   }
 
-  private createAlbum(event: any){
-    event.preventDefault();
-    const data = new FormData(event.currentTarget as HTMLFormElement)
-    console.log(data.get('title'));
-    axios
-      .post('/albums', {
-        token: localStorage.getItem('token'),
-        title: data.get('title'),
-      })
-      .then((res) => {
-        if (res){
-          console.log(res);
-          this.props.history.push('/user/' + this.state.userId);
-        }
-      })
-      .catch(() => {});
-  }
+
 
   /** Return add button if current user */
   private createAddButton() {
@@ -123,7 +108,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              this.props.history.push("/createcollection");
+              this.setState({newCollection: true});
             }}
           >
             Create a Collection
@@ -162,39 +147,13 @@ export default class ProfilePage extends React.Component<Props, State> {
             </Button>
           </Modal.Footer>
         </Modal>
-
-        <Modal
-          show={this.state.newAlbum}
-          backdrop="static"
-          onHide={() => this.props.history.goBack()}
-          animation={false}
-          centered
-        >
-          <Modal.Body>
-            <Form onSubmit={(e) => this.createAlbum(e)}>
-              <Form.Group controlId="formNewAlbum">
-                <Form.Label>Title</Form.Label>
-                <Form.Control type="title"
-                              name="title"
-                              placeholder="Enter Album Title"
-                />
-                <Form.Text className="text-muted">
-                  Enter a unique album title.
-                </Form.Text>
-              </Form.Group>
-              <Button variant="primary"
-                      type="submit"
-                      >
-                Save
-              </Button>{'   '}
-              <Button variant="danger"
-                      type="reset"
-                      onClick={() => this.setState({newAlbum: false})}>
-                Cancel
-              </Button>
-            </Form>
-          </Modal.Body>
-        </Modal>
+        {/* Passing state down to Album Modal*/}
+        <CreateCatalogueModal active={this.state.newAlbum}
+                    onCatalogueChange={(active) => (this.setState({newAlbum: active}))}
+                    type='album'/>
+        <CreateCatalogueModal active={this.state.newCollection}
+                    onCatalogueChange={(active) => (this.setState({newCollection: active}))}
+                    type='collection'/>
         <Toolbar />
         <UserHeader
           currentUser={currentUser}

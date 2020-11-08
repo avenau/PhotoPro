@@ -40,7 +40,12 @@ def validate_token(function):
         elif request.method == 'POST':
             token = request.form['token']
         elif request.method == 'DELETE':
-            token = request.args.get('token')
+            try:
+                token = request.args.get('token')
+            except:
+                token = request.form.to_dict()['token']
+            print("REACHED")
+
         elif request.method == 'PUT':
             token = request.form['token']
         else:

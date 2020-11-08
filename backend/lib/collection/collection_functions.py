@@ -30,7 +30,7 @@ def get_collection(_collection):
     return _collection.get_collection_json()
 
 
-def create_collection(_user, title, discount, tags):
+def create_collection(_user, params):
     """
     @param _user: mongoengine.Document.User
     @param title: string
@@ -38,14 +38,20 @@ def create_collection(_user, title, discount, tags):
     @param tags: [string]
     @return collection_id: string
     """
-    collection_id = ""
+    title = ''
+    tags = []
+
     if not _user:
         raise Error.UserDNE("No user found")
+
+    if "title" in params:
+        title = params['title']
+    if "tags" in params:
+        tags = params['tags']
 
     new_collection = collection.Collection(
         title=title,
         created_by=_user,
-        discount=discount,
         tags=tags,
         creation_date=datetime.datetime.now(),
     )
@@ -70,12 +76,13 @@ def delete_collection(_user, _collection):
         raise Error.UserDNE("User does not exist")
     if not _collection:
         raise Error.AccessError("Collection does not exist")
-    if _user is not _collection.get_created_by():
+    if _user != _collection.get_created_by():
         return ret
 
     try:
-        _collection.delete()
-        return ret
+        _collection.delete_collection()
+        _collection.save()
+        ret = True
     except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError("Could not delete collection")
@@ -156,3 +163,31 @@ def remove_collection_photo(_user, _photo, _collection):
         raise Error.ValidationError("Could not update Collection and Photo")
 
     return True
+
+def update_collection(params, _collection):
+    '''
+    Update collection
+    '''
+    if 'title' in params:
+        _collection.set_title(params['title'])
+    if 'tags' in params:
+        _collection.set_tags()
+    if 'private' in params:
+        if params['private'] == 'true':
+            _collection.set_private()
+        if params['private'] == 'false':
+            _collection.set_public()
+    _collection.save()
+
+def get_user_price(_user, _collection):
+    '''
+    Get the price for the current user
+    '''
+    user_price = 0
+    price_without_ownership = 0
+    for _photo in _collection.get_photos():
+        if _photo not in _user.get_purchased():
+            user_price += _photo.get_discounted_price()
+        price_without_ownership += _photo.get_discounted_price()
+
+    return user_price, price_without_ownership
