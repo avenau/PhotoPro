@@ -887,9 +887,9 @@ def _update_likes():
     token = request.form.get("token")
     sd_id = request.form.get("sd_id")
     part_id = request.form.get("part_id")
-    showdown_likes.update_showdown_likes(token, sd_id, part_id)
+    result = showdown_likes.update_showdown_likes(token, sd_id, part_id)
     
-    return dumps({})
+    return dumps({"liked" : result})
 
 
 @app.route("/welcome/popularcontributors", methods=["GET"])
