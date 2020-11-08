@@ -1,4 +1,4 @@
-import React, { useEffect , useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Alert, Button, Modal, Toast } from "react-bootstrap";
 import axios from "axios";
@@ -15,118 +15,75 @@ export default function LikeButton(props: LikeProps) {
   const [likeCount, setCount] = useState(props.like_count);
   const [likeStatus, setStatus] = useState("light");
   const [isLoaded, setLoad] = useState(false);
-  const [currentUser, setUser] = useState("No ID");
-  const [userLoggedin, setLogin] = useState(false);
+  const currentUser = localStorage.getItem("u_id") as string;
   const [alertContent, setContent] = useState("No Content");
   const [show, setShow] = useState(false);
   const closeAlert = () => setShow(false);
+  const token = localStorage.getItem("token") as string;
   const updateLike = async (
     event: React.MouseEvent,
     count: number,
-    photoId: string,
+    photoId: string
   ) => {
     if (event) {
       event.preventDefault();
     }
     console.log(count);
-    if (userLoggedin === true) {
-      const token = localStorage.getItem("token");
-      const upStatus = likeStatus === "light";
-      if (
-        localStorage.getItem("token") !== null &&
-        localStorage.getItem("token") !== ""
-      ) {
-        await axios
-          .post(
-            `/photo_details/updateLikes?=${localStorage.getItem("token")}`,
-            {
-              photoId,
-              token,
+    console.log("Printing TOken");
+    console.log(token);
+    if (
+      token !== null &&
+      token !== ""
+    ) {
+      await axios
+        .post("/photo_details/like_photo", {
+          photoId,
+          token,
+        })
+        .then((r) => {
+          if (r.status !== 200) {
+            // console.log("UPDATE LIKES NOT SUCCESSFUL");
+            throw new Error();
+          } else if (r.status === 200) {
+            if (r.data.liked === false) {
+              setCount(count - 1);
+              count -= 1;
+              setStatus("light");
+              setContent("You successfully unliked this photo!");
+              setShow(true);
+            } else {
+              setCount(count + 1);
+              count += 1;
+              setStatus("primary");
+              setContent("You successfully liked this photo!");
+              setShow(true);
             }
-          )
-          .then((r) => {
-            if (r.status !== 200) {
-              // console.log("UPDATE LIKES NOT SUCCESSFUL");
-              throw new Error();
-            } else if (r.status === 200) {
-              if (r.data.liked === false) {
-                setCount(count - 1);
-                count -= 1;
-                setStatus("light");
-                setContent("You successfully unliked this photo!");
-                setShow(true);
-              } else {
-                setCount(count + 1);
-                count += 1;
-                setStatus("primary");
-                setContent("You successfully liked this photo!");
-                setShow(true);
-              }
-            }
-          })
-          .catch((e) => {
-            console.log("==========Error occured==========");
-            console.log(e);
-            console.log("=================================");
-          });
-      }
+          }
+        })
+        .catch((e) => {
+          console.log("==========Error occured==========");
+          console.log(e);
+          console.log("=================================");
+        });
     } else {
       setContent("You must be logged in to like a photo!");
       setShow(true);
     }
   };
 
-  const getLikeCount = async (photoId: string) => {
-    const token = localStorage.getItem("token");
-    await axios
-      .get(`/photo_details?p_id=${photoId}&token=${token}`)
-      .then((response) => {
-        setCount(response.data.likes);
-      });
-  };
-
-  const getCurrentUser = async () => {
-    if (
-      localStorage.getItem("token") !== null &&
-      localStorage.getItem("token") !== ""
-    ) {
-      await axios
-        .get(`/verifytoken?token=${localStorage.getItem("token")}`)
-        .then(async (response) => {
-          // console.log("verify value: " + response.data.valid);
-          if (response.data.valid === true) {
-            await axios
-              .get(`/get_current_user?token=${localStorage.getItem("token")}`)
-              .then((response) => {
-                // console.log("getCurrentUser " + response.data.u_id);
-
-                setUser(response.data.u_id);
-                setLogin(true);
-              });
-          }
-        });
-    }
-  };
-
   useEffect(() => {
-    getCurrentUser();
     // getLikeCount(props.p_id);
-    isLiked(props.p_id, currentUser);
+    isLiked(props.p_id, token);
 
     setLoad(true);
-  }, [isLoaded, userLoggedin, currentUser, likeCount]);
+  }, [isLoaded, likeCount]);
 
-  const isLiked = async (photoId: string, userId: string) => {
-    // console.log("User Logged in: " + userLoggedin);
-    if (userLoggedin === true) {
-      await axios
-        .get(`/photo_details/isLiked?p_id=${photoId}&u_id=${userId}`)
-        .then((response) => {
-          setStatus(response.data.isLiked === true ? "primary" : "light");
-        });
-    } else {
-      setStatus("light");
-    }
+  const isLiked = async (photoId: string, token: string) => {
+    await axios
+      .get(`/photo_details/isLiked?p_id=${photoId}&token=${token}`)
+      .then((response) => {
+        setStatus(response.data.isLiked === true ? "primary" : "light");
+      });
   };
 
   function AlertMessages() {
@@ -159,9 +116,7 @@ export default function LikeButton(props: LikeProps) {
     <div>
       <Button
         variant={likeStatus}
-        onClick={(e) =>
-          updateLike(e, likeCount, props.p_id)
-        }
+        onClick={(e) => updateLike(e, likeCount, props.p_id)}
       >
         <svg
           width="1em"
