@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { RouteComponentProps } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import BookmarkButton from "../BookmarkButton";
 import LikeButton from "../LikeButton";
@@ -9,11 +10,23 @@ import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../Tags";
 
-interface ContentProps {
+
+interface Props extends RouteComponentProps {
   photoId: string;
 }
 
-export default function PhotoContents(props: ContentProps) {
+export default class PhotoContents extends React.Component<Props> { 
+  constructor(props) {
+    super(props);
+    this.state = {
+      title: "",
+      nickname: "",
+      email: "",
+      likes: "",
+      loading: true,
+      tags
+    }
+  }
   const [titleName, setTitle] = useState("Photo Title");
   const [nickname, setNick] = useState("Artist Nickname");
   const [email, setEmail] = useState("Artist Email");
@@ -87,7 +100,7 @@ export default function PhotoContents(props: ContentProps) {
       .then((response) => {
         setPurchased(response.data.purchased);
       })
-      .catch(() => { });
+      .catch(() => {});
   }
 
   function downloadPhoto(e: React.MouseEvent) {
@@ -115,7 +128,6 @@ export default function PhotoContents(props: ContentProps) {
   }
 
   function DetermineButton() {
-
     if (is_artist === true) {
       return (
         <div>
@@ -188,9 +200,9 @@ export default function PhotoContents(props: ContentProps) {
       <PhotoComments p_id={props.photoId} />
     </div>
   ) : (
-      <div>
-        {" "}
-        <p>{loadMessage}</p>{" "}
-      </div>
-    );
+    <div>
+      {" "}
+      <p>{loadMessage}</p>{" "}
+    </div>
+  );
 }
