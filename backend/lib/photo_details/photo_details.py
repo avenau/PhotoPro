@@ -8,7 +8,7 @@ from json import dumps
 from lib.photo.photo import Photo
 from lib.user.user import User
 from lib import token_functions
-# Modified from profile_details
+from lib.popular.popular_interactions import do_like, do_unlike
     
 def photo_detail_results(photo_id, token):
     print("Photo details results")
@@ -63,6 +63,7 @@ def photo_detail_results(photo_id, token):
             "discount": this_photo.get_discount(),
             "posted": str(this_photo.get_posted())[:10],
             "n_likes": this_photo.get_likes(),
+            "is_liked": is_photo_liked(this_photo, this_user),
             "tagsList": this_photo.get_tags(),
             "purchased": purchased,
             "metadata": this_photo.get_metadata(),
@@ -71,3 +72,47 @@ def photo_detail_results(photo_id, token):
             "is_artist": is_artist,
         }
     )
+
+def is_photo_liked(this_photo, this_user):
+    """
+    Helper to checks if this_photo has been liked by this_user and returns bool
+    """
+    return this_photo in this_user.get_liked()
+
+
+def like_photo(token, photo_id):
+    """
+    Toggle like on a photo
+    If photo is already liked, unlike it
+    If photo is not liked, like it
+    """
+    u_id = token_functions.get_uid(token)
+        
+    try:
+        this_user = User.objects.get(id=u_id)
+    except:
+        raise Error.UserDNE("Couldn't find db entry for user: " + u_id)
+
+    try:
+        this_photo = Photo.objects.get(id=photo_id)
+    except:
+        raise Error.PhotoDNE("Couldnt find db entry for photo: " + photo_id)
+
+    # If already liked, remove the like from the photo
+    if this_photo in this_user.get_liked():
+        this_photo.decrement_likes()
+        this_user.remove_liked_photo(this_photo)
+        this_photo.save()
+        this_user.save()
+        # Change PopularPhoto db collection
+        do_unlike(this_user, this_photo)
+        return False
+    # If not already liked, like the photo
+    else:
+        this_photo.increment_likes()
+        this_user.add_liked_photo(this_photo)
+        this_photo.save()
+        this_user.save()
+        # Change PopularPhoto db collection
+        do_like(this_user, this_photo)
+        return True
