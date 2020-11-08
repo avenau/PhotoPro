@@ -32,9 +32,7 @@ export default function CommentMessage(props: MessageProp) {
   }
 
   function DetermineDeleteButton() {
-    console.log("CHECKING IDSSSS")
-    console.log(currentUser)
-    console.log(props.author_id);
+
     if (currentUser === props.author_id) {
       setDelete(true);
     }

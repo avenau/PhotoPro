@@ -42,11 +42,9 @@ export default function PhotoContents(props: ContentProps) {
   };
 
   const getPhotoDetails = async (photoId: string) => {
-    console.log(token);
     await axios
       .get(`/photo_details?p_id=${photoId}&token=${token}`)
       .then((response) => {
-        // console.log(response.data);
         setArtist(response.data.u_id);
         setNick(response.data.nickname);
         setIsArtist(response.data.is_artist);
@@ -60,31 +58,22 @@ export default function PhotoContents(props: ContentProps) {
         setTitle(response.data.title);
         setPrice(response.data.price);
         setPhoto(`${response.data.metadata}${response.data.photoStr}`);
-
-        // console.log("deleted" + response.data.deleted);
-        // console.log(response.status);
       });
   };
 
   useEffect(() => {
     getPhotoDetails(props.photoId);
     if (purchased === true) {
-      // console.log("Purchased Section");
       setLoad(true);
     } else if (deleted === true || artist === "") {
-      // console.log("IN deleted Section");
       setLoad(false);
       setLoadMessage("The photo does not exist!");
     } else {
-      // console.log("Everything Else");
       setLoad(true);
     }
     if (status === 0) {
       setLoadMessage("Loading Photos...");
     }
-    console.log("STATUS UPDATE");
-    console.log(status);
-    // console.log("Purchased: " + purchased);
   }, [purchased, deleted, status, is_artist]);
 
   function purchasePhoto(e: any) {
@@ -126,13 +115,8 @@ export default function PhotoContents(props: ContentProps) {
   }
 
   function DetermineButton() {
-    /*console.log("IS ARTIST");
-    console.log(is_artist);
-    console.log("IS PURCHASED");
-    console.log(purchased);*/
 
     if (is_artist === true) {
-      console.log(props.photoId);
       return (
         <div>
           <Button onClick={(e) => downloadPhoto(e)}>Download Full Photo</Button>
