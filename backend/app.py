@@ -255,7 +255,7 @@ def _account_registration():
         extension=new_user['extension'],
         location=new_user['location'],
         about_me=new_user['aboutMe'],
-        created=datetime.datetime.now()
+        created=datetime.now()
     )
     this_user.save()
 
