@@ -1338,7 +1338,7 @@ def add_album():
     u_id = token_functions.verify_token(token)["u_id"]
     user = lib.user.user.User.objects.get(id=u_id)
     if not user:
-        raise Error.UserDNE("Could not find User " + user_uid)
+        raise Error.UserDNE("Could not find User " + u_id)
 
     return dumps(create_album(request.form.get("title"), user))
 

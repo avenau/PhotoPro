@@ -1,21 +1,23 @@
-'''
+"""
 Photo Likes
-'''
+"""
 
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
 from lib.Error import UserDNE, TokenError, PhotoDNE
+from lib.popular.popular_interactions import do_like, do_unlike
 import lib.user.user as user
 import lib.photo.photo as photo
+import lib.Error as Error
 
 
 def is_photo_liked(photo_id, user_id):
-    '''
+    """
     Checks if the user have liked the photo
     @param photo_id(string): The _id of the photo
     @param user_id(string): The _id of the user that you want to check if liked
     @return True if the user has liked the photo else false
-    '''
+    """
     is_liked = False
     # Get the user object
     this_user = user.User.objects.get(id=user_id)
@@ -33,11 +35,11 @@ def is_photo_liked(photo_id, user_id):
 
 
 def like_photo(user_id, photo_id):
-    '''
+    """
     Toggle like on a photo
     If photo is already liked, dislike it
     If photo is not liked, like it
-    '''
+    """
     # Get the User
     print("LIKE PHOTO TEST")
     print(user_id)
@@ -60,6 +62,7 @@ def like_photo(user_id, photo_id):
         this_user.remove_liked_photo(this_photo)
         this_photo.save()
         this_user.save()
+        do_unlike(this_user, this_photo)
         return False
     # If not already liked, like the photo
     else:
@@ -67,5 +70,5 @@ def like_photo(user_id, photo_id):
         this_user.add_liked_photo(this_photo)
         this_photo.save()
         this_user.save()
+        do_like(this_user, this_photo)
         return True
-

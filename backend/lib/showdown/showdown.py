@@ -23,7 +23,7 @@ class Showdown(Document):
     """
 
     # When did the showdown begin
-    start_date = DateTimeField(default=datetime.datetime.now())
+    start_date = DateTimeField(required=True)
     # Which photo was the winner of this showdown
     winner = ReferenceField("photo.Photo")
     # Which photos are participating in the showdown
