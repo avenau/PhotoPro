@@ -17,8 +17,6 @@ export default class LikeButton extends React.Component<LikeProps, any> {
     this.state = {
       likeCount: props.like_count,
       isLiked: props.isLiked,
-      // not sure if needed
-      likeStatus: !props.isLiked ? "primary" : "light",
       loading: true,
       alertContent: "No Content",
       showAlert: false,
@@ -28,20 +26,14 @@ export default class LikeButton extends React.Component<LikeProps, any> {
   handleLike(e: React.MouseEvent<HTMLElement, MouseEvent>) {
     e.preventDefault();
     const token = localStorage.getItem("token");
+
     axios
       .post("/photo_details/like_photo", {
         photoId: this.props.p_id,
         token: token,
       })
-      .then((r) => {
-        if (r.data.loggedIn) {
-          if (r.data.liked) {
-          } else {
-          }
-        } else {
-        }
-      })
       .catch(() => {});
+
     if (token) {
       if (!this.state.isLiked) {
         this.setState({
@@ -66,73 +58,8 @@ export default class LikeButton extends React.Component<LikeProps, any> {
     }
   }
 
-  // const updateLike = async (
-  //   event: React.MouseEvent,
-  //   count: number,
-  //   photoId: string
-  // ) => {
-  //   if (event) {
-  //     event.preventDefault();
-  //   }
-  //   console.log(count);
-  //   console.log("Printing TOken");
-  //   console.log(token);
-  //   if (
-  //     token !== null &&
-  //     token !== ""
-  //   ) {
-  //     await axios
-  //       .post("/photo_details/like_photo", {
-  //         photoId,
-  //         token,
-  //       })
-  //       .then((r) => {
-  //         if (r.status !== 200) {
-  //           // console.log("UPDATE LIKES NOT SUCCESSFUL");
-  //           throw new Error();
-  //         } else if (r.status === 200) {
-  //           if (r.data.liked === false) {
-  //             setCount(count - 1);
-  //             count -= 1;
-  //             setStatus("light");
-  //             setContent("You successfully unliked this photo!");
-  //             setShow(true);
-  //           } else {
-  //             setCount(count + 1);
-  //             count += 1;
-  //             setStatus("primary");
-  //             setContent("You successfully liked this photo!");
-  //             setShow(true);
-  //           }
-  //         }
-  //       })
-  //       .catch((e) => {
-  //         console.log("==========Error occured==========");
-  //         console.log(e);
-  //         console.log("=================================");
-  //       });
-  //   } else {
-  //     setContent("You must be logged in to like a photo!");
-  //     setShow(true);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   // getLikeCount(props.p_id);
-  //   isLiked(props.p_id, token);
-
-  //   setLoad(true);
-  // }, [isLoaded, likeCount]);
-
-  // const isLiked = async (photoId: string, token: string) => {
-  //   await axios
-  //     .get(`/photo_details/isLiked?p_id=${photoId}&token=${token}`)
-  //     .then((response) => {
-  //       setStatus(response.data.isLiked === true ? "primary" : "light");
-  //     });
-  // };
-
-  alertMessages() {
+  // Popup window after liking photo
+  alertMessage() {
     return (
       <div className="alertToast">
         <Modal
@@ -150,7 +77,6 @@ export default class LikeButton extends React.Component<LikeProps, any> {
   }
 
   render() {
-    console.log(this.state.isLiked);
     return (
       <div>
         <Button
@@ -172,7 +98,7 @@ export default class LikeButton extends React.Component<LikeProps, any> {
           </svg>{" "}
           {this.state.likeCount}
         </Button>
-        {this.state.showAlert ? this.alertMessages() : <></>}
+        {this.state.showAlert ? this.alertMessage() : <></>}
       </div>
     );
   }

@@ -238,9 +238,7 @@ class PhotoContents extends React.Component<Props, any> {
               <Row>Tags (click tag to search)</Row>
               <Row>
                 {this.state.tags.map((tag: string) => (
-                  <>
-                    <Tags key={tag} tagName={tag} />
-                  </>
+                  <Tags key={tag} tagName={tag} />
                 ))}
               </Row>
             </Col>
