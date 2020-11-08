@@ -65,6 +65,7 @@ from lib.search.search import album_search, photo_search, user_search, collectio
 
 # Showdown
 from lib.showdown import get_images
+from lib.showdown import showdown_likes
 
 # User
 from lib.user.validate_login import login
@@ -862,6 +863,33 @@ def _showdown_getwinner():
     """
     path = get_images.get_showdown_winner_image()
     return dumps({"path": path})
+
+@app.route("/showdown/updatelikes", methods=["POST"])
+@validate_token
+def _update_likes():
+    """
+    Description
+    -----------
+    Update Likes for showdown photos
+
+    Parameters
+    ----------
+    sd_id : string (Showdown id)
+    part_id : string (Participating id)
+    token : string
+
+    Returns
+    -------
+    {
+        "liked" : string (returns if the photo is "liked", "unliked" if photo is unliked and "swap" if the current photo is liked while the other showdown is still liked)
+    }
+    """
+    token = request.form.get("token")
+    sd_id = request.form.get("sd_id")
+    part_id = request.form.get("part_id")
+    showdown_likes.update_showdown_likes(token, sd_id, part_id)
+    
+    return dumps({})
 
 
 @app.route("/welcome/popularcontributors", methods=["GET"])
