@@ -58,7 +58,7 @@ class User(Document):
     # User's current credits
     credits = IntField(default=0, validation=validation.validate_credit)
     # When the user was created
-    created = DateTimeField(default=datetime.datetime.now())
+    created = DateTimeField(required=True)
     # List of the searches made by the user, ordered with recent searches first
     searches = ListField(StringField())
     # Reference to all users this user is following
@@ -248,7 +248,7 @@ class User(Document):
         """
         Add album object to album list
         """
-        self.albums.append(album)
+        self.albums.append(_album)
 
     def get_albums(self):
         """
@@ -256,7 +256,7 @@ class User(Document):
         """
         albums = []
         for _album in self.albums:
-            if not _album.deleted:
+            if not _album.is_deleted():
                 albums.append(_album)
         return albums
 
