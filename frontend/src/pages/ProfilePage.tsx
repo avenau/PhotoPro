@@ -4,6 +4,7 @@ import { Dropdown } from "react-bootstrap";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Modal from "react-bootstrap/Modal";
+import Form from 'react-bootstrap/Form';
 import Button from "react-bootstrap/Button";
 import { RouteComponentProps } from "react-router-dom";
 import Toolbar from "../components/Toolbar/Toolbar";
@@ -23,6 +24,8 @@ interface State {
   aboutMe?: string;
   dne: boolean;
   profilePic: string[];
+  newAlbum: boolean;
+  title: string;
 }
 
 export default class ProfilePage extends React.Component<Props, State> {
@@ -39,7 +42,10 @@ export default class ProfilePage extends React.Component<Props, State> {
       userId,
       dne: false,
       profilePic: ["", ""],
+      newAlbum: false,
+      title: '',
     };
+    this.createAlbum.bind(this);
   }
 
   componentDidMount() {
@@ -61,6 +67,24 @@ export default class ProfilePage extends React.Component<Props, State> {
         newState.dne = true;
         this.setState(newState);
       });
+  }
+
+  private createAlbum(event: any){
+    event.preventDefault();
+    const data = new FormData(event.currentTarget as HTMLFormElement)
+    console.log(data.get('title'));
+    axios
+      .post('/albums', {
+        token: localStorage.getItem('token'),
+        title: data.get('title'),
+      })
+      .then((res) => {
+        if (res){
+          console.log(res);
+          this.props.history.push('/user/' + this.state.userId);
+        }
+      })
+      .catch(() => {});
   }
 
   /** Return add button if current user */
@@ -91,7 +115,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert("Navigating to new album");
+              this.setState({newAlbum: true});
             }}
           >
             Create an Album
@@ -99,7 +123,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert("Navigating to new collection");
+              this.props.history.push("/createcollection");
             }}
           >
             Create a Collection
@@ -107,10 +131,6 @@ export default class ProfilePage extends React.Component<Props, State> {
         </Dropdown.Menu>
       </Dropdown>
     );
-  }
-
-  private redirect() {
-    this.props.history.goBack();
   }
 
   render() {
@@ -121,7 +141,7 @@ export default class ProfilePage extends React.Component<Props, State> {
         <Modal
           backdrop="static"
           show={this.state.dne}
-          onHide={() => this.redirect()}
+          onHide={() => this.props.history.goBack()}
           animation={false}
         >
           <Modal.Header closeButton>
@@ -130,16 +150,50 @@ export default class ProfilePage extends React.Component<Props, State> {
 
           <Modal.Body>
             <p>
-              The user you were looking for could not be found, please try again
-              later.
+              The user you were looking for could not be found, please
+              try again later. Maybe tomorrow...
             </p>
           </Modal.Body>
 
           <Modal.Footer>
-            <Button variant="primary" onClick={() => this.redirect()}>
+            <Button variant="primary"
+                    onClick={() => this.props.history.goBack()}>
               Go Back
             </Button>
           </Modal.Footer>
+        </Modal>
+
+        <Modal
+          show={this.state.newAlbum}
+          backdrop="static"
+          onHide={() => this.props.history.goBack()}
+          animation={false}
+          centered
+        >
+          <Modal.Body>
+            <Form onSubmit={(e) => this.createAlbum(e)}>
+              <Form.Group controlId="formNewAlbum">
+                <Form.Label>Title</Form.Label>
+                <Form.Control type="title"
+                              name="title"
+                              placeholder="Enter Album Title"
+                />
+                <Form.Text className="text-muted">
+                  Enter a unique album title.
+                </Form.Text>
+              </Form.Group>
+              <Button variant="primary"
+                      type="submit"
+                      >
+                Save
+              </Button>{'   '}
+              <Button variant="danger"
+                      type="reset"
+                      onClick={() => this.setState({newAlbum: false})}>
+                Cancel
+              </Button>
+            </Form>
+          </Modal.Body>
         </Modal>
         <Toolbar />
         <UserHeader
@@ -177,7 +231,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Tab eventKey="collections" title="Collections" unmountOnExit>
             <ContentLoader
               query={this.state.userId}
-              route="/user/collections"
+              route="/collection/getall"
               type="collection"
             />
           </Tab>

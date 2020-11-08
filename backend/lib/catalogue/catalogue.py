@@ -52,14 +52,19 @@ class Catalogue(Document):
         '''
         return self.tags
 
+    def add_tags(self, tags):
+        '''
+        Add tags to the list
+        '''
+        self.tags = self.tags + tags
+        # Ensure unique
+        self.update_tags()
+
     def update_tags(self):
         '''
-        Create a unique set of all tags in all photos
+        Create a unique set of tags for the collection
         '''
         tags = set(self.tags)
-        for this_photo in self.photos:
-            for tag in this_photo.tags:
-                tags.add(tag)
         self.tags = list(tags)
 
     def get_photos(self):
@@ -84,8 +89,8 @@ class Catalogue(Document):
         '''
         for this_photo in new_photos:
             self.photos.append(this_photo)
-            new_photo.add_collection(self)
-    
+            this_photo.add_collection(self)
+
     def remove_photos(self, photos):
         '''
         Remove a list of photos from this collection
@@ -93,7 +98,13 @@ class Catalogue(Document):
         @param photos: list of photo references
         '''
         for this_photo in photos:
-            self.remove_photo(this_photo)
+            self.photos.remove(this_photo)
+
+    def get_creation_date(self):
+        '''
+        Get when the Catalogue was made
+        '''
+        return self.creation_date
 
     def is_deleted(self):
         '''
@@ -124,4 +135,6 @@ class Catalogue(Document):
         self.created_by = this_user
 
     def clean(self):
-        self.update_tags()
+        '''
+        Additional validation
+        '''

@@ -1,7 +1,9 @@
 import React from "react";
 import Image from "react-bootstrap/Image";
+
 import { Link } from "react-router-dom";
 import Thumbnail from "../../static/catalouge.png";
+
 import "./CollectionThumbnail.scss";
 
 interface Props {

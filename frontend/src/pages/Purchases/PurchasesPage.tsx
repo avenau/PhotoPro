@@ -9,6 +9,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import axios from "axios";
 import Toolbar from "../../components/Toolbar/Toolbar";
+import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import "./PurchasesPage.css";
 
 class PurchasesPage extends React.Component<RouteChildrenProps, any> {
@@ -63,10 +64,15 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
           <Row id="purchasesHeading">
             <h1>Your Purchases</h1>
           </Row>
-          {/* TODO: Actually display purchases here */}
           <Tabs defaultActiveKey="photos" transition={false}>
-            <Tab eventKey="photos" title="Photos" />
-            <Tab eventKey="albums" title="Albums" />
+            <Tab eventKey="photos" title="Photos" unmountOnExit>
+              <ContentLoader
+                query={localStorage.getItem("u_id")!}
+                route="/user/purchasedphotos"
+                type="photo"
+              />
+            </Tab>
+            <Tab eventKey="albums" title="Albums" unmountOnExit></Tab>
           </Tabs>
         </Container>
       </div>
