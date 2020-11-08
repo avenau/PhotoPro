@@ -12,7 +12,7 @@ from mongoengine.fields import DateTimeField
 
 import lib.photo.photo as photo
 import lib.user.user as user
-import lib.showdown.participating
+import lib.showdown.participant as participant
 import lib.showdown.validation as validation
 import lib.Error as Error
 
@@ -27,9 +27,9 @@ class Showdown(Document):
     # Which photo was the winner of this showdown
     winner = ReferenceField("photo.Photo")
     # Which photos are participating in the showdown
-    participating = ListField(
-        ReferenceField("lib.showdown.participating.Participating"),
-        validation=validation.validate_participating,
+    participants = ListField(
+        ReferenceField("participant.Participant"),
+        validation=validation.validate_participants,
     )
     # Previous showdown
     previous = ReferenceField("self")
