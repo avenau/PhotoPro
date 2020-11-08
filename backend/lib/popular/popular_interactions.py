@@ -13,7 +13,7 @@ def do_like(user, photo):
     try:
         pop_photo = PopularPhoto.objects.get(photo=photo)
     except:
-        pop_photo = PopularUser(photo=photo, likes=0)
+        pop_photo = PopularPhoto(photo=photo, likes=0)
         pop_photo.save()
     try:
         pop_user = PopularUser.objects.get(user=user)
