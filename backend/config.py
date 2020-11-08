@@ -11,7 +11,7 @@ remote_db = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flas
 
 
 class Config(object):
-    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 465
     MAIL_USE_SSL = True
     MAIL_USERNAME = "photopro.jajac@gmail.com"
@@ -48,11 +48,13 @@ def defaultHandler(err):
     """
     print(err)
     response = err.get_response()
-    response.data = dumps({
-        "code": err.code,
-        "name": "System Error",
-        "message": err.description,
-        "show_toast": err.toast
-    })
-    response.content_type = 'application/json'
+    response.data = dumps(
+        {
+            "code": err.code,
+            "name": "System Error",
+            "message": err.description,
+            "show_toast": err.toast,
+        }
+    )
+    response.content_type = "application/json"
     return response

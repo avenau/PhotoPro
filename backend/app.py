@@ -103,7 +103,8 @@ mongoengine.connect("angular-flask-muckaround", host=app.config["MONGO_URI"])
 --------------------------
 """
 
-@app.route('/verifytoken', methods=['GET'])
+
+@app.route("/verifytoken", methods=["GET"])
 def _verify_token():
     """
     Verify that the token matches the secret
@@ -132,7 +133,7 @@ def _verify_token():
         return dumps({"valid": False})
 
 
-@app.route('/login', methods=['POST'])
+@app.route("/login", methods=["POST"])
 def _process_login():
     """
     Logs into the system
@@ -158,7 +159,7 @@ def _process_login():
     return dumps(ret)
 
 
-@app.route('/passwordreset/request', methods=['POST'])
+@app.route("/passwordreset/request", methods=["POST"])
 def _auth_password_reset_request():
     """
     Given an email address, if the user is a registered user, send an email
@@ -181,7 +182,7 @@ def _auth_password_reset_request():
     return dumps({})
 
 
-@app.route('/passwordreset/reset', methods=['POST'])
+@app.route("/passwordreset/reset", methods=["POST"])
 def _auth_passwordreset_reset():
     """
     Given a reset code, change user's password
@@ -207,7 +208,7 @@ def _auth_passwordreset_reset():
     )
 
 
-@app.route('/accountregistration', methods=['POST'])
+@app.route("/accountregistration", methods=["POST"])
 def _account_registration():
     """
     Description
@@ -245,16 +246,16 @@ def _account_registration():
         )
 
     this_user = user.User(
-        fname=new_user['fname'],
-        lname=new_user['lname'],
-        email=new_user['email'],
-        nickname=new_user['nickname'],
-        password=new_user['password'],
-        profile_pic=new_user['profilePic'],
-        extension=new_user['extension'],
-        location=new_user['location'],
-        about_me=new_user['aboutMe'],
-        created=datetime.datetime.now()
+        fname=new_user["fname"],
+        lname=new_user["lname"],
+        email=new_user["email"],
+        nickname=new_user["nickname"],
+        password=new_user["password"],
+        profile_pic=new_user["profilePic"],
+        extension=new_user["extension"],
+        location=new_user["location"],
+        about_me=new_user["aboutMe"],
+        created=datetime.datetime.now(),
     )
     this_user.save()
 
@@ -389,7 +390,8 @@ def password_check():
 --------------------
 """
 
-@app.route('/profiledetails', methods=['GET'])
+
+@app.route("/profiledetails", methods=["GET"])
 def _profile_details():
     """
     Description
@@ -412,8 +414,8 @@ def _profile_details():
     }
     -------
     """
-    u_id = request.args.get('u_id')
-    if not u_id or u_id == '':
+    u_id = request.args.get("u_id")
+    if not u_id or u_id == "":
         raise Error.UserDNE("Couldn't find user")
     this_user = user.User.objects.get(id=u_id)
     if not this_user:
@@ -431,11 +433,13 @@ def _profile_details():
     )
 
 
-'''
+"""
 --------------------
 - Purchases Routes -
 --------------------
-'''
+"""
+
+
 @app.route("/user/photos", methods=["GET"])
 def _get_photo_from_user():
     """
@@ -563,6 +567,7 @@ def _get_following_from_user():
 
     return dumps(user_following_search(data))
 
+
 @app.route("/user/purchasedphotos", methods=["GET"])
 @validate_token
 def _get_purchased_photos_from_user():
@@ -593,6 +598,7 @@ def _get_purchased_photos_from_user():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
     return dumps(get_purchased_photos(data))
+
 
 """
 --------------------
@@ -660,7 +666,8 @@ def _refund_credits():
 
     return dumps({"credits_refunded": credits_to_refund})
 
-@app.route('/purchasephoto', methods=['POST'])
+
+@app.route("/purchasephoto", methods=["POST"])
 @validate_token
 def buy_photo():
     """
@@ -692,9 +699,13 @@ def buy_photo():
 
     # Catch invalid actions
     if this_photo in buyer.get_purchased():
-        raise Error.ValidationError("You can't purchase a photo that you've already purchased'.")
+        raise Error.ValidationError(
+            "You can't purchase a photo that you've already purchased'."
+        )
     elif this_photo.is_photo_owner(buyer):
-        raise Error.ValidationError("You can't purchase a photo that you posted yourself.")
+        raise Error.ValidationError(
+            "You can't purchase a photo that you posted yourself."
+        )
     elif this_photo.is_deleted():
         raise Error.ValidationError("You can't purchase a deleted photo.")
     elif photo_price > user_credits:
@@ -704,15 +715,14 @@ def buy_photo():
     buyer.remove_credits(photo_price)
     buyer.add_purchased(this_photo)
     buyer.save()
-    seller.add_credits(int(0.80*photo_price))
+    seller.add_credits(int(0.80 * photo_price))
     seller.save()
 
-    return dumps({
-        "purchased": True
-    })
+    return dumps({"purchased": True})
 
-#TODO: unfinished
-@app.route('/purchasealbum', methods=['POST'])
+
+# TODO: unfinished
+@app.route("/purchasealbum", methods=["POST"])
 @validate_token
 def buy_album():
     """
@@ -745,9 +755,13 @@ def buy_album():
 
     # Catch invalid actions
     if this_photo in buyer.get_purchased():
-        raise Error.ValidationError("You can't purchase a photo that you've already purchased'.")
+        raise Error.ValidationError(
+            "You can't purchase a photo that you've already purchased'."
+        )
     elif this_photo.is_photo_owner(buyer):
-        raise Error.ValidationError("You can't purchase a photo that you posted yourself.")
+        raise Error.ValidationError(
+            "You can't purchase a photo that you posted yourself."
+        )
     elif this_photo.is_deleted():
         raise Error.ValidationError("You can't purchase a deleted photo.")
     elif photo_price > user_credits:
@@ -757,14 +771,13 @@ def buy_album():
     buyer.remove_credits(photo_price)
     buyer.add_purchased(this_photo)
     buyer.save()
-    seller.add_credits(int(0.80*photo_price))
+    seller.add_credits(int(0.80 * photo_price))
     seller.save()
 
-    return dumps({
-        "purchased": True
-    })
+    return dumps({"purchased": True})
 
-@app.route('/download', methods=['GET'])
+
+@app.route("/download", methods=["GET"])
 @validate_token
 def download_full_photo():
     """
@@ -797,11 +810,14 @@ def download_full_photo():
     requested_b64 = requested_photo_object.get_full_image(req_user)
     requested_extension = requested_photo_object.get_extension()
 
-    return dumps({
-        "metadata": requested_metadata,
-        "base64_img": requested_b64,
-        "extension": requested_extension
-    })
+    return dumps(
+        {
+            "metadata": requested_metadata,
+            "base64_img": requested_b64,
+            "extension": requested_extension,
+        }
+    )
+
 
 """
 --------------------
@@ -810,7 +826,7 @@ def download_full_photo():
 """
 
 # Returns the two showdown images for the day
-@app.route('/showdown/getImages', methods=['GET'])
+@app.route("/showdown/getImages", methods=["GET"])
 def _get_showdown_images():
     """
     Description
@@ -829,7 +845,7 @@ def _get_showdown_images():
     return dumps({"path_one": images[0], "path_two": images[1]})
 
 
-@app.route('/showdown/getwinner', methods=['GET'])
+@app.route("/showdown/getwinner", methods=["GET"])
 def _showdown_getwinner():
     """
     Description
@@ -848,7 +864,7 @@ def _showdown_getwinner():
     return dumps({"path": path})
 
 
-@app.route('/welcome/popularcontributors', methods=['GET'])
+@app.route("/welcome/popularcontributors", methods=["GET"])
 def _welcome_get_contributors():
     """
     Description
@@ -872,7 +888,7 @@ def _welcome_get_contributors():
     )
 
 
-@app.route('/welcome/getPopularImages', methods=['GET'])
+@app.route("/welcome/getPopularImages", methods=["GET"])
 def _welcome_get_popular_images():
     """
     Description
@@ -892,7 +908,7 @@ def _welcome_get_popular_images():
     return dumps({"popular_images": images})
 
 
-@app.route('/userdetails', methods=['GET'])
+@app.route("/userdetails", methods=["GET"])
 def _user_info_with_token():
     """
     Description
@@ -909,8 +925,8 @@ def _user_info_with_token():
      email:str, DOB:str, location:str, aboutMe:str}
 
     """
-    token = request.args.get('token')
-    if token == '':
+    token = request.args.get("token")
+    if token == "":
         print("token is an empty string")
         return {}
     u_id = token_functions.get_uid(token)
@@ -918,19 +934,21 @@ def _user_info_with_token():
     if not this_user:
         raise Error.UserDNE("Could not find user")
     # JSON Doesn't like ObjectId format
-    return dumps({
-        'fname': this_user.get_fname(),
-        'lname': this_user.get_lname(),
-        'email': this_user.get_email(),
-        'nickname': this_user.get_nickname(),
-        'credits': this_user.get_credits(),
-        'location': this_user.get_location(),
-        'aboutMe': this_user.get_about_me(),
-        'profilePic': this_user.get_profile_pic()
-    })
+    return dumps(
+        {
+            "fname": this_user.get_fname(),
+            "lname": this_user.get_lname(),
+            "email": this_user.get_email(),
+            "nickname": this_user.get_nickname(),
+            "credits": this_user.get_credits(),
+            "location": this_user.get_location(),
+            "aboutMe": this_user.get_about_me(),
+            "profilePic": this_user.get_profile_pic(),
+        }
+    )
 
 
-@app.route('/manageaccount/success', methods=['POST'])
+@app.route("/manageaccount/success", methods=["POST"])
 def _manage_account():
     """
     Description
@@ -955,23 +973,22 @@ def _manage_account():
     """
     success = False
     data = loads(request.data.decode())
-    this_user = user.User.objects.get(id=data['u_id'])
+    this_user = user.User.objects.get(id=data["u_id"])
     if this_user is None:
-        raise Error.UserDNE("User with id " + data['u_id'] + "does not exist")
+        raise Error.UserDNE("User with id " + data["u_id"] + "does not exist")
     try:
         for key, value in data.items():
-            lib.user.helper_functions.update_value(bcrypt, this_user,
-                                                   key, value)
+            lib.user.helper_functions.update_value(bcrypt, this_user, key, value)
         success = True
     except Exception:
         print("Errors... :-(")
         print(traceback.format_exc())
         success = False
 
-    return dumps({'success': success})
+    return dumps({"success": success})
 
 
-@app.route('/manageaccount/confirm', methods=['GET', 'POST'])
+@app.route("/manageaccount/confirm", methods=["GET", "POST"])
 def _password_check():
     """
     Description
@@ -984,17 +1001,16 @@ def _password_check():
     -------
     """
     data = request.form.to_dict()
-    current_user = data['u_id']
+    current_user = data["u_id"]
     user_object = user.User.objects.get(id=current_user)
     if user_object is None:
         raise Error.UserDNE("User " + current_user + "does not exist")
 
     # TODO: set the token properly with jwt
-    if bcrypt.check_password_hash(user_object.get_password(),
-                                  data['password']):
-        data['password'] = "true"
+    if bcrypt.check_password_hash(user_object.get_password(), data["password"]):
+        data["password"] = "true"
     else:
-        data['password'] = "false"
+        data["password"] = "false"
     print(data)
 
     return data
@@ -1181,7 +1197,8 @@ def _upload_photo():
 ---------------
 """
 
-@app.route('/search/user', methods=['GET'])
+
+@app.route("/search/user", methods=["GET"])
 def _search_user():
     """
     Description
@@ -1213,7 +1230,7 @@ def _search_user():
     return dumps(user_search(data))
 
 
-@app.route('/search/photo', methods=['GET'])
+@app.route("/search/photo", methods=["GET"])
 def _search_photo():
     """
     Description
@@ -1304,11 +1321,11 @@ def _search_album():
     return dumps({[]})
 
 
-'''
+"""
 -------------------
 - End Search Routes -
 -------------------
-'''
+"""
 
 """
 ----------------------
@@ -1316,7 +1333,8 @@ def _search_album():
 ----------------------
 """
 
-@app.route('/photo_details', methods=['GET'])
+
+@app.route("/photo_details", methods=["GET"])
 def _photo_details():
     # TODO: Should return photos and comments as well
     # Add to API list
@@ -1348,7 +1366,8 @@ def _photo_details():
     token = request.args.get("token")
     return photo_detail_results(photo_id, token)
 
-@app.route('/photo_details/isLiked', methods=['GET'])
+
+@app.route("/photo_details/isLiked", methods=["GET"])
 @validate_token
 def _photo_liked():
     """
@@ -1376,7 +1395,8 @@ def _photo_liked():
         }
     )
 
-@app.route('/photo_details/like_photo', methods=['POST'])
+
+@app.route("/photo_details/like_photo", methods=["POST"])
 @validate_token
 def _like_photo():
     """
@@ -1395,10 +1415,11 @@ def _like_photo():
     """
     photo_id = request.form.get("photoId")
     token = request.form.get("token")
-    #print("APP TOKEN")
-    #print(token)
+    # print("APP TOKEN")
+    # print(token)
     is_liked = like_photo(token, photo_id)
-    return dumps({"liked" : is_liked})
+    return dumps({"liked": is_liked})
+
 
 @app.route("/comments/comment", methods=["POST"])
 @validate_token
@@ -1431,7 +1452,7 @@ def _comment_on_photo():
     return dumps({})
 
 
-@app.route('/comments/get_comments', methods=['GET'])
+@app.route("/comments/get_comments", methods=["GET"])
 def _get_comments():
     """
     Description
@@ -1458,13 +1479,14 @@ def _get_comments():
     # limit = request.args.get("limit")
     order = request.args.get("new_to_old")
     current_date = datetime.now()
-    #print(current_date)
+    # print(current_date)
     all_comments = get_all_comments(photo_id, current_date, order)
 
     return dumps({"comments": all_comments, "status": True})
 
+
 @app.route("/comments/delete_comments", methods=["POST"])
-#@validate_token
+# @validate_token
 def _delete_comments():
     """
     Description
@@ -1492,7 +1514,7 @@ def _delete_comments():
     return dumps({})
 
 
-@app.route('/get_current_user', methods=['GET'])
+@app.route("/get_current_user", methods=["GET"])
 def _get_verified_user():
     """
     Description
@@ -1518,14 +1540,17 @@ def _get_verified_user():
         )
     u_id = token_functions.get_uid(token)
 
-'''
+
+"""
 ---------------------
 - Collection Routes -
 ---------------------
-'''
-@app.route('/collection/get', methods=['GET'])
+"""
+
+
+@app.route("/collection/get", methods=["GET"])
 def _get_collection():
-    '''
+    """
     Description
     -----------
     Get a Collection as a json object
@@ -1545,14 +1570,15 @@ def _get_collection():
         price, int
         tags: [string],
     }
-    '''
-    collection_id = request.args.get('collection_id')
+    """
+    collection_id = request.args.get("collection_id")
     _collection = collection.Collection.objects.get(id=collection_id)
     return dumps(collection_functions.get_collection(_collection))
 
-@app.route('/collection/getall', methods=['GET'])
+
+@app.route("/collection/getall", methods=["GET"])
 def _get_all_collections():
-    '''
+    """
     Description
     -----------
     For a given user_id, get all collections associated
@@ -1575,20 +1601,21 @@ def _get_all_collections():
         price, int
         tags: [string],
     }]
-    '''
+    """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    _user = user.User.objects.get(id=data['query'])
+    _user = user.User.objects.get(id=data["query"])
     _collections = collection.Collection.objects(user=_user)
     print(collection.Collection.objects(created_by=_user).to_json())
     return collection.Collection.objects.to_json()
 
-@app.route('/collection/create', methods=['POST'])
+
+@app.route("/collection/create", methods=["POST"])
 @validate_token
 def _create_collection():
-    '''
+    """
     Description
     -----------
     Create a new collection
@@ -1603,24 +1630,23 @@ def _create_collection():
     Returns
     ----------
     { 'collection_id': string }
-    '''
+    """
     # Get Parameters
     params = request.form.to_dict()
-    u_id = token_functions.get_uid(params['token'])
+    u_id = token_functions.get_uid(params["token"])
     # Get Objects
     _user = user.User.objects.get(id=u_id)
-    collection_id = collection_functions.create_collection(_user,
-                                                           params['title'],
-                                                           params['discount'],
-                                                           loads(params['tags']))
+    collection_id = collection_functions.create_collection(
+        _user, params["title"], params["discount"], loads(params["tags"])
+    )
     # Return Collection ID
-    return dumps({'collection_id': collection_id})
+    return dumps({"collection_id": collection_id})
 
 
-@app.route('/collection/delete', methods=['DELETE'])
+@app.route("/collection/delete", methods=["DELETE"])
 @validate_token
 def _delete_collection():
-    '''
+    """
     Description
     -----------
     Create a new collection
@@ -1633,10 +1659,10 @@ def _delete_collection():
     Returns
     ----------
     { 'collection_id': string }
-    '''
+    """
     # Get arguments
-    u_id = token_functions.get_uid(request.args.get('token'))
-    collection_id = request.args.get('collection_id')
+    u_id = token_functions.get_uid(request.args.get("token"))
+    collection_id = request.args.get("collection_id")
 
     # Get Objects
     _user = user.User.objects.get(id=u_id)
@@ -1644,12 +1670,13 @@ def _delete_collection():
 
     # Return success
     ret = collection_functions.delete_collection(_user, _collection)
-    return dumps({'success': ret})
+    return dumps({"success": ret})
 
-@app.route('/collection/getphotos', methods=['GET'])
+
+@app.route("/collection/getphotos", methods=["GET"])
 @validate_token
 def _get_collection_photos():
-    '''
+    """
     Description
     -----------
     Create a new collection
@@ -1662,10 +1689,10 @@ def _get_collection_photos():
     Returns
     ----------
     { 'collection_id': string }
-    '''
+    """
     # Get Arguments
-    u_id = token_functions.get_uid(request.args.get('token'))
-    collection_id = request.args.get('collection_id')
+    u_id = token_functions.get_uid(request.args.get("token"))
+    collection_id = request.args.get("collection_id")
 
     # Get Objects
     _collection = collection.Collection.objects.get(id=collection_id)
@@ -1674,12 +1701,13 @@ def _get_collection_photos():
     # List of photos
     photos = collection_functions.get_collection_photos(_user, _collection)
 
-    return dumps({'photos': photos})
+    return dumps({"photos": photos})
 
-@app.route('/collection/addphoto', methods=['UPDATE'])
+
+@app.route("/collection/addphoto", methods=["UPDATE"])
 @validate_token
 def _add_collection_photo():
-    '''
+    """
     Description
     -----------
     Add a photo to the collection
@@ -1693,24 +1721,25 @@ def _add_collection_photo():
     Returns
     ----------
     { 'success': boolean }
-    '''
+    """
 
     # Get arguments
-    u_id = token_functions.get_uid(request.args.get('token'))
-    collection_id = request.args.get('collection_id')
-    photo_id = request.args.get('photo_id')
+    u_id = token_functions.get_uid(request.args.get("token"))
+    collection_id = request.args.get("collection_id")
+    photo_id = request.args.get("photo_id")
 
     _collection = collection.Collection.objects.get(id=collection_id)
     _photo = photo.Photo.objects.get(id=photo_id)
     _user = user.User.objects.get(id=u_id)
 
     ret = collection_functions.add_collection_photo(_user, _photo, _collection)
-    return dumps({'success': ret})
+    return dumps({"success": ret})
 
-@app.route('/collection/removephoto', methods=['UPDATE'])
+
+@app.route("/collection/removephoto", methods=["UPDATE"])
 @validate_token
 def _remove_collection_photo():
-    '''
+    """
     Description
     -----------
     Remove a photo from a Collection
@@ -1724,12 +1753,12 @@ def _remove_collection_photo():
     Returns
     ----------
     { 'success': boolean }
-    '''
+    """
 
     # Variables
-    u_id = token_functions.get_uid(request.args.get('token'))
-    collection_id = request.args.get('collection_id')
-    photo_id = request.args.get('photo_id')
+    u_id = token_functions.get_uid(request.args.get("token"))
+    collection_id = request.args.get("collection_id")
+    photo_id = request.args.get("photo_id")
 
     _user = user.User.objects.get(id=u_id)
     _collection = collection.Collection.objects.get(id=collection_id)
@@ -1737,7 +1766,8 @@ def _remove_collection_photo():
 
     ret = collection_functions.remove_collection_photo(_user, _photo, _collection)
 
-    return dumps({'success': ret})
+    return dumps({"success": ret})
+
 
 """
 ---------------
@@ -1745,10 +1775,11 @@ def _remove_collection_photo():
 ---------------
 """
 
-@app.route('/album', methods=['GET'])
+
+@app.route("/album", methods=["GET"])
 @validate_token
 def _get_album():
-    '''
+    """
     Description
     -----------
 
@@ -1765,33 +1796,33 @@ def _get_album():
     title: string
     discount: integer
     tags: [string]
-    '''
-    token = request.args.get('token')
-    album_id = request.args.get('album_id')
+    """
+    token = request.args.get("token")
+    album_id = request.args.get("album_id")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
-    _album = album.Album.objects.get(id=request.args.get('album_id'))
+    _album = album.Album.objects.get(id=request.args.get("album_id"))
     if _album.get_created_by() != _user:
         raise Error.ValidationError("User does not own this album")
 
     return {
-                'title': _album.get_title(),
-                'discount': _album.get_discount(),
-                'tags': _album.get_tags(),
-                'albumId': album_id,
-                'owner': str(_album.get_created_by().get_id())
-            }
+        "title": _album.get_title(),
+        "discount": _album.get_discount(),
+        "tags": _album.get_tags(),
+        "albumId": album_id,
+        "owner": str(_album.get_created_by().get_id()),
+    }
 
 
-@app.route('/album', methods=['DELETE'])
+@app.route("/album", methods=["DELETE"])
 @validate_token
 def _delete_album():
-    '''
+    """
     NOT CURRENTLY WORKING
     @param token: string
     @param albumId: string
-    '''
-    token = request.args.get('token')
-    album_id = request.args.get('albumId')
+    """
+    token = request.args.get("token")
+    album_id = request.args.get("albumId")
 
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=album_id)
@@ -1799,15 +1830,14 @@ def _delete_album():
         raise Error.ValidationError("User does not have permission to delete")
     _album.delete_album()
     _album.save()
-    return dumps({'success': True})
+    return dumps({"success": True})
 
 
-
-@app.route('/album/price', methods=["GET"])
+@app.route("/album/price", methods=["GET"])
 @validate_token
 def _get_price():
-    token = request.args.get('token')
-    album_id = request.args.get('albumId')
+    token = request.args.get("token")
+    album_id = request.args.get("albumId")
 
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=album_id)
@@ -1830,18 +1860,20 @@ def _get_price():
         discounted_price += _photo.get_discounted_price()
 
     # Add the additional album discount
-    your_price = int(your_price - (discounted_price * (raw_album_discount/100)))
+    your_price = int(your_price - (discounted_price * (raw_album_discount / 100)))
     savings = original_price - your_price
 
+    return dumps(
+        {
+            "yourPrice": str(your_price),
+            "originalPrice": str(original_price),
+            "rawAlbumDiscount": str(raw_album_discount),
+            "savings": str(original_price - your_price),
+        }
+    )
 
 
-    return dumps({'yourPrice': str(your_price),
-                  'originalPrice': str(original_price),
-                  'rawAlbumDiscount': str(raw_album_discount),
-                  'savings': str(original_price - your_price)})
-
-
-@app.route('/album/photos', methods=["GET"])
+@app.route("/album/photos", methods=["GET"])
 @validate_token
 def _get_album_photos():
     """
@@ -1932,7 +1964,8 @@ def _add_album():
     if not _user:
         raise Error.UserDNE("Could not find User " + u_id)
 
-    return dumps(create_album(request.form.get('title'), _user))
+    return dumps(create_album(request.form.get("title"), _user))
+
 
 @app.route("/albums/update", methods=["PUT"])
 @validate_token
@@ -1957,20 +1990,18 @@ def _update_album():
     """
     # Get Parameters
     params = request.form.to_dict()
-    u_id = token_functions.get_uid(params['token'])
-    album_id = params['albumId']
+    u_id = token_functions.get_uid(params["token"])
+    album_id = params["albumId"]
     # Get Objects
     _user = user.User.objects.get(id=u_id)
     _album = album.Album.objects.get(id=album_id)
     if _album.get_created_by() != _user:
         raise Error.ValidationError("User does not have permission to edit album")
-    ret = update_album(_album,
-                       params['title'],
-                       params['discount'],
-                       loads(params['tags']))
+    ret = update_album(
+        _album, params["title"], params["discount"], loads(params["tags"])
+    )
 
-    return {'success': 'true'} if ret else {'success': 'false'}
-
+    return {"success": "true"} if ret else {"success": "false"}
 
 
 """
@@ -1992,7 +2023,7 @@ def _test_decorator():
     return dumps({"success": "success"})
 
 
-@app.route('/', methods=['GET'])
+@app.route("/", methods=["GET"])
 def _basic():
     """
     Basic Test route
