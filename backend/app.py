@@ -37,6 +37,7 @@ from lib.album.album_functions import album_photo_search
 # Comments
 import lib.comment.comment_photo as comment_photo
 from lib.comment.get_comments import get_all_comments
+from datetime import datetime
 
 # Photo
 from lib.photo.photo_edit import create_photo_entry, update_photo_details
@@ -45,6 +46,7 @@ from lib.photo.remove_photo import remove_photo
 
 # Photo details
 from lib.photo_details.photo_likes import is_photo_liked, like_photo
+from lib.photo_details.photo_details import photo_detail_results
 
 
 # Profile
@@ -251,7 +253,8 @@ def _account_registration():
         profile_pic=new_user['profilePic'],
         extension=new_user['extension'],
         location=new_user['location'],
-        about_me=new_user['aboutMe']
+        about_me=new_user['aboutMe'],
+        created=datetime.datetime.now()
     )
     this_user.save()
 
@@ -735,7 +738,7 @@ def buy_album():
     album_id = request.form.get("albumId")
     buyer = lib.user.user.User.objects.get(id=user_id)
     album = lib.album.album.Album.objects.get(id=album_id)
-    # 
+    #
     seller = lib.user.user.User.objects.get(id=this_album.get_user().created_by)
     photo_price = this_photo.get_discounted_price()
     user_credits = buyer.get_credits()
@@ -789,7 +792,7 @@ def download_full_photo():
     except:
         req_user = ""
 
-    requested_photo_object = lib.photo.photo.Photo.objects.get(id=photo_id) 
+    requested_photo_object = lib.photo.photo.Photo.objects.get(id=photo_id)
     requested_metadata = requested_photo_object.get_metadata()
     requested_b64 = requested_photo_object.get_full_image(req_user)
     requested_extension = requested_photo_object.get_extension()
@@ -1342,83 +1345,8 @@ def _photo_details():
     }
     """
     photo_id = request.args.get("p_id")
-    try:
-        req_user = token_functions.get_uid(request.args.get("token"))
-    except:
-        req_user = ""
-    try:
-        _photo = photo.Photo.objects.get(id=photo_id)
-    except photo.Photo.DoesNotExist:
-        print("INVALID!!!!")
-    user_purchasers = user.User.objects(purchased=_photo.id).count()
-    purchased = user_purchasers > 0
-
-    is_artist = str(_photo.get_user().get_id()) == req_user
-
-    if purchased is False and is_artist is False and _photo.is_deleted() is True :
-        return dumps({
-            "u_id": "",
-            "title": "",
-            "likes": "",
-            "tagsList": "",
-            "nickname": "",
-            "email": "",
-            "purchased": False,
-            "metadata": "",
-            "price": "",
-            "discount": "",
-            "deleted": _photo.is_deleted(),
-            "photoStr": "",
-            "status": 1,
-            "is_artist" : is_artist,
-        })
-
-    user_purchasers = user.User.objects(purchased=_photo.id).count()
-    if user_purchasers > 0:
-        purchased = True
-    else:
-        purchased = False
-
-
-    is_artist = str(_photo.get_user().get_id()) == req_user
-    if purchased == False and is_artist == False and _photo.is_deleted() == True:
-        return dumps(
-            {
-                "u_id": "",
-                "title": "",
-                "likes": "",
-                "tagsList": "",
-                "nickname": "",
-                "email": "",
-                "purchased": False,
-                "metadata": "",
-                "price": "",
-                "discount": "",
-                "deleted": _photo.is_deleted(),
-                "photoStr": "",
-                "status": 1,
-                "is_artist": is_artist,
-            }
-        )
-
-    return dumps(
-        {
-            "u_id": str(_photo.get_user().get_id()),
-            "title": _photo.get_title(),
-            "likes": _photo.get_likes(),
-            "tagsList": _photo.get_tags(),
-            "nickname": _photo.get_user().get_nickname(),
-            "email": _photo.get_user().get_email(),
-            "purchased": purchased,
-            "metadata": _photo.get_metadata(),
-            "price": _photo.get_price(),
-            "discount": _photo.get_discount(),
-            "deleted": _photo.is_deleted(),
-            "photoStr": _photo.get_thumbnail(req_user),
-            "status": 1,
-            "is_artist": is_artist,
-        }
-    )
+    token = request.args.get("token")
+    return photo_detail_results(photo_id, token)
 
 @app.route('/photo_details/isLiked', methods=['GET'])
 @validate_token
@@ -1440,14 +1368,37 @@ def _photo_liked():
     }
     """
     photo_id = request.args.get("p_id")
-    user_id = request.args.get("u_id")
-    is_liked = is_photo_liked(photo_id, user_id)
+    token = request.args.get("token")
+    is_liked = is_photo_liked(photo_id, token)
     return dumps(
         {
             "isLiked": is_liked,
         }
     )
 
+@app.route('/photo_details/like_photo', methods=['POST'])
+@validate_token
+def _like_photo():
+    """
+    Description
+    -----------
+    Updates likes and link it to Mongo
+
+    Parameters
+    ----------
+    token: string
+    photoId : string
+
+    Returns
+    -------
+    {}
+    """
+    photo_id = request.form.get("photoId")
+    token = request.form.get("token")
+    #print("APP TOKEN")
+    #print(token)
+    is_liked = like_photo(token, photo_id)
+    return dumps({"liked" : is_liked})
 
 @app.route("/comments/comment", methods=["POST"])
 @validate_token
@@ -1475,12 +1426,12 @@ def _comment_on_photo():
     token = params.get("token")
     user_id = token_functions.get_uid(token)
 
-    comment_photo.comments_photo(photo_id, user_id, content)
+    current_date = datetime.now()
+    comment_photo.comments_photo(photo_id, user_id, content, current_date)
     return dumps({})
 
 
 @app.route('/comments/get_comments', methods=['GET'])
-@validate_token
 def _get_comments():
     """
     Description
@@ -1492,7 +1443,7 @@ def _get_comments():
     p_id : string
     offset : number
     limit : number (-1 if want to return all of comments)
-    old_to_new : boolean
+    new_to_old : boolean
 
     Returns
     -------
@@ -1505,10 +1456,40 @@ def _get_comments():
     photo_id = request.args.get("p_id")
     # offset = request.args.get("offset")
     # limit = request.args.get("limit")
-    # order = request.args.get("old_to_new")
-    all_comments = get_all_comments(photo_id)
+    order = request.args.get("new_to_old")
+    current_date = datetime.now()
+    #print(current_date)
+    all_comments = get_all_comments(photo_id, current_date, order)
 
     return dumps({"comments": all_comments, "status": True})
+
+@app.route("/comments/delete_comments", methods=["POST"])
+#@validate_token
+def _delete_comments():
+    """
+    Description
+    -----------
+    Delete A Comment
+
+    Parameters
+    ----------
+    c_id : string
+    p_id : string
+    token : string
+
+    Returns
+    -------
+    None
+    """
+    params = request.form.to_dict()
+    comment_id = params.get("c_id")
+    photo_id = params.get("p_id")
+    token = params.get("token")
+
+    token_functions.verify_token(token)
+    comment_photo.delete_photos(photo_id, comment_id)
+
+    return dumps({})
 
 
 @app.route('/get_current_user', methods=['GET'])
@@ -1834,7 +1815,7 @@ def _get_price():
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=album_id)
 
-    # Price for the current user 
+    # Price for the current user
     your_price = 0
     # Price with discounts, no ownership
     discounted_price = 0

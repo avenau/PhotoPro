@@ -58,7 +58,7 @@ class User(Document):
     # User's current credits
     credits = IntField(default=0, validation=validation.validate_credit)
     # When the user was created
-    created = DateTimeField(default=datetime.datetime.now())
+    created = DateTimeField(required=True)
     # List of the searches made by the user, ordered with recent searches first
     searches = ListField(StringField())
     # Reference to all users this user is following
