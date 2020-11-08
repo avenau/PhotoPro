@@ -69,6 +69,7 @@ class PhotoContents extends React.Component<Props, any> {
         },
       })
       .then((res) => {
+        console.log("liked is " + res.data.is_liked);
         this.setState({
           artistId: res.data.artist_id,
           nickname: res.data.artist_nickname,
@@ -78,6 +79,7 @@ class PhotoContents extends React.Component<Props, any> {
           discount: res.data.discount,
           postedDate: res.data.posted,
           likes: res.data.n_likes,
+          isLiked: res.data.is_liked,
           tags: res.data.tagsList,
           purchased: res.data.purchased,
           photoB64: `${res.data.metadata}${res.data.photoStr}`,

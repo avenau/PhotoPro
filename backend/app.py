@@ -45,8 +45,7 @@ from lib.photo.photo_edit import get_photo_edit
 from lib.photo.remove_photo import remove_photo
 
 # Photo details
-from lib.photo_details.photo_likes import is_photo_liked, like_photo
-from lib.photo_details.photo_details import photo_detail_results
+from lib.photo_details.photo_details import photo_detail_results, is_photo_liked, like_photo
 
 
 # Profile
