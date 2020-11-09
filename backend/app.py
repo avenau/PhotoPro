@@ -884,8 +884,9 @@ def _update_likes():
     Returns
     -------
     {
-        "liked" : string (returns if the photo is "liked", "unliked" if photo is unliked and "swap" 
-                    if the current photo is liked while the other showdown is still liked)
+        "liked" : string (returns "liked" if the photo is liked, "unliked" if photo is unliked and "swap" 
+                    if the current photo is being liked while the other showdown photo is still liked. The other showdown will be unliked.)
+        "like_count" : number
     }
     """
     token = request.form.get("token")
@@ -893,7 +894,13 @@ def _update_likes():
     part_id = request.form.get("part_id")
     result = showdown_likes.update_showdown_likes(token, sd_id, part_id)
     
-    return dumps({"liked" : result})
+    return dumps(
+        {
+            "liked": result,
+            "like_count": showdown_likes.get_showdown_likes(part_id),
+        }
+    )
+    
 
 
 @app.route("/welcome/popularcontributors", methods=["GET"])

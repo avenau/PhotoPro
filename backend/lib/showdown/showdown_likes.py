@@ -48,6 +48,15 @@ def update_showdown_likes(token, sd_id, part_id):
     
     return "swap"
 
+def get_showdown_likes(part_id):
+    try:
+        _participant = participant.Participant.objects.get(id=part_id)
+    except participant.Participant.DoesNotExist:
+        print("Participating does not exist")
+        raise
+    
+    return _participant.get_votes().length()
+
 #Helper Functions (Should not be used outside of showdown_likes)
 def has_showdown_liked(u_id, part_object):
     try:
