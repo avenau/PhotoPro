@@ -1,11 +1,13 @@
 import React from "react";
+import {RouteComponentProps} from "react-router-dom";
+import {withRouter} from "react-router";
 import axios from "axios";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import Price from "../Price";
 import "./PhotoThumbnail.scss";
 
-interface Props {
+interface Props extends RouteComponentProps{
   id: string;
   title: string;
   price: number;
@@ -16,7 +18,7 @@ interface Props {
   owns: boolean; // purchased or posted
 }
 
-export default class PhotoThumbnail extends React.Component<
+class PhotoThumbnail extends React.Component<
   Props,
   { owns: boolean }
 > {
@@ -40,7 +42,7 @@ export default class PhotoThumbnail extends React.Component<
         photoId: this.props.id,
       })
       .then((response) => {
-        this.setState({ owns: response.data.purchased });
+        this.props.history.push(`/photo/${this.props.id}`);
       })
       .catch(() => {});
   }
@@ -99,3 +101,5 @@ export default class PhotoThumbnail extends React.Component<
     );
   }
 }
+
+export default withRouter(PhotoThumbnail);

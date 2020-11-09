@@ -146,6 +146,7 @@ class PhotoContents extends React.Component<Props, any> {
       })
       .then((response) => {
         this.setState({ purchased: response.data.purchased });
+        this.props.history.go(0);
       })
       .catch(() => {});
   }
