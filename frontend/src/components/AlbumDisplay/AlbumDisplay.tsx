@@ -23,10 +23,6 @@ interface AlbumDisplayState {
   tags?: string[];
   photos?: string[];
   albumId: string;
-  price: string;
-  originalPrice: string;
-  rawAlbumDiscount: string;
-  savings: string;
   purchased: boolean; // TODO set purchased from backend
 }
 
@@ -39,29 +35,22 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
       tags: props.tags,
       photos: props.photos,
       albumId: props.albumId,
-      price: '',
-      originalPrice: '',
-      rawAlbumDiscount: '',
-      savings: '',
       purchased: false
     }
   }
 
   componentDidMount(){
-    this.getPrice();
+    this.checkIfPurchased()
   }
 
-  getPrice(){
+  checkIfPurchased() {
     const token = localStorage.getItem('token') ? localStorage.getItem('token') : '';
     axios
-      .get(`/album/price?token=${token}&albumId=${this.state.albumId}`)
+      .get(`/album/checkpurchased?token=${token}&albumId=${this.state.albumId}`)
       .then((res) => {
-        this.setState({
-          price: res.data['yourPrice'],
-          originalPrice: res.data['originalPrice'],
-          rawAlbumDiscount: res.data['rawAlbumDiscount'],
-          savings: res.data['savings']
-        })
+        if (res.data["purchased"]) {
+          this.setState({purchased: true})
+        }
       })
   }
 
@@ -76,17 +65,12 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
       .then((res) => {
         console.log('purchased album')
         this.setState({purchased: true})
-        this.props.history.push('/purchases')
+        window.location.reload()
       })
       .catch((err) => {
         console.log(err)
       })
   }
-
-  // you own x photos in this Album
-  // you would pay this normally
-  // now you pay x
-  // discount percentage
 
   render() {
     return (
@@ -95,7 +79,7 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
           {this.props.isOwner ?
           <Savings albumId={this.state.albumId}/> :
             this.state.purchased ? 
-              <Button>You've purchased this album already</Button>
+              <p>You've purchased this album already</p>
               :
               <>
               <Savings albumId={this.state.albumId}/>

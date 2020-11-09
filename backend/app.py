@@ -1876,6 +1876,7 @@ def _get_album():
     token = request.args.get('token')
     album_id = request.args.get('album_id')
     """
+
     token = request.args.get("token")
     album_id = request.args.get("album_id")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
@@ -1889,7 +1890,23 @@ def _get_album():
         "owner": str(_album.get_created_by().get_id()),
     }
 
+@app.route('/album/checkpurchased', methods=["GET"])
+def _check_puchased():
+    """
+    Check if the album has already been purchased
 
+    """
+
+    token = request.args.get("token")
+    album_id = request.args.get("albumId")
+    _user = user.User.objects.get(id=token_functions.get_uid(token))
+    _album = album.Album.objects.get(id=request.args.get("albumId"))
+
+    purchased = all(alb_photo in _user.get_purchased() for alb_photo in _album.get_photos())
+
+    return dumps({
+        "purchased": purchased
+    })
 @app.route('/album/delete', methods=['DELETE'])
 @validate_token
 def _delete_album():
@@ -1987,7 +2004,7 @@ def _albums():
     return dumps(get_albums(_user))
 
 
-@app.route("/album", methods=["POST"])
+@app.route("/albums/add", methods=["POST"])
 @validate_token
 def _add_album():
     """

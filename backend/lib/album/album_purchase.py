@@ -17,7 +17,7 @@ def get_price(_user, _album):
         if photo not in _user.get_purchased():
             your_price += photo.get_discounted_price()
             discounted_price += photo.get_discounted_price()
-        original_price += photo.get_price()
+            original_price += photo.get_price()
 
     # Add the additional album discount
     your_price = int(your_price - (discounted_price * (raw_album_discount / 100)))
@@ -25,9 +25,9 @@ def get_price(_user, _album):
 
     return {
         'yourPrice': str(your_price),
-        'originalPrice': str(original_price),
+        'albumPrice': str(discounted_price),
         'rawAlbumDiscount': str(raw_album_discount),
-        'savings': str(original_price - your_price)
+        'savings': str(discounted_price - your_price)
     }
 
 def purchase_album(user_id, album_id):

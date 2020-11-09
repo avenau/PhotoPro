@@ -63,7 +63,7 @@ export default function Album(props: any) {
     }
 
     function createNewAlbum(event: React.FormEvent<HTMLElement>) {
-        axios.post('/albums', {
+        axios.post('/albums/add', {
             token,
             title: newAlbumTitle
         })

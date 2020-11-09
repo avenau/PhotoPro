@@ -56,7 +56,9 @@ class AlbumDetails extends React.Component<Props, State> {
       axios
       .get(`/album?token=${token}&album_id=${albumId}`)
       .then((res) => {
+        console.log('in here details')
         if (res.data) {
+          console.log('success')
           this.setState ({
             title: res.data.title,
             discount: res.data.discount,

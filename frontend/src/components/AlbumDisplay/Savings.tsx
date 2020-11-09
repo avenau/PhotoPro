@@ -41,7 +41,7 @@ export default class AlbumSavings extends React.Component<AlbumSavingsProps, Alb
       .then((res) => {
         this.setState({
           yourPrice: res.data['yourPrice'],
-          originalPrice: res.data['originalPrice'],
+          originalPrice: res.data['albumPrice'],
           rawAlbumDiscount: res.data['rawAlbumDiscount'],
           savings: res.data['savings']
         })
@@ -52,14 +52,14 @@ export default class AlbumSavings extends React.Component<AlbumSavingsProps, Alb
     return (this.state.savings > 0) ?
     (
       <>
-        <p><b>Price:</b> {this.state.yourPrice} CR</p>
-          <p><b>Originally:</b> {this.state.originalPrice} CR </p>
-          <p><b>You Save:</b> {this.state.savings} CR </p>
+        <p><b>Originally, you would pay:</b> {this.state.originalPrice} CR </p>
+        <p><b>After discount, you would pay:</b> {this.state.yourPrice} CR</p>
+        <p><b>You save:</b> {this.state.savings} CR </p>
       </>
     ) :
     (
       <>
-        <p><b>Price:</b> {this.state.yourPrice}</p>
+        <p><b>Album price:</b> {this.state.yourPrice}</p>
       </>
     )
   }
