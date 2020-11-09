@@ -25,15 +25,13 @@ export default class LikeButton extends React.Component<LikeProps, any> {
   handleLike(e: React.MouseEvent<HTMLElement, MouseEvent>) {
     e.preventDefault();
     const token = localStorage.getItem("token");
-
-    axios
-      .post("/photo_details/like_photo", {
-        photoId: this.props.p_id,
-        token: token,
-      })
-      .catch(() => {});
-
     if (token) {
+      axios
+        .post("/photo_details/like_photo", {
+          photoId: this.props.p_id,
+          token: token,
+        })
+        .catch(() => {});
       if (!this.state.isLiked) {
         this.setState({
           likeCount: this.state.likeCount + 1,
