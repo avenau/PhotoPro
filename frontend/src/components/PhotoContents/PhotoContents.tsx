@@ -32,6 +32,7 @@ class PhotoContents extends React.Component<Props, any> {
       photoB64: "",
       deleted: false,
       isArtist: false,
+      comments: [],
       loading: true,
     };
   }
@@ -63,7 +64,6 @@ class PhotoContents extends React.Component<Props, any> {
   // };
 
   componentDidMount() {
-    console.log(this.props.photoId);
     axios
       .get("/photodetailspage", {
         params: {
@@ -72,7 +72,13 @@ class PhotoContents extends React.Component<Props, any> {
         },
       })
       .then((res) => {
-        console.log("isLiked is " + res.data.is_liked);
+        const tempComments = [];
+        for (const comment of res.data.comments) {
+          tempComments.push(JSON.parse(comment));
+        }
+        this.setState({
+          comments: tempComments,
+        });
         this.setState({
           artistId: res.data.artist_id,
           nickname: res.data.artist_nickname,
@@ -90,7 +96,6 @@ class PhotoContents extends React.Component<Props, any> {
           isArtist: res.data.is_artist,
           loading: false,
         });
-        console.log("isLiked is now " + res.data.is_liked);
       })
       .catch(() => {});
   }
@@ -207,7 +212,6 @@ class PhotoContents extends React.Component<Props, any> {
     );
   }
   render() {
-    console.log("render");
     return !this.state.loading ? (
       <div className="PhotoContents">
         <Container className="container">
@@ -249,7 +253,10 @@ class PhotoContents extends React.Component<Props, any> {
             </Col>
           </Row>
         </Container>
-        <PhotoComments p_id={this.props.photoId} />
+        <PhotoComments
+          p_id={this.props.photoId}
+          comments={this.state.comments}
+        />
       </div>
     ) : (
       <div>

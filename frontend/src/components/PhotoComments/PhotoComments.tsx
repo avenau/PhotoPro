@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 //import CommentMessage from "./CommentMessage";
 import "./PhotoComments.scss";
 import axios from "axios";
@@ -8,6 +9,7 @@ import profilePic from "../../static/profile-pic.png";
 
 interface CommentProps {
   p_id: string;
+  comments: CommentObject[];
 }
 
 interface CommentObject {
@@ -35,16 +37,14 @@ interface MessageProp {
 }
 
 export default function PhotoComments(props: CommentProps) {
-  const [comments, setComments] = useState<CommentObject[]>([]);
+  const [comments, setComments] = useState<CommentObject[]>(props.comments);
   const [commentDate, setDate] = useState(new Date());
   const [commentContent, setContent] = useState("");
   const [status, setStatus] = useState(false);
   const [limitMessage, setLimitMessage] = useState("");
   const [validComment, setValidComment] = useState(false);
   const [new_to_old, setOrder] = useState(true);
-  const addComments = async (comment: string) => {
-    setComments(comments.concat(JSON.parse(comment)));
-  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     setDate(new Date());
     const token = localStorage.getItem("token");
@@ -52,7 +52,7 @@ export default function PhotoComments(props: CommentProps) {
     event.preventDefault();
     event.stopPropagation();
     axios
-      .post("/comments/comment", {
+      .post("/comments/postcomment", {
         token,
         photoId,
         commentContent,
@@ -78,9 +78,9 @@ export default function PhotoComments(props: CommentProps) {
       });
   };
 
-  useEffect(() => {
-    getComments(props.p_id, true);
-  }, [status]);
+  // useEffect(() => {
+  //   getComments(props.p_id, true);
+  // }, [status]);
 
   function clearCommentInput() {
     const commentInput = document.getElementById(
@@ -171,8 +171,9 @@ export default function PhotoComments(props: CommentProps) {
     return (
       <div className={props.className}>
         <div>
-          <img src={getPic()} style={{ width: "100px" }} className="image" />
-
+          <Link to={`/user/${props.author_id}`}>
+            <img src={getPic()} style={{ width: "100px" }} className="image" />
+          </Link>
           <Button
             className="DeleteButton"
             variant="light"
