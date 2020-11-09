@@ -21,7 +21,7 @@ export default function FileUpload(props: InterfaceFile) {
     const fileExtension = match !== null ? match[0] : "";
     if (!fileExtension) {
       setErrMsg(
-        "Couldn't get file extension. Make sure your file is a .jpg, .png, or .svg."
+        "Couldn't get file extension. Make sure your file is a .jpeg, .jpg, .png, or .svg."
       );
     }
     // If no file, or file removed, remove "Upload" button and remove error msg
@@ -37,7 +37,7 @@ export default function FileUpload(props: InterfaceFile) {
       fileExtension !== ".svg"
     ) {
       setErrMsg(
-        "Sorry, we only support .jpg, .png, and .svg images at the moment."
+        "Sorry, we only support .jpeg, .jpg, .png, and .svg images at the moment."
       );
       props.pickedPhoto(false);
       props.onChange(null);
@@ -62,13 +62,13 @@ export default function FileUpload(props: InterfaceFile) {
         <Form.File
           id="photo"
           label="Select A Photo"
-          accept=".jpg, .png, .svg"
+          accept=".jpeg, .jpg, .png, .svg"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             handleFileChange(e)
           }
         />
         <Form.Text className="text-muted">
-          We accept .jpg, .png, and .svg images.
+          We accept .jp(e)g, .png, and .svg images.
           <p className="error">{fileErrMsg}</p>
         </Form.Text>
       </Form.Group>

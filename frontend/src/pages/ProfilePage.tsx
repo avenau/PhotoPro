@@ -9,7 +9,7 @@ import { RouteComponentProps } from "react-router-dom";
 import Toolbar from "../components/Toolbar/Toolbar";
 import UserHeader from "../components/UserHeader/UserHeader";
 import ContentLoader from "../components/ContentLoader/ContentLoader";
-import CreateCatalogueModal from '../components/ProfilePage/CreateCatalogueModal';
+import CreateCatalogueModal from "../components/ProfilePage/CreateCatalogueModal";
 import "./Profile.scss";
 
 interface Props extends RouteComponentProps {}
@@ -45,7 +45,7 @@ export default class ProfilePage extends React.Component<Props, State> {
       profilePic: ["", ""],
       newAlbum: false,
       newCollection: false,
-      title: '',
+      title: "",
     };
   }
 
@@ -69,8 +69,6 @@ export default class ProfilePage extends React.Component<Props, State> {
         this.setState(newState);
       });
   }
-
-
 
   /** Return add button if current user */
   private createAddButton() {
@@ -100,7 +98,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              this.setState({newAlbum: true});
+              this.setState({ newAlbum: true });
             }}
           >
             Create an Album
@@ -108,7 +106,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              this.setState({newCollection: true});
+              this.setState({ newCollection: true });
             }}
           >
             Create a Collection
@@ -123,100 +121,104 @@ export default class ProfilePage extends React.Component<Props, State> {
     const currentUser = this.state.userId === userId;
     return (
       <>
-        <Modal
-          backdrop="static"
-          show={this.state.dne}
-          onHide={() => this.props.history.goBack()}
-          animation={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>User Not Found</Modal.Title>
-          </Modal.Header>
-
-          <Modal.Body>
-            <p>
-              The user you were looking for could not be found, please
-              try again later. Maybe tomorrow...
-            </p>
-          </Modal.Body>
-
-          <Modal.Footer>
-            <Button
-              variant="primary"
-              onClick={() => this.props.history.goBack()}
-            >
-              Go Back
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        {/* Passing state down to Album Modal */}
-        <CreateCatalogueModal
-          active={this.state.newAlbum}
-          onCatalogueChange={(active) => (this.setState({newAlbum: active}))}
-          type='album'
-        />
-        <CreateCatalogueModal
-          active={this.state.newCollection}
-          onCatalogueChange={(active) => (this.setState({newCollection: active}))}
-          type='collection'
-        />
         <Toolbar />
-        <UserHeader
-          currentUser={currentUser}
-          showEdit
-          header
-          name={`${this.state.fname} ${this.state.lname}`}
-          nickname={this.state.nickname}
-          location={this.state.location}
-          email={this.state.email}
-          aboutMe={this.state.aboutMe}
-          profilePic={this.state.profilePic}
-          className="user-header"
-        />
-        <br />
-        <Tabs
-          defaultActiveKey="showcase"
-          id="uncontrolled-tab-example"
-          transition={false}
-        >
-          <Tab eventKey="showcase" title="Showcase" unmountOnExit>
-            <ContentLoader
-              query={this.state.userId}
-              route="/user/photos"
-              type="photo"
-            />
-          </Tab>
-          <Tab eventKey="albums" title="Albums" unmountOnExit>
-            <ContentLoader
-              query={this.state.userId}
-              route="/user/albums"
-              type="album"
-            />
-          </Tab>
-          <Tab eventKey="collections" title="Collections" unmountOnExit>
-            <ContentLoader
-              query={this.state.userId}
-              route="/collection/getall"
-              type="collection"
-            />
-          </Tab>
-          {currentUser ? (
-            <Tab eventKey="following" title="Following" unmountOnExit>
+        <div>
+          <Modal
+            backdrop="static"
+            show={this.state.dne}
+            onHide={() => this.props.history.goBack()}
+            animation={false}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>User Not Found</Modal.Title>
+            </Modal.Header>
+
+            <Modal.Body>
+              <p>
+                The user you were looking for could not be found, please try
+                again later. Maybe tomorrow...
+              </p>
+            </Modal.Body>
+
+            <Modal.Footer>
+              <Button
+                variant="primary"
+                onClick={() => this.props.history.goBack()}
+              >
+                Go Back
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          {/* Passing state down to Album Modal */}
+          <CreateCatalogueModal
+            active={this.state.newAlbum}
+            onCatalogueChange={(active) => this.setState({ newAlbum: active })}
+            type="album"
+          />
+          <CreateCatalogueModal
+            active={this.state.newCollection}
+            onCatalogueChange={(active) =>
+              this.setState({ newCollection: active })
+            }
+            type="collection"
+          />
+          <UserHeader
+            currentUser={currentUser}
+            showEdit
+            header
+            name={`${this.state.fname} ${this.state.lname}`}
+            nickname={this.state.nickname}
+            location={this.state.location}
+            email={this.state.email}
+            aboutMe={this.state.aboutMe}
+            profilePic={this.state.profilePic}
+            className="user-header"
+          />
+          <br />
+          <Tabs
+            defaultActiveKey="showcase"
+            id="uncontrolled-tab-example"
+            transition={false}
+          >
+            <Tab eventKey="showcase" title="Showcase" unmountOnExit>
               <ContentLoader
                 query={this.state.userId}
-                route="/user/following"
-                type="user"
+                route="/user/photos"
+                type="photo"
               />
             </Tab>
-          ) : (
-            <></>
-          )}
-          {currentUser ? (
-            <Tab title={this.createAddButton()} tabClassName="no-border" />
-          ) : (
-            <></>
-          )}
-        </Tabs>
+            <Tab eventKey="albums" title="Albums" unmountOnExit>
+              <ContentLoader
+                query={this.state.userId}
+                route="/user/albums"
+                type="album"
+              />
+            </Tab>
+            <Tab eventKey="collections" title="Collections" unmountOnExit>
+              <ContentLoader
+                query={this.state.userId}
+                route="/collection/getall"
+                type="collection"
+              />
+            </Tab>
+            {currentUser ? (
+              <Tab eventKey="following" title="Following" unmountOnExit>
+                <ContentLoader
+                  query={this.state.userId}
+                  route="/user/following"
+                  type="user"
+                />
+              </Tab>
+            ) : (
+              <></>
+            )}
+            {currentUser ? (
+              <Tab title={this.createAddButton()} tabClassName="no-border" />
+            ) : (
+              <></>
+            )}
+          </Tabs>
+        </div>
       </>
     );
   }
