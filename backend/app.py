@@ -63,8 +63,8 @@ from lib.profile.profile_details import (
 # from lib.search.photo_search import photo_search
 from lib.search.search import album_search, photo_search, user_search, collection_search
 
-# Showdown
-from lib.showdown import get_images
+# Schedule
+from lib.schedule.schedule import initialise_schedule
 
 # User
 from lib.user.validate_login import login
@@ -96,6 +96,8 @@ CORS(app)
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 mongoengine.connect("angular-flask-muckaround", host=app.config["MONGO_URI"])
+
+initialise_schedule()
 
 """
 --------------------------
