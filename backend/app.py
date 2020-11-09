@@ -1754,10 +1754,6 @@ def _update_collection():
 
     collection_functions.update_collection(params, _collection)
 
-
-    
-
-
 @app.route("/collection/delete", methods=["DELETE"])
 @validate_token
 def _delete_collection():

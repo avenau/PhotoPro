@@ -59,7 +59,6 @@ def get_showdown_likes(part_id):
     except participant.Participant.DoesNotExist:
         print("Participating does not exist")
         raise
-    print(len(_participant.get_votes()))
     return len(_participant.get_votes())
 #Temporary Function
 #def create_dummy_showdown():
