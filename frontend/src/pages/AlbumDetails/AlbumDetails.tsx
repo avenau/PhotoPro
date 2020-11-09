@@ -5,6 +5,7 @@ import AlbumHeader from '../../components/AlbumDisplay/AlbumHeader';
 
 
 import axios from "axios";
+
 import Toolbar from "../../components/Toolbar/Toolbar";
 import AlbumDisplay from '../../components/AlbumDisplay/AlbumDisplay';
 
@@ -48,8 +49,6 @@ class AlbumDetails extends React.Component<Props, State> {
     this.getAlbum();
   }
 
-
-
   private getAlbum(){
     const albumId = this.state.albumId;
     const token = this.state.token;
@@ -58,6 +57,7 @@ class AlbumDetails extends React.Component<Props, State> {
       .get(`/album?token=${token}&album_id=${albumId}`)
       .then((res) => {
         if (res.data) {
+          console.log('success')
           this.setState ({
             title: res.data.title,
             discount: res.data.discount,
@@ -72,7 +72,6 @@ class AlbumDetails extends React.Component<Props, State> {
       .catch(() =>{});
     }
   }
-
 
 
   render() {
@@ -92,10 +91,12 @@ class AlbumDetails extends React.Component<Props, State> {
             tags={this.state.tags}
             photos={this.state.photos}
             albumId={this.state.albumId}
+            isOwner={this.state.isOwner}
           />
         </Container>
       </div>
-  )}
+    )
+  }
 };
 
 export default AlbumDetails;

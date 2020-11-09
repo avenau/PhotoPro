@@ -33,6 +33,7 @@ import lib.collection.collection_functions as collection_functions
 from lib.album.album_edit import create_album, get_albums
 from lib.album.album_functions import update_album
 from lib.album.album_functions import album_photo_search
+from lib.album.album_purchase import purchase_album, get_price
 
 # Comments
 import lib.comment.comment_photo as comment_photo
@@ -720,6 +721,8 @@ def buy_photo():
     buyer.remove_credits(photo_price)
     buyer.add_purchased(this_photo)
     buyer.save()
+
+    # Seller gets 80% of profits. Photopro takes 20%
     seller.add_credits(int(0.80 * photo_price))
     seller.save()
 
@@ -730,7 +733,6 @@ def buy_photo():
                     "purchased": True})
 
 
-# TODO: unfinished
 @app.route("/purchasealbum", methods=["POST"])
 @validate_token
 def buy_album():
@@ -751,40 +753,11 @@ def buy_album():
     token = request.form.get("token")
     try:
         user_id = token_functions.get_uid(token)
+        album_id = request.form.get("albumId")
     except:
         raise Error.ValidationError("You need to log in to purchase an album.")
 
-    album_id = request.form.get("albumId")
-    buyer = lib.user.user.User.objects.get(id=user_id)
-    album = lib.album.album.Album.objects.get(id=album_id)
-    #
-    seller = lib.user.user.User.objects.get(id=this_album.get_user().created_by)
-    photo_price = this_photo.get_discounted_price()
-    user_credits = buyer.get_credits()
-
-    # Catch invalid actions
-    if this_photo in buyer.get_purchased():
-        raise Error.ValidationError(
-            "You can't purchase a photo that you've already purchased'."
-        )
-    elif this_photo.is_photo_owner(buyer):
-        raise Error.ValidationError(
-            "You can't purchase a photo that you posted yourself."
-        )
-    elif this_photo.is_deleted():
-        raise Error.ValidationError("You can't purchase a deleted photo.")
-    elif photo_price > user_credits:
-        raise Error.ValueError("You don't have enough credits to buy this photo.")
-
-    # Do the purchase
-    buyer.remove_credits(photo_price)
-    buyer.add_purchased(this_photo)
-    buyer.save()
-    seller.add_credits(int(0.80 * photo_price))
-    seller.save()
-
-    return dumps({"purchased": True})
-
+    return dumps(purchase_album(user_id, album_id))
 
 @app.route("/download", methods=["GET"])
 @validate_token
@@ -1914,13 +1887,12 @@ def _get_album():
     token = request.args.get('token')
     album_id = request.args.get('album_id')
     """
+
     token = request.args.get("token")
     album_id = request.args.get("album_id")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=request.args.get("album_id"))
-    if _album.get_created_by() != _user:
-        raise Error.ValidationError("User does not own this album")
-
+   
     return {
         "title": _album.get_title(),
         "discount": _album.get_discount(),
@@ -1929,7 +1901,23 @@ def _get_album():
         "owner": str(_album.get_created_by().get_id()),
     }
 
+@app.route('/album/checkpurchased', methods=["GET"])
+def _check_puchased():
+    """
+    Check if the album has already been purchased
 
+    """
+
+    token = request.args.get("token")
+    album_id = request.args.get("albumId")
+    _user = user.User.objects.get(id=token_functions.get_uid(token))
+    _album = album.Album.objects.get(id=request.args.get("albumId"))
+
+    purchased = all(alb_photo in _user.get_purchased() for alb_photo in _album.get_photos())
+
+    return dumps({
+        "purchased": purchased
+    })
 @app.route('/album/delete', methods=['DELETE'])
 @validate_token
 def _delete_album():
@@ -1956,35 +1944,10 @@ def _delete_album():
 def _get_price():
     token = request.args.get("token")
     album_id = request.args.get("albumId")
-
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=album_id)
 
-    # Price for the current user
-    your_price = 0
-    # Price with discounts, no ownership
-    discounted_price = 0
-    # Price without prior ownership, without discounts
-    original_price = 0
-    # Savings on all discounts and ownership
-    savings = 0
-
-    raw_album_discount = _album.get_discount()
-
-    for _photo in _album.get_photos():
-        if _photo not in _user.get_purchased():
-            your_price += _photo.get_discounted_price()
-        original_price += _photo.get_price()
-        discounted_price += _photo.get_discounted_price()
-
-    # Add the additional album discount
-    your_price = int(your_price - (discounted_price * (raw_album_discount / 100)))
-    savings = original_price - your_price
-
-    return dumps({'yourPrice': str(your_price),
-                  'originalPrice': str(original_price),
-                  'rawAlbumDiscount': str(raw_album_discount),
-                  'savings': str(original_price - your_price)})
+    return dumps(get_price(_user, _album))
 
 
 @app.route("/album/photos", methods=["GET"])
@@ -2052,7 +2015,7 @@ def _albums():
     return dumps(get_albums(_user))
 
 
-@app.route("/album", methods=["POST"])
+@app.route("/albums/add", methods=["POST"])
 @validate_token
 def _add_album():
     """

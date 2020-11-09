@@ -7,6 +7,7 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 from lib.token_functions import get_uid
 import lib.photo.photo as photo
+from lib.user.user import User
 
 def update_album(_album, title, discount, tags):
     '''
@@ -60,8 +61,23 @@ def album_photo_search(data):
         ]
     )
     res = loads(dumps(res))
+    try:
+        # Get purchased photos of register user
+        cur_user = User.objects.get(id=req_user)
+        purchased = cur_user.get_all_purchased()
+    except:
+        # Anonymous user
+        purchased = []
+
     for result in res:
-        result["metadata"], result["photoStr"] = photo.Photo.objects.get(id=result["id"]).get_thumbnail(req_user)
+        cur_photo = photo.Photo.objects.get(id=result["id"])
+        result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
+
+        if req_user == str(cur_photo.get_user().get_id()):
+            result["owns"] = True
+        elif cur_photo in purchased:
+            result["owns"] = True
+        else:
+            result["owns"] = False
+
     return res
-    """
-    """
