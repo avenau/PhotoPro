@@ -66,7 +66,6 @@ export default class ContentLoader extends React.Component<Props, State> {
         },
       })
       .then((res) => {
-        console.log(res);
         this.setState((prevState) => ({
           loading: false,
           results: [...prevState.results, ...res.data],
@@ -127,6 +126,18 @@ export default class ContentLoader extends React.Component<Props, State> {
           }
         >
           {this.getList()}
+          {this.state.loading ? (
+            <Spinner
+              animation="border"
+              role="status"
+              style={{ display: "block", margin: "40px" }}
+              key="spin"
+            >
+              <span className="sr-only">Loading...</span>
+            </Spinner>
+          ) : (
+            <></>
+          )}
         </InfiniteScroll>
       </>
     );

@@ -1,5 +1,5 @@
 """
-Participating Class for mongoengine
+Participant Class for mongoengine
 """
 
 from mongoengine import ListField
@@ -11,14 +11,15 @@ import lib.photo.photo as photo
 import lib.user.user as user
 
 
-class Paticipating(Document):
+class Participant(Document):
     """
-    Mongoengine Participation definition
+    Mongoengine Participant definition
     """
 
     photo = ReferenceField("photo.Photo")
     votes = ListField(ReferenceField("user.User"))
     won = BooleanField(default=False)
+    meta = {"collection": "participant"}
 
     # Participating Methods:
     # ----------------------
@@ -26,7 +27,16 @@ class Paticipating(Document):
     def add_vote(self, vote_user):
         self.votes.append(vote_user)
 
+    def remove_vote(self, vote_user):
+        try:
+            self.votes.remove(vote_user)
+        except Exception:
+            pass
+
     def get_votes(self):
+        return self.votes
+
+    def count_votes(self):
         return self.votes
 
     def get_photo(self):
@@ -35,7 +45,7 @@ class Paticipating(Document):
     def set_photo(self, new_photo):
         self.photo = new_photo
 
-    def get_won(self):
+    def has_won(self):
         return self.won
 
     def set_won(self, status):

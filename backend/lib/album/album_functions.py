@@ -45,7 +45,6 @@ def album_photo_search(data):
                     "title": 1,
                     "price": 1,
                     "discount": 1,
-                    "metadata": 1,
                     "extension": 1,
                     '''
                     "is_album": {
@@ -72,7 +71,7 @@ def album_photo_search(data):
 
     for result in res:
         cur_photo = photo.Photo.objects.get(id=result["id"])
-        result["photoStr"] = cur_photo.get_thumbnail(req_user)
+        result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
 
         if req_user == str(cur_photo.get_user().get_id()):
             result["owns"] = True
@@ -82,5 +81,3 @@ def album_photo_search(data):
             result["owns"] = False
 
     return res
-    """
-    """

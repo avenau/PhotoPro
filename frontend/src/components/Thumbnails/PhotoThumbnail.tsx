@@ -1,11 +1,13 @@
 import React from "react";
+import { RouteComponentProps } from "react-router-dom";
+import { withRouter } from "react-router";
 import axios from "axios";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import Price from "../Price";
 import "./PhotoThumbnail.scss";
 
-interface Props {
+interface Props extends RouteComponentProps {
   id: string;
   title: string;
   price: number;
@@ -16,18 +18,16 @@ interface Props {
   owns: boolean; // purchased or posted
 }
 
-export default class PhotoThumbnail extends React.Component<
+class PhotoThumbnail extends React.Component<
   Props,
-  { owns: boolean }
+  { owns: boolean; photoB64: string }
 > {
   constructor(props: Props) {
     super(props);
     this.state = {
       owns: this.props.owns,
+      photoB64: `${this.props.metadata}${this.props.photoStr}`,
     };
-  }
-  private getPic() {
-    return this.props.metadata + this.props.photoStr;
   }
 
   private handleBuy(e: React.MouseEvent<HTMLElement, MouseEvent>) {
@@ -39,8 +39,11 @@ export default class PhotoThumbnail extends React.Component<
         token: token,
         photoId: this.props.id,
       })
-      .then((response) => {
-        this.setState({ owns: response.data.purchased });
+      .then((res) => {
+        this.setState({
+          owns: res.data.purchased,
+          photoB64: `${res.data.metadata}${res.data.photoStr}`,
+        });
       })
       .catch(() => {});
   }
@@ -75,7 +78,7 @@ export default class PhotoThumbnail extends React.Component<
   render() {
     return (
       <>
-        <Image src={this.getPic()} className="photo-thumbnail" />
+        <Image src={this.state.photoB64} className="photo-thumbnail" />
         <div className="photo-overlay">
           <div>{this.props.title}</div>
           <Price fullPrice={this.props.price} discount={this.props.discount} />
@@ -101,3 +104,5 @@ export default class PhotoThumbnail extends React.Component<
     );
   }
 }
+
+export default withRouter(PhotoThumbnail);

@@ -3,6 +3,7 @@ Photo Class for mongoengine
 '''
 
 import datetime
+import math
 from mongoengine import StringField
 from mongoengine import ListField
 from mongoengine import DateTimeField
@@ -207,7 +208,9 @@ class Photo(Document):
         Get the discounted price of the photo
         @return price : integer
         '''
-        return int(self.price - self.price * (self.discount/100))
+        discounted_price = self.price - self.price * (self.discount/100)
+        # Because round() doesn't actually round, we had to do this
+        return math.floor(discounted_price + 0.5)
 
     def get_user(self):
         '''
@@ -328,42 +331,50 @@ class Photo(Document):
         '''
         Get the watermarked or non watermarked thumbnail based on
         whether the u_id passed in owns the photo
+
+        Returns metadata and base64 string
         '''
 
         # SVG thumbnails are in png format
-        this_extension = self.get_extension()
-        if this_extension == ".svg":
-            this_extension = ".png"
+        metadata = self.get_metadata()
+        extension = self.get_extension()
+        if extension == ".svg":
+            metadata = metadata.replace("svg+xml", "png")
+            extension = ".png"
 
         try:
             this_user = user.User.objects.get(id=u_id)
             if self in this_user.get_all_purchased() or this_user == self.get_user():
-                return find_photo(f"{self.get_id()}_t{this_extension}")
-            return find_photo(f"{self.get_id()}_t_w{this_extension}")
+                return [metadata, find_photo(f"{self.get_id()}_t{extension}")]
+            return [metadata, find_photo(f"{self.get_id()}_t_w{extension}")]
         except:
-            return find_photo(f"{self.get_id()}_t_w{this_extension}")
+            return [metadata, find_photo(f"{self.get_id()}_t_w{extension}")]
 
     def get_full_image(self, u_id):
         '''
         Get the watermarked or non watermarked full-res image based on
         whether the u_id passed in owns the photo. For downloading purposes.
 
-        Returns base64 string.
+        Returns metadata, base64 string, extension
         '''
-
+        metadata = self.get_metadata()
         extension = self.get_extension()
         try:
             this_user = user.User.objects.get(id=u_id)
             if self in this_user.get_all_purchased() or this_user == self.get_user():
-                return find_photo(f"{self.get_id()}{extension}")
+                return [metadata, find_photo(f"{self.get_id()}{extension}"), extension]
             else:
                 if extension == ".svg":
+                    metadata = metadata.replace("svg+xml", "png")
                     extension = ".png"
-                return find_photo(f"{self.get_id()}_w{extension}")
+
+                return [metadata, find_photo(f"{self.get_id()}_w{extension}"), extension]
         except:
             if extension == ".svg":
+                metadata = metadata.replace("svg+xml", "png")
                 extension = ".png"
-            return find_photo(f"{self.get_id()}_w{extension}")
+
+            return [metadata, find_photo(f"{self.get_id()}_w{extension}"), extension]
 
     def is_photo_owner(self, this_user):
         '''

@@ -6,7 +6,7 @@ import mongoengine
 import traceback
 
 
-def validate_participating(participants):
+def validate_participants(participants):
     """
     Mongoengine validation of likes
     @param likes: str:[]

@@ -25,12 +25,11 @@ def get_purchased_photos(data):
         tmp_dict['title'] = photo_obj.get_title()
         tmp_dict['price'] = photo_obj.get_price()
         tmp_dict['discount'] = photo_obj.get_discount()
-        tmp_dict['metadata'] = photo_obj.get_metadata()
         tmp_dict['user'] = str(photo_obj.get_user().get_id())
         tmp_dict['owns'] = True
         res.append(tmp_dict)
 
     for result in res:
-        result["photoStr"] = Photo.objects.get(id=result['id']).get_thumbnail(u_id)
+        result["metadata"], result["photoStr"] = Photo.objects.get(id=result['id']).get_thumbnail(u_id)
 
     return res

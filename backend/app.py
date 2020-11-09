@@ -65,6 +65,9 @@ from lib.search.search import album_search, photo_search, user_search, collectio
 
 # Showdown
 from lib.showdown import get_images
+from lib.showdown import showdown_likes
+# Schedule
+from lib.schedule.schedule import initialise_schedule
 
 # User
 from lib.user.validate_login import login
@@ -97,6 +100,8 @@ CORS(app)
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 mongoengine.connect("angular-flask-muckaround", host=app.config["MONGO_URI"])
+
+initialise_schedule()
 
 """
 --------------------------
@@ -721,7 +726,11 @@ def buy_photo():
     seller.add_credits(int(0.80 * photo_price))
     seller.save()
 
-    return dumps({"purchased": True})
+    metadata, photoStr = this_photo.get_thumbnail(user_id)
+
+    return dumps({"metadata": metadata, 
+                    "photoStr": photoStr, 
+                    "purchased": True})
 
 
 @app.route("/purchasealbum", methods=["POST"])
@@ -778,9 +787,7 @@ def download_full_photo():
         req_user = ""
 
     requested_photo_object = lib.photo.photo.Photo.objects.get(id=photo_id)
-    requested_metadata = requested_photo_object.get_metadata()
-    requested_b64 = requested_photo_object.get_full_image(req_user)
-    requested_extension = requested_photo_object.get_extension()
+    requested_metadata, requested_b64, requested_extension = requested_photo_object.get_full_image(req_user)
 
     return dumps(
         {
@@ -834,6 +841,41 @@ def _showdown_getwinner():
     """
     path = get_images.get_showdown_winner_image()
     return dumps({"path": path})
+
+@app.route("/showdown/updatelikes", methods=["POST"])
+@validate_token
+def _update_likes():
+    """
+    Description
+    -----------
+    Update Likes for showdown photos
+
+    Parameters
+    ----------
+    sd_id : string (Showdown id)
+    part_id : string (Participating id)
+    token : string
+
+    Returns
+    -------
+    {
+        "liked" : string (returns "liked" if the photo is liked, "unliked" if photo is unliked and "swap" 
+                    if the current photo is being liked while the other showdown photo is still liked. The other showdown will be unliked.)
+        "like_count" : number
+    }
+    """
+    token = request.form.get("token")
+    sd_id = request.form.get("sd_id")
+    part_id = request.form.get("part_id")
+    result = showdown_likes.update_showdown_likes(token, sd_id, part_id)
+    print(result)
+    return dumps(
+        {
+            "liked": result,
+            "like_count": showdown_likes.get_showdown_likes(part_id),
+        }
+    )
+    
 
 
 @app.route("/welcome/popularcontributors", methods=["GET"])
@@ -1383,6 +1425,7 @@ def _photo_details_page():
         photoStr: str,
         deleted: bool
         is_artist : bool
+        comments: Comment[]
     }
     """
     photo_id = request.args.get("p_id")
@@ -1537,34 +1580,6 @@ def _delete_comments():
 
     return dumps({})
 
-
-@app.route("/get_current_user", methods=["GET"])
-def _get_verified_user():
-    """
-    Description
-    -----------
-    Gets user id from token
-
-    Parameters
-    ----------
-    token : string
-
-    Returns
-    -------
-    {
-        u_id : string
-    }
-    """
-    token = request.args.get("token")
-    if token is None:
-        return dumps(
-            {
-                "u_id": "",
-            }
-        )
-    u_id = token_functions.get_uid(token)
-
-
 """
 ---------------------
 - Collection Routes -
@@ -1714,10 +1729,6 @@ def _update_collection():
         raise PermissionError("User not permitted to edit this Collection")
 
     collection_functions.update_collection(params, _collection)
-
-
-    
-
 
 @app.route("/collection/delete", methods=["DELETE"])
 @validate_token
