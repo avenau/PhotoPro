@@ -9,7 +9,7 @@ from io import BytesIO
 import mongoengine
 from bson.objectid import ObjectId
 from PIL import Image, ImageSequence, ImageDraw
-# import cairosvg
+import cairosvg
 
 
 from lib.photo.validate_photo import reformat_lists
