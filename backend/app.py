@@ -805,9 +805,7 @@ def download_full_photo():
         req_user = ""
 
     requested_photo_object = lib.photo.photo.Photo.objects.get(id=photo_id)
-    requested_metadata = requested_photo_object.get_metadata()
-    requested_b64 = requested_photo_object.get_full_image(req_user)
-    requested_extension = requested_photo_object.get_extension()
+    requested_metadata, requested_b64, requested_extension = requested_photo_object.get_full_image(req_user)
 
     return dumps(
         {

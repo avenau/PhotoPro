@@ -348,9 +348,9 @@ class Photo(Document):
         Get the watermarked or non watermarked full-res image based on
         whether the u_id passed in owns the photo. For downloading purposes.
 
-        Returns base64 string.
+        Returns metadata, base64 string, extension
         '''
-
+        metadata = self.get_metadata()
         extension = self.get_extension()
         try:
             this_user = user.User.objects.get(id=u_id)
@@ -358,12 +358,16 @@ class Photo(Document):
                 return find_photo(f"{self.get_id()}{extension}")
             else:
                 if extension == ".svg":
+                    metadata = metadata.replace("svg+xml", "png")
                     extension = ".png"
+
                 return find_photo(f"{self.get_id()}_w{extension}")
         except:
             if extension == ".svg":
+                metadata = metadata.replace("svg+xml", "png")
                 extension = ".png"
-            return find_photo(f"{self.get_id()}_w{extension}")
+
+            return [metadata, find_photo(f"{self.get_id()}_w{extension}"), extension]
 
     def is_photo_owner(self, this_user):
         '''
