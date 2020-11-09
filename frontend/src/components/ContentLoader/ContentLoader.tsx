@@ -6,11 +6,12 @@ import AlbumList from "../Lists/AlbumList";
 import CollectionList from "../Lists/CollectionList";
 import PhotoList from "../Lists/PhotoList";
 import UserList from "../Lists/UserList";
+import ArtistList from "../Lists/ArtistList";
 
 interface Props {
   query: string;
   route: string;
-  type: "photo" | "album" | "collection" | "user" | "albumPhotos";
+  type: "photo" | "album" | "collection" | "user" | "artist" | "albumPhotos";
   orderby?: string;
   filetype?: string;
   priceMin?: number;
@@ -50,6 +51,7 @@ export default class ContentLoader extends React.Component<Props, State> {
 
   private getResults() {
     this.setState({ loading: true });
+    console.log('content loader', this.state.query)
     axios
       .get(this.props.route, {
         params: {
@@ -91,6 +93,8 @@ export default class ContentLoader extends React.Component<Props, State> {
         return <CollectionList collections={this.state.results} />;
       case "user":
         return <UserList users={this.state.results} />;
+      case "artist":
+        return <ArtistList artists={this.state.results}/>;
       case "albumPhotos":
         return (
           <PhotoList

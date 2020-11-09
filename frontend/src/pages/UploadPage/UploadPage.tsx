@@ -69,7 +69,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
           albums: JSON.stringify(this.state.albums),
           // The photo, encoded as a base64 string
           photo: response[0],
-          // The file extension e.g. ".jpg" or ".gif"
+          // The file extension e.g. ".jpg"
           extension: response[1],
           token,
         })
@@ -116,9 +116,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
               deactivateUploadButton={this.deactivateUploadButton}
               activateUploadButton={this.activateUploadButton}
               tagsList={this.state.tagsList}
-              setTagsList={(tagsList: any) =>
-                this.setState({ tagsList })
-              }
+              setTagsList={(tagsList: any) => this.setState({ tagsList })}
             />
             <FileUpload
               deactivateUploadButton={this.deactivateUploadButton}
@@ -146,7 +144,9 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
                   </Col>
                   <Col>
                     <Album
-                      setSelAlbums={(selAlbums: string[]) => {this.setState({albums: selAlbums})}}
+                      setSelAlbums={(selAlbums: string[]) => {
+                        this.setState({ albums: selAlbums });
+                      }}
                       selectedAlbums={this.state.albums}
                     />
                   </Col>

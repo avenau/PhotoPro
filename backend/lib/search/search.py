@@ -73,19 +73,19 @@ def photo_search(data):
     Search photo collection
     """
     sort = get_sort_method(data["orderby"])
-    valid_extensions = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
+    valid_extensions = [".jpg", ".jpeg", ".png", ".svg"]
     if data["filetype"] == "jpgpng":
         valid_extensions = [".jpg", ".jpeg", ".png"]
-    elif data["filetype"] == "gif":
-        valid_extensions = [".gif"]
     elif data["filetype"] == "svg":
         valid_extensions = [".svg"]
 
     try:
         req_user = get_uid(data["token"])
         this_user = User.objects.get(id=req_user)
-        this_user.add_search(data["query"])
-        this_user.save()
+        if data["query"] != "":
+            print(this_user.get_searches())
+            this_user.add_search(data["query"])
+            this_user.save()
     except:
         req_user = ""
 

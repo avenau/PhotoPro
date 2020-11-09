@@ -57,7 +57,7 @@ def validate_extension(extension):
     except mongoengine.ValidationError:
         print(traceback.print_exc())
         raise ValidationError("Extension is not valid")
-    exts = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
+    exts = [".jpg", ".jpeg", ".png", ".svg"]
     if extension not in exts:
         raise ValueError("Unacceptable file type")
 

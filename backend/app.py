@@ -36,7 +36,7 @@ from lib.album.album_functions import album_photo_search
 
 # Comments
 import lib.comment.comment_photo as comment_photo
-from lib.comment.get_comments import get_all_comments
+from lib.photo_details.photo_details import get_all_comments
 from datetime import datetime
 
 # Photo
@@ -45,8 +45,7 @@ from lib.photo.photo_edit import get_photo_edit
 from lib.photo.remove_photo import remove_photo
 
 # Photo details
-from lib.photo_details.photo_likes import is_photo_liked, like_photo
-from lib.photo_details.photo_details import photo_detail_results
+from lib.photo_details.photo_details import photo_detail_results, is_photo_liked, like_photo
 
 
 # Profile
@@ -76,6 +75,7 @@ import lib.user.password_reset as password_reset
 from lib.purchases.purchases import get_purchased_photos
 
 # Welcome
+from lib.welcome.recommend import generate_recommend, recommend_photos
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
 
@@ -247,16 +247,16 @@ def _account_registration():
         )
 
     this_user = user.User(
-        fname=new_user["fname"],
-        lname=new_user["lname"],
-        email=new_user["email"],
-        nickname=new_user["nickname"],
-        password=new_user["password"],
-        profile_pic=new_user["profilePic"],
-        extension=new_user["extension"],
-        location=new_user["location"],
-        about_me=new_user["aboutMe"],
-        created=datetime.datetime.now(),
+        fname=new_user['fname'],
+        lname=new_user['lname'],
+        email=new_user['email'],
+        nickname=new_user['nickname'],
+        password=new_user['password'],
+        profile_pic=new_user['profilePic'],
+        extension=new_user['extension'],
+        location=new_user['location'],
+        about_me=new_user['aboutMe'],
+        created=datetime.now()
     )
     this_user.save()
 
@@ -799,8 +799,7 @@ def download_full_photo():
     extension: str
     """
     token = request.args.get("token")
-    photo_id = request.args.get("photo_id")
-    print("They want to download photo " + photo_id)
+    photo_id = request.args.get("photoId")
     try:
         req_user = token_functions.get_uid(token)
     except:
@@ -908,14 +907,9 @@ def _welcome_get_contributors():
     -------
     A list of images
     """
-    images = get_popular_contributors_images()
     return dumps(
-        {
-            # Returning a tuple
-            "contributors": images
-        }
+        get_popular_contributors_images()
     )
-
 
 @app.route("/welcome/getPopularImages", methods=["GET"])
 def _welcome_get_popular_images():
@@ -936,6 +930,58 @@ def _welcome_get_popular_images():
     images = get_popular_images()
     return dumps({"popular_images": images})
 
+@app.route("/welcome/recommend/compute", methods=["GET"])
+@validate_token
+def welcome_compute_recommend():
+    """
+    Description
+    -----------
+    Use user data to recommend photos to the user on the main feed.
+    Return true if the system can recommend at least 3 photos.
+
+    Parameters
+    ----------
+    token: str
+
+    Returns
+    -------
+    success: bool
+
+    """
+    u_id = get_uid(request.args.get("token"))
+    return(generate_recommend(u_id))
+   
+@app.route("/welcome/recommend", methods=["GET"])
+@validate_token
+def welcome_recommend_photos():
+    """
+    Description
+    -----------
+    Get recommended photos for a registered user.
+    
+    Parameters
+    ----------
+    query : string[] // list of recommended topics
+    offset : int
+    limit : int
+    orderby : string
+    token : string
+
+    Returns
+    -------
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
+    """
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+    return dumps(recommend_photos(data))
 
 @app.route("/userdetails", methods=["GET"])
 def _user_info_with_token():
@@ -1363,14 +1409,13 @@ def _search_album():
 """
 
 
-@app.route("/photo_details", methods=["GET"])
-def _photo_details():
-    # TODO: Should return photos and comments as well
-    # Add to API list
+@app.route("/photodetailspage", methods=["GET"])
+def _photo_details_page():
     """
     Description
     -----------
-    GET request to retrieve information for a photo
+    GET request to retrieve information for the photo details page.
+    Should not be called by anything except the photo details page.
 
     Parameters
     ----------
@@ -1380,21 +1425,57 @@ def _photo_details():
     Returns
     -------
     {
+        artist_id: str,
+        artist_nickname: str,
+        artist_email: str
         title: str,
-        numLikes: number,
-        datePosted: Date,
-        tags: str[],
-        nickname: str (Artist's Nickname)
-        email: str
-        u_id: str, (Artist of the photo)
-        status : number (0 means not loaded yet, 1 means existing, 2 means does not exist)
-        is_owner : bool
+        price: int,
+        discount: int,
+        posted: str (Format 'YYYY-MM-DD'),
+        n_likes: int,
+        tagsList: str[],
+        purchased: bool,
+        metadata: str,
+        photoStr: str,
+        deleted: bool
+        is_artist : bool
     }
     """
     photo_id = request.args.get("p_id")
     token = request.args.get("token")
     return photo_detail_results(photo_id, token)
 
+@app.route("/comments/get_comments", methods=["GET"])
+def _get_comments():
+    """
+    Description
+    -----------
+    Get Comments of a photo
+
+    Parameters
+    ----------
+    p_id : string
+    new_to_old : boolean
+
+    Returns
+    -------
+    {
+        comments: [{commenter: string,
+                     comment : string,
+                     datePosted : date}]
+    }
+    """
+    photo_id = request.args.get("p_id")
+    # offset = request.args.get("offset")
+    # limit = request.args.get("limit")
+    order = request.args.get("new_to_old")
+    print("getcomments")
+    print(order)
+    current_date = datetime.now()
+    # print(current_date)
+    all_comments = get_all_comments(photo_id, current_date, order)
+
+    return dumps({"comments": all_comments, "status": True})
 
 @app.route("/photo_details/isLiked", methods=["GET"])
 @validate_token
@@ -1418,15 +1499,9 @@ def _photo_liked():
     photo_id = request.args.get("p_id")
     token = request.args.get("token")
     is_liked = is_photo_liked(photo_id, token)
-    return dumps(
-        {
-            "isLiked": is_liked,
-        }
-    )
-
+    return dumps({"isLiked": is_liked})
 
 @app.route("/photo_details/like_photo", methods=["POST"])
-@validate_token
 def _like_photo():
     """
     Description
@@ -1444,13 +1519,22 @@ def _like_photo():
     """
     photo_id = request.form.get("photoId")
     token = request.form.get("token")
+    logged_in = True
+    try:
+        u_id = token_functions.get_uid(token)
+    except:
+        u_id = ""
+        logged_in = False
+    
     # print("APP TOKEN")
     # print(token)
-    is_liked = like_photo(token, photo_id)
-    return dumps({"liked": is_liked})
+    liked = like_photo(u_id, photo_id)
+    return dumps({
+                "liked": liked, 
+                "loggedIn": logged_in})
 
 
-@app.route("/comments/comment", methods=["POST"])
+@app.route("/comments/postcomment", methods=["POST"])
 @validate_token
 def _comment_on_photo():
     """
@@ -1479,39 +1563,6 @@ def _comment_on_photo():
     current_date = datetime.now()
     comment_photo.comments_photo(photo_id, user_id, content, current_date)
     return dumps({})
-
-
-@app.route("/comments/get_comments", methods=["GET"])
-def _get_comments():
-    """
-    Description
-    -----------
-    Get Comments of a photo
-
-    Parameters
-    ----------
-    p_id : string
-    offset : number
-    limit : number (-1 if want to return all of comments)
-    new_to_old : boolean
-
-    Returns
-    -------
-    {
-        comments: [{commenter: string,
-                     comment : string,
-                     datePosted : date}]
-    }
-    """
-    photo_id = request.args.get("p_id")
-    # offset = request.args.get("offset")
-    # limit = request.args.get("limit")
-    order = request.args.get("new_to_old")
-    current_date = datetime.now()
-    # print(current_date)
-    all_comments = get_all_comments(photo_id, current_date, order)
-
-    return dumps({"comments": all_comments, "status": True})
 
 
 @app.route("/comments/delete_comments", methods=["POST"])
@@ -1547,34 +1598,50 @@ def _delete_comments():
 - Collection Routes -
 ---------------------
 """
-
-
 @app.route("/collection/get", methods=["GET"])
+@validate_token
 def _get_collection():
-    """
+    '''
     Description
     -----------
     Get a Collection as a json object
 
     Parameters
     ----------
-    collection_id: string
+    token: string
+    collectionId: string
 
     Returns
     ----------
     {
         title: string,
-        photos: [Photo],
-        creation_date: datetime,
-        deleted: boolean,
         private: boolean,
         price, int
         tags: [string],
+        price: int,
+        originalPrice: int
     }
-    """
-    collection_id = request.args.get("collection_id")
+    '''
+    token = request.args.get('token')
+    collection_id = request.args.get('collectionId')
+    _user = user.User.objects.get(id=token_functions.get_uid(token))
     _collection = collection.Collection.objects.get(id=collection_id)
-    return dumps(collection_functions.get_collection(_collection))
+    owns = _collection.get_created_by() == _user
+    if _collection.is_private() and _collection.get_created_by() != _user:
+        return dumps({}), 401
+    if _collection.is_deleted():
+        raise Error.ValueError("Collection is deleted")
+    user_price, price_without_own = collection_functions.get_user_price(_user, _collection)
+
+    return dumps({ 
+            'title': _collection.get_title(),
+            'private': _collection.is_private(),
+            'price': user_price,
+            'tags': _collection.get_tags(),
+            'price': user_price,
+            'originalPrice': price_without_own,
+            'isOwner': owns})
+
 
 
 @app.route("/collection/getall", methods=["GET"])
@@ -1607,13 +1674,18 @@ def _get_all_collections():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    _user = user.User.objects.get(id=data["query"])
-    _collections = collection.Collection.objects(user=_user)
-    print(collection.Collection.objects(created_by=_user).to_json())
-    return collection.Collection.objects.to_json()
+    _user = user.User.objects.get(id=data['query'])
+    _collections = collection.Collection.objects(created_by=_user, deleted=False)
+    json_collection = []
+    # Add the id as a string
+    for index, col in enumerate(loads(_collections.to_json())):
+        json_collection.append(col)
+        json_collection[index]['id'] = col['_id']['$oid']
+    return dumps(json_collection)
 
 
-@app.route("/collection/create", methods=["POST"])
+
+@app.route("/collection", methods=["POST"])
 @validate_token
 def _create_collection():
     """
@@ -1637,11 +1709,42 @@ def _create_collection():
     u_id = token_functions.get_uid(params["token"])
     # Get Objects
     _user = user.User.objects.get(id=u_id)
-    collection_id = collection_functions.create_collection(
-        _user, params["title"], params["discount"], loads(params["tags"])
-    )
+    collection_id = collection_functions.create_collection(_user, params)
+
     # Return Collection ID
     return dumps({"collection_id": collection_id})
+
+@app.route('/collection/update', methods=['PUT'])
+@validate_token
+def _update_collection():
+    '''
+    Update Collection with the following parameters
+
+    Parameters
+    ----------
+    token: string
+    collectionId: string
+    title: string
+    private: boolean
+    tags: string[]
+    '''
+    params = request.form.to_dict()
+    token = request.args.get('token')
+    u_id = token_functions.get_uid(token)
+    collection_id = request.args.get('collectionId')
+    _user = user.User.objects.get(id=u_id)
+    if not _user:
+        raise Error.UserDNE("Could not find user")
+    _collection = collection.Collection.objects.get(id=collection_id)
+    if not _collection:
+        raise Error.ValueError("Could not find Collection")
+    if _user != _collection.get_created_by():
+        raise PermissionError("User not permitted to edit this Collection")
+
+    collection_functions.update_collection(params, _collection)
+
+
+    
 
 
 @app.route("/collection/delete", methods=["DELETE"])
@@ -1655,19 +1758,18 @@ def _delete_collection():
     Parameters
     ----------
     token: string
-    collection_id: string
+    _id: string
 
     Returns
     ----------
     { 'collection_id': string }
     """
     # Get arguments
-    u_id = token_functions.get_uid(request.args.get("token"))
-    collection_id = request.args.get("collection_id")
-
+    u_id = token_functions.get_uid(request.args.get('token'))
+    collection_id = request.args.get('_id')
     # Get Objects
     _user = user.User.objects.get(id=u_id)
-    _collection = collection.Collection.get(id=collection_id)
+    _collection = collection.Collection.objects.get(id=collection_id)
 
     # Return success
     ret = collection_functions.delete_collection(_user, _collection)
@@ -1797,6 +1899,10 @@ def _get_album():
     title: string
     discount: integer
     tags: [string]
+    params = request.form.to_dict()
+    print(params)
+    token = request.args.get('token')
+    album_id = request.args.get('album_id')
     """
     token = request.args.get("token")
     album_id = request.args.get("album_id")
@@ -1814,18 +1920,19 @@ def _get_album():
     }
 
 
-@app.route("/album", methods=["DELETE"])
+@app.route('/album/delete', methods=['DELETE'])
 @validate_token
 def _delete_album():
     """
-    NOT CURRENTLY WORKING
     @param token: string
+    @param _id: string
     @param albumId: string
     """
     token = request.args.get("token")
-    album_id = request.args.get("albumId")
+    u_id = token_functions.get_uid(token)
+    album_id = request.args.get("_id")
 
-    _user = user.User.objects.get(id=token_functions.get_uid(token))
+    _user = user.User.objects.get(id=u_id)
     _album = album.Album.objects.get(id=album_id)
     if _album.get_created_by() != _user:
         raise Error.ValidationError("User does not have permission to delete")
@@ -1847,7 +1954,7 @@ def _get_price():
     your_price = 0
     # Price with discounts, no ownership
     discounted_price = 0
-    # Price without prior ownership, includes discounts
+    # Price without prior ownership, without discounts
     original_price = 0
     # Savings on all discounts and ownership
     savings = 0
@@ -1864,14 +1971,10 @@ def _get_price():
     your_price = int(your_price - (discounted_price * (raw_album_discount / 100)))
     savings = original_price - your_price
 
-    return dumps(
-        {
-            "yourPrice": str(your_price),
-            "originalPrice": str(original_price),
-            "rawAlbumDiscount": str(raw_album_discount),
-            "savings": str(original_price - your_price),
-        }
-    )
+    return dumps({'yourPrice': str(your_price),
+                  'originalPrice': str(original_price),
+                  'rawAlbumDiscount': str(raw_album_discount),
+                  'savings': str(original_price - your_price)})
 
 
 @app.route("/album/photos", methods=["GET"])
@@ -1939,7 +2042,7 @@ def _albums():
     return dumps(get_albums(_user))
 
 
-@app.route("/albums", methods=["POST"])
+@app.route("/album", methods=["POST"])
 @validate_token
 def _add_album():
     """
