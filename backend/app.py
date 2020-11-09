@@ -1386,10 +1386,19 @@ def _search_album():
     Returns
     -------
     {
-        TODO
+        title : string,
+        created_by : string,
+        created: Date,
+        id : string,
+        authorId: string,
+        discount : int
     }
     """
-    return dumps({[]})
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+
+    return dumps(album_search(data))
 
 
 """
