@@ -718,7 +718,11 @@ def buy_photo():
     seller.add_credits(int(0.80 * photo_price))
     seller.save()
 
-    return dumps({"purchased": True})
+    metadata, photoStr = this_photo.get_thumbnail(user_id)
+
+    return dumps({"metadata": metadata, 
+                    "photoStr": photoStr, 
+                    "purchased": True})
 
 
 # TODO: unfinished
@@ -1408,6 +1412,7 @@ def _photo_details_page():
         photoStr: str,
         deleted: bool
         is_artist : bool
+        comments: Comment[]
     }
     """
     photo_id = request.args.get("p_id")

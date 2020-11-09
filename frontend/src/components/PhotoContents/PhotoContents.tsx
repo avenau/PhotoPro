@@ -144,9 +144,11 @@ class PhotoContents extends React.Component<Props, any> {
         token: localStorage.getItem("token"),
         photoId: this.props.photoId,
       })
-      .then((response) => {
-        this.setState({ purchased: response.data.purchased });
-        this.props.history.go(0);
+      .then((res) => {
+        this.setState({
+          purchased: res.data.purchased,
+          photoB64: `${res.data.metadata}${res.data.photoStr}`,
+        });
       })
       .catch(() => {});
   }
