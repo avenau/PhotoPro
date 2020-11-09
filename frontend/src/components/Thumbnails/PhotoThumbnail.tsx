@@ -46,11 +46,13 @@ export default class PhotoThumbnail extends React.Component<Props,{ owns: boolea
     e.preventDefault();
     e.stopPropagation();
     const token = localStorage.getItem("token");
+    console.log('download!')
+    console.log(this.props)
     axios
       .get("/download", {
         params: {
           token: token,
-          photo_id: this.props.id,
+          photoId: this.props.id,
         },
       })
       .then((r) => {

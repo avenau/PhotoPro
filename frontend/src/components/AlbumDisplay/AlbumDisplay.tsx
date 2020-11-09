@@ -1,12 +1,14 @@
 import React from "react";
 
-import ContentLoader from '../ContentLoader/ContentLoader';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
-import Savings from "./Savings";
 import axios from "axios";
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import ContentLoader from '../ContentLoader/ContentLoader';
+import Savings from "./Savings";
+import Album from "../PhotoEdit/Album";
 
-interface AlbumDisplayProps {
+interface AlbumDisplayProps extends RouteComponentProps {
   albumTitle?: string;
   discount?: number;
   tags?: string[];
@@ -25,9 +27,10 @@ interface AlbumDisplayState {
   originalPrice: string;
   rawAlbumDiscount: string;
   savings: string;
+  purchased: boolean; // TODO set purchased from backend
 }
 
-export default class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState> {
+class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState> {
   constructor(props: AlbumDisplayProps){
     super(props);
     this.state = {
@@ -39,7 +42,8 @@ export default class AlbumDisplay extends React.Component<AlbumDisplayProps, Alb
       price: '',
       originalPrice: '',
       rawAlbumDiscount: '',
-      savings: ''
+      savings: '',
+      purchased: false
     }
   }
 
@@ -71,22 +75,34 @@ export default class AlbumDisplay extends React.Component<AlbumDisplayProps, Alb
       })
       .then((res) => {
         console.log('purchased album')
+        this.setState({purchased: true})
+        this.props.history.push('/purchases')
       })
       .catch((err) => {
         console.log(err)
       })
   }
 
+  // you own x photos in this Album
+  // you would pay this normally
+  // now you pay x
+  // discount percentage
+
   render() {
     return (
       <>
         <Container>
-          <Savings albumId={this.state.albumId}/>
           {this.props.isOwner ?
-          <> </> :
-          <Button onClick={() => {this.purchaseAlbum()}}>
-            Purchase
-          </Button>
+          <Savings albumId={this.state.albumId}/> :
+            this.state.purchased ? 
+              <Button>You've purchased this album already</Button>
+              :
+              <>
+              <Savings albumId={this.state.albumId}/>
+              <Button onClick={() => {this.purchaseAlbum()}}>
+                Purchase
+              </Button>
+              </>
           }
           <ContentLoader
             query={this.state.albumId}
@@ -96,3 +112,4 @@ export default class AlbumDisplay extends React.Component<AlbumDisplayProps, Alb
       </>);
     }
   }
+export default withRouter(AlbumDisplay)
