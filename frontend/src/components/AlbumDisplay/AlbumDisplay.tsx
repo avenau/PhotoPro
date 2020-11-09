@@ -12,6 +12,7 @@ interface AlbumDisplayProps {
   tags?: string[];
   photos?: string[];
   albumId: string;
+  isOwner: boolean;
 }
 
 interface AlbumDisplayState {
@@ -62,17 +63,31 @@ export default class AlbumDisplay extends React.Component<AlbumDisplayProps, Alb
 
   purchaseAlbum(){
     console.log("Purchasing");
+    const token = localStorage.getItem('token') ? localStorage.getItem('token') : '';
+    axios
+      .post("/purchasealbum", {
+        token: token,
+        albumId: this.state.albumId
+      })
+      .then((res) => {
+        console.log('purchased album')
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
 
   render() {
-
     return (
       <>
         <Container>
           <Savings albumId={this.state.albumId}/>
-          <Button onClick={this.purchaseAlbum}>
+          {this.props.isOwner ?
+          <> </> :
+          <Button onClick={() => {this.purchaseAlbum()}}>
             Purchase
           </Button>
+          }
           <ContentLoader
             query={this.state.albumId}
             route='/album/photos'

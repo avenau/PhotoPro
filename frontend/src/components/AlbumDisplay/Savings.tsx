@@ -52,14 +52,14 @@ export default class AlbumSavings extends React.Component<AlbumSavingsProps, Alb
     return (this.state.savings > 0) ?
     (
       <>
-        <h2>Price: {this.state.yourPrice}</h2>
-          <h4>Originally {this.state.originalPrice}</h4>
-          <h4>You Save {this.state.savings}</h4>
+        <p><b>Price:</b> {this.state.yourPrice} CR</p>
+          <p><b>Originally:</b> {this.state.originalPrice} CR </p>
+          <p><b>You Save:</b> {this.state.savings} CR </p>
       </>
     ) :
     (
       <>
-        <h2>Price: {this.state.yourPrice}</h2>
+        <p><b>Price:</b> {this.state.yourPrice}</p>
       </>
     )
   }

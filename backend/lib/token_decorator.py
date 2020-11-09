@@ -59,7 +59,7 @@ def validate_token(function):
             raise TokenError("Token is not a string")
         if token == '':
             print("Token is an empty string")
-            raise TokenError("Token is an empty string")
+            raise TokenError("Please login to use this feature")
 
         # Try decoding
         try:

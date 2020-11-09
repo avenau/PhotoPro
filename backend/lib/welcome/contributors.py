@@ -26,7 +26,7 @@ def get_popular_contributors_images(artists=10):
                     "likes": "$likes"
                 }
             },
-            {"$sort": {"likes": -1}},
+            {"$sort": {"likes": -1, "user": 1}},
             {"$limit": artists}
         ]
     )
