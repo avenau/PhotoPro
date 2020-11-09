@@ -6,6 +6,7 @@ import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import ShowdownLike from './ShowdownLike';
 
 class Showdown extends Component<any, any> {
   constructor(props: any) {
@@ -50,6 +51,7 @@ class Showdown extends Component<any, any> {
           <Row>
             <Col>
               <Button variant="success">Apple</Button>
+              <ShowdownLike partId="5fa92d58367cb28505115b06" sdId="5fa92d58367cb28505115b08" isLiked={false} likeCount={0} />
             </Col>
             <Col xs={2} />
             <Col>

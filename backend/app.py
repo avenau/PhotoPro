@@ -893,7 +893,7 @@ def _update_likes():
     sd_id = request.form.get("sd_id")
     part_id = request.form.get("part_id")
     result = showdown_likes.update_showdown_likes(token, sd_id, part_id)
-    
+    print(result)
     return dumps(
         {
             "liked": result,

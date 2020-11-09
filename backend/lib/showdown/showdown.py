@@ -48,9 +48,7 @@ class Showdown(Document):
         """
         Get whether this showdown has ended
         """
-        return datetime.now() > self.get_start_date() + timedelta(
-            hours=self.get_duration()
-        )
+        return datetime.now() > self.get_start_date() + timedelta(hours=self.get_duration())
 
     def get_duration(self):
         """
@@ -68,7 +66,7 @@ class Showdown(Document):
         """
         Add a participant to the showdown
         """
-        self.participating.append(participant)
+        self.participants.append(participant)
 
     def get_start_date(self):
         """

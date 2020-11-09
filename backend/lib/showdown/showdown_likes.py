@@ -1,11 +1,16 @@
 '''
 Showdown likes related functions
 '''
+import mongoengine
+
 import lib.token_functions as token_functions
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
-import lib.showdown.showdown
-import lib.showdown.participant
+from datetime import datetime
+import lib.photo.photo as photo
+import lib.user.user as user
+import lib.showdown.showdown as showdown
+import lib.showdown.participant as participant
 
 def update_showdown_likes(token, sd_id, part_id):
     u_id = token_functions.verify_token(token)["u_id"]
@@ -54,8 +59,28 @@ def get_showdown_likes(part_id):
     except participant.Participant.DoesNotExist:
         print("Participating does not exist")
         raise
-    
-    return _participant.get_votes().length()
+    print(len(_participant.get_votes()))
+    return len(_participant.get_votes())
+#Temporary Function
+#def create_dummy_showdown():
+#    photo1 = photo.Photo.objects.get(id="5fa46a46c7d4a0e99df98ee0")
+#    photo2 = photo.Photo.objects.get(id="5fa755b596826652f59f3634")
+#    new_participant1 = participant.Participant(
+#        photo = photo1,
+#    )
+#    new_participant1.save()
+#    
+#    new_participant2 = participant.Participant(
+#        photo = photo2,
+#    )
+#    new_participant2.save()
+#
+#    new_showdown = showdown.Showdown(
+#        start_date = datetime.now()
+#    )
+#    new_showdown.add_participant(new_participant1)
+#    new_showdown.add_participant(new_participant2)
+#    new_showdown.save()
 
 #Helper Functions (Should not be used outside of showdown_likes)
 def has_showdown_liked(u_id, part_object):
@@ -68,24 +93,24 @@ def has_showdown_liked(u_id, part_object):
     return _user in part_object.get_votes()
     
 def showdown_like(u_id, part_object):
-    user_id = token_functions.verify_token(token)["u_id"]
     try:
         _user = user.User.objects.get(id=u_id)
     except user.User.DoesNotExist:
         print("User does not exist")
         raise
     
-    if has_showdown_liked(user_id, part_object) == False:
+    if has_showdown_liked(u_id, part_object) == False:
         part_object.add_vote(_user)
+        part_object.save()
 
 def showdown_unlike(u_id, part_object):
-    user_id = token_functions.verify_token(token)["u_id"]
     try:
         _user = user.User.objects.get(id=u_id)
     except user.User.DoesNotExist:
         print("User does not exist")
         raise
     
-    if has_showdown_liked(user_id, part_object) == True:
+    if has_showdown_liked(u_id, part_object) == True:
         part_object.remove_vote(_user)
+        part_object.save()
     
