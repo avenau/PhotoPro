@@ -72,7 +72,7 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
                 type="photo"
               />
             </Tab>
-            <Tab eventKey="albums" title="Albums" unmountOnExit></Tab>
+            <Tab eventKey="albums" title="Albums" unmountOnExit />
           </Tabs>
         </Container>
       </div>

@@ -1,10 +1,10 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Container from "react-bootstrap/Container";
+import axios from "axios";
 import AlbumHeader from '../../components/AlbumDisplay/AlbumHeader';
 
 
-import axios from "axios";
 
 import Toolbar from "../../components/Toolbar/Toolbar";
 import AlbumDisplay from '../../components/AlbumDisplay/AlbumDisplay';
@@ -40,8 +40,8 @@ class AlbumDetails extends React.Component<Props, State> {
       title: '',
       discount: 0,
       tags: [],
-      albumId: albumId,
-      isOwner: props.isOwner ? true : false,
+      albumId,
+      isOwner: !!props.isOwner,
     }
   }
 
@@ -50,8 +50,8 @@ class AlbumDetails extends React.Component<Props, State> {
   }
 
   private getAlbum(){
-    const albumId = this.state.albumId;
-    const token = this.state.token;
+    const {albumId} = this.state;
+    const {token} = this.state;
     if (this.state.albumId != '') {
       axios
       .get(`/album?token=${token}&album_id=${albumId}`)
@@ -83,7 +83,8 @@ class AlbumDetails extends React.Component<Props, State> {
             isOwner={this.state.isOwner}
             catalogueId={this.state.albumId}
             token={this.state.token}
-            type='album'/>
+            type='album'
+          />
           <h1>{this.state.title}</h1>
           <AlbumDisplay
             albumTitle={this.state.title}

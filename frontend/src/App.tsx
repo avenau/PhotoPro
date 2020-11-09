@@ -109,14 +109,14 @@ class App extends React.Component<Props, State> {
             component={ManageAlbum}
           />
           <ProtectedRoute
-          valid={this.state.valid}
-          exact
-          path="/album/:album_id"
-          component={AlbumDetails}
+            valid={this.state.valid}
+            exact
+            path="/album/:album_id"
+            component={AlbumDetails}
           />
           <Route
-          path="/collection/:collection_id"
-          component={CollectionDetails}
+            path="/collection/:collection_id"
+            component={CollectionDetails}
           />
           <ProtectedRoute
             valid={this.state.valid}

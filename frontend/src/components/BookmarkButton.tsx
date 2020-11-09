@@ -23,10 +23,13 @@ export default class BookmarkButton extends React.Component<
   }
 
   openModal = () => this.setState({ showModal: true });
+
   closeModal = () => this.setState({ showModal: false });
 
   openNewCol = () => this.setState({ showNewCol: true });
+
   closeNewCol = () => this.setState({ showNewCol: false });
+
   handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     if (event) {
       event.preventDefault();
@@ -36,6 +39,7 @@ export default class BookmarkButton extends React.Component<
       collections: [...this.state.collections, this.state.newCollection],
     });
   };
+
   render() {
     return (
       <div>

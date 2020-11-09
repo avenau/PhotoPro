@@ -35,7 +35,7 @@ class ManageAlbum extends React.Component<Props, State> {
       title: '',
       discount: 0,
       tags: [],
-      albumId: albumId
+      albumId
     }
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -47,8 +47,8 @@ class ManageAlbum extends React.Component<Props, State> {
   }
 
   getAlbum(){
-    const token = this.state.token;
-    const albumId = this.state.albumId;
+    const {token} = this.state;
+    const {albumId} = this.state;
     if (this.state.albumId != '') {
       axios
       .get(`/album?token=${token}&album_id=${albumId}`)
@@ -104,14 +104,14 @@ class ManageAlbum extends React.Component<Props, State> {
           Create Album
         </Button>
       )
-    } else {
+    } 
       return (
         <Button id="createButton" className="mt-2" type="submit">
           Update Album {'  '}
         </Button>
       )
 
-    }
+    
   }
 
   render() {
@@ -125,14 +125,14 @@ class ManageAlbum extends React.Component<Props, State> {
               titleType="Album"
               deactivateUpdateButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}
-              onChange={(title: string) => this.setState({ title: title })}
+              onChange={(title: string) => this.setState({ title })}
               titleDef={this.state.title}
               prefill={this.state.title}
             />
             <Discount
               deactivateCreateButton={this.deactivateCreateButton}
               activateCreateButton={this.activateCreateButton}
-              onChange={(discount: number) => this.setState({ discount: discount })}
+              onChange={(discount: number) => this.setState({ discount })}
               discountDef={this.state.discount}
               prefill={this.state.discount}
               currencyType='Credits'
@@ -142,7 +142,7 @@ class ManageAlbum extends React.Component<Props, State> {
               deactivateUploadButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}
               tagsList={this.state.tags}
-              setTagsList={(tags: string[]) => this.setState({ tags: tags })}
+              setTagsList={(tags: string[]) => this.setState({ tags })}
               prefill={this.state.tags}
             />
             {this.getButton()}

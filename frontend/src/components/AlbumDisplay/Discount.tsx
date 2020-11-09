@@ -21,22 +21,22 @@ export default function Discount(props: any) {
       props.onChange(discount);
   }
   return(
-      <>
+    <>
       <Form.Group controlId="price">
-          <Form.Label>Album Discount as a percentage</Form.Label>
-          <Form.Control  value={props.discountDef}
-                         type="number"
-                         onChange={(discount) => {
+        <Form.Label>Album Discount as a percentage</Form.Label>
+        <Form.Control
+          value={props.discountDef}
+          type="number"
+          onChange={(discount) => {
                            discount.preventDefault();
                            setDiscount(Number(discount.target.value));
                          }}
-          >
-          </Form.Control>
-          <Form.Text className="text-muted priceInfo">
-              Discount must be between 0 and 100.
-              <p className="error">{discountErrMsg}</p>
-          </Form.Text>
+        />
+        <Form.Text className="text-muted priceInfo">
+          Discount must be between 0 and 100.
+          <p className="error">{discountErrMsg}</p>
+        </Form.Text>
       </Form.Group>
-      </>
+    </>
   )
 }

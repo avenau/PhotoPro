@@ -12,7 +12,7 @@ export default function CuratedFeed() {
             console.log(token)
             // Compute metrics for recommendation algorithm
             axios.get("/welcome/recommend/compute", {params: {
-                token: token
+                token
             }})
             .then((res) => {
                 // Load photos based on computed metrics
@@ -30,21 +30,21 @@ export default function CuratedFeed() {
     )
 
     return(
-        <>
+      <>
         <Container>
           {loading ?
             <></>
             :
             <>
-            <h3>Recommended for you</h3>
-            <ContentLoader
-              query=""
-              route="/welcome/recommend"
-              type="photo"
-            />
+              <h3>Recommended for you</h3>
+              <ContentLoader
+                query=""
+                route="/welcome/recommend"
+                type="photo"
+              />
             </>
           }
         </Container>
-        </>
+      </>
     )
 }

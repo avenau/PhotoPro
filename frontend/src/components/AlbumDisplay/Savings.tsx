@@ -40,10 +40,10 @@ export default class AlbumSavings extends React.Component<AlbumSavingsProps, Alb
       .get(`/album/price?token=${token}&albumId=${this.state.albumId}`)
       .then((res) => {
         this.setState({
-          yourPrice: res.data['yourPrice'],
-          originalPrice: res.data['albumPrice'],
-          rawAlbumDiscount: res.data['rawAlbumDiscount'],
-          savings: res.data['savings']
+          yourPrice: res.data.yourPrice,
+          originalPrice: res.data.albumPrice,
+          rawAlbumDiscount: res.data.rawAlbumDiscount,
+          savings: res.data.savings
         })
       })
   }

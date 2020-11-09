@@ -29,7 +29,7 @@ export default class LikeButton extends React.Component<LikeProps, any> {
       axios
         .post("/photo_details/like_photo", {
           photoId: this.props.p_id,
-          token: token,
+          token,
         })
         .catch(() => {});
       if (!this.state.isLiked) {

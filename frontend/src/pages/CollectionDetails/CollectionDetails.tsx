@@ -1,9 +1,9 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
-import AlbumHeader from '../../components/AlbumDisplay/AlbumHeader';
 import axios from "axios";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import Container from 'react-bootstrap/Container';
+import AlbumHeader from '../../components/AlbumDisplay/AlbumHeader';
+import Toolbar from "../../components/Toolbar/Toolbar";
 
 
 interface Props extends RouteComponentProps<MatchParams> {
@@ -37,8 +37,8 @@ class CollectionDetails extends React.Component<Props, State> {
       originalPrice: 0,
       tags: [],
       isPrivate: true,
-      collectionId: collectionId,
-      isOwner: props.isOwner ? true : false,
+      collectionId,
+      isOwner: !!props.isOwner,
     }
   }
 
@@ -49,8 +49,8 @@ class CollectionDetails extends React.Component<Props, State> {
 
 
   private getCollection(){
-    const collectionId = this.state.collectionId;
-    const token = this.state.token;
+    const {collectionId} = this.state;
+    const {token} = this.state;
     if (this.state.collectionId != '') {
       axios
       .get(`/collection/get?token=${token}&collectionId=${collectionId}`)
@@ -77,16 +77,17 @@ class CollectionDetails extends React.Component<Props, State> {
       <div className="create-collection-page">
         <Toolbar />
         <Container>
-        <div>
-          <AlbumHeader
-            isOwner={this.state.isOwner}
-            catalogueId={this.state.collectionId}
-            token={this.state.token}
-            type='collection'/>
-          <h1>{this.state.title}</h1>
-          <h2>Price: {this.state.price}</h2>
-          <h3>Regular Price: {this.state.originalPrice}</h3>
-        </div>
+          <div>
+            <AlbumHeader
+              isOwner={this.state.isOwner}
+              catalogueId={this.state.collectionId}
+              token={this.state.token}
+              type='collection'
+            />
+            <h1>{this.state.title}</h1>
+            <h2>Price: {this.state.price}</h2>
+            <h3>Regular Price: {this.state.originalPrice}</h3>
+          </div>
         </Container>
       </div>
   )}

@@ -93,7 +93,7 @@ export default class ContentLoader extends React.Component<Props, State> {
       case "user":
         return <UserList users={this.state.results} />;
       case "artist":
-        return <ArtistList artists={this.state.results}/>;
+        return <ArtistList artists={this.state.results} />;
       case "albumPhotos":
         return (
           <PhotoList

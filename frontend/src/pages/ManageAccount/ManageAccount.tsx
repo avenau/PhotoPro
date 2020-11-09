@@ -8,7 +8,7 @@ import "./ManageAccount.scss";
 
 function convertProfilePicToBase64(profilePic: [string, string]) {
   // Get filetype
-  if (profilePic[0] == "" && profilePic[1] == "") {
+  if (profilePic[0] === "" && profilePic[1] === "") {
     return "";
   }
   // base64 of the tuple profilePic
@@ -18,8 +18,7 @@ function convertProfilePicToBase64(profilePic: [string, string]) {
   const metadata2 = profilePic[1];
   const metadata3 = ";base64, ";
 
-  const ret = metadata1 + metadata2 + metadata3 + " " + b64;
-  console.log(ret);
+  const ret = `${metadata1}${metadata2}${metadata3} ${b64}`;
   return ret;
 }
 

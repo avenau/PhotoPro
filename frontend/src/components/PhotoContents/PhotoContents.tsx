@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { RouteComponentProps, withRouter , Link } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import BookmarkButton from "../BookmarkButton";
 import LikeButton from "../LikeButton";
 import "./PhotoContents.scss";
 import axios from "axios";
-import { Link } from "react-router-dom";
+
 import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../Tags";
@@ -192,7 +192,7 @@ class PhotoContents extends React.Component<Props, any> {
           </Button>
         </div>
       );
-    } else if (this.state.purchased) {
+    } if (this.state.purchased) {
       return (
         <div>
           <Button onClick={(e) => this.downloadPhoto(e)} className="ml-1">
@@ -216,6 +216,7 @@ class PhotoContents extends React.Component<Props, any> {
       </div>
     );
   }
+
   render() {
     return !this.state.loading ? (
       <div className="PhotoContents">

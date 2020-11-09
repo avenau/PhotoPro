@@ -14,7 +14,7 @@ class WelcomePage extends React.Component {
         <Toolbar />
         <WelcomeHeader />
         <Showdown />
-        <CuratedFeed/>
+        <CuratedFeed />
         <PopularContributors />
         <PopularImages />
       </div>

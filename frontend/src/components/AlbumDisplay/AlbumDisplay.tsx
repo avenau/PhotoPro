@@ -48,7 +48,7 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
     axios
       .get(`/album/checkpurchased?token=${token}&albumId=${this.state.albumId}`)
       .then((res) => {
-        if (res.data["purchased"]) {
+        if (res.data.purchased) {
           this.setState({purchased: true})
         }
       })
@@ -59,7 +59,7 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
     const token = localStorage.getItem('token') ? localStorage.getItem('token') : '';
     axios
       .post("/purchasealbum", {
-        token: token,
+        token,
         albumId: this.state.albumId
       })
       .then((res) => {
@@ -77,21 +77,22 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
       <>
         <Container>
           {this.props.isOwner ?
-          <Savings albumId={this.state.albumId}/> :
+            <Savings albumId={this.state.albumId} /> :
             this.state.purchased ? 
               <p>You've purchased this album already</p>
               :
               <>
-              <Savings albumId={this.state.albumId}/>
-              <Button onClick={() => {this.purchaseAlbum()}}>
-                Purchase
-              </Button>
+                <Savings albumId={this.state.albumId} />
+                <Button onClick={() => {this.purchaseAlbum()}}>
+                  Purchase
+                </Button>
               </>
           }
           <ContentLoader
             query={this.state.albumId}
             route='/album/photos'
-            type="albumPhotos"/>
+            type="albumPhotos"
+          />
         </Container>
       </>);
     }

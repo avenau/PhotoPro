@@ -22,10 +22,13 @@ export default function Title(props: any) {
       <>
         <Form.Group controlId="title">
           <Form.Label>Photo Title</Form.Label>
-          <Form.Control required placeholder={props.titleDef}
-                        type="text"
-                        onChange={(e) => setTitle(e.target.value)}
-                        defaultValue={prefill} />
+          <Form.Control
+            required
+            placeholder={props.titleDef}
+            type="text"
+            onChange={(e) => setTitle(e.target.value)}
+            defaultValue={prefill}
+          />
           <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
           <Form.Text className="text-muted titleInfo">
             Title must be between 1 and 40 characters long.

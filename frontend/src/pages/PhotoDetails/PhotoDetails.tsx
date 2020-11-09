@@ -7,6 +7,7 @@ import PhotoContents from "../../components/PhotoContents/PhotoContents";
 
 export default class PhotoDetails extends React.Component<RouteComponentProps> {
   photoId = window.location.pathname.split("/")[2];
+
   render() {
     return (
       <div>

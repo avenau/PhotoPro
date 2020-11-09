@@ -8,10 +8,10 @@ export default function PhotoList(props: any) {
   const [errMsg, setErrMsg] = useState("")
   
   return(
-      <>
+    <>
       <Form.Group controlId="photoList">
-      <Form.Label>Available Photos</Form.Label>
+        <Form.Label>Available Photos</Form.Label>
       </Form.Group>
-      </>
+    </>
   )
 }

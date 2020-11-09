@@ -141,19 +141,25 @@ export default class ProfilePage extends React.Component<Props, State> {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button variant="primary"
-                    onClick={() => this.props.history.goBack()}>
+            <Button
+              variant="primary"
+              onClick={() => this.props.history.goBack()}
+            >
               Go Back
             </Button>
           </Modal.Footer>
         </Modal>
-        {/* Passing state down to Album Modal*/}
-        <CreateCatalogueModal active={this.state.newAlbum}
-                    onCatalogueChange={(active) => (this.setState({newAlbum: active}))}
-                    type='album'/>
-        <CreateCatalogueModal active={this.state.newCollection}
-                    onCatalogueChange={(active) => (this.setState({newCollection: active}))}
-                    type='collection'/>
+        {/* Passing state down to Album Modal */}
+        <CreateCatalogueModal
+          active={this.state.newAlbum}
+          onCatalogueChange={(active) => (this.setState({newAlbum: active}))}
+          type='album'
+        />
+        <CreateCatalogueModal
+          active={this.state.newCollection}
+          onCatalogueChange={(active) => (this.setState({newCollection: active}))}
+          type='collection'
+        />
         <Toolbar />
         <UserHeader
           currentUser={currentUser}

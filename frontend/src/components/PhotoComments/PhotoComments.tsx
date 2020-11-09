@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-//import CommentMessage from "./CommentMessage";
+// import CommentMessage from "./CommentMessage";
 import "./PhotoComments.scss";
 import axios from "axios";
 import _ from "lodash";
@@ -64,7 +64,7 @@ export default function PhotoComments(props: CommentProps) {
       });
   };
 
-  //Order is newest to oldest then true
+  // Order is newest to oldest then true
   const getComments = async (photoId: string, order: boolean) => {
     await axios
       .get(`/comments/get_comments?p_id=${photoId}&new_to_old=${order}`)
