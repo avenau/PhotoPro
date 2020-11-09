@@ -87,6 +87,25 @@ class Showdown(Document):
             - datetime.now()
         )
 
+    def declare_winner(self):
+        """
+        If a winner has not yet been declared then declare one
+        """
+        if len(self.participants) != 2:
+            return
+
+        p0 = self.participants[0]
+        p1 = self.participants[1]
+
+        if p0.count_votes() > p1.count_votes():
+            # p0 is winner
+            p0.set_won(True)
+            self.winner = p0
+        elif p0.count_votes() < p1.count_votes():
+            # p1 is winner
+            p1.set_won(True)
+            self.winner = p1
+
     # User Document validation
     # ------------------------
     def clean(self):
@@ -94,3 +113,4 @@ class Showdown(Document):
         Run on every User.save()
         Add validation checks here
         """
+        pass

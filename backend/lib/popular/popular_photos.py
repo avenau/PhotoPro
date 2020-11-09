@@ -31,9 +31,9 @@ class PopularPhoto(Document):
 
     def get_photo(self):
         """
-        Object id of the photo
+        Retrun photo entry
         """
-        return self.id
+        return self.photo
 
     def add_like(self):
         """
