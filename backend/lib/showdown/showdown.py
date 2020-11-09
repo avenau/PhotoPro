@@ -2,8 +2,7 @@
 User Class for mongoengine
 """
 
-import datetime
-from datetime import timedelta
+from datetime import timedelta, datetime
 from mongoengine import ListField
 from mongoengine import IntField
 from mongoengine import Document
@@ -12,7 +11,7 @@ from mongoengine.fields import DateTimeField
 
 import lib.photo.photo as photo
 import lib.user.user as user
-import lib.showdown.participating
+import lib.showdown.participant as participant
 import lib.showdown.validation as validation
 import lib.Error as Error
 
@@ -27,9 +26,9 @@ class Showdown(Document):
     # Which photo was the winner of this showdown
     winner = ReferenceField("photo.Photo")
     # Which photos are participating in the showdown
-    participating = ListField(
-        ReferenceField("lib.showdown.participating.Participating"),
-        validation=validation.validate_participating,
+    participants = ListField(
+        ReferenceField("participant.Participant"),
+        validation=validation.validate_participants,
     )
     # Previous showdown
     previous = ReferenceField("self")
@@ -49,7 +48,7 @@ class Showdown(Document):
         """
         Get whether this showdown has ended
         """
-        return datetime.datetime.now() > self.get_start_date() + timedelta(
+        return datetime.now() > self.get_start_date() + timedelta(
             hours=self.get_duration()
         )
 
@@ -77,12 +76,15 @@ class Showdown(Document):
         """
         return self.start_date
 
-    def was_last(self):
+    def get_time_remaining(self):
         """
-        Get the start datetime of the showdown
+        Get the time remaining in the showdown, this should only
+        be used if the showdown has not ended
         """
-        return datetime.datetime.now() < self.get_start_date() + (
-            2 * timedelta(hours=self.get_duration())
+        return (
+            self.get_start_date()
+            + timedelta(hours=self.get_duration())
+            - datetime.now()
         )
 
     # User Document validation

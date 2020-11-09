@@ -22,13 +22,13 @@ def get_sort_method(sortid):
     if sortid == "old":
         return {"$sort": {"created": 1, "id": 1}}
     if sortid == "low":
-        return {"$sort": {"price": 1}}
+        return {"$sort": {"price": 1, "id": 1}}
     if sortid == "high":
-        return {"$sort": {"price": -1}}
+        return {"$sort": {"price": -1, "id": -1}}
     if sortid == "az":
-        return {"$sort": {"title": 1, "nickname": 1}}
+        return {"$sort": {"title": 1, "nickname": 1, "id": 1}}
     if sortid == "za":
-        return {"$sort": {"title": -1, "nickname": -1}}
+        return {"$sort": {"title": -1, "nickname": -1, "id": -1}}
 
 
 def user_search(data):
@@ -138,8 +138,9 @@ def photo_search(data):
         cur_photo = Photo.objects.get(id=result["id"])
         result["photoStr"] = cur_photo.get_thumbnail(req_user)
         if req_user:
-            result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (cur_photo.is_photo_owner(req_user_obj))
-
+            result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (
+                cur_photo.is_photo_owner(req_user_obj)
+            )
 
     return res
 
