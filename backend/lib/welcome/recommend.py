@@ -121,7 +121,6 @@ def recommend_photos(data):
                     "title": 1,
                     "price": 1,
                     "discount": 1,
-                    "metadata": 1,
                     "extension": 1,
                     "created": "$posted",
                     "user": {"$toString": "$user"},
@@ -135,7 +134,7 @@ def recommend_photos(data):
     )
     res = json.loads(dumps(res))
     for result in res:
-        result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(u_id)
+        result["metadata"], result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(u_id)
     return res
 
 def aggregate_photo_keywords(photos):
