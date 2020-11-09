@@ -47,7 +47,7 @@ def create_showdown(prev_showdown):
     showdown = Showdown(
         start_date=datetime.now(),
         previous=prev_showdown,
-        duration=24,
+        duration=1440,
         participants=participants,
     )
     showdown.save()

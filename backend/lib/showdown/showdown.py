@@ -32,7 +32,7 @@ class Showdown(Document):
     )
     # Previous showdown
     previous = ReferenceField("self")
-    # Duration of the showdown in hours
+    # Duration of the showdown in minutes
     duration = IntField()
     meta = {"collection": "showdown"}
 
@@ -48,7 +48,9 @@ class Showdown(Document):
         """
         Get whether this showdown has ended
         """
-        return datetime.now() > self.get_start_date() + timedelta(hours=self.get_duration())
+        return datetime.now() > self.get_start_date() + timedelta(
+            minutes=self.get_duration()
+        )
 
     def get_duration(self):
         """
@@ -81,7 +83,7 @@ class Showdown(Document):
         """
         return (
             self.get_start_date()
-            + timedelta(hours=self.get_duration())
+            + timedelta(minutes=self.get_duration())
             - datetime.now()
         )
 
