@@ -53,7 +53,7 @@ export default class PhotoThumbnail extends React.Component<
       .get("/download", {
         params: {
           token: token,
-          photo_id: this.props.id,
+          photoId: this.props.id,
         },
       })
       .then((r) => {

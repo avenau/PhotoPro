@@ -24,7 +24,7 @@ def photo_detail_results(photo_id, token):
     except:
         raise Error.PhotoDNE("Photo with ID: " + photo_id + " couldn't be found.")
         
-    if this_photo.is_deleted:
+    if this_photo.is_deleted():
         raise Error.PhotoDNE("Photo " + photo_id + " has been deleted")
     # If signed in
     if req_user != "":
