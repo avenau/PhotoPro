@@ -39,7 +39,7 @@ class PhotoContents extends React.Component<Props, any> {
   // const [titleName, setTitle] = useState("Photo Title");
   // const [nickname, setNick] = useState("Artist Nickname");
   // const [email, setEmail] = useState("Artist Email");
-  // const [likes, setLikes] = useState(0);
+  // const [likes, set1s] = useState(0);
   // const [isLoaded, setLoad] = useState(false);
   // const [tags, setTags] = useState<string[]>([]);
   // const [artist, setArtist] = useState("");
@@ -170,7 +170,8 @@ class PhotoContents extends React.Component<Props, any> {
         document.body.appendChild(link);
         link.click();
         link.remove();
-      });
+      })
+      .catch(() => {});
   }
 
   // Determine whether to show buttons for:
