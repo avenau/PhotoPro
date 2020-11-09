@@ -799,7 +799,6 @@ def download_full_photo():
     """
     token = request.args.get("token")
     photo_id = request.args.get("photoId")
-    print("They want to download photo " + photo_id)
     try:
         req_user = token_functions.get_uid(token)
     except:
