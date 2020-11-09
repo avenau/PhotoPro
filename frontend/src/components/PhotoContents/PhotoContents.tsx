@@ -34,6 +34,7 @@ class PhotoContents extends React.Component<Props, any> {
       isArtist: false,
       comments: [],
       loading: true,
+      msg: "Loading...",
     };
   }
   // const [titleName, setTitle] = useState("Photo Title");
@@ -262,7 +263,7 @@ class PhotoContents extends React.Component<Props, any> {
     ) : (
       <div>
         {" "}
-        <p>{"Loading..."}</p>{" "}
+        <p>{this.state.msg}</p>{" "}
       </div>
     );
   }

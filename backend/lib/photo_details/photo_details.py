@@ -21,9 +21,11 @@ def photo_detail_results(photo_id, token):
         req_user = ""
     try:
         this_photo = Photo.objects.get(id=photo_id)
-    except Photo.DoesNotExist:
+    except:
         raise Error.PhotoDNE("Photo with ID: " + photo_id + " couldn't be found.")
         
+    if this_photo.is_deleted:
+        raise Error.PhotoDNE("Photo " + photo_id + " has been deleted")
     # If signed in
     if req_user != "":
         this_user = User.objects.get(id=req_user)

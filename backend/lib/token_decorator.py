@@ -56,10 +56,10 @@ def validate_token(function):
         # Check that token is correct format
         if isinstance(token, str) is False:
             print("Token is not a string")
-            raise TokenError("Please log in to use this feature")
+            raise TokenError("Please log in to use this feature.")
         if token == '':
             print("Token is an empty string")
-            raise TokenError("Please log in to use this feature")
+            raise TokenError("Please log in to use this feature.")
 
         # Try decoding
         try:
