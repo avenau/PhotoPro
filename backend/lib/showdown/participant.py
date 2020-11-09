@@ -36,13 +36,16 @@ class Participant(Document):
     def get_votes(self):
         return self.votes
 
+    def count_votes(self):
+        return self.votes
+
     def get_photo(self):
         return self.photo
 
     def set_photo(self, new_photo):
         self.photo = new_photo
 
-    def get_won(self):
+    def has_won(self):
         return self.won
 
     def set_won(self, status):

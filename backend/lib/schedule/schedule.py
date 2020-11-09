@@ -26,8 +26,7 @@ def initialise_schedule():
 
     # Create timer with duration of showdown time remaining
     dur = current_showdown.get_time_remaining()
-    timer = Timer(dur.total_seconds(), create_showdown, args=[current_showdown])
-    print(dur.total_seconds())
+    timer = Timer(dur.total_seconds(), initialise_schedule)
     timer.setDaemon(True)
     timer.start()
 
@@ -36,15 +35,14 @@ def create_showdown(prev_showdown):
     """
     Create a new showdown entry
     """
-    photos = PopularPhoto.objects().order_by("-likes")[:2]
+    pop_photos = PopularPhoto.objects().order_by("-likes")[:2]
     participants = []
-    if len(photos) == 2:
-        for photo in photos:
+    if len(pop_photos) == 2:
+        for pop_photo in pop_photos:
+            photo = pop_photo.get_photo()
             participant = Participant(photo=photo)
             participant.save()
             participants.append(participant)
-
-    empty_popular()
 
     showdown = Showdown(
         start_date=datetime.now(),
@@ -53,6 +51,13 @@ def create_showdown(prev_showdown):
         participants=participants,
     )
     showdown.save()
+
+    # Reset the popular lists
+    empty_popular()
+
+    # Declare winner for previous showdown
+    prev_showdown.declare_winner()
+
     return showdown
 
 
