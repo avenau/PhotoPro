@@ -111,7 +111,7 @@ def get_all_comments(p_id, current_date, order):
             minute_diff = math.trunc(time_diff_sec/60)
             time_after = str(minute_diff) + " minutes ago"
         else:
-            time_after = "moments seconds ago"
+            time_after = "just now"
         
         comment_id = str(comment.get_id())
         
