@@ -44,7 +44,6 @@ def album_photo_search(data):
                     "title": 1,
                     "price": 1,
                     "discount": 1,
-                    "metadata": 1,
                     "extension": 1,
                     '''
                     "is_album": {
@@ -62,7 +61,7 @@ def album_photo_search(data):
     )
     res = loads(dumps(res))
     for result in res:
-        result["photoStr"] = photo.Photo.objects.get(id=result["id"]).get_thumbnail(req_user)
+        result["metadata"], result["photoStr"] = photo.Photo.objects.get(id=result["id"]).get_thumbnail(req_user)
     return res
     """
     """

@@ -115,7 +115,6 @@ def photo_search(data):
                     "title": 1,
                     "price": 1,
                     "discount": 1,
-                    "metadata": 1,
                     "extension": 1,
                     "created": "$posted",
                     "user": {"$toString": "$user"},
@@ -136,7 +135,7 @@ def photo_search(data):
 
     for result in res:
         cur_photo = Photo.objects.get(id=result["id"])
-        result["photoStr"] = cur_photo.get_thumbnail(req_user)
+        result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
         if req_user:
             result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (cur_photo.is_photo_owner(req_user_obj))
 
