@@ -46,7 +46,11 @@ from lib.photo.photo_edit import get_photo_edit
 from lib.photo.remove_photo import remove_photo
 
 # Photo details
-from lib.photo_details.photo_details import photo_detail_results, is_photo_liked, like_photo
+from lib.photo_details.photo_details import (
+    photo_detail_results,
+    is_photo_liked,
+    like_photo,
+)
 
 
 # Profile
@@ -66,6 +70,7 @@ from lib.search.search import album_search, photo_search, user_search, collectio
 # Showdown
 from lib.showdown import get_images
 from lib.showdown import showdown_likes
+
 # Schedule
 from lib.schedule.schedule import initialise_schedule
 
@@ -252,16 +257,16 @@ def _account_registration():
         )
 
     this_user = user.User(
-        fname=new_user['fname'],
-        lname=new_user['lname'],
-        email=new_user['email'],
-        nickname=new_user['nickname'],
-        password=new_user['password'],
-        profile_pic=new_user['profilePic'],
-        extension=new_user['extension'],
-        location=new_user['location'],
-        about_me=new_user['aboutMe'],
-        created=datetime.now()
+        fname=new_user["fname"],
+        lname=new_user["lname"],
+        email=new_user["email"],
+        nickname=new_user["nickname"],
+        password=new_user["password"],
+        profile_pic=new_user["profilePic"],
+        extension=new_user["extension"],
+        location=new_user["location"],
+        about_me=new_user["aboutMe"],
+        created=datetime.now(),
     )
     this_user.save()
 
@@ -728,9 +733,7 @@ def buy_photo():
 
     metadata, photoStr = this_photo.get_thumbnail(user_id)
 
-    return dumps({"metadata": metadata, 
-                    "photoStr": photoStr, 
-                    "purchased": True})
+    return dumps({"metadata": metadata, "photoStr": photoStr, "purchased": True})
 
 
 @app.route("/purchasealbum", methods=["POST"])
@@ -758,6 +761,7 @@ def buy_album():
         raise Error.ValidationError("You need to log in to purchase an album.")
 
     return dumps(purchase_album(user_id, album_id))
+
 
 @app.route("/download", methods=["GET"])
 @validate_token
@@ -787,7 +791,11 @@ def download_full_photo():
         req_user = ""
 
     requested_photo_object = lib.photo.photo.Photo.objects.get(id=photo_id)
-    requested_metadata, requested_b64, requested_extension = requested_photo_object.get_full_image(req_user)
+    (
+        requested_metadata,
+        requested_b64,
+        requested_extension,
+    ) = requested_photo_object.get_full_image(req_user)
 
     return dumps(
         {
@@ -842,6 +850,7 @@ def _showdown_getwinner():
     path = get_images.get_showdown_winner_image()
     return dumps({"path": path})
 
+
 @app.route("/showdown/updatelikes", methods=["POST"])
 @validate_token
 def _update_likes():
@@ -859,7 +868,7 @@ def _update_likes():
     Returns
     -------
     {
-        "liked" : string (returns "liked" if the photo is liked, "unliked" if photo is unliked and "swap" 
+        "liked" : string (returns "liked" if the photo is liked, "unliked" if photo is unliked and "swap"
                     if the current photo is being liked while the other showdown photo is still liked. The other showdown will be unliked.)
         "like_count" : number
     }
@@ -875,7 +884,6 @@ def _update_likes():
             "like_count": showdown_likes.get_showdown_likes(part_id),
         }
     )
-    
 
 
 @app.route("/welcome/popularcontributors", methods=["GET"])
@@ -893,9 +901,8 @@ def _welcome_get_contributors():
     -------
     A list of images
     """
-    return dumps(
-        get_popular_contributors_images()
-    )
+    return dumps(get_popular_contributors_images())
+
 
 @app.route("/welcome/getPopularImages", methods=["GET"])
 def _welcome_get_popular_images():
@@ -916,6 +923,7 @@ def _welcome_get_popular_images():
     images = get_popular_images()
     return dumps({"popular_images": images})
 
+
 @app.route("/welcome/recommend/compute", methods=["GET"])
 @validate_token
 def welcome_compute_recommend():
@@ -935,8 +943,9 @@ def welcome_compute_recommend():
 
     """
     u_id = get_uid(request.args.get("token"))
-    return(generate_recommend(u_id))
-   
+    return generate_recommend(u_id)
+
+
 @app.route("/welcome/recommend", methods=["GET"])
 @validate_token
 def welcome_recommend_photos():
@@ -944,7 +953,7 @@ def welcome_recommend_photos():
     Description
     -----------
     Get recommended photos for a registered user.
-    
+
     Parameters
     ----------
     query : string[] // list of recommended topics
@@ -968,6 +977,7 @@ def welcome_recommend_photos():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
     return dumps(recommend_photos(data))
+
 
 @app.route("/userdetails", methods=["GET"])
 def _user_info_with_token():
@@ -1432,6 +1442,7 @@ def _photo_details_page():
     token = request.args.get("token")
     return photo_detail_results(photo_id, token)
 
+
 @app.route("/comments/get_comments", methods=["GET"])
 def _get_comments():
     """
@@ -1464,6 +1475,7 @@ def _get_comments():
 
     return dumps({"comments": all_comments, "status": True})
 
+
 @app.route("/photo_details/isLiked", methods=["GET"])
 @validate_token
 def _photo_liked():
@@ -1487,6 +1499,7 @@ def _photo_liked():
     token = request.args.get("token")
     is_liked = is_photo_liked(photo_id, token)
     return dumps({"isLiked": is_liked})
+
 
 @app.route("/photo_details/like_photo", methods=["POST"])
 def _like_photo():
@@ -1512,13 +1525,11 @@ def _like_photo():
     except:
         u_id = ""
         logged_in = False
-    
+
     # print("APP TOKEN")
     # print(token)
     liked = like_photo(u_id, photo_id)
-    return dumps({
-                "liked": liked, 
-                "loggedIn": logged_in})
+    return dumps({"liked": liked, "loggedIn": logged_in})
 
 
 @app.route("/comments/postcomment", methods=["POST"])
@@ -1580,15 +1591,18 @@ def _delete_comments():
 
     return dumps({})
 
+
 """
 ---------------------
 - Collection Routes -
 ---------------------
 """
+
+
 @app.route("/collection/get", methods=["GET"])
 @validate_token
 def _get_collection():
-    '''
+    """
     Description
     -----------
     Get a Collection as a json object
@@ -1608,9 +1622,9 @@ def _get_collection():
         price: int,
         originalPrice: int
     }
-    '''
-    token = request.args.get('token')
-    collection_id = request.args.get('collectionId')
+    """
+    token = request.args.get("token")
+    collection_id = request.args.get("collectionId")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _collection = collection.Collection.objects.get(id=collection_id)
     owns = _collection.get_created_by() == _user
@@ -1618,17 +1632,21 @@ def _get_collection():
         return dumps({}), 401
     if _collection.is_deleted():
         raise Error.ValueError("Collection is deleted")
-    user_price, price_without_own = collection_functions.get_user_price(_user, _collection)
+    user_price, price_without_own = collection_functions.get_user_price(
+        _user, _collection
+    )
 
-    return dumps({ 
-            'title': _collection.get_title(),
-            'private': _collection.is_private(),
-            'price': user_price,
-            'tags': _collection.get_tags(),
-            'price': user_price,
-            'originalPrice': price_without_own,
-            'isOwner': owns})
-
+    return dumps(
+        {
+            "title": _collection.get_title(),
+            "private": _collection.is_private(),
+            "price": user_price,
+            "tags": _collection.get_tags(),
+            "price": user_price,
+            "originalPrice": price_without_own,
+            "isOwner": owns,
+        }
+    )
 
 
 @app.route("/collection/getall", methods=["GET"])
@@ -1661,18 +1679,17 @@ def _get_all_collections():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-    _user = user.User.objects.get(id=data['query'])
+    _user = user.User.objects.get(id=data["query"])
     _collections = collection.Collection.objects(created_by=_user, deleted=False)
     json_collection = []
     # Add the id as a string
     for index, col in enumerate(loads(_collections.to_json())):
         json_collection.append(col)
-        json_collection[index]['id'] = col['_id']['$oid']
+        json_collection[index]["id"] = col["_id"]["$oid"]
     return dumps(json_collection)
 
 
-
-@app.route("/collection", methods=["POST"])
+@app.route("/collection/add", methods=["POST"])
 @validate_token
 def _create_collection():
     """
@@ -1701,10 +1718,11 @@ def _create_collection():
     # Return Collection ID
     return dumps({"collection_id": collection_id})
 
-@app.route('/collection/update', methods=['PUT'])
+
+@app.route("/collection/update", methods=["PUT"])
 @validate_token
 def _update_collection():
-    '''
+    """
     Update Collection with the following parameters
 
     Parameters
@@ -1714,11 +1732,11 @@ def _update_collection():
     title: string
     private: boolean
     tags: string[]
-    '''
+    """
     params = request.form.to_dict()
-    token = request.args.get('token')
+    token = request.args.get("token")
     u_id = token_functions.get_uid(token)
-    collection_id = request.args.get('collectionId')
+    collection_id = request.args.get("collectionId")
     _user = user.User.objects.get(id=u_id)
     if not _user:
         raise Error.UserDNE("Could not find user")
@@ -1729,6 +1747,7 @@ def _update_collection():
         raise PermissionError("User not permitted to edit this Collection")
 
     collection_functions.update_collection(params, _collection)
+
 
 @app.route("/collection/delete", methods=["DELETE"])
 @validate_token
@@ -1748,8 +1767,8 @@ def _delete_collection():
     { 'collection_id': string }
     """
     # Get arguments
-    u_id = token_functions.get_uid(request.args.get('token'))
-    collection_id = request.args.get('_id')
+    u_id = token_functions.get_uid(request.args.get("token"))
+    collection_id = request.args.get("_id")
     # Get Objects
     _user = user.User.objects.get(id=u_id)
     _collection = collection.Collection.objects.get(id=collection_id)
@@ -1892,7 +1911,7 @@ def _get_album():
     album_id = request.args.get("album_id")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=request.args.get("album_id"))
-   
+
     return {
         "title": _album.get_title(),
         "discount": _album.get_discount(),
@@ -1901,7 +1920,8 @@ def _get_album():
         "owner": str(_album.get_created_by().get_id()),
     }
 
-@app.route('/album/checkpurchased', methods=["GET"])
+
+@app.route("/album/checkpurchased", methods=["GET"])
 def _check_puchased():
     """
     Check if the album has already been purchased
@@ -1913,12 +1933,14 @@ def _check_puchased():
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=request.args.get("albumId"))
 
-    purchased = all(alb_photo in _user.get_purchased() for alb_photo in _album.get_photos())
+    purchased = all(
+        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos()
+    )
 
-    return dumps({
-        "purchased": purchased
-    })
-@app.route('/album/delete', methods=['DELETE'])
+    return dumps({"purchased": purchased})
+
+
+@app.route("/album/delete", methods=["DELETE"])
 @validate_token
 def _delete_album():
     """
@@ -2015,7 +2037,7 @@ def _albums():
     return dumps(get_albums(_user))
 
 
-@app.route("/albums/add", methods=["POST"])
+@app.route("/album/add", methods=["POST"])
 @validate_token
 def _add_album():
     """
