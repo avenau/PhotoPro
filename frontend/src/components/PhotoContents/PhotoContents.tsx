@@ -199,7 +199,10 @@ class PhotoContents extends React.Component<Props, any> {
         <Button className="ml-1" onClick={(e) => this.purchasePhoto(e)}>
           Purchase Photo
         </Button>
-        <Price price={this.state.price} discount={this.state.discount} />
+        <Price
+          fullPrice={this.state.fullPrice}
+          discount={this.state.discount}
+        />
       </div>
     );
   }
