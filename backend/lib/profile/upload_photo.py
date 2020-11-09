@@ -18,8 +18,6 @@ def extension_to_mimetype(extension):
         mime = "JPEG"
     elif extension == ".png":
         mime = "PNG"
-    elif extension == ".gif":
-        mime = "GIF"
     elif extension == ".svg":
         mime = "SVG+XML"
     

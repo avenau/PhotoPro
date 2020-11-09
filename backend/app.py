@@ -37,7 +37,7 @@ from lib.album.album_purchase import purchase_album, get_price
 
 # Comments
 import lib.comment.comment_photo as comment_photo
-from lib.comment.get_comments import get_all_comments
+from lib.photo_details.photo_details import get_all_comments
 from datetime import datetime
 
 # Photo
@@ -772,7 +772,6 @@ def download_full_photo():
     """
     token = request.args.get("token")
     photo_id = request.args.get("photoId")
-    print("They want to download photo " + photo_id)
     try:
         req_user = token_functions.get_uid(token)
     except:
@@ -1390,6 +1389,37 @@ def _photo_details_page():
     token = request.args.get("token")
     return photo_detail_results(photo_id, token)
 
+@app.route("/comments/get_comments", methods=["GET"])
+def _get_comments():
+    """
+    Description
+    -----------
+    Get Comments of a photo
+
+    Parameters
+    ----------
+    p_id : string
+    new_to_old : boolean
+
+    Returns
+    -------
+    {
+        comments: [{commenter: string,
+                     comment : string,
+                     datePosted : date}]
+    }
+    """
+    photo_id = request.args.get("p_id")
+    # offset = request.args.get("offset")
+    # limit = request.args.get("limit")
+    order = request.args.get("new_to_old")
+    print("getcomments")
+    print(order)
+    current_date = datetime.now()
+    # print(current_date)
+    all_comments = get_all_comments(photo_id, current_date, order)
+
+    return dumps({"comments": all_comments, "status": True})
 
 @app.route("/photo_details/isLiked", methods=["GET"])
 @validate_token
@@ -1414,39 +1444,6 @@ def _photo_liked():
     token = request.args.get("token")
     is_liked = is_photo_liked(photo_id, token)
     return dumps({"isLiked": is_liked})
-
-@app.route("/comments/get_comments", methods=["GET"])
-def _get_comments():
-    """
-    Description
-    -----------
-    Get Comments of a photo
-
-    Parameters
-    ----------
-    p_id : string
-    offset : number
-    limit : number (-1 if want to return all of comments)
-    new_to_old : boolean
-
-    Returns
-    -------
-    {
-        comments: [{commenter: string,
-                     comment : string,
-                     datePosted : date}]
-    }
-    """
-    photo_id = request.args.get("p_id")
-    # offset = request.args.get("offset")
-    # limit = request.args.get("limit")
-    order = request.args.get("new_to_old")
-    current_date = datetime.now()
-    # print(current_date)
-    all_comments = get_all_comments(photo_id, current_date, order)
-
-    return dumps({"comments": all_comments, "status": True})
-
 
 @app.route("/photo_details/like_photo", methods=["POST"])
 def _like_photo():
@@ -1481,7 +1478,7 @@ def _like_photo():
                 "loggedIn": logged_in})
 
 
-@app.route("/comments/comment", methods=["POST"])
+@app.route("/comments/postcomment", methods=["POST"])
 @validate_token
 def _comment_on_photo():
     """

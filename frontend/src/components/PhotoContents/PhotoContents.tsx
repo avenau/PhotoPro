@@ -32,13 +32,15 @@ class PhotoContents extends React.Component<Props, any> {
       photoB64: "",
       deleted: false,
       isArtist: false,
+      comments: [],
       loading: true,
+      msg: "Loading...",
     };
   }
   // const [titleName, setTitle] = useState("Photo Title");
   // const [nickname, setNick] = useState("Artist Nickname");
   // const [email, setEmail] = useState("Artist Email");
-  // const [likes, setLikes] = useState(0);
+  // const [likes, set1s] = useState(0);
   // const [isLoaded, setLoad] = useState(false);
   // const [tags, setTags] = useState<string[]>([]);
   // const [artist, setArtist] = useState("");
@@ -63,7 +65,6 @@ class PhotoContents extends React.Component<Props, any> {
   // };
 
   componentDidMount() {
-    console.log(this.props.photoId);
     axios
       .get("/photodetailspage", {
         params: {
@@ -72,7 +73,13 @@ class PhotoContents extends React.Component<Props, any> {
         },
       })
       .then((res) => {
-        console.log("isLiked is " + res.data.is_liked);
+        const tempComments = [];
+        for (const comment of res.data.comments) {
+          tempComments.push(JSON.parse(comment));
+        }
+        this.setState({
+          comments: tempComments,
+        });
         this.setState({
           artistId: res.data.artist_id,
           nickname: res.data.artist_nickname,
@@ -90,7 +97,6 @@ class PhotoContents extends React.Component<Props, any> {
           isArtist: res.data.is_artist,
           loading: false,
         });
-        console.log("isLiked is now " + res.data.is_liked);
       })
       .catch(() => {});
   }
@@ -165,7 +171,8 @@ class PhotoContents extends React.Component<Props, any> {
         document.body.appendChild(link);
         link.click();
         link.remove();
-      });
+      })
+      .catch(() => {});
   }
 
   // Determine whether to show buttons for:
@@ -199,12 +206,14 @@ class PhotoContents extends React.Component<Props, any> {
         <Button className="ml-1" onClick={(e) => this.purchasePhoto(e)}>
           Purchase Photo
         </Button>
-        <Price price={this.state.price} discount={this.state.discount} />
+        <Price
+          fullPrice={this.state.fullPrice}
+          discount={this.state.discount}
+        />
       </div>
     );
   }
   render() {
-    console.log("render");
     return !this.state.loading ? (
       <div className="PhotoContents">
         <Container className="container">
@@ -227,7 +236,11 @@ class PhotoContents extends React.Component<Props, any> {
               </h2>
             </Row>
             <Row>
-              by {this.state.nickname} on {this.state.postedDate}
+              by{" "}
+              <a className="mx-1" href={`/user/${this.state.artistId}`}>
+                {this.state.nickname}
+              </a>{" "}
+              on {this.state.postedDate}
             </Row>
             <Row>{this.state.email}</Row>
           </div>
@@ -242,12 +255,15 @@ class PhotoContents extends React.Component<Props, any> {
             </Col>
           </Row>
         </Container>
-        <PhotoComments p_id={this.props.photoId} />
+        <PhotoComments
+          p_id={this.props.photoId}
+          comments={this.state.comments}
+        />
       </div>
     ) : (
       <div>
         {" "}
-        <p>{"Loading..."}</p>{" "}
+        <p>{this.state.msg}</p>{" "}
       </div>
     );
   }

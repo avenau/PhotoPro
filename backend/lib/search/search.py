@@ -73,11 +73,9 @@ def photo_search(data):
     Search photo collection
     """
     sort = get_sort_method(data["orderby"])
-    valid_extensions = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
+    valid_extensions = [".jpg", ".jpeg", ".png", ".svg"]
     if data["filetype"] == "jpgpng":
         valid_extensions = [".jpg", ".jpeg", ".png"]
-    elif data["filetype"] == "gif":
-        valid_extensions = [".gif"]
     elif data["filetype"] == "svg":
         valid_extensions = [".svg"]
 

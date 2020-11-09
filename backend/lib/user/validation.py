@@ -44,6 +44,6 @@ def validate_extension(extension):
 
     mongoengine.StringField().validate(extension)
     # TODO Properly handly no profile picture
-    exts = ["", ".jpg", ".jpeg", ".png", ".gif", ".svg"]
+    exts = ["", ".jpg", ".jpeg", ".png", ".svg"]
     if extension not in exts:
         raise Error.ValueError("Unacceptable file type")
