@@ -24,7 +24,7 @@ def get_popular_contributors_images(artists=10):
                 "$match": {
                     "likes": {"$gt": 0}
                 }
-            }
+            },
             {
                 "$project": {
                     "user": {"$toString": "$user"},
