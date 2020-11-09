@@ -24,6 +24,7 @@ import UploadPage from "./pages/UploadPage/UploadPage";
 import DownloadExample from "./pages/DownloadExample";
 import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
 import AlbumDetails from './pages/AlbumDetails/AlbumDetails';
+import CollectionDetails from './pages/CollectionDetails/CollectionDetails';
 
 interface Props {}
 
@@ -118,9 +119,15 @@ class App extends React.Component<Props, State> {
             path="/album/manage/:album_id"
             component={ManageAlbum}
           />
-          <Route
+          <ProtectedRoute
+          valid={this.state.valid}
+          exact
           path="/album/:album_id"
           component={AlbumDetails}
+          />
+          <Route
+          path="/collection/:collection_id"
+          component={CollectionDetails}
           />
           <ProtectedRoute
             valid={this.state.valid}

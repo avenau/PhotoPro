@@ -6,11 +6,12 @@ import AlbumList from "../Lists/AlbumList";
 import CollectionList from "../Lists/CollectionList";
 import PhotoList from "../Lists/PhotoList";
 import UserList from "../Lists/UserList";
+import ArtistList from "../Lists/ArtistList";
 
 interface Props {
   query: string;
   route: string;
-  type: "photo" | "album" | "collection" | "user" | "albumPhotos";
+  type: "photo" | "album" | "collection" | "user" | "artist" | "albumPhotos";
   orderby?: string;
   filetype?: string;
   priceMin?: number;
@@ -50,6 +51,7 @@ export default class ContentLoader extends React.Component<Props, State> {
 
   private getResults() {
     this.setState({ loading: true });
+    console.log('content loader', this.state.query)
     axios
       .get(this.props.route, {
         params: {
@@ -64,6 +66,7 @@ export default class ContentLoader extends React.Component<Props, State> {
         },
       })
       .then((res) => {
+        console.log(res);
         this.setState((prevState) => ({
           loading: false,
           results: [...prevState.results, ...res.data],
@@ -78,21 +81,29 @@ export default class ContentLoader extends React.Component<Props, State> {
   private getList() {
     switch (this.props.type) {
       case "photo":
-        return <PhotoList photos={this.state.results}
-                          addPhotoId={(newPhotoId: string) =>
-                                        this.props.addPhotoId?.(newPhotoId)
-                                    }/>
+        return (
+          <PhotoList
+            photos={this.state.results}
+            addPhotoId={this.props.addPhotoId}
+          />
+        );
       case "album":
         return <AlbumList albums={this.state.results} />;
       case "collection":
         return <CollectionList collections={this.state.results} />;
       case "user":
         return <UserList users={this.state.results} />;
+      case "artist":
+        return <ArtistList artists={this.state.results}/>;
       case "albumPhotos":
-        return <PhotoList photos={this.state.results}
-                          addPhotoId={(newPhotoId: string) =>
-                                      this.props.addPhotoId?.(newPhotoId)
-                                    }/>
+        return (
+          <PhotoList
+            photos={this.state.results}
+            addPhotoId={(newPhotoId: string) =>
+              this.props.addPhotoId?.(newPhotoId)
+            }
+          />
+        );
       default:
         return <div>Error: Invalid seach type: {this.props.type}</div>;
     }
