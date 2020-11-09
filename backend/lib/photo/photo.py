@@ -355,13 +355,13 @@ class Photo(Document):
         try:
             this_user = user.User.objects.get(id=u_id)
             if self in this_user.get_all_purchased() or this_user == self.get_user():
-                return find_photo(f"{self.get_id()}{extension}")
+                return [metadata, find_photo(f"{self.get_id()}{extension}"), extension]
             else:
                 if extension == ".svg":
                     metadata = metadata.replace("svg+xml", "png")
                     extension = ".png"
 
-                return find_photo(f"{self.get_id()}_w{extension}")
+                return [metadata, find_photo(f"{self.get_id()}_w{extension}"), extension]
         except:
             if extension == ".svg":
                 metadata = metadata.replace("svg+xml", "png")
