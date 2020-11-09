@@ -35,26 +35,7 @@ def photo_detail_results(photo_id, token):
         purchased = False
         is_artist = False
 
-    # if purchased == False and is_artist == False and this_photo.is_deleted() == True:
-    #     return dumps(
-    #         {
-    #             "u_id": "",
-    #             "title": "",
-    #             "likes": "",
-    #             "tagsList": "",
-    #             "nickname": "",
-    #             "email": "",
-    #             "purchased": False,
-    #             "metadata": "",
-    #             "price": "",
-    #             "discount": "",
-    #             "deleted": this_photo.is_deleted(),
-    #             "photoStr": "",
-    #             "status": 1,
-    #             "is_artist": is_artist,
-    #         }
-    #     )
-
+    metadata, thumbnail_b64 = this_photo.get_thumbnail(req_user)
     details = {
                     "artist_id": str(this_photo.get_user().get_id()),
                     "artist_nickname": this_photo.get_user().get_nickname(),
@@ -68,22 +49,13 @@ def photo_detail_results(photo_id, token):
                     "tagsList": this_photo.get_tags(),
                     "purchased": purchased,
                     "metadata": this_photo.get_metadata(),
-                    "photoStr": this_photo.get_thumbnail(req_user),
+                    "photoStr": thumbnail_b64,
                     "deleted": this_photo.is_deleted(),
                     "is_artist": is_artist,
                     "comments": get_all_comments(photo_id, datetime.now(), "true")
                 }
-                
-    # comment_details = get_all_comments(photo_id, datetime.now(), True)
-
-    # details_without_comments -> union(details_without_comments, comment_details)
-    # details_without_comments.update(comment_details)
-    # print(details_without_comments)
-
-    # note that details_without_comments contains comment_details after
-    # the .update() in the line above
+            
     return dumps(details)
-    # return dumps(details_without_comments)
 
 def get_all_comments(p_id, current_date, order):
     '''
