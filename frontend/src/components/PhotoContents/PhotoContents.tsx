@@ -227,7 +227,11 @@ class PhotoContents extends React.Component<Props, any> {
               </h2>
             </Row>
             <Row>
-              by {this.state.nickname} on {this.state.postedDate}
+              by{" "}
+              <a className="mx-1" href={`/user/${this.state.artistId}`}>
+                {this.state.nickname}
+              </a>{" "}
+              on {this.state.postedDate}
             </Row>
             <Row>{this.state.email}</Row>
           </div>
