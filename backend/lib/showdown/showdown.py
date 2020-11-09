@@ -2,8 +2,7 @@
 User Class for mongoengine
 """
 
-import datetime
-from datetime import timedelta
+from datetime import timedelta, datetime
 from mongoengine import ListField
 from mongoengine import IntField
 from mongoengine import Document
@@ -12,7 +11,7 @@ from mongoengine.fields import DateTimeField
 
 import lib.photo.photo as photo
 import lib.user.user as user
-import lib.showdown.participating
+import lib.showdown.participant as participant
 import lib.showdown.validation as validation
 import lib.Error as Error
 
@@ -27,13 +26,13 @@ class Showdown(Document):
     # Which photo was the winner of this showdown
     winner = ReferenceField("photo.Photo")
     # Which photos are participating in the showdown
-    participating = ListField(
-        ReferenceField("lib.showdown.participating.Participating"),
-        validation=validation.validate_participating,
+    participants = ListField(
+        ReferenceField("participant.Participant"),
+        validation=validation.validate_participants,
     )
     # Previous showdown
     previous = ReferenceField("self")
-    # Duration of the showdown in hours
+    # Duration of the showdown in minutes
     duration = IntField()
     meta = {"collection": "showdown"}
 
@@ -49,8 +48,8 @@ class Showdown(Document):
         """
         Get whether this showdown has ended
         """
-        return datetime.datetime.now() > self.get_start_date() + timedelta(
-            hours=self.get_duration()
+        return datetime.now() > self.get_start_date() + timedelta(
+            minutes=self.get_duration()
         )
 
     def get_duration(self):
@@ -69,7 +68,7 @@ class Showdown(Document):
         """
         Add a participant to the showdown
         """
-        self.participating.append(participant)
+        self.participants.append(participant)
 
     def get_start_date(self):
         """
@@ -77,13 +76,35 @@ class Showdown(Document):
         """
         return self.start_date
 
-    def was_last(self):
+    def get_time_remaining(self):
         """
-        Get the start datetime of the showdown
+        Get the time remaining in the showdown, this should only
+        be used if the showdown has not ended
         """
-        return datetime.datetime.now() < self.get_start_date() + (
-            2 * timedelta(hours=self.get_duration())
+        return (
+            self.get_start_date()
+            + timedelta(minutes=self.get_duration())
+            - datetime.now()
         )
+
+    def declare_winner(self):
+        """
+        If a winner has not yet been declared then declare one
+        """
+        if len(self.participants) != 2:
+            return
+
+        p0 = self.participants[0]
+        p1 = self.participants[1]
+
+        if p0.count_votes() > p1.count_votes():
+            # p0 is winner
+            p0.set_won(True)
+            self.winner = p0
+        elif p0.count_votes() < p1.count_votes():
+            # p1 is winner
+            p1.set_won(True)
+            self.winner = p1
 
     # User Document validation
     # ------------------------
@@ -92,3 +113,4 @@ class Showdown(Document):
         Run on every User.save()
         Add validation checks here
         """
+        pass

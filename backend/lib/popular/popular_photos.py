@@ -31,9 +31,9 @@ class PopularPhoto(Document):
 
     def get_photo(self):
         """
-        Object id of the photo
+        Retrun photo entry
         """
-        return self.id
+        return self.photo
 
     def add_like(self):
         """
@@ -46,6 +46,12 @@ class PopularPhoto(Document):
         Remove a like - THIS SHOULD ALLOW NEGATIVE VALUES
         """
         self.likes -= 1
+
+    def reset_likes(self):
+        """
+        Set likes to 0
+        """
+        self.likes = 0
 
     # PopularPhoto Document validation
     # ------------------------
