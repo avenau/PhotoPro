@@ -1,6 +1,5 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { withRouter } from "react-router";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import axios from "axios";
 import Image from "react-bootstrap/Image";
 import Price from "../Price";
