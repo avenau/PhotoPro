@@ -22,9 +22,9 @@ def validate_album(albums):
 def validate_extension(extension):
     '''
     Check that the extension is valid:
-    .jpg, .jpeg, .png, .gif, .svg
+    .jpg, .jpeg, .png, .svg
     '''
-    exts = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
+    exts = [".jpg", ".jpeg", ".png", ".svg"]
     if extension not in exts:
         raise ValueError("Attempted to upload a file type we don't accept.")
 
