@@ -330,6 +330,8 @@ class Photo(Document):
         '''
         Get the watermarked or non watermarked thumbnail based on
         whether the u_id passed in owns the photo
+
+        Returns metadata and base64 string
         '''
 
         # SVG thumbnails are in png format

@@ -48,7 +48,7 @@ def photo_detail_results(photo_id, token):
                     "is_liked": is_photo_liked(this_photo, this_user) if req_user else False,
                     "tagsList": this_photo.get_tags(),
                     "purchased": purchased,
-                    "metadata": this_photo.get_metadata(),
+                    "metadata": metadata,
                     "photoStr": thumbnail_b64,
                     "deleted": this_photo.is_deleted(),
                     "is_artist": is_artist,
