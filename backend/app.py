@@ -262,7 +262,6 @@ def _account_registration():
         nickname=new_user["nickname"],
         password=new_user["password"],
         profile_pic=new_user["profilePic"],
-        extension=new_user["extension"],
         location=new_user["location"],
         about_me=new_user["aboutMe"],
         created=datetime.now(),
