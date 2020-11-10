@@ -17,6 +17,7 @@ interface Props {
   priceMin?: number;
   priceMax?: number;
   curatedFeed?: boolean;
+  popular?: boolean;
   addPhotoId?: (newPhotoId: string) => void;
   updatePage?: () => void;
 }
@@ -98,6 +99,7 @@ export default class ContentLoader extends React.Component<Props, State> {
           <PhotoList
             photos={this.state.results}
             addPhotoId={this.props.addPhotoId}
+            popular={this.props.popular}
           />
         );
       case "album":

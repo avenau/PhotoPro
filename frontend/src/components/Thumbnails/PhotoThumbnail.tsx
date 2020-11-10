@@ -15,6 +15,8 @@ interface Props extends RouteComponentProps {
   metadata: string;
   user: string;
   owns: boolean;
+  popular?: boolean;
+  likes: number;
   updatePage?: () => void;
 }
 
@@ -91,7 +93,17 @@ class PhotoThumbnail extends React.Component<
       <>
         <Image src={this.state.photoB64} className="photo-thumbnail" />
         <div className="photo-overlay">
+         
           <div>{this.props.title}</div>
+          {
+            this.props.popular ? 
+              (this.props.likes > 1 ?
+              <div style={{fontSize:"18px"}}> {this.props.likes} likes </div>
+              :
+              <div style={{fontSize:"18px"}}> {this.props.likes} like </div>)
+            : 
+              <></>
+          }
           <Price fullPrice={this.props.price} discount={this.props.discount} />
           {!this.state.owns ? (
             <LoadingButton

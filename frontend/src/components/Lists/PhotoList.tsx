@@ -5,6 +5,7 @@ import "./PhotoList.scss";
 
 interface Props extends RouteComponentProps {
   photos: Photo[];
+  popular?: boolean;
   addPhotoId?: (newPhotoId: string) => void;
   updatePage?: () => void;
 }
@@ -18,6 +19,7 @@ interface Photo {
   metadata: string;
   user: string;
   owns: boolean; // purchased or posted
+  likes: number;
 }
 
 
@@ -34,7 +36,7 @@ class PhotoList extends React.Component<Props> {
             key={photo.id}
             className="photo-result"
           >
-            <PhotoThumbnail {...photo} updatePage={this.props.updatePage}/>
+            <PhotoThumbnail {...photo} updatePage={this.props.updatePage} popular={this.props.popular}/>
           </div>
         ))}
       </div>

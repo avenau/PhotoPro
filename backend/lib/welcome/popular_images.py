@@ -17,6 +17,8 @@ def get_popular_images(u_id, offset, limit):
         discount : int
         photoStr : string
         metadata : string
+        likes: int
+        owns: boolean
         id : string
     }
     """
@@ -47,8 +49,9 @@ def get_popular_images(u_id, offset, limit):
         result["title"] = _photo.get_title()
         result["price"] = _photo.get_price()
         result["discount"] = _photo.get_discount()
-        result["metadata"], result["photoStr"] = _photo.get_thumbnail(u_id)
+        result["likes"] = _photo.get_likes()
 
+        result["metadata"], result["photoStr"] = _photo.get_thumbnail(u_id)
         # Check if photo is deleted, if it is, remove from result list
         if _photo.is_deleted():
             deleted_photos.append(result)

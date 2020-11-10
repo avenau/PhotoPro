@@ -23,6 +23,7 @@ class PopularImages extends Component<any, any> {
             query=""
             route="/welcome/getPopularImages"
             type="photo"
+            popular={true}
           />
         </Container>
       </div>
