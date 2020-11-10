@@ -45,7 +45,6 @@ def album_photo_search(data):
                     "title": 1,
                     "price": 1,
                     "discount": 1,
-                    "extension": 1,
                     "deleted": 1,
                     "user": {"$toString": "$user"},
                     "id": {"$toString": "$_id"},
