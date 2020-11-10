@@ -88,37 +88,33 @@ class PhotoThumbnail extends React.Component<
       });
   }
 
+  getLikes() {
+    return this.props.likes > 1 ? (
+      <div style={{ fontSize: "18px" }}> {this.props.likes} likes </div>
+    ) : (
+      <div style={{ fontSize: "18px" }}> {this.props.likes} like </div>
+    );
+  }
+
   render() {
     return (
       <>
         <Image src={this.state.photoB64} className="photo-thumbnail" />
         <div className="photo-overlay">
-         
           <div>{this.props.title}</div>
-          {
-            this.props.popular ? 
-              (this.props.likes > 1 ?
-              <div style={{fontSize:"18px"}}> {this.props.likes} likes </div>
-              :
-              <div style={{fontSize:"18px"}}> {this.props.likes} like </div>)
-            : 
-              <></>
-          }
+          {this.props.popular ? this.getLikes() : <></>}
           <Price fullPrice={this.props.price} discount={this.props.discount} />
           {!this.state.owns ? (
             <LoadingButton
-              content="Buy"
               loading={this.state.loading}
               onClick={(e) => {
                 this.handleBuy(e);
-                
               }}
             >
               Buy
             </LoadingButton>
           ) : (
             <LoadingButton
-              content="Download"
               loading={this.state.loading}
               onClick={(e) => {
                 this.handleDownload(e);

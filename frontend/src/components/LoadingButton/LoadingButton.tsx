@@ -1,10 +1,9 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { Spinner } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 
 interface Props {
   loading: boolean;
-  content: string | ReactElement;
   onClick: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 }
 
@@ -24,7 +23,7 @@ export default class LoadingButton extends React.Component<Props> {
               <span className="sr-only">Loading...</span>
             </Spinner>
           ) : (
-            this.props.content
+            this.props.children
           )}
         </Button>
       </div>

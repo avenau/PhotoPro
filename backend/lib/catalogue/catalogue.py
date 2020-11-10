@@ -61,9 +61,9 @@ class Catalogue(Document):
         self.update_tags()
 
     def set_tags(self, tags):
-        '''
+        """
         Delete old tags and set to these tags
-        '''
+        """
         self.tags = tags
 
     def update_tags(self):
@@ -144,4 +144,3 @@ class Catalogue(Document):
         """
         Additional validation
         """
-        
