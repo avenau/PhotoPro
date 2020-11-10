@@ -197,7 +197,7 @@ export default class ProfilePage extends React.Component<Props, State> {
             <Tab eventKey="collections" title="Collections" unmountOnExit>
               <ContentLoader
                 query={this.state.userId}
-                route="/collection/getall"
+                route="/user/collections"
                 type="collection"
               />
             </Tab>
