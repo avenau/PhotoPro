@@ -789,7 +789,6 @@ def buy_album():
 
 
 @app.route("/download", methods=["GET"])
-@validate_token
 def download_full_photo():
     """
     Description
