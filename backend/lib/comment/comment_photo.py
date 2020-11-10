@@ -38,11 +38,9 @@ def delete_photos(p_id, c_id):
     this_comment = comment.Comment.objects.get(id=c_id)
     if not this_photo:
         print(traceback.format_exc)
-        print("Photo Did not exist")
         raise PhotoDNE("Could not find photo")
     if not this_comment:
         print(traceback.format_exc)
-        print("Comment did not exist")
         raise PhotoDNE("Could not find comment")
     
     this_photo.delete_comment(this_comment)

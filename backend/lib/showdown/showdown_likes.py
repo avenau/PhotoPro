@@ -18,7 +18,6 @@ def update_showdown_likes(token, sd_id, part_id):
         oid = ObjectId(u_id)
     except InvalidId:
         print("u_id is not a valid ObjectId. Look closely at it")
-        print(u_id)
         raise TokenError("u_id is not a valid ObjectId." + u_id)
     try:
         _showdown = showdown.Showdown.objects.get(id=sd_id)

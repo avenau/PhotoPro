@@ -243,7 +243,6 @@ def _account_registration():
     None
     """
     new_user = request.form.to_dict()
-    print(new_user)
     # Make some hashbrowns
     hashed_password = bcrypt.generate_password_hash(new_user["password"])
     new_user["password"] = hashed_password
@@ -390,7 +389,6 @@ def password_check():
         data["password"] = "true"
     else:
         data["password"] = "false"
-    print(data)
 
     return data
 
@@ -877,7 +875,6 @@ def _update_likes():
     sd_id = request.form.get("sd_id")
     part_id = request.form.get("part_id")
     result = showdown_likes.update_showdown_likes(token, sd_id, part_id)
-    print(result)
     return dumps(
         {
             "liked": result,
@@ -1082,7 +1079,6 @@ def _password_check():
         data["password"] = "true"
     else:
         data["password"] = "false"
-    print(data)
 
     return data
 
@@ -1473,13 +1469,8 @@ def _get_comments():
     }
     """
     photo_id = request.args.get("p_id")
-    # offset = request.args.get("offset")
-    # limit = request.args.get("limit")
     order = request.args.get("new_to_old")
-    print("getcomments")
-    print(order)
     current_date = datetime.now()
-    # print(current_date)
     all_comments = get_all_comments(photo_id, current_date, order)
 
     return dumps({"comments": all_comments, "status": True})
@@ -1535,8 +1526,6 @@ def _like_photo():
         u_id = ""
         logged_in = False
 
-    # print("APP TOKEN")
-    # print(token)
     liked = like_photo(u_id, photo_id)
     return dumps({"liked": liked, "loggedIn": logged_in})
 
@@ -1910,10 +1899,6 @@ def _get_album():
     title: string
     discount: integer
     tags: [string]
-    params = request.form.to_dict()
-    print(params)
-    token = request.args.get('token')
-    album_id = request.args.get('album_id')
     """
 
     token = request.args.get("token")
@@ -2127,7 +2112,6 @@ def _test_decorator():
     Use this decorator to verify the token is
     valid and matches the secret
     """
-    print("YAY")
     return dumps({"success": "success"})
 
 
@@ -2139,7 +2123,6 @@ def _basic():
     arguments = {"first_name": "test", "colour": "test"}
     if request.args:
         arguments = request.args
-    print(arguments)
     return dumps(arguments)
 
 

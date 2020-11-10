@@ -66,7 +66,6 @@ def upload_photo():
     None
     """
     r = request.form.to_dict()
-    print(f"saving {r['filename']}")
     with open(f"./backend/images/{r['filename']}", "wb") as f:
         f.write(base64.b64decode(r['photo']))
     return dumps({})
@@ -171,7 +170,6 @@ def basic():
             }
     if request.args:
         arguments = request.args
-    print(arguments)
     return dumps(arguments)
 
 if __name__ == '__main__':
