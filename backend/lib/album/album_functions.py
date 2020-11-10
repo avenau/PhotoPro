@@ -70,17 +70,17 @@ def album_photo_search(data):
         cur_photo = photo.Photo.objects.get(id=result["id"])
         result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
 
-        if req_user == str(cur_photo.get_user().get_id()):
-            result["owns"] = True
-        elif cur_photo in purchased:
+        if cur_photo in purchased:
+            # Someone who has purchased a photo, should still be able to
+            # download deleted photo
             result["owns"] = True
         else:
             result["owns"] = False
-            # Check if photo is deleted, if it is, remove from result list
             if result["deleted"] == True:
+                # Check if photo is deleted, if it is, remove from result list
                 remove_photo.append(result)
-
-    # res = res - remove_photo
+            if req_user ==  str(cur_photo.get_user().get_id()):
+                result["owns"] = True
 
     # Only return photos which have not been deleted
     album_photos = [i for i in res if i not in remove_photo]

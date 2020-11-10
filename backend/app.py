@@ -914,15 +914,21 @@ def _welcome_get_popular_images():
 
     Parameters
     ----------
-    N/A
+    token: str
 
     Returns
     -------
     {popular_images: tup}
         tuple of image paths
     """
-    images = get_popular_images()
-    return dumps({"popular_images": images})
+    data = request.args.to_dict()
+    try:
+        u_id = get_uid(data["token"])
+    except:
+        u_id = ""
+    offset = int(data["offset"])
+    limit = int(data["limit"])
+    return dumps(get_popular_images(u_id, offset, limit))
 
 @app.route("/welcome/recommend", methods=["GET"])
 @validate_token
