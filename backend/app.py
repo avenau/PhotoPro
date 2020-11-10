@@ -17,7 +17,6 @@ from flask_pymongo import PyMongo
 from werkzeug.exceptions import HTTPException
 
 # Classes
-from lib.user.user import User
 import lib.photo.photo as photo
 import lib.user.user as user
 import lib.catalogue.catalogue as catalogue
@@ -327,12 +326,12 @@ def _get_credits():
 
     Returns
     -------
-    {ncredits: int}
+    {credits: int}
 
     """
     token = request.args.get("token")
     u_id = token_functions.get_uid(token)
-    this_user = User.objects.get(id=u_id)
+    this_user = user.User.objects.get(id=u_id)
     if not this_user:
         raise Error.UserDNE("Could not find user")
 
