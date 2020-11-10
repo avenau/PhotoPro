@@ -29,7 +29,7 @@ interface AlbumDisplayState {
 }
 
 class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState> {
-  constructor(props: AlbumDisplayProps){
+  constructor(props: AlbumDisplayProps) {
     super(props);
     this.state = {
       albumTitle: props.albumTitle,
@@ -41,7 +41,7 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.checkIfPurchased()
   }
 
@@ -51,13 +51,12 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
       .get(`/album/checkpurchased?token=${token}&albumId=${this.state.albumId}`)
       .then((res) => {
         if (res.data.purchased) {
-          this.setState({purchased: true})
+          this.setState({ purchased: true })
         }
       })
   }
 
-  purchaseAlbum(){
-    console.log("Purchasing");
+  purchaseAlbum() {
     const token = localStorage.getItem('token') ? localStorage.getItem('token') : '';
     axios
       .post("/purchasealbum", {
@@ -65,8 +64,7 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
         albumId: this.state.albumId
       })
       .then((res) => {
-        console.log('purchased album')
-        this.setState({purchased: true})
+        this.setState({ purchased: true })
         window.location.reload()
       })
       .catch((err) => {
@@ -94,7 +92,7 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
               <>
                 <p>{this.props.discount}% off original price!</p>
                 <Savings albumId={this.state.albumId} />
-                <Button onClick={() => {this.purchaseAlbum()}}>
+                <Button onClick={() => { this.purchaseAlbum() }}>
                   Purchase
                 </Button>
               </>
@@ -107,6 +105,6 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
           />
         </Container>
       </>);
-    }
   }
+}
 export default withRouter(AlbumDisplay)

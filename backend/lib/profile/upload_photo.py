@@ -31,7 +31,6 @@ def update_user_thumbnail(base64_image, extension):
     """
     mime = extension_to_mimetype(extension)
     base64_image = base64_image.split(",")[1]
-    print(mime)
     # Cannot compress SVG
     if mime == "SVG+XML":
         return (base64_image, mime)

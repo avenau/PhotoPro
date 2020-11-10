@@ -61,7 +61,6 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
         ncredits: this.state.ncredits,
       })
       .then((response) => {
-        console.log(response);
         this.props.history.push("/purchases");
       })
       .catch((err) => {
@@ -82,7 +81,7 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
 
   setPriceMsg() {
     this.setState({
-      priceMsg: `Price: ${  this.state.price.toString()  } USD.`,
+      priceMsg: `Price: ${this.state.price.toString()} USD.`,
     });
   }
 
@@ -106,10 +105,8 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
 
   returnGoogleURL() {
     return (
-      `http://letmegooglethat.com/?q=+${ 
-      this.state.price.toString() 
-      }+usd+to+${ 
-      this.state.location 
+      `http://letmegooglethat.com/?q=+${this.state.price.toString()
+      }+usd+to+${this.state.location
       }+currency`
     );
   }
@@ -166,8 +163,8 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
                     How much does this cost in my currency?
                   </a>
                 ) : (
-                  <></>
-                )}
+                    <></>
+                  )}
               </Col>
               <Col>
                 <Button id="paypalButton" type="submit" size="lg">

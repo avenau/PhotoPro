@@ -100,10 +100,8 @@ def test_search_users():
     "limit": 2,
     "offset": 0
   }
-  print(search.user_search(data))
   data2 = {
     "query": "joseph",
     "limit": 2,
     "offset": 0
   }
-  print(search.user_search(data2))

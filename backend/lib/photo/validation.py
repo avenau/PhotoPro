@@ -18,7 +18,6 @@ def validate_price(price):
     '''
     Make sure price doesn't fall below zero
     '''
-    print('in validate', price)
 
     # Use mongoengine's validation
     try:

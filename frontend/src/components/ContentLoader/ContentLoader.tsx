@@ -52,7 +52,6 @@ export default class ContentLoader extends React.Component<Props, State> {
 
   private getResults() {
     this.setState({ loading: true });
-    console.log('content loader', this.state.query)
     axios
       .get(this.props.route, {
         params: {
@@ -75,7 +74,7 @@ export default class ContentLoader extends React.Component<Props, State> {
           limit: prevState.limit,
         }));
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   private getList() {
@@ -139,8 +138,8 @@ export default class ContentLoader extends React.Component<Props, State> {
               <span className="sr-only">Loading...</span>
             </Spinner>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
         </InfiniteScroll>
       </>
     );

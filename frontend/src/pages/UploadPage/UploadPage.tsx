@@ -74,7 +74,6 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
           token,
         })
         .then((response) => {
-          console.log(response);
           const uid = localStorage.getItem("u_id");
           this.props.history.push(`/user/${uid}`);
         })
@@ -156,8 +155,8 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
                 </Button>
               </div>
             ) : (
-              <></>
-            )}
+                <></>
+              )}
           </Form>
         </Container>
       </div>
