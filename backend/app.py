@@ -276,6 +276,7 @@ def _account_registration():
 
 
 @app.route("/userdetails", methods=["GET"])
+@validate_token
 def user_info_with_token():
     """
     Description
@@ -316,6 +317,7 @@ def user_info_with_token():
 
 
 @app.route("/manageaccount/success", methods=["POST"])
+@validate_token
 def manage_account():
     """
     Description
