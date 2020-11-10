@@ -69,7 +69,7 @@ def like_photo(token, photo_id):
         this_user.remove_liked_photo(this_photo)
         this_photo.save()
         this_user.save()
-        do_unlike(this_user, this_photo)
+        do_unlike(this_photo)
         return False
     # If not already liked, like the photo
     else:
@@ -77,5 +77,5 @@ def like_photo(token, photo_id):
         this_user.add_liked_photo(this_photo)
         this_photo.save()
         this_user.save()
-        do_like(this_user, this_photo)
+        do_like(this_photo)
         return True
