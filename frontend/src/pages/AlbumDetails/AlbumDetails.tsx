@@ -65,6 +65,8 @@ class AlbumDetails extends React.Component<Props, State> {
               discount: res.data.discount,
               tags: res.data.tags,
               albumId: res.data.albumId,
+              owner: res.data.owner,
+              nickname: res.data.nickname
             });
             if (this.state.uId == res.data.owner) {
               this.setState({ isOwner: true });
