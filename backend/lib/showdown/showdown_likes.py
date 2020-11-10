@@ -43,7 +43,7 @@ def update_showdown_likes(token, sd_id, part_id):
         showdown_like(u_id, _participant)
         return "liked"
     else:
-        if has_showdown_liked(u_id, _showdown.particpants[0]) == False:
+        if has_showdown_liked(u_id, _showdown.participants[0]) == False:
             showdown_like(u_id, _showdown.participants[0])
             showdown_unlike(u_id, _showdown.participants[1])
         else:
