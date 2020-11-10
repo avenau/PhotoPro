@@ -17,6 +17,7 @@ interface Props {
   priceMin?: number;
   priceMax?: number;
   addPhotoId?: (newPhotoId: string) => void;
+  updatePage?: () => void;
 }
 
 interface State {
@@ -101,6 +102,8 @@ export default class ContentLoader extends React.Component<Props, State> {
             addPhotoId={(newPhotoId: string) =>
               this.props.addPhotoId?.(newPhotoId)
             }
+            updatePage={this.props.updatePage}
+
           />
         );
       default:

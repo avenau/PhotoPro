@@ -103,6 +103,7 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
             query={this.state.albumId}
             route='/album/photos'
             type="albumPhotos"
+            updatePage={() => {window.location.reload()}}
           />
         </Container>
       </>);

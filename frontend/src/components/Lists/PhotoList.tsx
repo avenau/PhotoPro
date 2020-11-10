@@ -6,6 +6,7 @@ import "./PhotoList.scss";
 interface Props extends RouteComponentProps {
   photos: Photo[];
   addPhotoId?: (newPhotoId: string) => void;
+  updatePage?: () => void;
 }
 
 interface Photo {
@@ -18,6 +19,7 @@ interface Photo {
   user: string;
   owns: boolean; // purchased or posted
 }
+
 
 class PhotoList extends React.Component<Props> {
   render() {
@@ -32,7 +34,7 @@ class PhotoList extends React.Component<Props> {
             key={photo.id}
             className="photo-result"
           >
-            <PhotoThumbnail {...photo} />
+            <PhotoThumbnail {...photo} updatePage={this.props.updatePage}/>
           </div>
         ))}
       </div>

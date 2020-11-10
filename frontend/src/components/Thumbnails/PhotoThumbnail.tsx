@@ -14,7 +14,8 @@ interface Props extends RouteComponentProps {
   photoStr: string;
   metadata: string;
   user: string;
-  owns: boolean; // purchased or posted
+  owns: boolean;
+  updatePage?: () => void;
 }
 
 class PhotoThumbnail extends React.Component<
@@ -46,6 +47,9 @@ class PhotoThumbnail extends React.Component<
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
           loading: false,
         });
+        if (this.props.updatePage !== undefined) {
+          this.props.updatePage();
+        }
       })
       .catch(() => {
         this.setState({ loading: false });
@@ -95,6 +99,7 @@ class PhotoThumbnail extends React.Component<
               loading={this.state.loading}
               onClick={(e) => {
                 this.handleBuy(e);
+                
               }}
             >
               Buy
