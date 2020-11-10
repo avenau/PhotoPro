@@ -57,23 +57,6 @@ class AlbumDetails extends React.Component<Props, State> {
     const { token } = this.state;
     if (this.state.albumId != '') {
       axios
-<<<<<<< HEAD
-      .get(`/album?token=${token}&album_id=${albumId}`)
-      .then((res) => {
-        if (res.data) {
-          console.log('success')
-          console.log(res)
-          this.setState ({
-            title: res.data.title,
-            discount: res.data.discount,
-            tags: res.data.tags,
-            albumId: res.data.albumId,
-            owner: res.data.owner,
-            nickname: res.data.nickname,
-          });
-          if (this.state.uId == res.data.owner){
-            this.setState({isOwner: true});
-=======
         .get(`/album?token=${token}&album_id=${albumId}`)
         .then((res) => {
           if (res.data) {
@@ -86,7 +69,6 @@ class AlbumDetails extends React.Component<Props, State> {
             if (this.state.uId == res.data.owner) {
               this.setState({ isOwner: true });
             }
->>>>>>> develop
           }
         })
         .catch(() => { });
