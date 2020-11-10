@@ -1927,6 +1927,7 @@ def _get_album():
         "tags": _album.get_tags(),
         "albumId": album_id,
         "owner": str(_album.get_created_by().get_id()),
+        "nickname": str(_album.get_created_by().get_nickname())
     }
 
 
@@ -1943,7 +1944,7 @@ def _check_puchased():
     _album = album.Album.objects.get(id=request.args.get("albumId"))
 
     purchased = all(
-        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos()
+        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos() if not alb_photo.is_deleted()
     )
 
     return dumps({"purchased": purchased})

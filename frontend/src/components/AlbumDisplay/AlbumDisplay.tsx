@@ -3,7 +3,7 @@ import React from "react";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import axios from "axios";
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { RouteComponentProps, withRouter, Link } from 'react-router-dom';
 import ContentLoader from '../ContentLoader/ContentLoader';
 import Savings from "./Savings";
 import Album from "../PhotoEdit/Album";
@@ -15,6 +15,8 @@ interface AlbumDisplayProps extends RouteComponentProps {
   photos?: string[];
   albumId: string;
   isOwner: boolean;
+  owner: string;
+  nickname: string;
 }
 
 interface AlbumDisplayState {
@@ -23,7 +25,7 @@ interface AlbumDisplayState {
   tags?: string[];
   photos?: string[];
   albumId: string;
-  purchased: boolean; // TODO set purchased from backend
+  purchased: boolean;
 }
 
 class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState> {
@@ -35,7 +37,7 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
       tags: props.tags,
       photos: props.photos,
       albumId: props.albumId,
-      purchased: false
+      purchased: false,
     }
   }
 
@@ -76,12 +78,21 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
     return (
       <>
         <Container>
+          <Link
+            to={`/user/${this.props.owner}`}
+            >
+            By @​​​​​​​{this.props.nickname}
+          </Link>
           {this.props.isOwner ?
-            <Savings albumId={this.state.albumId} /> :
+            <>
+            <p>{this.props.discount}% off original price!</p>
+            <Savings albumId={this.state.albumId} />
+            </> :
             this.state.purchased ? 
               <p>You've purchased this album already</p>
               :
               <>
+                <p>{this.props.discount}% off original price!</p>
                 <Savings albumId={this.state.albumId} />
                 <Button onClick={() => {this.purchaseAlbum()}}>
                   Purchase

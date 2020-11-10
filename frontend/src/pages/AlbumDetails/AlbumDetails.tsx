@@ -27,6 +27,8 @@ interface State {
   photos?: string[],
   showEdit?: boolean,
   isOwner: boolean,
+  owner: string,
+  nickname: string,
 }
 
 class AlbumDetails extends React.Component<Props, State> {
@@ -42,6 +44,8 @@ class AlbumDetails extends React.Component<Props, State> {
       tags: [],
       albumId,
       isOwner: !!props.isOwner,
+      owner: "",
+      nickname: "",
     }
   }
 
@@ -58,11 +62,14 @@ class AlbumDetails extends React.Component<Props, State> {
       .then((res) => {
         if (res.data) {
           console.log('success')
+          console.log(res)
           this.setState ({
             title: res.data.title,
             discount: res.data.discount,
             tags: res.data.tags,
             albumId: res.data.albumId,
+            owner: res.data.owner,
+            nickname: res.data.nickname,
           });
           if (this.state.uId == res.data.owner){
             this.setState({isOwner: true});
@@ -93,6 +100,8 @@ class AlbumDetails extends React.Component<Props, State> {
             photos={this.state.photos}
             albumId={this.state.albumId}
             isOwner={this.state.isOwner}
+            owner={this.state.owner}
+            nickname={this.state.nickname}
           />
         </Container>
       </div>

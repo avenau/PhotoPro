@@ -46,11 +46,7 @@ def album_photo_search(data):
                     "price": 1,
                     "discount": 1,
                     "extension": 1,
-                    '''
-                    "is_album": {
-                        "$in": [_id, "$albums"]
-                        },
-                    '''
+                    "deleted": 1,
                     "user": {"$toString": "$user"},
                     "id": {"$toString": "$_id"},
                     "_id": 0,
@@ -69,6 +65,7 @@ def album_photo_search(data):
         # Anonymous user
         purchased = []
 
+    remove_photo = []
     for result in res:
         cur_photo = photo.Photo.objects.get(id=result["id"])
         result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
@@ -79,5 +76,13 @@ def album_photo_search(data):
             result["owns"] = True
         else:
             result["owns"] = False
+            # Check if photo is deleted, if it is, remove from result list
+            if result["deleted"] == True:
+                remove_photo.append(result)
 
-    return res
+    # res = res - remove_photo
+
+    # Only return photos which have not been deleted
+    album_photos = [i for i in res if i not in remove_photo]
+
+    return album_photos

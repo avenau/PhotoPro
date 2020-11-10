@@ -16,7 +16,8 @@ def create_album(title, user):
     @param user: user object
     returns: albumid of created album
     """
-    validate_title(title, user)
+
+    # validate_title(title, user)
     album = lib.album.album.Album(
         title=title,
         photos=[],
