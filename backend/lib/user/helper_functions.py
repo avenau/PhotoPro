@@ -28,8 +28,6 @@ def update_value(bcrypt, user, key, value):
     elif key == "password":
         hashed_password = bcrypt.generate_password_hash(value)
         user.set_password(hashed_password)
-    elif key == 'extension':
-        user.set_extension(value)
     elif key == 'aboutMe':
         user.set_about_me(value)
     elif key == 'location':

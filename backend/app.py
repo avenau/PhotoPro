@@ -262,7 +262,6 @@ def _account_registration():
         nickname=new_user["nickname"],
         password=new_user["password"],
         profile_pic=new_user["profilePic"],
-        extension=new_user["extension"],
         location=new_user["location"],
         about_me=new_user["aboutMe"],
         created=datetime.now(),
@@ -276,6 +275,7 @@ def _account_registration():
 
 
 @app.route("/userdetails", methods=["GET"])
+@validate_token
 def user_info_with_token():
     """
     Description
@@ -293,9 +293,6 @@ def user_info_with_token():
 
     """
     token = request.args.get("token")
-    if token == "":
-        print("token is an empty string")
-        return {}
     u_id = token_functions.get_uid(token)
     this_user = lib.user.user.User.objects.get(id=u_id)
     if not this_user:
@@ -314,8 +311,33 @@ def user_info_with_token():
         }
     )
 
+@app.route("/user/credits", methods=["GET"])
+@validate_token
+def _get_credits():
+    """
+    Description
+    -----------
+    Return credits for given user.
+
+    Parameters
+    ----------
+    token : string
+
+    Returns
+    -------
+    {credits: int}
+
+    """
+    token = request.args.get("token")
+    u_id = token_functions.get_uid(token)
+    this_user = user.User.objects.get(id=u_id)
+    if not this_user:
+        raise Error.UserDNE("Could not find user")
+
+    return dumps({"credits": this_user.get_credits()})
 
 @app.route("/manageaccount/success", methods=["POST"])
+@validate_token
 def manage_account():
     """
     Description
