@@ -11,7 +11,7 @@ import Discount from '../../components/AlbumDisplay/Discount';
 import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
 
-interface Props extends RouteComponentProps<MatchParams> {}
+interface Props extends RouteComponentProps<MatchParams> { }
 interface MatchParams {
   album_id: string,
 }
@@ -46,34 +46,32 @@ class ManageAlbum extends React.Component<Props, State> {
     this.getAlbum()
   }
 
-  getAlbum(){
-    const {token} = this.state;
-    const {albumId} = this.state;
+  getAlbum() {
+    const { token } = this.state;
+    const { albumId } = this.state;
     if (this.state.albumId != '') {
       axios
-      .get(`/album?token=${token}&album_id=${albumId}`)
-      .then((res) => {
-        console.log(res.data);
-        if (res.data) {
-          this.setState ({
-            'title': res.data.title,
-            'discount': res.data.discount,
-            'tags': res.data.tags
-          });
-        }
-      })
+        .get(`/album?token=${token}&album_id=${albumId}`)
+        .then((res) => {
+          if (res.data) {
+            this.setState({
+              'title': res.data.title,
+              'discount': res.data.discount,
+              'tags': res.data.tags
+            });
+          }
+        })
     }
 
   }
 
   handleSubmit(event: React.FormEvent<HTMLElement>) {
-    console.log(this.state.tags);
     event.preventDefault();
     if (this.state.tags.length < 1) {
       return;
     }
     axios
-    .put("/albums/update", {
+      .put("/albums/update", {
         title: this.state.title,
         discount: this.state.discount,
         tags: JSON.stringify(this.state.tags),
@@ -81,7 +79,6 @@ class ManageAlbum extends React.Component<Props, State> {
         albumId: this.state.albumId
       })
       .then((res) => {
-        console.log(res);
         this.props.history.push(`/user/${this.state.uId}`);
       })
       .catch();
@@ -97,21 +94,21 @@ class ManageAlbum extends React.Component<Props, State> {
     return btn?.setAttribute("disabled", "true");
   }
 
-  getButton(){
+  getButton() {
     if (this.state.albumId == '') {
       return (
         <Button id="createButton" className="mt-2" type="submit">
           Create Album
         </Button>
       )
-    } 
-      return (
-        <Button id="createButton" className="mt-2" type="submit">
-          Update Album {'  '}
-        </Button>
-      )
+    }
+    return (
+      <Button id="createButton" className="mt-2" type="submit">
+        Update Album {'  '}
+      </Button>
+    )
 
-    
+
   }
 
   render() {
@@ -149,7 +146,8 @@ class ManageAlbum extends React.Component<Props, State> {
           </Form>
         </Container>
       </div>
-  )}
+    )
+  }
 };
 
 export default ManageAlbum;

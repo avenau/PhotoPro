@@ -33,7 +33,6 @@ class AlbumDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const albumId = this.props.match.params.album_id
-    console.log(albumId);
     this.state = {
       uId: String(localStorage.getItem('u_id')),
       token: String(localStorage.getItem('token')),
@@ -49,27 +48,26 @@ class AlbumDetails extends React.Component<Props, State> {
     this.getAlbum();
   }
 
-  private getAlbum(){
-    const {albumId} = this.state;
-    const {token} = this.state;
+  private getAlbum() {
+    const { albumId } = this.state;
+    const { token } = this.state;
     if (this.state.albumId != '') {
       axios
-      .get(`/album?token=${token}&album_id=${albumId}`)
-      .then((res) => {
-        if (res.data) {
-          console.log('success')
-          this.setState ({
-            title: res.data.title,
-            discount: res.data.discount,
-            tags: res.data.tags,
-            albumId: res.data.albumId,
-          });
-          if (this.state.uId == res.data.owner){
-            this.setState({isOwner: true});
+        .get(`/album?token=${token}&album_id=${albumId}`)
+        .then((res) => {
+          if (res.data) {
+            this.setState({
+              title: res.data.title,
+              discount: res.data.discount,
+              tags: res.data.tags,
+              albumId: res.data.albumId,
+            });
+            if (this.state.uId == res.data.owner) {
+              this.setState({ isOwner: true });
+            }
           }
-        }
-      })
-      .catch(() =>{});
+        })
+        .catch(() => { });
     }
   }
 

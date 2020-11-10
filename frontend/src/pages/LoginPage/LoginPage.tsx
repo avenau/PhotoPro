@@ -12,7 +12,7 @@ import Toolbar from "../../components/Toolbar/Toolbar";
 export default class LoginPage extends React.Component<
   RouteChildrenProps,
   any
-> {
+  > {
   constructor(props: RouteChildrenProps) {
     super(props);
     this.state = {
@@ -35,13 +35,11 @@ export default class LoginPage extends React.Component<
     axios
       .post("/login", { email, password })
       .then((response: any) => {
-        console.log("then");
         const { data } = response;
         localStorage.setItem("token", data.token);
         localStorage.setItem("u_id", data.u_id);
         localStorage.setItem("nickname", data.nickname);
         this.handleLoginClick();
-        console.log(`isLoggedInState: ${this.state.isLoggedIn}`);
         this.props.history.push("/");
       })
       .catch((e) => {
