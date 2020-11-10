@@ -13,7 +13,6 @@ from flask import Flask, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
-from flask_pymongo import PyMongo
 from werkzeug.exceptions import HTTPException
 
 # Classes
@@ -102,7 +101,6 @@ app = Flask(__name__, static_url_path="/static")
 app.config.from_object(DevelopmentConfig)
 app.register_error_handler(HTTPException, defaultHandler)
 CORS(app)
-mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 mongoengine.connect("angular-flask-muckaround", host=app.config["MONGO_URI"])
 
@@ -215,7 +213,7 @@ def _auth_passwordreset_reset():
     hashed_password = bcrypt.generate_password_hash(new_password)
 
     return dumps(
-        password_reset.password_reset_reset(email, reset_code, hashed_password, mongo)
+        password_reset.password_reset_reset(email, reset_code, hashed_password)
     )
 
 
