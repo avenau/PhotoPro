@@ -11,6 +11,7 @@ import lib.photo.photo as photo
 import lib.user.user as user
 import lib.showdown.showdown as showdown
 import lib.showdown.participant as participant
+import Error
 
 def update_showdown_likes(token, sd_id, part_id):
     u_id = token_functions.verify_token(token)["u_id"]
@@ -24,17 +25,17 @@ def update_showdown_likes(token, sd_id, part_id):
         _showdown = showdown.Showdown.objects.get(id=sd_id)
     except showdown.Showdown.DoesNotExist:
         print("Showdown does not exist")
-        raise
+        raise Error.ShowdownDNE("Showdown does not exist! " + sd_id)
     
     try:
         _participant = participant.Participant.objects.get(id=part_id)
     except participant.Participant.DoesNotExist:
         print("Participating does not exist")
-        raise
+        raise Error.ParticipantDNE("Participant does not exist! " + part_id)
               
     #Users cannot like both photos in showdown
     if has_showdown_liked(u_id, _showdown.participants[0]) == True and has_showdown_liked(u_id, _showdown.participants[1]) == True:
-        raise
+        raise Error.ValueError("You can't vote two Showdown Photo at once!")
      
     if has_showdown_liked(u_id, _participant) == True:
         showdown_unlike(u_id, _participant)

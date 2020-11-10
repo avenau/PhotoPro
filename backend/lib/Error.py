@@ -32,6 +32,22 @@ class PhotoDNE(HTTPException):
     code = 400
     message = 'No message specified'
     toast = False
+    
+class ShowdownDNE(HTTPException):
+    '''
+    ShowdownDNE: Error when showdown does not exist
+    '''
+    code = 400
+    message = 'No message specified'
+    toast = False
+
+class ParticipantDNE(HTTPException):
+    '''
+    ParticipantDNE: Error when participant does not exist
+    '''
+    code = 400
+    message = 'No message specified'
+    toast = False
 
 
 class ValueError(HTTPException):
