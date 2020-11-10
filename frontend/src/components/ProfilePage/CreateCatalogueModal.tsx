@@ -11,12 +11,14 @@ interface Props extends RouteComponentProps {
   type: "album" | "collection";
 }
 
-interface State {}
+interface State {
+}
 
 class CreateCatalogueModal extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = {};
+    this.state = {
+    };
   }
 
   handleChange(active: boolean) {
@@ -37,7 +39,8 @@ class CreateCatalogueModal extends React.Component<Props, State> {
           this.props.history.push(`/user/${localStorage.getItem("u_id")}`);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+      });
   }
 
   render() {

@@ -20,7 +20,7 @@ class Catalogue(Document):
     Catalogue class
     """
 
-    title = StringField(required=True, max_length=200, unique=True)
+    title = StringField(required=True, max_length=40)
     photos = ListField(ReferenceField("photo.Photo"))
     creation_date = DateTimeField(required=True)
     created_by = ReferenceField("user.User")

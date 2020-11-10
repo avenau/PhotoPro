@@ -7,7 +7,7 @@ import mongoengine
 import traceback
 import lib.Error as Error
 import lib.album
-
+from lib.album.validation import validate_title
 
 def create_album(title, user):
     """
@@ -16,6 +16,7 @@ def create_album(title, user):
     @param user: user object
     returns: albumid of created album
     """
+    validate_title(title, user)
     album = lib.album.album.Album(
         title=title,
         photos=[],

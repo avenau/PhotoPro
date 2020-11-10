@@ -8,7 +8,7 @@ import datetime
 import mongoengine
 import lib.collection.collection as collection
 import lib.Error as Error
-
+from lib.collection.validation import validate_title
 
 def get_collection(_collection):
     """
@@ -49,6 +49,8 @@ def create_collection(_user, params):
     if "tags" in params:
         tags = params['tags']
 
+    validate_title(title, _user)
+
     new_collection = collection.Collection(
         title=title,
         created_by=_user,
@@ -58,6 +60,8 @@ def create_collection(_user, params):
     try:
         new_collection.save()
         collection_id = str(new_collection.id)
+        _user.add_collection(new_collection)
+        _user.save()
     except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError

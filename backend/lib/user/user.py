@@ -234,6 +234,12 @@ class User(Document):
         """
         self.posts.remove(this_photo)
 
+    def add_collection(self, _collection):
+        """
+        Add collection object to album list
+        """
+        self.collections.append(_collection)
+
     def get_collections(self):
         """
         Get non-deleted collections
