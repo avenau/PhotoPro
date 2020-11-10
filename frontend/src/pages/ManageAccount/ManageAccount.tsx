@@ -109,6 +109,8 @@ export default function ManageAccount(props: any) {
       setFormInput({ ...formInput, password });
     }
     setProfilePic().then((response: any) => {
+      console.log('here')
+      console.log(response)
       axios
         .post("/manageaccount/success", {
           ...oDetails,

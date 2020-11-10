@@ -8,7 +8,6 @@ from lib.user.user import User
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 
-
 def get_popular_contributors_images(artists=10):
     """
     Get top liked artists (default top 10)
@@ -32,5 +31,5 @@ def get_popular_contributors_images(artists=10):
         # Get the artist thumbnails
         user = User.objects.get(id=photo["user"])
         photo["artistImg"] = user.get_profile_pic()
-        photo["name"] = user.get_fname() + " " + user.get_lname()
+        photo["name"] = user.get_nickname()
     return res

@@ -10,21 +10,6 @@ from lib.token_functions import get_uid
 from lib.photo.photo import Photo
 from bson.objectid import ObjectId
 
-def generate_recommend(u_id, min_photo=3):
-    """
-    Compute photos to recommend for the user and check if sufficient
-    (at least min_photo) results can be generated.
-
-    @param: u_id userid
-    @param: optional, min_photo=3, number of recommended photos needed for results to display.
-    @return: dict(success: bool)
-    """
-    keywords = recommend_keywords(u_id)
-    matching_res = count_res(u_id, keywords)
-    if matching_res < min_photo:
-        return {"success": False}
-    return {"success": True}
-
 def recommend_keywords(u_id):
     """
     Get the default or 10 top photo keywords based on recently liked,
@@ -91,9 +76,10 @@ def count_res(u_id,keywords):
 
 def recommend_photos(data):
     u_id = get_uid(data["token"])
-    user = lib.user.user.User.objects.get(id=u_id)
-    keywords = user.get_recommend_keywords()
+    keywords = recommend_keywords(u_id)
+
     # Array of purchased photos, do not display previously purchased
+    user = lib.user.user.User.objects.get(id=u_id)
     purchased = user.get_purchased()
     purchased_id = []
     for i in purchased:

@@ -83,7 +83,7 @@ import lib.user.password_reset as password_reset
 from lib.purchases.purchases import get_purchased_photos
 
 # Welcome
-from lib.welcome.recommend import generate_recommend, recommend_photos
+from lib.welcome.recommend import recommend_photos
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
 
@@ -267,7 +267,10 @@ def _account_registration():
         about_me=new_user["aboutMe"],
         created=datetime.now(),
     )
-    this_user.save()
+    try:
+        this_user.save()
+    except:
+        raise Error.ValueError("An account is already registered with this email")
 
     return dumps({})
 
@@ -344,6 +347,8 @@ def manage_account():
         data["profilePic"] = update_user_thumbnail(
             data["profilePic"], data["extension"]
         )
+    else:
+         data["profilePic"] = ["", ""]
 
     if this_user is None:
         raise Error.UserDNE("User with id " + this_user + "does not exist")
@@ -882,7 +887,6 @@ def _update_likes():
         }
     )
 
-
 @app.route("/welcome/popularcontributors", methods=["GET"])
 def _welcome_get_contributors():
     """
@@ -919,29 +923,6 @@ def _welcome_get_popular_images():
     """
     images = get_popular_images()
     return dumps({"popular_images": images})
-
-
-@app.route("/welcome/recommend/compute", methods=["GET"])
-@validate_token
-def welcome_compute_recommend():
-    """
-    Description
-    -----------
-    Use user data to recommend photos to the user on the main feed.
-    Return true if the system can recommend at least 3 photos.
-
-    Parameters
-    ----------
-    token: str
-
-    Returns
-    -------
-    success: bool
-
-    """
-    u_id = get_uid(request.args.get("token"))
-    return generate_recommend(u_id)
-
 
 @app.route("/welcome/recommend", methods=["GET"])
 @validate_token

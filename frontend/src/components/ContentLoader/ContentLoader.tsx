@@ -16,6 +16,7 @@ interface Props {
   filetype?: string;
   priceMin?: number;
   priceMax?: number;
+  curatedFeed?: boolean;
   addPhotoId?: (newPhotoId: string) => void;
   updatePage?: () => void;
 }
@@ -66,6 +67,8 @@ export default class ContentLoader extends React.Component<Props, State> {
         },
       })
       .then((res) => {
+        console.log('in then')
+        console.log(res)
         this.setState((prevState) => ({
           loading: false,
           results: [...prevState.results, ...res.data],
@@ -77,7 +80,18 @@ export default class ContentLoader extends React.Component<Props, State> {
       .catch(() => { });
   }
 
+
+
   private getList() {
+    // Add message for the user if there are no results
+    if (this.state.results.length < 1 && this.state.atEnd) {
+      if (this.props.curatedFeed === true) {
+        return <p>Like and search more photos for a curated feed.</p>
+      } else {
+        return <p>No results were found :(</p>
+      }
+    }
+
     switch (this.props.type) {
       case "photo":
         return (

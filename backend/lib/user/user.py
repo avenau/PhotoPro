@@ -32,7 +32,7 @@ class User(Document):
     # User's last name
     lname = StringField(required=True)
     # User's email
-    email = EmailField(required=True, unique=True)
+    email = EmailField(required=True, unique=True, validation=validation.validate_email)
     # User's nickname
     nickname = StringField(required=True)
     # User's hashed password

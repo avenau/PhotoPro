@@ -5,44 +5,22 @@ import ContentLoader from "../ContentLoader/ContentLoader";
 
 export default function CuratedFeed() {
   const token = localStorage.getItem("token");
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (token !== null) {
-      // Compute metrics for recommendation algorithm
-      axios.get("/welcome/recommend/compute", {
-        params: {
-          token
-        }
-      })
-        .then((res) => {
-          // Load photos based on computed metrics
-          // If there are sufficient results
-          if (res.data.success === true) {
-            setLoading(false)
-          }
-        }
-        )
-        .catch(() => {
-        })
-    }
-  }, []
-  )
 
   return (
     <>
       <Container>
-        {loading ?
-          <></>
-          :
-          <>
-            <h3>Recommended for you</h3>
-            <ContentLoader
-              query=""
-              route="/welcome/recommend"
-              type="photo"
-            />
-          </>
+        <h3>Recommended for you</h3>
+        {token === null ? 
+        (
+          <p>Create an account today, and we'll curate photos just for you.</p>
+        )
+        :
+          (<ContentLoader
+            query=""
+            route="/welcome/recommend"
+            type="photo"
+            curatedFeed={true}
+          />)
         }
       </Container>
     </>
