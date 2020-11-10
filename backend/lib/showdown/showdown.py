@@ -52,6 +52,20 @@ class Showdown(Document):
             minutes=self.get_duration()
         )
 
+    def get_winner(self):
+        """
+        Get the winner of the current showdown
+        """
+        return self.winner
+
+    def get_prev_winner(self):
+        """
+        Get the winner of the previous showdown
+        """
+        if self.previous == None:
+            return None
+        return self.previous.get_winner()
+
     def get_duration(self):
         """
         Get the duration in hours of the showdown
@@ -86,6 +100,12 @@ class Showdown(Document):
             + timedelta(minutes=self.get_duration())
             - datetime.now()
         )
+
+    def get_participants(self):
+        """
+        Get all participants in the current showdown
+        """
+        return self.participants
 
     def declare_winner(self):
         """

@@ -17,6 +17,7 @@ from werkzeug.exceptions import HTTPException
 
 # Classes
 import lib.photo.photo as photo
+from lib.showdown.showdown import Showdown
 import lib.user.user as user
 import lib.catalogue.catalogue as catalogue
 import lib.collection.collection as collection
@@ -51,7 +52,6 @@ from lib.photo_details.photo_details import (
     like_photo,
 )
 
-
 # Profile
 from lib.profile.upload_photo import update_user_thumbnail
 from lib.profile.profile_details import (
@@ -67,8 +67,7 @@ from lib.profile.profile_details import (
 from lib.search.search import album_search, photo_search, user_search, collection_search
 
 # Showdown
-from lib.showdown import get_images
-from lib.showdown import showdown_likes
+import lib.showdown.get_data as showdown_data
 
 # Schedule
 from lib.schedule.schedule import initialise_schedule
@@ -811,23 +810,33 @@ def download_full_photo():
 """
 
 # Returns the two showdown images for the day
-@app.route("/showdown/getImages", methods=["GET"])
-def _get_showdown_images():
+@app.route("/showdown", methods=["GET"])
+def _get_showdown():
     """
     Description
     -----------
-    Get the two showdown images for the current showdown
+    Get details about the currently running showdown
 
     Parameters
     ----------
-    N/A
+    token: string
 
     Returns
     -------
-    {path_one, path_two}
+    {
+        participants: object[],
+        prev_winner_photo: object,
+        prev_winner_user: object,
+        current_vote: string <- either participant id or empty
+    }
     """
-    images = get_images.get_showdown_competing_photos()
-    return dumps({"path_one": images[0], "path_two": images[1]})
+    token = request.args.get("token")
+    try:
+        req_user = token_functions.get_uid(token)
+    except:
+        req_user = ""
+
+    return dumps(showdown_data.get_data(req_user))
 
 
 @app.route("/showdown/getwinner", methods=["GET"])

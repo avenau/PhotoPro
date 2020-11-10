@@ -24,6 +24,9 @@ class Participant(Document):
     # Participating Methods:
     # ----------------------
 
+    def get_id(self):
+        return self.id
+
     def add_vote(self, vote_user):
         self.votes.append(vote_user)
 
