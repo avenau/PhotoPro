@@ -57,7 +57,7 @@ export default function ManageAccount(props: any) {
     const token = localStorage.getItem("token");
     if (token !== null) {
       axios
-        .get(`http://localhost:8001/userdetails?token=${token}`)
+        .get(`/userdetails?token=${token}`)
         .then((response) => {
           setODetails({
             fname: response.data.fname,
@@ -109,8 +109,8 @@ export default function ManageAccount(props: any) {
       setFormInput({ ...formInput, password });
     }
     setProfilePic().then((response: any) => {
-      console.log('here')
-      console.log(response)
+      console.log("here");
+      console.log(response);
       axios
         .post("/manageaccount/success", {
           ...oDetails,
