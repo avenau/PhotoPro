@@ -55,6 +55,7 @@ def user_search(data):
                     "email": 1,
                     "location": 1,
                     "created": 1,
+                    "profilePic": "$profile_pic",
                     "id": {"$toString": "$_id"},
                     "_id": 0,
                 }
