@@ -51,8 +51,8 @@ class Showdown extends Component<any, any> {
           <Row>
             <Col>
               <Button variant="success">Apple</Button>
-              <ShowdownLike partId="5fa92d58367cb28505115b06" sdId="5fa92d58367cb28505115b08" isLiked={false} likeCount={0} />
-              <ShowdownLike partId="5fa92d58367cb28505115b07" sdId="5fa92d58367cb28505115b08" isLiked={false} likeCount={0} />
+              {/*<ShowdownLike partId="5fa92d58367cb28505115b06" sdId="5fa92d58367cb28505115b08" isLiked={false} likeCount={0} />*/}
+              {/*<ShowdownLike partId="5fa92d58367cb28505115b07" sdId="5fa92d58367cb28505115b08" isLiked={false} likeCount={0} />*/}
             </Col>
             <Col xs={2} />
             <Col>
