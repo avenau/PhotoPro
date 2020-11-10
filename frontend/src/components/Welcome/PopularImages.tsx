@@ -18,7 +18,7 @@ class PopularImages extends Component<any, any> {
     return (
       <div>
         <Container>
-          <h3>Popular Images</h3>
+          <h3>Popular images</h3>
           <ContentLoader
             query=""
             route="/welcome/getPopularImages"
