@@ -1229,44 +1229,6 @@ def _user_remove_photo():
     res = remove_photo(u_id, identifier)
     return dumps({"success": str(res)})
 
-
-@app.route("/user/profile/uploadphoto", methods=["POST"])
-@validate_token
-def _upload_photo():
-    """
-    Description
-    -----------
-    Parameters
-    ----------
-    img_path : string
-        e.g. http://imagesite.com/img.png
-    token : string
-    extension : string
-    Returns
-    -------
-    {}
-    """
-    """
-    TODO
-    """
-    token = request.form.get("token")
-    img_path = request.form.get("img_path")
-    extension = request.form.get("extension")
-    thumbnail_and_filetype = update_user_thumbnail(img_path, extension)
-    u_id = token_functions.get_uid(token)
-    _user = user.User.objects.get(id=u_id)
-    if not user:
-        raise Error.UserDNE("Could not find user " + u_id)
-    _user.update_user_thumbnail(thumbnail_and_filetype)
-    try:
-        _user.save()
-    except mongoengine.ValidationError:
-        print(traceback.format_exc())
-        raise Error.ValidationError("Could not update thumbnail")
-    # Update the database...
-    return dumps({"success": "True"})
-
-
 """
 ---------------
 - Search Routes -
