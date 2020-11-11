@@ -4,6 +4,7 @@ User helper functions
 
 from lib.profile.upload_photo import update_user_thumbnail
 from lib.Error import ValidationError, ValueError
+import lib.user.user as user
 
 def update_value(bcrypt, user, key, value):
     '''
@@ -36,3 +37,16 @@ def update_value(bcrypt, user, key, value):
         user.set_profile_pic(value)
 
     user.save()
+    
+def is_following(follower_id, followed_id):
+    follower_user = user.User.objects.get(id=follower_id)
+    if not follower_user:
+        return False
+    
+    followed_user = user.User.objects.get(id=followed_id)
+    if not followed_user:
+        raise UserDNE("User does not exist " + followed_id)
+        
+    return (followed_user in follower_user.following)
+    
+    

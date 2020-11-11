@@ -78,6 +78,7 @@ from lib.schedule.schedule import initialise_schedule
 from lib.user.validate_login import login
 import lib.user.helper_functions
 import lib.user.password_reset as password_reset
+from lib.user.helper_functions import is_following
 
 # Purchases
 from lib.purchases.purchases import get_purchased_photos
@@ -602,6 +603,30 @@ def _get_following_from_user():
     data["limit"] = int(data["limit"])
 
     return dumps(user_following_search(data))
+    
+@app.route("/user/isfollowing", methods=["GET"])
+def _is_followed():
+    """
+    Description
+    -----------
+    GET request to check whether a person is following someone
+
+    Parameters
+    ----------
+    follower_u_id : string
+    followed_u_id : string
+
+    Returns
+    -------
+    {
+        is_followed : boolean
+    }
+    """
+    data = request.args.to_dict()
+    follower_u_id = data["follower_u_id"]
+    followed_u_id = data["followed_u_id"]
+    
+    return dumps({"is_followed" : is_following(follower_u_id, followed_u_id)})
 
 
 @app.route("/user/purchasedphotos", methods=["GET"])

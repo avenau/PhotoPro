@@ -173,6 +173,7 @@ class ProfilePage extends React.Component<Props, State> {
             email={this.state.email}
             aboutMe={this.state.aboutMe}
             profilePic={this.state.profilePic}
+            userId={this.state.userId}
             className="user-header"
           />
           <br />
@@ -212,13 +213,13 @@ class ProfilePage extends React.Component<Props, State> {
                 />
               </Tab>
             ) : (
-              <></>
-            )}
+                <></>
+              )}
             {currentUser ? (
               <Tab title={this.createAddButton()} tabClassName="no-border" />
             ) : (
-              <></>
-            )}
+                <></>
+              )}
           </Tabs>
         </div>
       </>
