@@ -11,7 +11,7 @@ import ArtistList from "../Lists/ArtistList";
 interface Props {
   query: string;
   route: string;
-  type: "photo" | "album" | "collection" | "user" | "artist" | "albumPhotos";
+  type: "photo" | "album" | "collection" | "user" | "artist" | "albumPhotos" | "collectionPhotos";
   orderby?: string;
   filetype?: string;
   priceMin?: number;
@@ -108,6 +108,17 @@ export default class ContentLoader extends React.Component<Props, State> {
       case "artist":
         return <ArtistList artists={this.state.results} />;
       case "albumPhotos":
+        return (
+          <PhotoList
+            photos={this.state.results}
+            addPhotoId={(newPhotoId: string) =>
+              this.props.addPhotoId?.(newPhotoId)
+            }
+            updatePage={this.props.updatePage}
+
+          />
+        );
+      case "collectionPhotos":
         return (
           <PhotoList
             photos={this.state.results}

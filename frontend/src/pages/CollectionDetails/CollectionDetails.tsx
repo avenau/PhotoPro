@@ -92,7 +92,7 @@ class CollectionDetails extends React.Component<Props, State> {
           <ContentLoader
             query={this.state.collectionId}
             route='/collection/photos'
-            type="albumPhotos"
+            type="collectionPhotos"
             updatePage={() => {window.location.reload()}}
           />
         </Container>
