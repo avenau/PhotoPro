@@ -74,7 +74,7 @@ class App extends React.Component<Props, State> {
     }
   }
 
-  refreshCredits() {
+  refreshCredits = () => {
     const token = localStorage.getItem("token");
     if (this.state.valid) {
       axios
@@ -88,7 +88,7 @@ class App extends React.Component<Props, State> {
         })
         .catch(() => {});
     }
-  }
+  };
 
   render() {
     return this.state.loading ? (
@@ -130,10 +130,7 @@ class App extends React.Component<Props, State> {
           <Route path="/user/:user_id" component={ProfilePage} />
           <Route path="/search/:type" component={SearchPage} />
           <Route valid={this.state.valid} path="/photo/:photo_id">
-            <PhotoDetails
-              credits={this.state.credits}
-              refreshCredits={this.refreshCredits}
-            />
+            <PhotoDetails refreshCredits={this.refreshCredits} />
           </Route>
           <ProtectedRoute
             valid={this.state.valid}
