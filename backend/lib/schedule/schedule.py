@@ -56,7 +56,8 @@ def create_showdown(prev_showdown):
     empty_popular()
 
     # Declare winner for previous showdown
-    prev_showdown.declare_winner()
+    if prev_showdown != None:
+        prev_showdown.declare_winner()
 
     return showdown
 
