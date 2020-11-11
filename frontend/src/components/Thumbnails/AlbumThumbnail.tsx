@@ -3,6 +3,7 @@ import Image from "react-bootstrap/Image";
 import { Link } from "react-router-dom";
 import Thumbnail from "../../static/catalouge.png";
 import "./AlbumThumbnail.scss";
+import axios from "axios"
 
 interface Props {
   id: string;
@@ -12,12 +13,41 @@ interface Props {
   author: string;
 }
 
-export default class AlbumThumbnail extends React.Component<Props> {
+interface State {
+  albumThumbnail: string;
+}
+
+export default class AlbumThumbnail extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      albumThumbnail: Thumbnail,
+    }
+  }
+
+  componentDidMount() {
+    const token = localStorage.getItem("token")
+    axios
+      .get("/album/thumbnail", {
+        params: {
+          albumId: this.props.id,
+          token: token
+        }
+      })
+      .then((res) => {
+        console.log(res.data)
+        if (res.data.thumbnail !== "") {
+          this.setState({albumThumbnail: res.data.thumbnail})
+        }
+      })
+      .catch();
+  }
+
   render() {
     const { discount } = this.props;
     return (
       <>
-        <Image src={Thumbnail} className="album-thumbnail" />
+        <Image src={this.state.albumThumbnail} className="album-thumbnail" />
         <div className="album-overlay">
           <div>{this.props.title}</div>
           <Link

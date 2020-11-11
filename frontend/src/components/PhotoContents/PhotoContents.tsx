@@ -1,17 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { RouteComponentProps, withRouter , Link } from "react-router-dom";
+import React from "react";
+import { RouteComponentProps, withRouter, Link } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import axios from "axios";
 import BookmarkButton from "../BookmarkButton";
 import LikeButton from "../LikeButton";
 import "./PhotoContents.scss";
-import axios from "axios";
 
 import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../Tags";
 
+interface Collection {
+  title: string;
+  authorId: string;
+  author: string;
+  created: string;
+  id: string;
+}
+
 interface Props extends RouteComponentProps {
   photoId: string;
+  refreshCredits: () => void;
 }
 
 class PhotoContents extends React.Component<Props, any> {
@@ -30,39 +39,15 @@ class PhotoContents extends React.Component<Props, any> {
       tags: [],
       purchased: false,
       photoB64: "",
-      deleted: false,
       isArtist: false,
       comments: [],
       loading: true,
       msg: "Loading...",
+      collections: [],
+      token: localStorage.getItem("token") ? localStorage.getItem("token") : "",
+      uId: localStorage.getItem("u_id") ? localStorage.getItem("u_id") : "",
     };
   }
-  // const [titleName, setTitle] = useState("Photo Title");
-  // const [nickname, setNick] = useState("Artist Nickname");
-  // const [email, setEmail] = useState("Artist Email");
-  // const [likes, set1s] = useState(0);
-  // const [isLoaded, setLoad] = useState(false);
-  // const [tags, setTags] = useState<string[]>([]);
-  // const [artist, setArtist] = useState("");
-  // const [status, setStatus] = useState(0);
-  // const [is_artist, setIsArtist] = useState(false);
-  // // TODO
-  // const [photo, setPhoto] = useState("");
-  // const [purchased, setPurchased] = useState<boolean>();
-  // const currentUser = localStorage.getItem("u_id") as string;
-  // const token = localStorage.getItem("token") as string;
-  // const [meta, setMeta] = useState("");
-  // const [price, setPrice] = useState(0);
-  // const [discount, setDiscount] = useState(0);
-  // const [deleted, setDeleted] = useState(false);
-  // const [loadMessage, setLoadMessage] = useState("Page Still Loading");
-  // const updateTags = (tag: string) => {
-  //   if (tag) {
-  //     setTags((tags) => [...tags, tag]);
-  //   } else if (tag !== "") {
-  //     setTags((tags) => [...tags, tag]);
-  //   }
-  // };
 
   componentDidMount() {
     axios
@@ -73,10 +58,10 @@ class PhotoContents extends React.Component<Props, any> {
         },
       })
       .then((res) => {
-        const tempComments = [];
-        for (const comment of res.data.comments) {
-          tempComments.push(JSON.parse(comment));
-        }
+        const tempComments: string[] = [];
+        res.data.comments.map((comment: any) =>
+          tempComments.push(JSON.parse(comment))
+        );
         this.setState({
           comments: tempComments,
         });
@@ -93,48 +78,18 @@ class PhotoContents extends React.Component<Props, any> {
           tags: res.data.tagsList,
           purchased: res.data.purchased,
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
-          deleted: res.data.deleted,
           isArtist: res.data.is_artist,
           loading: false,
         });
       })
       .catch(() => {});
+    if (localStorage.getItem("token")) {
+      const query = `/user/collections?token=${this.state.token}&query=${this.state.uId}&offset=0&limit=5`;
+      axios.get(query).then((res) => {
+        this.setState({ collections: res.data.map((obj: Collection) => obj) });
+      });
+    }
   }
-
-  // getPhotoDetails = async (photoId: string) => {
-  //   await axios
-  //     .get(`/photo_details?p_id=${photoId}&token=${token}`)
-  //     .then((response) => {
-  //       setArtist(response.data.u_id);
-  //       setNick(response.data.nickname);
-  //       setIsArtist(response.data.is_artist);
-  //       setEmail(response.data.email);
-  //       setLikes(response.data.likes);
-  //       setTags(response.data.tagsList);
-  //       setPurchased(response.data.purchased);
-  //       setDeleted(response.data.deleted);
-  //       setStatus(response.data.status);
-  //       setMeta(response.data.metadata);
-  //       setTitle(response.data.title);
-  //       setPrice(response.data.price);
-  //       setPhoto(`${response.data.metadata}${response.data.photoStr}`);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   getPhotoDetails(props.photoId);
-  //   if (purchased === true) {
-  //     setLoad(true);
-  //   } else if (deleted === true || artist === "") {
-  //     setLoad(false);
-  //     setLoadMessage("The photo does not exist!");
-  //   } else {
-  //     setLoad(true);
-  //   }
-  //   if (status === 0) {
-  //     setLoadMessage("Loading Photos...");
-  //   }
-  // }, [purchased, deleted, status, is_artist]);
 
   purchasePhoto(e: any) {
     e.preventDefault();
@@ -149,6 +104,7 @@ class PhotoContents extends React.Component<Props, any> {
           purchased: res.data.purchased,
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
         });
+        this.props.refreshCredits();
       })
       .catch(() => {});
   }
@@ -192,7 +148,8 @@ class PhotoContents extends React.Component<Props, any> {
           </Button>
         </div>
       );
-    } if (this.state.purchased) {
+    }
+    if (this.state.purchased) {
       return (
         <div>
           <Button onClick={(e) => this.downloadPhoto(e)} className="ml-1">
@@ -230,7 +187,10 @@ class PhotoContents extends React.Component<Props, any> {
               like_count={this.state.likes}
               isLiked={this.state.isLiked}
             />
-            <BookmarkButton p_id={this.props.photoId} />
+            <BookmarkButton
+              pId={this.props.photoId}
+              collections={this.state.collections}
+            />
             {this.returnDynamicButtons()}
           </Row>
           <div className="ArtistInfo">

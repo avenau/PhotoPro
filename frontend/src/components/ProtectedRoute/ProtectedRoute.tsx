@@ -13,7 +13,11 @@ interface Props extends RouteProps {
   valid: boolean;
 }
 function ProtectedRoute(props: Props) {
-  return props.valid ? <Route {...props} /> : <Redirect to="/login" />;
+  return props.valid ? (
+    <Route {...props}>{props.children}</Route>
+  ) : (
+    <Redirect to="/login" />
+  );
 }
 
 export default ProtectedRoute;

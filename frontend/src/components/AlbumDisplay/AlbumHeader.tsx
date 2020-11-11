@@ -3,6 +3,7 @@ import { PencilSquare, XSquare } from "react-bootstrap-icons";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import "./AlbumHeader.scss";
 import axios from "axios";
+import ConfirmDelete from "./ConfirmDelete";
 
 interface AlbumHeaderProps extends RouteComponentProps {
   catalogueId: string;
@@ -11,10 +12,26 @@ interface AlbumHeaderProps extends RouteComponentProps {
   type: "album" | "collection";
 }
 
-class AlbumHeader extends React.Component<AlbumHeaderProps> {
+interface AlbumHeaderState {
+  modalDelete: boolean;
+}
+class AlbumHeader extends React.Component<AlbumHeaderProps, AlbumHeaderState> {
   constructor(props: AlbumHeaderProps) {
     super(props);
-    this.state = {};
+    this.state = {
+      modalDelete: false,
+    };
+  }
+
+  handleDelete() {
+    axios.delete(`/${this.props.type}/delete`, {
+      params: {
+        token: this.props.token,
+        _id: this.props.catalogueId,
+      },
+    })
+    .then(() => this.props.history.push("/"))
+    .catch()
   }
 
   render() {
@@ -26,20 +43,16 @@ class AlbumHeader extends React.Component<AlbumHeaderProps> {
         </Link>
         <div
           className="album-header-delete-button"
-          onClick={() =>
-            axios
-              .delete(`/${this.props.type}/delete`, {
-                params: {
-                  token: this.props.token,
-                  _id: this.props.catalogueId,
-                },
-              })
-              .then(() => this.props.history.push("/"))
-              .catch()
-          }
+          onClick={() => this.setState({modalDelete: true})}
         >
           <XSquare size="2rem" color="#b00b1e" />
         </div>
+        <ConfirmDelete 
+          modalDelete={this.state.modalDelete}
+          setModalDelete={(display: boolean) => this.setState({modalDelete: display})}
+          catalogue={this.props.type}
+          handleDelete={() => this.handleDelete()}
+          />
       </div>
     ) : (
       <></>

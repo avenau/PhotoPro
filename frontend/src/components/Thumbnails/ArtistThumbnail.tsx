@@ -1,7 +1,6 @@
 import React from "react";
 import Image from "react-bootstrap/Image";
 import "./ArtistThumbnail.scss";
-// import "./PhotoThumbnail.scss"
 import _ from "lodash";
 import profilePic from "../../static/profile-pic.png";
 

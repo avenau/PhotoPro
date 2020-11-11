@@ -100,7 +100,6 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
   render() {
     return (
       <div className="uploadPage">
-        <Toolbar />
         <Container className="mt-5">
           <h1>Upload Photo</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>

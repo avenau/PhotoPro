@@ -31,8 +31,7 @@ import lib.collection.collection_functions as collection_functions
 
 # Albums
 from lib.album.album_edit import create_album, get_albums
-from lib.album.album_functions import update_album
-from lib.album.album_functions import album_photo_search
+from lib.album.album_functions import update_album, album_photo_search, catalogue_thumbnail
 from lib.album.album_purchase import purchase_album, get_price
 
 # Comments
@@ -336,6 +335,7 @@ def _get_credits():
 
     return dumps({"credits": this_user.get_credits()})
 
+
 @app.route("/manageaccount/success", methods=["POST"])
 @validate_token
 def manage_account():
@@ -468,6 +468,19 @@ def _profile_details():
         }
     )
 
+@app.route("/collection/thumbnail", methods=["GET"])
+def _collection_thumbnail():
+    """
+    Get first photo from collection to use a thumbnail
+
+    """
+    collection_id = request.args.get("albumId")
+    _collection = lib.collection.collection.Collection.objects.get(id=collection_id)
+    try:
+        u_id = get_uid(request.args.get("token"))
+    except:
+        u_id = ""
+    return dumps(catalogue_thumbnail(_collection, u_id))
 
 """
 --------------------
@@ -745,7 +758,7 @@ def buy_photo():
     elif this_photo.is_deleted():
         raise Error.ValidationError("You can't purchase a deleted photo.")
     elif photo_price > user_credits:
-        raise Error.ValueError("You don't have enough credits to buy this photo.")
+        raise Error.ValueError("You don't have enough credits. Buy more at the purchases tab :)")
 
     # Do the purchase
     buyer.remove_credits(photo_price)
@@ -985,6 +998,7 @@ def welcome_recommend_photos():
 
 
 @app.route("/userdetails", methods=["GET"])
+@validate_token
 def _user_info_with_token():
     """
     Description
@@ -1002,9 +1016,6 @@ def _user_info_with_token():
 
     """
     token = request.args.get("token")
-    if token == "":
-        print("token is an empty string")
-        return {}
     u_id = token_functions.get_uid(token)
     this_user = user.User.objects.get(id=u_id)
     if not this_user:
@@ -1669,7 +1680,6 @@ def _create_collection():
     ----------
     token: string
     title: string,
-    discount, int
     tags: JSON([string]),
 
     Returns
@@ -1681,10 +1691,10 @@ def _create_collection():
     u_id = token_functions.get_uid(params["token"])
     # Get Objects
     _user = user.User.objects.get(id=u_id)
-    collection_id = collection_functions.create_collection(_user, params)
+    new_collection = collection_functions.create_collection(_user, params)
 
     # Return Collection ID
-    return dumps({"collection_id": collection_id})
+    return dumps(new_collection)
 
 
 @app.route("/collection/update", methods=["PUT"])
@@ -1746,7 +1756,7 @@ def _delete_collection():
     return dumps({"success": ret})
 
 
-@app.route("/collection/getphotos", methods=["GET"])
+@app.route("/collection/photos", methods=["GET"])
 @validate_token
 def _get_collection_photos():
     """
@@ -1757,27 +1767,30 @@ def _get_collection_photos():
     Parameters
     ----------
     token: string
-    collection_id: string
+    query: collectionId
+    offset: string
+    limit: string
+
 
     Returns
     ----------
-    { 'collection_id': string }
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
     """
-    # Get Arguments
-    u_id = token_functions.get_uid(request.args.get("token"))
-    collection_id = request.args.get("collection_id")
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
 
-    # Get Objects
-    _collection = collection.Collection.objects.get(id=collection_id)
-    _user = user.User.objects.get(id=u_id)
-
-    # List of photos
-    photos = collection_functions.get_collection_photos(_user, _collection)
-
-    return dumps({"photos": photos})
+    return dumps(collection_functions.collection_photo_search(data))
 
 
-@app.route("/collection/addphoto", methods=["UPDATE"])
+@app.route("/collection/addphotos", methods=["PUT"])
 @validate_token
 def _add_collection_photo():
     """
@@ -1788,8 +1801,8 @@ def _add_collection_photo():
     Parameters
     ----------
     token: string
-    collection_id: string
-    photo_id: string
+    collectionIds: []string
+    photoId: string
 
     Returns
     ----------
@@ -1797,16 +1810,21 @@ def _add_collection_photo():
     """
 
     # Get arguments
-    u_id = token_functions.get_uid(request.args.get("token"))
-    collection_id = request.args.get("collection_id")
-    photo_id = request.args.get("photo_id")
+    params = request.form.to_dict()
+    u_id = token_functions.get_uid(params['token'])
+    collection_ids = loads(params['collectionIds'])
+    photo_id = params['photoId']
 
-    _collection = collection.Collection.objects.get(id=collection_id)
     _photo = photo.Photo.objects.get(id=photo_id)
     _user = user.User.objects.get(id=u_id)
+    print(collection_ids)
 
-    ret = collection_functions.add_collection_photo(_user, _photo, _collection)
-    return dumps({"success": ret})
+    for col in collection_ids:
+        print(col)
+        _col = collection.Collection.objects.get(id=col)
+        collection_functions.add_collection_photo(_user, _photo, _col)
+
+    return dumps({"success": True})
 
 
 @app.route("/collection/removephoto", methods=["UPDATE"])
@@ -1848,7 +1866,6 @@ def _remove_collection_photo():
 ---------------
 """
 
-
 @app.route("/album", methods=["GET"])
 @validate_token
 def _get_album():
@@ -1884,6 +1901,31 @@ def _get_album():
         "owner": str(_album.get_created_by().get_id()),
         "nickname": str(_album.get_created_by().get_nickname())
     }
+@app.route("/album/thumbnail", methods=["GET"])
+def _album_thumbnail():
+    """
+    Return thumbnail of first photo from an album to use as
+    the thumbnail for an album
+
+    Parameters
+    ----------
+    albumId: string
+    token: string
+
+    Returns
+    ----------
+    {
+        thumbnail: string
+    }
+    """
+    album_id = request.args.get("albumId")
+    _album = lib.album.album.Album.objects.get(id=album_id)
+
+    try:
+        u_id = get_uid(request.args.get("token"))
+    except:
+        u_id = ""
+    return dumps(catalogue_thumbnail(_album, u_id))
 
 
 @app.route("/album/checkpurchased", methods=["GET"])
