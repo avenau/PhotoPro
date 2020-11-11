@@ -6,8 +6,8 @@ import axios from "axios";
 import { RouteComponentProps, withRouter, Link } from 'react-router-dom';
 import Savings from "./Savings";
 import Album from "../PhotoEdit/Album";
-import Tags from "../Tags";
-import { Row, Card } from "react-bootstrap";
+import "./AlbumDisplay.scss"
+
 
 interface AlbumDisplayProps extends RouteComponentProps {
   albumTitle?: string;
@@ -83,34 +83,23 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
         </Link>
         {this.props.isOwner ?
           <>
-          <p>{this.props.discount}% off original price!</p>
-          <Savings albumId={this.state.albumId} />
+          <br/>
+          <div className="album-price-display">
+            <p>{this.props.discount}% off original price!</p>
+            <Savings albumId={this.state.albumId} />
+          </div>
           </> :
           this.state.purchased ? 
             <p>You've purchased this album already</p>
             :
-            <>
+            <div className="album-price-display">
               <p>{this.props.discount}% off original price!</p>
               <Savings albumId={this.state.albumId} />
               <Button onClick={() => { this.purchaseAlbum() }}>
                 Purchase
               </Button>
-            </>
+            </div>
         }
-        <Card>
-          <Card.Body>
-            <p><b>Tags</b></p>
-            <Container>
-              <Row>
-              { this.props.tags.map((tag) => (
-                  <Tags key={tag} tagName={tag} type="album"/>
-                ))
-              }
-              </Row>
-            </Container>
-          </Card.Body>
-        </Card>
-        
       </>);
   }
 }

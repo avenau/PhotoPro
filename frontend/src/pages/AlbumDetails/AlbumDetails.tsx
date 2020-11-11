@@ -1,10 +1,10 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
+import Tags from "../../components/Tags";
 import axios from "axios";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
 import ContentLoader from '../../components/ContentLoader/ContentLoader';
-import Toolbar from "../../components/Toolbar/Toolbar";
 import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
 
 interface Props extends RouteComponentProps<MatchParams> {
@@ -93,12 +93,24 @@ class AlbumDetails extends React.Component<Props, State> {
               />
             </Col>
             <Col xs={7}>
+              <Container>
+                  <p><b>Tags</b></p>
+                  <Container>
+                    <Row>
+                    { this.state.tags.map((tag) => (
+                        <Tags key={tag} tagName={tag} type="album"/>
+                      ))
+                    }
+                    </Row>
+                  </Container>
+              
               <AlbumHeader
                 isOwner={this.state.isOwner}
                 catalogueId={this.state.albumId}
                 token={this.state.token}
                 type="album"
               />
+              </Container>
             </Col>
           </Row>
           <ContentLoader
