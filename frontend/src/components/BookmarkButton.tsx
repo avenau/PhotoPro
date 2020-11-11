@@ -1,15 +1,30 @@
-import React, { createRef, useState } from "react";
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import { Interface } from "readline";
+import React from "react";
+import { Button, Form, Modal } from "react-bootstrap";
+import axios from 'axios';
 
-interface BookmarkProps {
-  p_id: string;
+interface Collection {
+  title : string;
+  authorId?: string;
+  author?: string;
+  created?: string;
+  id?: string;
 }
 
-export default class BookmarkButton extends React.Component<
-  BookmarkProps,
-  any
-> {
+interface BookmarkProps {
+  pId: string;
+  collections: Collection[];
+}
+
+interface State {
+  showModal: boolean;
+  showNewCol: boolean;
+  collections: Collection[];
+  token?: string;
+  uId?: string;
+}
+
+
+export default class BookmarkButton extends React.Component<BookmarkProps, State> {
   // If photo does not belong in any collections then it will be grey
   // Otherwise the button will be blue
   constructor(props: BookmarkProps) {
@@ -17,9 +32,11 @@ export default class BookmarkButton extends React.Component<
     this.state = {
       showModal: false,
       showNewCol: false,
-      collections: [],
-      newCollection: "",
+      collections: props.collections,
     };
+  }
+
+  onComponentMount(){
   }
 
   openModal = () => this.setState({ showModal: true });
@@ -34,16 +51,27 @@ export default class BookmarkButton extends React.Component<
     if (event) {
       event.preventDefault();
     }
+    const data = new FormData(event.currentTarget as HTMLFormElement)
     this.closeNewCol();
-    this.setState({
-      collections: [...this.state.collections, this.state.newCollection],
-    });
+    axios
+      .post(`/collection/add`, {params: {token: this.state.token,
+                                         title: data.get('title')}})
+      .then((res) => {
+              const newCollection = res.data;
+              this.setState(prevState => ({
+                collections: [...prevState.collections, newCollection],
+              }));
+            })
+      .catch(()=>{});
   };
 
   render() {
     return (
       <div>
-        <Button variant="light" onClick={this.openModal}>
+        <Button
+          variant="light"
+          onClick={this.openModal}
+        >
           <svg
             width="1em"
             height="1em"
@@ -58,7 +86,6 @@ export default class BookmarkButton extends React.Component<
             />
           </svg>
         </Button>
-
         <Modal
           animation={false}
           show={this.state.showModal}
@@ -66,19 +93,24 @@ export default class BookmarkButton extends React.Component<
           className="BookmarkModal"
         >
           <Modal.Header closeButton />
-          <Modal.Title>Add Photo to a Collection</Modal.Title>
-          <Form>
-            {this.state.collections.map((collection: string) => (
-              <Form.Group>
-                <Form.Check type="checkbox" label={collection} />
-              </Form.Group>
-            ))}
-          </Form>
-          <div className="modalButtons">
-            <Button variant="primary" onClick={this.openNewCol}>
-              New Collection
-            </Button>
-            <Button onClick={this.closeModal}>Done</Button>
+          <div className="BookmarkForm p-3">
+            <Modal.Title>Add Photo to a Collection</Modal.Title>
+            <Form className="p-3">
+              {this.state.collections.map((collection: Collection) => (
+                <Form.Group key={collection.id}>
+                  <Form.Check
+                    type="checkbox"
+                    label={collection.title}
+                  />
+                </Form.Group>
+              ))}
+            </Form>
+            <div className="modalButtons">
+              <Button variant="primary" onClick={this.openNewCol}>
+                New Collection
+              </Button>
+              <Button onClick={this.closeModal}>Done</Button>
+            </div>
           </div>
         </Modal>
         <Modal
@@ -92,8 +124,8 @@ export default class BookmarkButton extends React.Component<
           <Form onSubmit={this.handleSubmit}>
             <Form.Group>
               <Form.Control
-                onChange={(e) => this.setState({ collections: e.target.value })}
                 placeholder="Enter a name for your new Collection"
+                name="title"
               />
             </Form.Group>
             <Button variant="primary" onClick={this.closeNewCol}>

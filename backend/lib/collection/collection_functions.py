@@ -59,14 +59,16 @@ def create_collection(_user, params):
     )
     try:
         new_collection.save()
-        collection_id = str(new_collection.id)
         _user.add_collection(new_collection)
         _user.save()
     except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError
 
-    return collection_id
+    return {'title': new_collection.get_title(),
+            'collection_id': new_collection.get_id(),
+            'tags': new_collection.get_tags(),
+            'creation_date': new_collection.get_creation_date()}
 
 
 def delete_collection(_user, _collection):

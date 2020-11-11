@@ -1710,7 +1710,6 @@ def _create_collection():
     ----------
     token: string
     title: string,
-    discount, int
     tags: JSON([string]),
 
     Returns
@@ -1722,10 +1721,10 @@ def _create_collection():
     u_id = token_functions.get_uid(params["token"])
     # Get Objects
     _user = user.User.objects.get(id=u_id)
-    collection_id = collection_functions.create_collection(_user, params)
+    new_collection = collection_functions.create_collection(_user, params)
 
     # Return Collection ID
-    return dumps({"collection_id": collection_id})
+    return dumps(new_collection)
 
 
 @app.route("/collection/update", methods=["PUT"])
