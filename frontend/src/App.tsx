@@ -6,6 +6,7 @@ import "./axios";
 import AnonRoute from "./components/AnonRoute/AnonRoute";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import DoesNotExistPage from "./pages/DoesNotExistPage";
+import Toolbar from "./components/Toolbar/Toolbar";
 import EditPhoto from "./pages/EditPhoto";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
@@ -30,6 +31,7 @@ interface Props {}
 interface State {
   valid: boolean;
   loading: boolean;
+  credits: number | "...";
 }
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -43,6 +45,7 @@ class App extends React.Component<Props, State> {
     this.state = {
       valid: false,
       loading,
+      credits: "...",
     };
   }
 
@@ -56,14 +59,44 @@ class App extends React.Component<Props, State> {
           this.setState({ valid: false, loading: false });
         }
       });
+      axios
+        .get("/user/credits", {
+          params: {
+            token,
+          },
+        })
+        .then((res) => {
+          if (this.state.credits != res.data.credits) {
+            this.setState({ credits: res.data.credits });
+          }
+        })
+        .catch(() => {});
     }
   }
+
+  refreshCredits = () => {
+    const token = localStorage.getItem("token");
+    if (this.state.valid) {
+      axios
+        .get("/user/credits", {
+          params: {
+            token,
+          },
+        })
+        .then((res) => {
+          this.setState({ credits: res.data.credits });
+          console.log(res.data.credits);
+        })
+        .catch(() => {});
+    }
+  };
 
   render() {
     return this.state.loading ? (
       <div>Loading...</div>
     ) : (
       <Router forceRefresh>
+        <Toolbar credits={this.state.credits} />
         <Switch>
           <AnonRoute
             valid={this.state.valid}
@@ -71,7 +104,9 @@ class App extends React.Component<Props, State> {
             path="/login"
             component={LoginPage}
           />
-          <Route exact path="/" component={HomePage} />
+          <Route exact path="/">
+            <HomePage />
+          </Route>
           <AnonRoute
             valid={this.state.valid}
             exact
@@ -96,12 +131,14 @@ class App extends React.Component<Props, State> {
             component={ResetPasswordPage}
           />
           <Route path="/user/:user_id" component={ProfilePage} />
-          <Route path="/search/:type" component={SearchPage} />
-          <Route
-            valid={this.state.valid}
-            path="/photo/:photo_id"
-            component={PhotoDetails}
-          />
+          <Route path="/search/:type">
+            <SearchPage refreshCredits={this.refreshCredits} />
+          </Route>
+          {/* component={SearchPage} /> */}
+
+          <Route valid={this.state.valid} path="/photo/:photo_id">
+            <PhotoDetails refreshCredits={this.refreshCredits} />
+          </Route>
           <ProtectedRoute
             valid={this.state.valid}
             exact

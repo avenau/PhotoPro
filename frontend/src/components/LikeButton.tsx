@@ -98,7 +98,7 @@ export default class LikeButton extends React.Component<LikeProps, any> {
 
   render() {
     return (
-      <div style={{ position: 'absolute' }}>
+      <div style={{ position: 'absolute' }} className="mt-1">
         <Button
           variant={this.state.isLiked ? "primary" : "light"}
           onClick={(e) => this.handleLike(e)}

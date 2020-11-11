@@ -12,7 +12,7 @@ import Toolbar from "../../components/Toolbar/Toolbar";
 export default class LoginPage extends React.Component<
   RouteChildrenProps,
   any
-  > {
+> {
   constructor(props: RouteChildrenProps) {
     super(props);
     this.state = {
@@ -55,7 +55,6 @@ export default class LoginPage extends React.Component<
   render() {
     return (
       <div className="loginPage">
-        <Toolbar />
         <Container>
           <Jumbotron>
             <h1>Log In to PhotoPro</h1>
