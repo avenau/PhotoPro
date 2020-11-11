@@ -21,7 +21,7 @@ export default function CuratedFeed(props: Props) {
             query=""
             route="/welcome/recommend"
             type="photo"
-            curatedFeed={true}
+            curatedFeed
             refreshCredits={props.refreshCredits}
           />
         )}

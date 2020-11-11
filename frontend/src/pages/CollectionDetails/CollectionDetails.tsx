@@ -3,7 +3,6 @@ import { RouteComponentProps } from "react-router-dom";
 import axios from "axios";
 import Container from "react-bootstrap/Container";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import ContentLoader from '../../components/ContentLoader/ContentLoader';
 
 interface Props extends RouteComponentProps<MatchParams> {
@@ -64,7 +63,6 @@ class CollectionDetails extends React.Component<Props, State> {
   render() {
     return (
       <div className="create-collection-page">
-        <Toolbar />
         <Container className="mt-5">
           <div>
             <AlbumHeader

@@ -24,13 +24,14 @@ export default class CollectionThumbnail extends React.Component<Props, State> {
       collectionThumbnail: Thumbnail,
     }
   }
+
   componentDidMount() {
     const token = localStorage.getItem("token")
     axios
       .get("/collection/thumbnail", {
         params: {
           albumId: this.props.id,
-          token: token
+          token
         }
       })
       .then((res) => {

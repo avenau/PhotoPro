@@ -1,6 +1,7 @@
 import React from "react";
 import { PencilSquare, XSquare } from "react-bootstrap-icons";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
+import { OverlayTrigger, Tooltip } from "react-bootstrap"
 import "./AlbumHeader.scss";
 import axios from "axios";
 import ConfirmDelete from "./ConfirmDelete";
@@ -34,25 +35,49 @@ class AlbumHeader extends React.Component<AlbumHeaderProps, AlbumHeaderState> {
     .catch()
   }
 
+  renderAlbumTooltip = (props: any) => {
+    return <Tooltip id="edit-album" {...props}>
+      Edit album
+    </Tooltip>
+  }
+  
+  renderDeleteTooltip = (props: any) => {
+    return <Tooltip id="delete-album" {...props}>
+      Delete album
+    </Tooltip>
+  }
+
   render() {
     const path = `/${this.props.type}/manage/${this.props.catalogueId}`;
     return this.props.isOwner ? (
       <div className="album-header-container">
-        <Link to={path} className="mr-3">
-          <PencilSquare size="2rem" color="#343a40" />
-        </Link>
-        <div
-          className="album-header-delete-button"
-          onClick={() => this.setState({modalDelete: true})}
+        <OverlayTrigger 
+          placement="left"
+          delay={{ show: 250, hide: 400 }}
+          overlay={this.renderAlbumTooltip}
         >
-          <XSquare size="2rem" color="#b00b1e" />
-        </div>
+          <Link to={path} className="mr-3">
+            <PencilSquare size="2rem" color="#343a40" />
+          </Link>
+        </OverlayTrigger>
+        <OverlayTrigger 
+          placement="right"
+          delay={{ show: 250, hide: 400 }}
+          overlay={this.renderDeleteTooltip}
+        >
+          <div
+            className="album-header-delete-button"
+            onClick={() => this.setState({modalDelete: true})}
+          >
+            <XSquare size="2rem" color="#b00b1e" />
+          </div>
+        </OverlayTrigger>
         <ConfirmDelete 
           modalDelete={this.state.modalDelete}
           setModalDelete={(display: boolean) => this.setState({modalDelete: display})}
           catalogue={this.props.type}
           handleDelete={() => this.handleDelete()}
-          />
+        />
       </div>
     ) : (
       <></>

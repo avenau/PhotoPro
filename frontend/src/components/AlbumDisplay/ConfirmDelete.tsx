@@ -10,13 +10,13 @@ interface ConfirmDeleteProps {
 
 export default function ConfirmDelete(props: ConfirmDeleteProps) {
     return (<Modal show={props.modalDelete} onHide={() => {props.setModalDelete(false)}} animation={false}>
-    <Modal.Header closeButton>
-      <Modal.Title>Delete {props.catalogue}</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>Are you sure you want to delete your {props.catalogue}? You cannot recover your {props.catalogue} after deletion.</Modal.Body>
-    <Modal.Footer>
-      <Button id="deleteConfirmed" variant="danger" onClick={() => {props.handleDelete()}}>Delete {props.catalogue}</Button>
-      <Button id="cancelDelete" variant="secondary" onClick={() => {props.setModalDelete(false)}}>Cancel</Button>
-    </Modal.Footer>
-  </Modal>)
+      <Modal.Header closeButton>
+        <Modal.Title>Delete {props.catalogue}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>Are you sure you want to delete your {props.catalogue}? You cannot recover your {props.catalogue} after deletion.</Modal.Body>
+      <Modal.Footer>
+        <Button id="deleteConfirmed" variant="danger" onClick={() => {props.handleDelete()}}>Delete {props.catalogue}</Button>
+        <Button id="cancelDelete" variant="secondary" onClick={() => {props.setModalDelete(false)}}>Cancel</Button>
+      </Modal.Footer>
+    </Modal>)
 }

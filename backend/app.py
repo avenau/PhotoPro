@@ -1984,7 +1984,6 @@ def _check_puchased():
     purchased = all(
         alb_photo in _user.get_purchased() for alb_photo in _album.get_photos()
     )
-
     return dumps({"purchased": purchased})
 
 

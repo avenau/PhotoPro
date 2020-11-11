@@ -4,14 +4,15 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import axios from "axios";
 import { RouteComponentProps, withRouter, Link } from 'react-router-dom';
-import ContentLoader from '../ContentLoader/ContentLoader';
 import Savings from "./Savings";
 import Album from "../PhotoEdit/Album";
+import "./AlbumDisplay.scss"
+
 
 interface AlbumDisplayProps extends RouteComponentProps {
   albumTitle?: string;
   discount?: number;
-  tags?: string[];
+  tags: string[];
   photos?: string[];
   albumId: string;
   isOwner: boolean;
@@ -75,35 +76,29 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
   render() {
     return (
       <>
-        <Container>
-          <Link
-            to={`/user/${this.props.owner}`}
-            >
-            By @​​​​​​​{this.props.nickname}
-          </Link>
-          {this.props.isOwner ?
-            <>
-            <p>{this.props.discount}% off original price!</p>
-            <Savings albumId={this.state.albumId} />
-            </> :
-            this.state.purchased ? 
-              <p>You've purchased this album already</p>
-              :
-              <>
-                <p>{this.props.discount}% off original price!</p>
-                <Savings albumId={this.state.albumId} />
-                <Button onClick={() => { this.purchaseAlbum() }}>
-                  Purchase
-                </Button>
-              </>
-          }
-          <ContentLoader
-            query={this.state.albumId}
-            route='/album/photos'
-            type="albumPhotos"
-            updatePage={() => {window.location.reload()}}
-          />
-        </Container>
+        <Link
+          to={`/user/${this.props.owner}`}
+        >
+          By @​​​​​​​{this.props.nickname}
+        </Link>
+        {this.props.isOwner ?
+          <>
+            <div className="album-price-display">
+              <p>{this.props.discount}% off original price!</p>
+              <Savings albumId={this.state.albumId} />
+            </div>
+          </> :
+          this.state.purchased ? 
+            <p>You've purchased this album already</p>
+            :
+            <div className="album-price-display">
+              <p>{this.props.discount}% off original price!</p>
+              <Savings albumId={this.state.albumId} />
+              <Button onClick={() => { this.purchaseAlbum() }}>
+                Purchase
+              </Button>
+            </div>
+        }
       </>);
   }
 }

@@ -25,7 +25,7 @@ class PopularImages extends Component<Props, any> {
             query=""
             route="/welcome/getPopularImages"
             type="photo"
-            popular={true}
+            popular
             refreshCredits={this.props.refreshCredits}
           />
         </Container>

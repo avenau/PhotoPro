@@ -1,10 +1,10 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
-import Container from "react-bootstrap/Container";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import axios from "axios";
+import Tags from "../../components/Tags";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
-
-import Toolbar from "../../components/Toolbar/Toolbar";
+import ContentLoader from '../../components/ContentLoader/ContentLoader';
 import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
 
 interface Props extends RouteComponentProps<MatchParams> {
@@ -78,22 +78,46 @@ class AlbumDetails extends React.Component<Props, State> {
     return (
       <div className="createAlbumPage">
         <Container className="mt-5">
-          <AlbumHeader
-            isOwner={this.state.isOwner}
-            catalogueId={this.state.albumId}
-            token={this.state.token}
-            type="album"
-          />
           <h1>{this.state.title}</h1>
-          <AlbumDisplay
-            albumTitle={this.state.title}
-            discount={this.state.discount}
-            tags={this.state.tags}
-            photos={this.state.photos}
-            albumId={this.state.albumId}
-            isOwner={this.state.isOwner}
-            owner={this.state.owner}
-            nickname={this.state.nickname}
+          <Row>
+            <Col>
+              <AlbumDisplay
+                albumTitle={this.state.title}
+                discount={this.state.discount}
+                tags={this.state.tags}
+                photos={this.state.photos}
+                albumId={this.state.albumId}
+                isOwner={this.state.isOwner}
+                owner={this.state.owner}
+                nickname={this.state.nickname}
+              />
+            </Col>
+            <Col xs={7}>
+              <Container>
+                <p><b>Tags</b></p>
+                <Container>
+                  <Row>
+                    { this.state.tags.map((tag) => (
+                      <Tags key={tag} tagName={tag} type="album" />
+                      ))
+                    }
+                  </Row>
+                </Container>
+              
+                <AlbumHeader
+                  isOwner={this.state.isOwner}
+                  catalogueId={this.state.albumId}
+                  token={this.state.token}
+                  type="album"
+                />
+              </Container>
+            </Col>
+          </Row>
+          <ContentLoader
+            query={this.state.albumId}
+            route='/album/photos'
+            type="albumPhotos"
+            updatePage={() => {window.location.reload()}}
           />
         </Container>
       </div>
