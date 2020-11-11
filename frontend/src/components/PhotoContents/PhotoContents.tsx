@@ -9,14 +9,12 @@ import "./PhotoContents.scss";
 import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../Tags";
-import { relative } from "path";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
 
 interface Collection {
   title: string;
-  authorId: string;
-  author: string;
-  created: string;
   id: string;
+  photoExists: boolean;
 }
 
 interface Props extends RouteComponentProps {
@@ -47,6 +45,8 @@ class PhotoContents extends React.Component<Props, any> {
       collections: [],
       token: localStorage.getItem("token") ? localStorage.getItem("token") : "",
       uId: localStorage.getItem("u_id") ? localStorage.getItem("u_id") : "",
+      downloadBtnLoading: false,
+      purchaseBtnLoading: false,
     };
   }
 
@@ -85,14 +85,16 @@ class PhotoContents extends React.Component<Props, any> {
       })
       .catch(() => { });
     if (localStorage.getItem("token")) {
-      const query = `/user/collections?token=${this.state.token}&query=${this.state.uId}&offset=0&limit=5`;
-      axios.get(query).then((res) => {
-        this.setState({ collections: res.data.map((obj: Collection) => obj) });
-      });
+      const query = `/collection/getall?token=${this.state.token}&photoId=${this.props.photoId}`
+      axios.get(query)
+        .then((res) => {
+          this.setState({ collections: res.data.map((obj: Collection) => obj) });
+        });
     }
   }
 
   purchasePhoto(e: any) {
+    this.setState({ purchaseBtnLoading: true });
     e.preventDefault();
     e.stopPropagation();
     axios
@@ -101,16 +103,20 @@ class PhotoContents extends React.Component<Props, any> {
         photoId: this.props.photoId,
       })
       .then((res) => {
+        this.setState({ purchaseBtnLoading: false });
         this.setState({
           purchased: res.data.purchased,
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
         });
         this.props.refreshCredits();
       })
-      .catch(() => { });
+      .catch(() => {
+        this.setState({ purchaseBtnLoading: false });
+      });
   }
 
   downloadPhoto(e: React.MouseEvent) {
+    this.setState({ downloadBtnLoading: true });
     e.preventDefault();
     e.stopPropagation();
     axios
@@ -121,6 +127,7 @@ class PhotoContents extends React.Component<Props, any> {
         },
       })
       .then((r) => {
+        this.setState({ downloadBtnLoading: false });
         const link = document.createElement("a");
         link.href = `${r.data.metadata}${r.data.base64_img}`;
         const titleWithoutSpaces = this.state.title.replace(/\s+/g, "");
@@ -132,7 +139,9 @@ class PhotoContents extends React.Component<Props, any> {
         link.click();
         link.remove();
       })
-      .catch(() => { });
+      .catch(() => {
+        this.setState({ downloadBtnLoading: false });
+      });
   }
 
   // Determine whether to show buttons for:
@@ -141,10 +150,13 @@ class PhotoContents extends React.Component<Props, any> {
     if (this.state.isArtist) {
       return (
         <div>
-          <Button onClick={(e) => this.downloadPhoto(e)} className="ml-1 mt-1">
+          <LoadingButton
+            loading={this.state.downloadBtnLoading}
+            onClick={(e) => this.downloadPhoto(e)}
+          >
             Download Full Photo
-          </Button>
-          <Button href={`/edit/${this.props.photoId}`} className="ml-1 mt-1">
+          </LoadingButton>
+          <Button href={`/edit/${this.props.photoId}`} className="ml-1">
             Manage Photo
           </Button>
         </div>
@@ -153,20 +165,30 @@ class PhotoContents extends React.Component<Props, any> {
     if (this.state.purchased) {
       return (
         <div>
-          <Button onClick={(e) => this.downloadPhoto(e)} className="ml-1 mt-1">
+          <LoadingButton
+            loading={this.state.downloadBtnLoading}
+            onClick={(e) => this.downloadPhoto(e)}
+          >
             Download Full Photo
-          </Button>
+          </LoadingButton>
         </div>
       );
     }
     return (
       <div>
-        <Button className="ml-1 mt-1" onClick={(e) => this.downloadPhoto(e)}>
+        <LoadingButton
+          loading={this.state.downloadBtnLoading}
+          onClick={(e) => this.downloadPhoto(e)}
+        >
           Download Watermarked Photo
-        </Button>
-        <Button className="ml-1 mt-1" onClick={(e) => this.purchasePhoto(e)}>
+        </LoadingButton>
+        <LoadingButton
+          className="ml-1"
+          loading={this.state.purchaseBtnLoading}
+          onClick={(e) => this.purchasePhoto(e)}
+        >
           Purchase Photo
-        </Button>
+        </LoadingButton>
         <Price
           fullPrice={this.state.fullPrice}
           discount={this.state.discount}
@@ -188,7 +210,7 @@ class PhotoContents extends React.Component<Props, any> {
               like_count={this.state.likes}
               isLiked={this.state.isLiked}
             />
-            <div className="BookmarkButton mt-1">
+            <div className="BookmarkButton">
               <BookmarkButton
                 pId={this.props.photoId}
                 collections={this.state.collections}

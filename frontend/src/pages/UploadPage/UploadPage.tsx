@@ -9,6 +9,7 @@ import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Toolbar from "../../components/Toolbar/Toolbar";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
 
 // Functional components
 import Title from "../../components/PhotoEdit/Title";
@@ -32,6 +33,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       imagePreview: null,
       albums: [],
       photoElement: "",
+      btnLoading: false,
     };
     this.setState = this.setState.bind(this);
     this.activateUploadButton = this.activateUploadButton.bind(this);
@@ -59,6 +61,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
     if (this.state.tagsList.length < 1) {
       return;
     }
+    this.setState({ btnLoading: true });
     this.setPhoto().then((response: any) => {
       const token = localStorage.getItem("token");
       axios
@@ -74,11 +77,12 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
           token,
         })
         .then((response) => {
+          this.setState({ btnLoading: false });
           const uid = localStorage.getItem("u_id");
           this.props.history.push(`/user/${uid}`);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          this.setState({ btnLoading: false });
         });
     });
   }
@@ -149,9 +153,16 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
                     />
                   </Col>
                 </Row>
-                <Button id="uploadButton" className="mt-2" type="submit">
+                <LoadingButton
+                  id="uploadButton"
+                  loading={this.state.btnLoading}
+                  onClick={() => {
+                    return;
+                  }}
+                  type="submit"
+                >
                   Upload Photo
-                </Button>
+                </LoadingButton>
               </div>
             ) : (
               <></>

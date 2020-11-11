@@ -6,15 +6,19 @@ import PopularImages from "../components/Welcome/PopularImages";
 import WelcomeHeader from "../components/Welcome/WelcomeHeader";
 import CuratedFeed from "../components/Welcome/CuratedFeed";
 
-class WelcomePage extends React.Component {
+interface Props {
+  refreshCredits: () => void;
+}
+
+class WelcomePage extends React.Component<Props> {
   render() {
     return (
       <div className="HomePage">
         <WelcomeHeader />
         <Showdown />
-        <CuratedFeed />
+        <CuratedFeed refreshCredits={this.props.refreshCredits} />
         <PopularContributors />
-        <PopularImages />
+        <PopularImages refreshCredits={this.props.refreshCredits} />
       </div>
     );
   }
