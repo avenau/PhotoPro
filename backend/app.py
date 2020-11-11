@@ -14,11 +14,12 @@ from flask import Flask, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
-from flask_pymongo import PyMongo
 from werkzeug.exceptions import HTTPException
 
 # Classes
 import lib.photo.photo as photo
+import lib.showdown.participant as participant
+import lib.showdown.showdown as showdown
 import lib.user.user as user
 import lib.catalogue.catalogue as catalogue
 import lib.collection.collection as collection
@@ -26,10 +27,6 @@ import lib.album.album as album
 import lib.comment.comment as comment
 
 # Delete rules
-# photo.Photo.register_delete_rule(album.Album, "albums", PULL)
-# photo.Photo.register_delete_rule(collection.Collection, "collections", PULL)
-# user.User.register_delete_rule(album.Album, "albums", PULL)
-# user.User.register_delete_rule(collection.Collection, "collections", PULL)
 album.Album.register_delete_rule(user.User, "albums", PULL)
 album.Album.register_delete_rule(photo.Photo, "albums", PULL)
 collection.Collection.register_delete_rule(user.User, "collections", PULL)
@@ -42,7 +39,11 @@ import lib.collection.collection_functions as collection_functions
 
 # Albums
 from lib.album.album_edit import create_album, get_albums
-from lib.album.album_functions import update_album, album_photo_search, catalogue_thumbnail
+from lib.album.album_functions import (
+    update_album,
+    album_photo_search,
+    catalogue_thumbnail,
+)
 from lib.album.album_purchase import purchase_album, get_price
 
 # Comments
@@ -62,7 +63,6 @@ from lib.photo_details.photo_details import (
     like_photo,
 )
 
-
 # Profile
 from lib.profile.upload_photo import update_user_thumbnail
 from lib.profile.profile_details import (
@@ -73,13 +73,10 @@ from lib.profile.profile_details import (
 )
 
 # Search
-# from lib.search.user_search import user_search
-# from lib.search.photo_search import photo_search
 from lib.search.search import album_search, photo_search, user_search, collection_search
 
 # Showdown
-from lib.showdown import get_images
-from lib.showdown import showdown_likes
+import lib.showdown.get_data as showdown_data
 
 # Schedule
 from lib.schedule.schedule import initialise_schedule
@@ -113,7 +110,6 @@ app = Flask(__name__, static_url_path="/static")
 app.config.from_object(DevelopmentConfig)
 app.register_error_handler(HTTPException, defaultHandler)
 CORS(app)
-mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 mongoengine.connect("angular-flask-muckaround", host=app.config["MONGO_URI"])
 
@@ -226,7 +222,7 @@ def _auth_passwordreset_reset():
     hashed_password = bcrypt.generate_password_hash(new_password)
 
     return dumps(
-        password_reset.password_reset_reset(email, reset_code, hashed_password, mongo)
+        password_reset.password_reset_reset(email, reset_code, hashed_password)
     )
 
 
@@ -322,6 +318,7 @@ def user_info_with_token():
         }
     )
 
+
 @app.route("/user/credits", methods=["GET"])
 @validate_token
 def _get_credits():
@@ -382,7 +379,7 @@ def manage_account():
             data["profilePic"], data["extension"]
         )
     else:
-         data["profilePic"] = ["", ""]
+        data["profilePic"] = ["", ""]
 
     if this_user is None:
         raise Error.UserDNE("User with id " + this_user + "does not exist")
@@ -480,6 +477,7 @@ def _profile_details():
         }
     )
 
+
 @app.route("/collection/thumbnail", methods=["GET"])
 def _collection_thumbnail():
     """
@@ -493,6 +491,7 @@ def _collection_thumbnail():
     except:
         u_id = ""
     return dumps(catalogue_thumbnail(_collection, u_id))
+
 
 """
 --------------------
@@ -627,7 +626,8 @@ def _get_following_from_user():
     data["limit"] = int(data["limit"])
 
     return dumps(user_following_search(data))
-    
+
+
 @app.route("/user/isfollowing", methods=["GET"])
 def _is_followed():
     """
@@ -649,8 +649,9 @@ def _is_followed():
     data = request.args.to_dict()
     follower_u_id = data["follower_u_id"]
     followed_u_id = data["followed_u_id"]
-    
-    return dumps({"is_followed" : is_following(follower_u_id, followed_u_id)})
+
+    return dumps({"is_followed": is_following(follower_u_id, followed_u_id)})
+
 
 @app.route("/user/follow", methods=["POST"])
 def _follow():
@@ -815,7 +816,9 @@ def buy_photo():
     elif this_photo.is_deleted():
         raise Error.ValidationError("You can't purchase a deleted photo.")
     elif photo_price > user_credits:
-        raise Error.ValueError("You don't have enough credits. Buy more at the purchases tab :)")
+        raise Error.ValueError(
+            "You don't have enough credits. Buy more at the purchases tab :)"
+        )
 
     # Do the purchase
     buyer.remove_credits(photo_price)
@@ -907,42 +910,32 @@ def download_full_photo():
 """
 
 # Returns the two showdown images for the day
-@app.route("/showdown/getImages", methods=["GET"])
-def _get_showdown_images():
+@app.route("/showdown", methods=["GET"])
+def _get_showdown():
     """
     Description
     -----------
-    Get the two showdown images for the current showdown
+    Get details about the currently running showdown
 
     Parameters
     ----------
-    N/A
+    token: string
 
     Returns
     -------
-    {path_one, path_two}
+    {
+        participants: object[],
+        prevWinnerPhoto: object,
+        currentVote: string <- either participant id or empty
+    }
     """
-    images = get_images.get_showdown_competing_photos()
-    return dumps({"path_one": images[0], "path_two": images[1]})
+    token = request.args.get("token")
+    try:
+        req_user = token_functions.get_uid(token)
+    except:
+        req_user = ""
 
-
-@app.route("/showdown/getwinner", methods=["GET"])
-def _showdown_getwinner():
-    """
-    Description
-    -----------
-    Get the winning photo from the last showdown
-
-    Parameters
-    ----------
-    N/A
-
-    Returns
-    -------
-    CURRENTLY returns a static path
-    """
-    path = get_images.get_showdown_winner_image()
-    return dumps({"path": path})
+    return dumps(showdown_data.get_data(req_user))
 
 
 @app.route("/showdown/updatelikes", methods=["POST"])
@@ -955,28 +948,46 @@ def _update_likes():
 
     Parameters
     ----------
-    sd_id : string (Showdown id)
     part_id : string (Participating id)
     token : string
 
     Returns
     -------
     {
-        "liked" : string (returns "liked" if the photo is liked, "unliked" if photo is unliked and "swap"
-                    if the current photo is being liked while the other showdown photo is still liked. The other showdown will be unliked.)
-        "like_count" : number
+        "votes" : number
     }
     """
     token = request.form.get("token")
-    sd_id = request.form.get("sd_id")
     part_id = request.form.get("part_id")
-    result = showdown_likes.update_showdown_likes(token, sd_id, part_id)
+    try:
+        u_id = token_functions.get_uid(token)
+        _user = user.User.objects.get(id=u_id)
+    except Exception:
+        raise Error.TokenError("Invalid token, please log in to PhotoPro again")
+
+    try:
+        _participant = participant.Participant.objects.get(id=part_id)
+    except Exception:
+        raise Error.ValueError("Showdown Participant does not exist")
+
+    participants = _participant.get_showdown().get_participants()
+    participants.remove(_participant)
+    _participant2 = participants[0]
+
+    if _user in _participant.get_votes():
+        _participant.remove_vote(_user)
+    else:
+        _participant.add_vote(_user)
+        _participant2.remove_vote(_user)
+
+    _participant.save()
+    _participant2.save()
     return dumps(
         {
-            "liked": result,
-            "like_count": showdown_likes.get_showdown_likes(part_id),
+            "votes": _participant.count_votes(),
         }
     )
+
 
 @app.route("/welcome/popularcontributors", methods=["GET"])
 def _welcome_get_contributors():
@@ -1020,6 +1031,7 @@ def _welcome_get_popular_images():
     offset = int(data["offset"])
     limit = int(data["limit"])
     return dumps(get_popular_images(u_id, offset, limit))
+
 
 @app.route("/welcome/recommend", methods=["GET"])
 @validate_token
@@ -1295,6 +1307,7 @@ def _user_remove_photo():
     identifier = {"_id": ObjectId(img_id)}
     res = remove_photo(u_id, identifier)
     return dumps({"success": str(res)})
+
 
 """
 ---------------
@@ -1710,11 +1723,13 @@ def _get_all_collections():
     json_collection = collection_functions.get_all_collections(request.args)
     response = []
     for entry in loads(json_collection):
-        response.append({
-            'title': entry['title'],
-            'id': entry['id'],
-            'photoExists': entry['photoExists']
-        })
+        response.append(
+            {
+                "title": entry["title"],
+                "id": entry["id"],
+                "photoExists": entry["photoExists"],
+            }
+        )
     return dumps(response)
 
 
@@ -1837,7 +1852,6 @@ def _get_collection_photos():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
-
     return dumps(collection_functions.collection_photo_search(data))
 
 
@@ -1864,23 +1878,22 @@ def _add_collection_photo():
 
     # Get arguments
     params = request.form.to_dict()
-    u_id = token_functions.get_uid(params['token'])
-    collection_ids = loads(params['collectionIds'])
-    photo_id = params['photoId']
+    u_id = token_functions.get_uid(params["token"])
+    collection_ids = loads(params["collectionIds"])
+    photo_id = params["photoId"]
     new_collections = []
 
     _photo = photo.Photo.objects.get(id=photo_id)
     _user = user.User.objects.get(id=u_id)
     for _col in _user.get_collections():
-        new_collections.append({'title': _col.get_title(),
-                                'id': str(_col.get_id()),
-                                'photoExists': False})
+        new_collections.append(
+            {"title": _col.get_title(), "id": str(_col.get_id()), "photoExists": False}
+        )
         if _photo in _col.get_photos():
             _col.remove_photo(_photo)
         if str(_col.get_id()) in collection_ids:
             collection_functions.add_collection_photo(_user, _photo, _col)
-            new_collections[-1]['photoExists'] = True
-
+            new_collections[-1]["photoExists"] = True
 
     return dumps(new_collections)
 
@@ -1890,6 +1903,7 @@ def _add_collection_photo():
 - Album Routes -
 ---------------
 """
+
 
 @app.route("/album", methods=["GET"])
 @validate_token
@@ -1924,8 +1938,10 @@ def _get_album():
         "tags": _album.get_tags(),
         "albumId": album_id,
         "owner": str(_album.get_created_by().get_id()),
-        "nickname": str(_album.get_created_by().get_nickname())
+        "nickname": str(_album.get_created_by().get_nickname()),
     }
+
+
 @app.route("/album/thumbnail", methods=["GET"])
 def _album_thumbnail():
     """

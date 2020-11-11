@@ -1,37 +1,34 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container } from 'react-bootstrap';
-import ContentLoader from '../ContentLoader/ContentLoader';
+import React, { Component } from "react";
+import axios from "axios";
+import ContentLoader from "../ContentLoader/ContentLoader";
 
 class PopularContributors extends Component<any, any> {
   constructor(props: any) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
   }
 
   componentDidMount() {
-    this.checkContributors()
+    this.checkContributors();
   }
 
   checkContributors() {
-    axios.get('/')
+    axios.get("/");
   }
 
   render() {
     return (
-      <Container>
+      <div style={{ padding: "0% 5%" }}>
         <h3>Popular contributors</h3>
 
-        <div style={{display:'flex', justifyContent: 'left'}}>
+        <div style={{ display: "flex", justifyContent: "left" }}>
           <ContentLoader
             query=""
             route="/welcome/popularcontributors"
             type="artist"
           />
         </div>
-      </Container>
+      </div>
     );
   }
 }

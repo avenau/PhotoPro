@@ -4,6 +4,7 @@ import axios from "axios";
 import Image from "react-bootstrap/Image";
 import Price from "../Price";
 import LoadingButton from "../LoadingButton/LoadingButton";
+import NoImage from "../../static/no_image.png";
 import "./PhotoThumbnail.scss";
 
 interface Props extends RouteComponentProps {
@@ -16,7 +17,8 @@ interface Props extends RouteComponentProps {
   user: string;
   owns: boolean;
   popular?: boolean;
-  likes: number;
+  likes?: number;
+  deleted?: boolean;
   updatePage?: () => void;
   refreshCredits?: () => void;
 }
@@ -93,15 +95,23 @@ class PhotoThumbnail extends React.Component<
   }
 
   getLikes() {
-    return this.props.likes > 1 ? (
-      <div style={{ fontSize: "18px" }}> {this.props.likes} likes </div>
-    ) : (
-      <div style={{ fontSize: "18px" }}> {this.props.likes} like </div>
-    );
+    if (this.props.likes) {
+      return this.props.likes > 1 ? (
+        <div style={{ fontSize: "18px" }}> {this.props.likes} likes </div>
+      ) : (
+        <div style={{ fontSize: "18px" }}> {this.props.likes} like </div>
+      );
+    }
+    return <></>;
   }
 
   render() {
-    return (
+    return this.props.deleted ? (
+      <>
+        <Image src={NoImage} className="photo-thumbnail" />
+        <div className="photo-overlay">This photo has been deleted</div>
+      </>
+    ) : (
       <>
         <Image src={this.state.photoB64} className="photo-thumbnail" />
         <div className="photo-overlay">

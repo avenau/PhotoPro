@@ -9,6 +9,7 @@ from mongoengine.fields import BooleanField
 
 import lib.photo.photo as photo
 import lib.user.user as user
+import lib.showdown.showdown as showdown
 
 
 class Participant(Document):
@@ -18,11 +19,15 @@ class Participant(Document):
 
     photo = ReferenceField("photo.Photo")
     votes = ListField(ReferenceField("user.User"))
+    showdown = ReferenceField("showdown.Showdown")
     won = BooleanField(default=False)
     meta = {"collection": "participant"}
 
     # Participating Methods:
     # ----------------------
+
+    def get_id(self):
+        return self.id
 
     def add_vote(self, vote_user):
         self.votes.append(vote_user)
@@ -37,13 +42,19 @@ class Participant(Document):
         return self.votes
 
     def count_votes(self):
-        return self.votes
+        return len(self.votes)
 
     def get_photo(self):
         return self.photo
 
     def set_photo(self, new_photo):
         self.photo = new_photo
+
+    def get_showdown(self):
+        return self.showdown
+
+    def is_deleted(self):
+        return self.photo.is_deleted()
 
     def has_won(self):
         return self.won

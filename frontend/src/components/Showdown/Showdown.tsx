@@ -1,68 +1,98 @@
-import React, { Component } from 'react';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Image from 'react-bootstrap/Image';
-import Button from 'react-bootstrap/Button';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ShowdownLike from './ShowdownLike';
+import React from "react";
+import axios from "axios";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import PrevShowdown from "./PrevShowdown";
+import CurrShowdown from "./CurrShowdown";
+import "./Showdown.scss";
 
-class Showdown extends Component<any, any> {
-  constructor(props: any) {
+interface Props extends RouteComponentProps {}
+
+interface State {
+  participants: Photo[];
+  currentVote: string;
+  prevWinnerPhoto: Photo | null;
+  currentId: string;
+  loading: boolean;
+}
+
+interface Photo {
+  id: string;
+  title: string;
+  price: number;
+  discount: number;
+  photoStr: string;
+  metadata: string;
+  user: string;
+  owns: boolean; // purchased or posted
+  participantId: string;
+  votes: number;
+  deleted: boolean;
+}
+
+class Showdown extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
-      imagePaths: [],
+      participants: [],
+      currentVote: "",
+      prevWinnerPhoto: null,
+      currentId: "",
+      loading: true,
     };
   }
 
   componentDidMount() {
-    this.getStandupImagePaths();
+    this.getShowdownData();
   }
 
-  getStandupImagePaths() {
-    axios.get('/showdown/getImages')
+  getShowdownData() {
+    this.setState({ loading: true });
+    axios
+      .get("/showdown", { params: { token: localStorage.getItem("token") } })
       .then((res) => {
-        const imagePaths = res.data;
-        this.setState({ imagePaths });
+        const {
+          participants,
+          prevWinnerPhoto,
+          currentVote,
+          currentId,
+        } = res.data;
+        this.setState({
+          loading: false,
+          participants,
+          currentVote,
+          prevWinnerPhoto,
+          currentId,
+        });
       });
   }
 
   render() {
+    // TODO update this to use loading spinner
     return (
-      <Container className="p-3">
-        <Row>
-          <h3 style={{ textAlign: 'center' }}>Today's PHOTO SHOWDOWN</h3>
-        </Row>
-        <Container className="p-2">
-          <Row>
-            <Col>
-              <Image src={this.state.imagePaths.path_one} fluid />
-            </Col>
-            <Col xs={2}>
-              {' '}
-              <h3> VS </h3>
-              {' '}
-            </Col>
-            <Col>
-              <Image src={this.state.imagePaths.path_two} fluid />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Button variant="success">Apple</Button>
-              {/* <ShowdownLike partId="5fa92d58367cb28505115b06" sdId="5fa92d58367cb28505115b08" isLiked={false} likeCount={0} /> */}
-              {/* <ShowdownLike partId="5fa92d58367cb28505115b07" sdId="5fa92d58367cb28505115b08" isLiked={false} likeCount={0} /> */}
-            </Col>
-            <Col xs={2} />
-            <Col>
-              <Button variant="success">Banana</Button>
-            </Col>
-          </Row>
-        </Container>
-      </Container>
+      <div className="showdown-container">
+        <div className="subcontainer">
+          <h3>Last Showdown Winner</h3>
+          {this.state.loading ? (
+            <div>Loading...</div>
+          ) : (
+            <PrevShowdown photo={this.state.prevWinnerPhoto} />
+          )}
+        </div>
+        <div className="subcontainer">
+          <h3>Today&apos;s Photo Showdown</h3>
+          {this.state.loading ? (
+            <div>Loading...</div>
+          ) : (
+            <CurrShowdown
+              photos={this.state.participants}
+              currentVote={this.state.currentVote}
+              currentId={this.state.currentId}
+            />
+          )}
+        </div>
+      </div>
     );
   }
 }
 
-export default Showdown;
+export default withRouter(Showdown);

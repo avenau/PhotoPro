@@ -52,6 +52,20 @@ class Showdown(Document):
             minutes=self.get_duration()
         )
 
+    def get_winner(self):
+        """
+        Get the winner of the current showdown
+        """
+        return self.winner
+
+    def get_prev_winner(self):
+        """
+        Get the winner of the previous showdown
+        """
+        if self.previous == None:
+            return None
+        return self.previous.get_winner()
+
     def get_duration(self):
         """
         Get the duration in hours of the showdown
@@ -87,9 +101,16 @@ class Showdown(Document):
             - datetime.now()
         )
 
+    def get_participants(self):
+        """
+        Get all participants in the current showdown
+        """
+        return self.participants
+
     def declare_winner(self):
         """
         If a winner has not yet been declared then declare one
+        If one of the photos has been deleted then the other is automatically the winner
         """
         if len(self.participants) != 2:
             return
@@ -97,11 +118,15 @@ class Showdown(Document):
         p0 = self.participants[0]
         p1 = self.participants[1]
 
-        if p0.count_votes() > p1.count_votes():
+        if (
+            p0.count_votes() > p1.count_votes() or p1.is_deleted()
+        ) and not p0.is_deleted():
             # p0 is winner
             p0.set_won(True)
             self.winner = p0
-        elif p0.count_votes() < p1.count_votes():
+        elif (
+            p0.count_votes() < p1.count_votes() or p0.is_deleted()
+        ) and not p1.is_deleted():
             # p1 is winner
             p1.set_won(True)
             self.winner = p1
