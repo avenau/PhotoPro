@@ -163,9 +163,6 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
                 >
                   Upload Photo
                 </LoadingButton>
-                {/* <Button id="uploadButton" className="mt-2" type="submit">
-                  Upload Photo
-                </Button> */}
               </div>
             ) : (
               <></>
