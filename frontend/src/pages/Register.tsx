@@ -88,7 +88,6 @@ export default function Register(props: RouteChildrenProps) {
 
   return (
     <>
-      <Toolbar />
       <br />
       <Container>
         <h1>Join PhotoPro</h1>

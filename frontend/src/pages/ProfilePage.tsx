@@ -12,7 +12,9 @@ import ContentLoader from "../components/ContentLoader/ContentLoader";
 import CreateCatalogueModal from "../components/ProfilePage/CreateCatalogueModal";
 import "./Profile.scss";
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps {
+  credits: number | "...";
+}
 
 interface State {
   fname: string;
@@ -121,7 +123,6 @@ export default class ProfilePage extends React.Component<Props, State> {
     const currentUser = this.state.userId === userId;
     return (
       <>
-        <Toolbar />
         <div>
           <Modal
             backdrop="static"

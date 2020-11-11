@@ -76,7 +76,6 @@ class SearchPage extends React.Component<Props, State> {
     const { search, type, orderby, filetype, priceMin, priceMax } = this.state;
     return (
       <>
-        <Toolbar />
         <div className="search-options">
           {type === "photo" ? (
             <TypeFilter
