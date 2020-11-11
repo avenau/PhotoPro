@@ -87,13 +87,12 @@ def album_photo_search(data):
 
     return album_photos
 
-def album_thumbnail(album_id, u_id):
+def catalogue_thumbnail(catalogue_obj, u_id):
     """
     Get the thumbnail of first photo (not deleted) from an album
     """
-    _album = Album.objects.get(id=album_id)
 
-    photos = _album.get_photos()
+    photos = catalogue_obj.get_photos()
 
     thumbnail = {
         "thumbnail": ""

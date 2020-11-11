@@ -31,7 +31,7 @@ import lib.collection.collection_functions as collection_functions
 
 # Albums
 from lib.album.album_edit import create_album, get_albums
-from lib.album.album_functions import update_album, album_photo_search, album_thumbnail
+from lib.album.album_functions import update_album, album_photo_search, catalogue_thumbnail
 from lib.album.album_purchase import purchase_album, get_price
 
 # Comments
@@ -468,6 +468,19 @@ def _profile_details():
         }
     )
 
+@app.route("/collection/thumbnail", methods=["GET"])
+def _collection_thumbnail():
+    """
+    Get first photo from collection to use a thumbnail
+
+    """
+    collection_id = request.args.get("albumId")
+    _collection = lib.collection.collection.Collection.objects.get(id=collection_id)
+    try:
+        u_id = get_uid(request.args.get("token"))
+    except:
+        u_id = ""
+    return dumps(catalogue_thumbnail(_collection, u_id))
 
 """
 --------------------
@@ -1907,12 +1920,14 @@ def _album_thumbnail():
         thumbnail: string
     }
     """
-    albumId = request.args.get("albumId")
+    album_id = request.args.get("albumId")
+    _album = lib.album.album.Album.objects.get(id=album_id)
+
     try:
         u_id = get_uid(request.args.get("token"))
     except:
         u_id = ""
-    return dumps(album_thumbnail(albumId, u_id))
+    return dumps(catalogue_thumbnail(_album, u_id))
 
 
 @app.route("/album/checkpurchased", methods=["GET"])
