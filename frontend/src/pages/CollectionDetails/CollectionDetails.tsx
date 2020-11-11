@@ -77,7 +77,7 @@ class CollectionDetails extends React.Component<Props, State> {
     return (
       <div className="create-collection-page">
         <Toolbar />
-        <Container>
+        <Container className="mt-5">
           <div>
             <AlbumHeader
               isOwner={this.state.isOwner}

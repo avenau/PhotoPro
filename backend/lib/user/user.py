@@ -228,12 +228,7 @@ class User(Document):
         """
         Get non-deleted collections
         """
-        collections = []
-        for coll in self.collections:
-            print("Collection ID " + str(coll.id))
-            if not coll.deleted:
-                collections.append(coll)
-        return collections
+        return self.collections
 
     def add_album(self, _album):
         """
@@ -245,11 +240,7 @@ class User(Document):
         """
         Get non-deleted albums
         """
-        albums = []
-        for _album in self.albums:
-            if not _album.is_deleted():
-                albums.append(_album)
-        return albums
+        return self.albums
 
     def get_liked(self):
         """

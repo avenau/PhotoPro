@@ -24,7 +24,6 @@ def get_collection(_collection):
         title: string,
         photos: [Photo],
         creation_date: datetime,
-        deleted: boolean,
         private: boolean,
         price, int
         tags: [string],
@@ -92,8 +91,7 @@ def delete_collection(_user, _collection):
         return ret
 
     try:
-        _collection.delete_collection()
-        _collection.save()
+        _collection.delete()
         ret = True
     except mongoengine.ValidationError:
         print(traceback.format_exc())
@@ -223,10 +221,11 @@ def get_all_collections(args):
         entry['id'] = entry['_id']['$oid']
         entry['photoExists'] = False
         print(entry)
-        for this_photo in entry['photos']:
-            print(this_photo['$oid'], photo_id)
-            if this_photo['$oid'] == photo_id:
-                entry['photoExists'] = True
+        if 'photos' in entry:
+            for this_photo in entry['photos']:
+                print(this_photo['$oid'], photo_id)
+                if this_photo['$oid'] == photo_id:
+                    entry['photoExists'] = True
     return dumps(res)
 
 
@@ -242,50 +241,26 @@ def collection_photo_search(data):
         _id = ObjectId(data["query"])
     except:
         _id = ""
-    res = photo.Photo.objects().aggregate(
-        [
-            {"$match": {"collections": {"$in": [_id, "$collections"]}}},
-            {
-                "$project": {
-                    "title": 1,
-                    "price": 1,
-                    "deleted": 1,
-                    "user": {"$toString": "$user"},
-                    "id": {"$toString": "$_id"},
-                    "_id": 0,
-                },
-            },
-            {"$skip": data["offset"]},
-            {"$limit": data["limit"]},
-        ]
-    )
-    res = loads(dumps(res))
-    try:
-        # Get purchased photos of register user
-        cur_user = User.objects.get(id=req_user)
-        purchased = cur_user.get_all_purchased()
-    except:
-        # Anonymous user
-        purchased = []
+    if 'offset' in data:
+        offset = data['offset']
+    else:
+        offset = 0
+    if 'limit' in data:
+        limit = data['limit']
+    else:
+        limit = 5
 
-    remove_photo = []
-    for result in res:
-        cur_photo = photo.Photo.objects.get(id=result["id"])
-        result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
-
-        if cur_photo in purchased:
-            # Someone who has purchased a photo, should still be able to
-            # download deleted photo
-            result["owns"] = True
-        else:
-            result["owns"] = False
-            if result["deleted"] == True:
-                # Check if photo is deleted, if it is, remove from result list
-                remove_photo.append(result)
-            if req_user ==  str(cur_photo.get_user().get_id()):
-                result["owns"] = True
-
-    # Only return photos which have not been deleted
-    collection_photos = [i for i in res if i not in remove_photo]
-
-    return collection_photos
+    _collection = collection.Collection.objects.get(id=_id)
+    _photos = _collection.get_photos()[offset:offset+limit]
+    ret_photos = []
+    for this_photo in _photos:
+        meta, thumbnail = this_photo.get_thumbnail(req_user)
+        ret_photos.append({
+                'title': this_photo.get_title(),
+                'price': this_photo.get_price(),
+                'discount': this_photo.get_discount(),
+                'photoStr': thumbnail,
+                'metadata': meta,
+                'id': str(this_photo.get_id())
+            })
+    return ret_photos

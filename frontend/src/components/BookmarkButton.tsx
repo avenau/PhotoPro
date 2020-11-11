@@ -123,11 +123,17 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
                   />
                 </Form.Group>
               ))}
-              <div className="modalButtons">
-                <Button className="createNewCollectionbutton" variant="primary" onClick={this.openNewCol}>
+              <div>
+                <Button
+                  variant="primary"
+                  onClick={this.openNewCol}
+                >
                   Create New Collection
                 </Button>
-                <Button type="submit">
+                <Button
+                  className="updateCollectionButton ml-2"
+                  type="submit"
+                >
                   Update Collections
                 </Button>
               </div>
@@ -141,19 +147,29 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
           className="NewCollectionModal"
         >
           <Modal.Header closeButton />
-          <Modal.Title>Create New Collection</Modal.Title>
-          <Form onSubmit={this.handleNewCollection}>
-            <Form.Group>
-              <Form.Control
-                placeholder="Enter a name for your new Collection"
-                name="title"
-              />
-            </Form.Group>
-            <Button variant="primary" onClick={this.closeNewCol}>
-              Cancel
-            </Button>
-            <Button type="submit">Create</Button>
-          </Form>
+          <div className="createNewCollectionModal p-3">
+            <Modal.Title>Create New Collection</Modal.Title>
+            <Form onSubmit={this.handleNewCollection}>
+              <Form.Group>
+                <Form.Control
+                  placeholder="Enter a name for your new Collection"
+                  name="title"
+                />
+              </Form.Group>
+              <Button 
+                variant="danger"
+                onClick={this.closeNewCol}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                className="bookmarkButtonCancelButton ml-2"
+              >
+                Create
+              </Button>
+            </Form>
+          </div>
         </Modal>
       </div>
     );

@@ -17,7 +17,7 @@ class Album(catalogue.Catalogue):
     """
 
     discount = IntField(default=0, validation=validation.validate_discount)
-
+    
     meta = {"collection": "albums"}
 
     def get_discount(self):
@@ -48,13 +48,6 @@ class Album(catalogue.Catalogue):
         if old_photo in self.photos:
             self.photos.remove(old_photo)
             self.save()
-
-    def delete_album(self):
-        """
-        Delete the album by calling the super class
-        Essentially an alias
-        """
-        super().delete_catalogue()
 
     def clean(self):
         """

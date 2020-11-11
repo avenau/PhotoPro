@@ -15,7 +15,7 @@ def get_price(_user, _album):
     raw_album_discount = _album.get_discount()
 
     for photo in _album.get_photos():
-        if photo not in _user.get_purchased() and not photo.is_deleted():
+        if photo not in _user.get_purchased():
             your_price += photo.get_discounted_price()
             discounted_price += photo.get_discounted_price()
             original_price += photo.get_price()
@@ -66,7 +66,7 @@ def purchase_album(user_id, album_id):
     
     # Add photos to buyer's purchased list
     for photo in album_photos:
-        if photo not in buyer.get_purchased() and not photo.is_deleted():
+        if photo not in buyer.get_purchased():
             buyer.add_purchased(photo)
 
     buyer.save()

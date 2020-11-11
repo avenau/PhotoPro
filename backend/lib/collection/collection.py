@@ -74,13 +74,7 @@ class Collection(lib.catalogue.catalogue.Catalogue):
 
         if old_photo in self.photos:
             self.photos.remove(old_photo)
-g           self.save()
-
-    def delete_collection(self):
-        '''
-        Delete the collection
-        '''
-        super().delete_catalogue()
+            self.save()
 
     def get_collection_json(self):
         '''
@@ -90,7 +84,6 @@ g           self.save()
             'title': self.get_title(),
             'photos': [this_photo.id for this_photo in self.get_photos()],
             'creation_date': str(self.get_creation_date()),
-            'deleted': self.is_deleted(),
             'private': self.is_private(),
             'price': self.get_price(),
             'tags': self.get_tags(),

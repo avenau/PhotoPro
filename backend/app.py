@@ -8,6 +8,7 @@ Handle requests to and from server and web app client
 import traceback
 from json import dumps, loads
 import mongoengine
+from mongoengine import PULL
 from bson.objectid import ObjectId, InvalidId
 from flask import Flask, request
 from flask_bcrypt import Bcrypt
@@ -23,6 +24,16 @@ import lib.catalogue.catalogue as catalogue
 import lib.collection.collection as collection
 import lib.album.album as album
 import lib.comment.comment as comment
+
+# Delete rules
+# photo.Photo.register_delete_rule(album.Album, "albums", PULL)
+# photo.Photo.register_delete_rule(collection.Collection, "collections", PULL)
+# user.User.register_delete_rule(album.Album, "albums", PULL)
+# user.User.register_delete_rule(collection.Collection, "collections", PULL)
+album.Album.register_delete_rule(user.User, "albums", PULL)
+album.Album.register_delete_rule(photo.Photo, "albums", PULL)
+collection.Collection.register_delete_rule(user.User, "collections", PULL)
+collection.Collection.register_delete_rule(photo.Photo, "collections", PULL)
 
 # JAJAC made functions
 
@@ -1598,8 +1609,6 @@ def _get_collection():
     owns = _collection.get_created_by() == _user
     if _collection.is_private() and _collection.get_created_by() != _user:
         return dumps({}), 401
-    if _collection.is_deleted():
-        raise Error.ValueError("Collection is deleted")
     user_price, price_without_own = collection_functions.get_user_price(
         _user, _collection
     )
@@ -1771,6 +1780,7 @@ def _get_collection_photos():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
+
     return dumps(collection_functions.collection_photo_search(data))
 
 
@@ -1876,7 +1886,7 @@ def _check_puchased():
     _album = album.Album.objects.get(id=request.args.get("albumId"))
 
     purchased = all(
-        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos() if not alb_photo.is_deleted()
+        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos()
     )
 
     return dumps({"purchased": purchased})
@@ -1898,8 +1908,7 @@ def _delete_album():
     _album = album.Album.objects.get(id=album_id)
     if _album.get_created_by() != _user:
         raise Error.ValidationError("User does not have permission to delete")
-    _album.delete_album()
-    _album.save()
+    _album.delete()
     return dumps({"success": True})
 
 

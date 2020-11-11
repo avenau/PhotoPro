@@ -24,7 +24,6 @@ class Catalogue(Document):
     photos = ListField(ReferenceField("photo.Photo"))
     creation_date = DateTimeField(required=True)
     created_by = ReferenceField("user.User")
-    deleted = BooleanField(default=False)
     tags = ListField(StringField())
     meta = {"allow_inheritance": True, "abstract": True}
 
@@ -77,7 +76,11 @@ class Catalogue(Document):
         """
         Get the list of photos
         """
-        return self.photos
+        photos = []
+        for this_photo in self.photos:
+            if not this_photo.is_deleted():
+                photos.append(this_photo)
+        return photos
 
     def add_photo(self, new_photo):
         """
@@ -111,22 +114,6 @@ class Catalogue(Document):
         Get when the Catalogue was made
         """
         return self.creation_date
-
-    def is_deleted(self):
-        """
-        Check whether the collection is deleted
-        """
-        return self.deleted
-
-    def delete_catalogue(self):
-        """
-        Soft deletion of the collection
-        Dereferences photos and removes self
-        """
-        self.deleted = True
-        for this_photo in self.photos:
-            this_photo.remove_collection(self)
-            this_photo.save()
 
     def get_created_by(self):
         """
