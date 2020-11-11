@@ -1,7 +1,7 @@
-import { isNaN} from "lodash";
+import { isNaN } from "lodash";
 import qs from "qs";
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import OrderBy from "../../components/Search/OrderBy";
 import PriceFilter from "../../components/Search/PriceFilter";
 import Search from "../../components/Search/Search";
@@ -10,7 +10,9 @@ import Toolbar from "../../components/Toolbar/Toolbar";
 import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import "./SearchPage.scss";
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps {
+  refreshCredits: () => void;
+}
 
 interface State {
   search: string;
@@ -21,7 +23,7 @@ interface State {
   priceMax?: number;
 }
 
-export default class SearchPage extends React.Component<Props, State> {
+class SearchPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const { params } = this.props.match;
@@ -117,9 +119,12 @@ export default class SearchPage extends React.Component<Props, State> {
             priceMin={priceMin}
             priceMax={priceMax}
             key={this.state.orderby + this.state.filetype}
+            refreshCredits={this.props.refreshCredits}
           />
         </div>
       </>
     );
   }
 }
+
+export default withRouter(SearchPage);

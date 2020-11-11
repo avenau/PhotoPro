@@ -18,6 +18,7 @@ interface Props extends RouteComponentProps {
   popular?: boolean;
   likes: number;
   updatePage?: () => void;
+  refreshCredits?: () => void;
 }
 
 class PhotoThumbnail extends React.Component<
@@ -49,6 +50,9 @@ class PhotoThumbnail extends React.Component<
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
           loading: false,
         });
+        if (this.props.refreshCredits) {
+          this.props.refreshCredits();
+        }
         if (this.props.updatePage !== undefined) {
           this.props.updatePage();
         }

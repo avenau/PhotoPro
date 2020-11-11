@@ -85,6 +85,7 @@ class App extends React.Component<Props, State> {
         })
         .then((res) => {
           this.setState({ credits: res.data.credits });
+          console.log(res.data.credits);
         })
         .catch(() => {});
     }
@@ -130,7 +131,11 @@ class App extends React.Component<Props, State> {
             component={ResetPasswordPage}
           />
           <Route path="/user/:user_id" component={ProfilePage} />
-          <Route path="/search/:type" component={SearchPage} />
+          <Route path="/search/:type">
+            <SearchPage refreshCredits={this.refreshCredits} />
+          </Route>
+          {/* component={SearchPage} /> */}
+
           <Route valid={this.state.valid} path="/photo/:photo_id">
             <PhotoDetails refreshCredits={this.refreshCredits} />
           </Route>

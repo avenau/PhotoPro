@@ -20,6 +20,7 @@ interface Props {
   popular?: boolean;
   addPhotoId?: (newPhotoId: string) => void;
   updatePage?: () => void;
+  refreshCredits?: () => void;
 }
 
 interface State {
@@ -68,8 +69,8 @@ export default class ContentLoader extends React.Component<Props, State> {
         },
       })
       .then((res) => {
-        console.log('in then')
-        console.log(res)
+        console.log("in then");
+        console.log(res);
         this.setState((prevState) => ({
           loading: false,
           results: [...prevState.results, ...res.data],
@@ -78,18 +79,16 @@ export default class ContentLoader extends React.Component<Props, State> {
           limit: prevState.limit,
         }));
       })
-      .catch(() => { });
+      .catch(() => {});
   }
-
-
 
   private getList() {
     // Add message for the user if there are no results
     if (this.state.results.length < 1 && this.state.atEnd) {
       if (this.props.curatedFeed === true) {
-        return <p>Like and search more photos for a curated feed.</p>
+        return <p>Like and search more photos for a curated feed.</p>;
       } else {
-        return <p>No results were found :(</p>
+        return <p>No results were found :(</p>;
       }
     }
 
@@ -100,6 +99,7 @@ export default class ContentLoader extends React.Component<Props, State> {
             photos={this.state.results}
             addPhotoId={this.props.addPhotoId}
             popular={this.props.popular}
+            refreshCredits={this.props.refreshCredits}
           />
         );
       case "album":
@@ -118,7 +118,7 @@ export default class ContentLoader extends React.Component<Props, State> {
               this.props.addPhotoId?.(newPhotoId)
             }
             updatePage={this.props.updatePage}
-
+            // refreshCredits={this.props.refreshCredits}
           />
         );
       default:
@@ -154,8 +154,8 @@ export default class ContentLoader extends React.Component<Props, State> {
               <span className="sr-only">Loading...</span>
             </Spinner>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
         </InfiniteScroll>
       </>
     );
