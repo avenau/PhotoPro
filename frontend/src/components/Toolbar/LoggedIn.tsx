@@ -23,9 +23,6 @@ export default class LoggedIn extends React.Component<Props> {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link href="/notifications">Notifications</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
           <Nav.Link href={profile}>{this.props.nickname}</Nav.Link>
         </Nav.Item>
         <Nav.Item>
