@@ -130,7 +130,10 @@ class App extends React.Component<Props, State> {
             path="/forgotpassword/reset"
             component={ResetPasswordPage}
           />
-          <Route path="/user/:user_id" component={ProfilePage} />
+          <Route path="/user/:user_id">
+            {" "}
+            <ProfilePage refreshCredits={this.refreshCredits} />
+          </Route>
           <Route path="/search/:type">
             <SearchPage refreshCredits={this.refreshCredits} />
           </Route>
