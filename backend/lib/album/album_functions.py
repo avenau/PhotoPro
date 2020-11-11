@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 from lib.token_functions import get_uid
 import lib.photo.photo as photo
 from lib.user.user import User
+from lib.album.album import Album
 
 def update_album(_album, title, discount, tags):
     '''
@@ -85,3 +86,24 @@ def album_photo_search(data):
     album_photos = [i for i in res if i not in remove_photo]
 
     return album_photos
+
+def album_thumbnail(album_id, u_id):
+    """
+    Get the thumbnail of first photo (not deleted) from an album
+    """
+    _album = Album.objects.get(id=album_id)
+
+    photos = _album.get_photos()
+
+    thumbnail = {
+        "thumbnail": ""
+    }
+
+    for _photo in photos:
+        if not _photo.is_deleted():
+            # Get first image which has not been deleted
+            metadata, photoStr = _photo.get_thumbnail(u_id)
+            thumbnail["thumbnail"] = metadata + photoStr
+            break
+
+    return thumbnail

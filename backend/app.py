@@ -31,8 +31,7 @@ import lib.collection.collection_functions as collection_functions
 
 # Albums
 from lib.album.album_edit import create_album, get_albums
-from lib.album.album_functions import update_album
-from lib.album.album_functions import album_photo_search
+from lib.album.album_functions import update_album, album_photo_search, album_thumbnail
 from lib.album.album_purchase import purchase_album, get_price
 
 # Comments
@@ -335,6 +334,7 @@ def _get_credits():
         raise Error.UserDNE("Could not find user")
 
     return dumps({"credits": this_user.get_credits()})
+
 
 @app.route("/manageaccount/success", methods=["POST"])
 @validate_token
@@ -1855,7 +1855,6 @@ def _remove_collection_photo():
 ---------------
 """
 
-
 @app.route("/album", methods=["GET"])
 @validate_token
 def _get_album():
@@ -1891,6 +1890,29 @@ def _get_album():
         "owner": str(_album.get_created_by().get_id()),
         "nickname": str(_album.get_created_by().get_nickname())
     }
+@app.route("/album/thumbnail", methods=["GET"])
+def _album_thumbnail():
+    """
+    Return thumbnail of first photo from an album to use as
+    the thumbnail for an album
+
+    Parameters
+    ----------
+    albumId: string
+    token: string
+
+    Returns
+    ----------
+    {
+        thumbnail: string
+    }
+    """
+    albumId = request.args.get("albumId")
+    try:
+        u_id = get_uid(request.args.get("token"))
+    except:
+        u_id = ""
+    return dumps(album_thumbnail(albumId, u_id))
 
 
 @app.route("/album/checkpurchased", methods=["GET"])
