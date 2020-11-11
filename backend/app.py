@@ -998,6 +998,7 @@ def welcome_recommend_photos():
 
 
 @app.route("/userdetails", methods=["GET"])
+@validate_token
 def _user_info_with_token():
     """
     Description
@@ -1015,9 +1016,6 @@ def _user_info_with_token():
 
     """
     token = request.args.get("token")
-    if token == "":
-        print("token is an empty string")
-        return {}
     u_id = token_functions.get_uid(token)
     this_user = user.User.objects.get(id=u_id)
     if not this_user:
