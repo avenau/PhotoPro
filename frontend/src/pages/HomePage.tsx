@@ -9,9 +9,7 @@ import CuratedFeed from "../components/Welcome/CuratedFeed";
 class WelcomePage extends React.Component {
   render() {
     return (
-
       <div className="HomePage">
-        <Toolbar />
         <WelcomeHeader />
         <Showdown />
         <CuratedFeed />

@@ -103,7 +103,9 @@ class App extends React.Component<Props, State> {
             path="/login"
             component={LoginPage}
           />
-          <Route exact path="/" component={HomePage} />
+          <Route exact path="/">
+            <HomePage />
+          </Route>
           <AnonRoute
             valid={this.state.valid}
             exact
