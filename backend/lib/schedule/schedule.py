@@ -46,14 +46,22 @@ def create_showdown(prev_showdown):
 
     showdown.save()
 
-    pop_photos = PopularPhoto.objects().order_by("-likes")[:2]
-    if len(pop_photos) == 2:
-        for pop_photo in pop_photos:
-            photo = pop_photo.get_photo()
-            participant = Participant(photo=photo, showdown=showdown)
-            participant.save()
-            showdown.add_participant(participant)
-            participants.append(participant)
+    pop_photos = PopularPhoto.objects().order_by("-likes")
+    for pop_photo in pop_photos:
+        photo = pop_photo.get_photo()
+        if photo.is_deleted():
+            continue
+        participant = Participant(photo=photo, showdown=showdown)
+        participant.save()
+        participants.append(participant)
+        if len(participants) == 2:
+            break
+
+    if len(participants) != 2:
+        participants = []
+
+    for p in participants:
+        showdown.add_participant(p)
 
     showdown.save()
 

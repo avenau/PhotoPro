@@ -89,9 +89,15 @@ class CurrShowdown extends React.Component<Props, State> {
     }
   }
 
+  getVoteText(photo: Photo) {
+    if (photo.deleted) return "Deleted";
+    if (photo.participantId === this.state.currentVote) return "Voted";
+    return "Vote";
+  }
+
   render() {
     const { photos } = this.props;
-    const { votes, currentVote } = this.state;
+    const { votes } = this.state;
     return (
       <div className="showdown-photo-container">
         {photos !== null ? (
@@ -104,7 +110,8 @@ class CurrShowdown extends React.Component<Props, State> {
               <div
                 onClick={(e) => {
                   e.preventDefault();
-                  this.props.history.push(`/photo/${photo.id}`);
+                  if (!photo.deleted)
+                    this.props.history.push(`/photo/${photo.id}`);
                 }}
                 className="showdown-photo"
               >
@@ -120,7 +127,7 @@ class CurrShowdown extends React.Component<Props, State> {
                     : "outline-secondary"
                 }
               >
-                {photo.participantId === currentVote ? "Voted" : "Vote"}
+                {this.getVoteText(photo)}
               </LoadingButton>
             </div>
           ))

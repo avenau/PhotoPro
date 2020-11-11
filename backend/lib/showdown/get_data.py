@@ -42,10 +42,13 @@ def get_data(req_user):
     current_vote = ""
     for participant in participants:
         photo = participant.get_photo()
+        if photo.is_deleted():
+            photo_json = {"deleted": True, "votes": 0, "id": f"empty{len(photos)}"}
+            photos.append(photo_json)
+            continue
         photo_json = loads(photo.to_json())
         photo_json["metadata"], photo_json["photoStr"] = photo.get_thumbnail(req_user)
         photo_json["id"] = str(photo.get_id())
-        photos.append(photo_json)
         photo_json["owns"] = photo.is_owned(req_user_obj)
         photo_json["votes"] = len(participant.get_votes())
         photo_json["participantId"] = str(participant.get_id())
@@ -53,6 +56,7 @@ def get_data(req_user):
             photo_json.pop(key)
         if req_user_obj in participant.get_votes():
             current_vote = str(participant.get_id())
+        photos.append(photo_json)
 
     return {
         "participants": photos,

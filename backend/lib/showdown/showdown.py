@@ -110,6 +110,7 @@ class Showdown(Document):
     def declare_winner(self):
         """
         If a winner has not yet been declared then declare one
+        If one of the photos has been deleted then the other is automatically the winner
         """
         if len(self.participants) != 2:
             return
@@ -117,11 +118,15 @@ class Showdown(Document):
         p0 = self.participants[0]
         p1 = self.participants[1]
 
-        if p0.count_votes() > p1.count_votes():
+        if (
+            p0.count_votes() > p1.count_votes() or p1.is_deleted()
+        ) and not p0.is_deleted():
             # p0 is winner
             p0.set_won(True)
             self.winner = p0
-        elif p0.count_votes() < p1.count_votes():
+        elif (
+            p0.count_votes() < p1.count_votes() or p0.is_deleted()
+        ) and not p1.is_deleted():
             # p1 is winner
             p1.set_won(True)
             self.winner = p1

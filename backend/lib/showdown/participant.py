@@ -53,6 +53,9 @@ class Participant(Document):
     def get_showdown(self):
         return self.showdown
 
+    def is_deleted(self):
+        return self.photo.is_deleted()
+
     def has_won(self):
         return self.won
 
