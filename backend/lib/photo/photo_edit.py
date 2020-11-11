@@ -8,8 +8,8 @@ import traceback
 from io import BytesIO
 import mongoengine
 from bson.objectid import ObjectId
-from PIL import Image, ImageSequence, ImageDraw
-import cairosvg
+from PIL import Image, ImageSequence, ImageDraw, ImageFont
+# import cairosvg
 
 
 from lib.photo.validate_photo import reformat_lists
@@ -124,31 +124,17 @@ def make_watermarked_copy(img_data, name, extension):
     '''
     watermarked_filename = name + "_w" + extension
     img = Image.open(BytesIO(img_data))
+
     img_width, img_height = img.size
-
-    # Height and width coords for drawing watermark
-    coord_ratios = [0.1, 0.25, 0.75, 0.9]
-    w = [img_width*r for r in coord_ratios] # left to right
-    h = [img_height*r for r in coord_ratios] # top to bottom
-
+    x_quarter = img_width*0.25
+    y_middle = img_height*0.5
     draw = ImageDraw.Draw(img)
-    # Draw some rectangles and lines
-    black = (0,0,0)
-    red = (255, 0, 0)
-    green = (0, 255, 0)
-    blue = (0, 0, 255)
-    thickness = max([1, int(img_height/100)])
-    draw.rectangle([w[0], h[0], w[3], h[3]], width=thickness, outline=black)
-    draw.rectangle([w[1], h[1], w[2], h[2]], width=thickness, outline=green)
-    draw.line([w[0], h[0], w[3], h[3]], width=thickness, fill=red)
-    draw.line([w[3], h[0], w[0], h[3]], width=thickness, fill=blue)
-
-    # Write "PhotoPro (c)" in red
-    watermark_text = "PhotoPro (c)"
-    # Following line only works on windows. May need to specify absolute path to font.
-    # font_size = max([1, int(img_height/20)])
-    # font = ImageFont.truetype('arial.ttf', size=font_size)
-    draw.text((w[1], h[0]), watermark_text, fill=red)
+    medium_grey = (192,192,192)
+    # Write "PhotoPro (c)" in grey
+    # Change font size if you want below
+    font_size = max([1, int(img_height/8)])
+    font = ImageFont.truetype('josefin-sans/JosefinSans-Regular.ttf', size=font_size)
+    draw.text((x_quarter, y_middle), "PhotoPro (c)", font=font, fill=medium_grey)
 
     watermarked_img_buf = BytesIO()
     img.save(watermarked_img_buf, format=img.format)
