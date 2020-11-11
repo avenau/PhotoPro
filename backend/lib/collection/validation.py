@@ -3,7 +3,7 @@ Collection mongoengine.Document validation
 '''
 import traceback
 import mongoengine
-from lib.Error import ValidationError
+from lib.Error import ValidationError, ValueError
 
 
 def validate_price(price):

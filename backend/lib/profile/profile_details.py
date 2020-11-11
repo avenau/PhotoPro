@@ -61,7 +61,6 @@ def user_collection_search(data):
         [
             {
                 "$match": {
-                    "deleted": False,
                     "$or": [{"private": False}, {"created_by": ObjectId(req_user)}],
                     "created_by": ObjectId(data["query"]),
                 }
@@ -89,7 +88,7 @@ def user_collection_search(data):
 def user_album_search(data):
     res = Album.objects.aggregate(
         [
-            {"$match": {"created_by": ObjectId(data["query"]), "deleted": False}},
+            {"$match": {"created_by": ObjectId(data["query"])}},
             {
                 "$project": {
                     "title": 1,
