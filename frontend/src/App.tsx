@@ -75,7 +75,7 @@ class App extends React.Component<Props, State> {
   }
 
   // Function to refresh number of credits displayed on toolbar
-  // Gets passed to each page where purchases can be made
+  // Passed to all pages where purchases can be made E.g. PhotoDetails
   refreshCredits = () => {
     const token = localStorage.getItem("token");
     if (this.state.valid) {
