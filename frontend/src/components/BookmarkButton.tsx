@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import axios from 'axios';
+import axios from "axios";
 
 interface Collection {
   title: string;
@@ -23,8 +23,10 @@ interface State {
   uId?: string;
 }
 
-
-export default class BookmarkButton extends React.Component<BookmarkProps, State> {
+export default class BookmarkButton extends React.Component<
+  BookmarkProps,
+  State
+  > {
   // If photo does not belong in any collections then it will be grey
   // Otherwise the button will be blue
   constructor(props: BookmarkProps) {
@@ -36,8 +38,7 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
     };
   }
 
-  onComponentMount() {
-  }
+  onComponentMount() { }
 
   openModal = () => this.setState({ showModal: true });
 
@@ -51,16 +52,16 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
     if (event) {
       event.preventDefault();
     }
-    const data = new FormData(event.currentTarget as HTMLFormElement)
+    const data = new FormData(event.currentTarget as HTMLFormElement);
     this.closeNewCol();
     axios
       .post(`/collection/add`, {
-        token: localStorage.getItem('token'),
-        title: data.get('title')
+        token: localStorage.getItem("token"),
+        title: data.get("title"),
       })
       .then((res) => {
         const newCollection = res.data;
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           collections: [...prevState.collections, newCollection],
         }));
       })
@@ -71,28 +72,24 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
     if (event) {
       event.preventDefault();
     }
-    const data = new FormData(event.currentTarget as HTMLFormElement)
+    const data = new FormData(event.currentTarget as HTMLFormElement);
     const collections = [] as string[];
     Array.from(data.entries()).map((el) => collections.push(el[0]));
     axios
       .put(`/collection/addphotos`, {
-        token: localStorage.getItem('token'),
+        token: localStorage.getItem("token"),
         collectionIds: JSON.stringify(collections),
-        photoId: this.props.pId
+        photoId: this.props.pId,
       })
-      .then((res) => res ? console.log("Worked") : console.log("No"))
+      .then((res) => (res ? console.log("Worked") : console.log("No")))
       .then(() => this.closeModal())
       .catch(() => { });
-
-  }
+  };
 
   render() {
     return (
       <div>
-        <Button
-          variant="light"
-          onClick={this.openModal}
-        >
+        <Button variant="light" onClick={this.openModal}>
           <svg
             width="1em"
             height="1em"
@@ -114,28 +111,41 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
           className="BookmarkModal"
         >
           <Modal.Header closeButton />
-          <div className="BookmarkForm p-3">
-            <Modal.Title>Add Photo to a Collection</Modal.Title>
-            <Form className="updateCollection p-3" onSubmit={this.updateCollections}>
-              {this.state.collections.map((collection: Collection) => (
-                <Form.Group key={collection.id}>
-                  <Form.Check
-                    name={collection.id}
-                    type="checkbox"
-                    label={collection.title}
-                  />
-                </Form.Group>
-              ))}
-              <div className="modalButtons">
-                <Button className="createNewCollectionbutton mr-1" variant="primary" onClick={this.openNewCol}>
-                  Create New Collection
-                </Button>
-                <Button type="submit">
-                  Update Collections
-                </Button>
+          {localStorage.getItem("token") ? (
+            <div className="BookmarkForm p-3">
+              <Modal.Title>Add Photo to a Collection</Modal.Title>
+              <Form
+                className="updateCollection p-3"
+                onSubmit={this.updateCollections}
+              >
+                {this.state.collections.map((collection: Collection) => (
+                  <Form.Group key={collection.id}>
+                    <Form.Check
+                      name={collection.id}
+                      type="checkbox"
+                      label={collection.title}
+                    />
+                  </Form.Group>
+                ))}
+                <div className="modalButtons">
+                  <Button
+                    className="createNewCollectionbutton mr-1"
+                    variant="primary"
+                    onClick={this.openNewCol}
+                  >
+                    Create New Collection
+                  </Button>
+                  <Button type="submit">Update Collections</Button>
+                </div>
+              </Form>
+            </div>
+          ) : (
+              <div>
+                <p style={{ textAlign: "center" }}>
+                  Please log in to create a collection
+              </p>
               </div>
-            </Form>
-          </div>
+            )}
         </Modal>
         <Modal
           animation={false}

@@ -84,11 +84,12 @@ class PhotoContents extends React.Component<Props, any> {
         });
       })
       .catch(() => { });
-
-    const query = `/user/collections?token=${this.state.token}&query=${this.state.uId}&offset=0&limit=5`;
-    axios.get(query).then((res) => {
-      this.setState({ collections: res.data.map((obj: Collection) => obj) });
-    });
+    if (localStorage.getItem("token")) {
+      const query = `/user/collections?token=${this.state.token}&query=${this.state.uId}&offset=0&limit=5`;
+      axios.get(query).then((res) => {
+        this.setState({ collections: res.data.map((obj: Collection) => obj) });
+      });
+    }
   }
 
   purchasePhoto(e: any) {
