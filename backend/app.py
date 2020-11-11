@@ -8,6 +8,7 @@ Handle requests to and from server and web app client
 import traceback
 from json import dumps, loads
 import mongoengine
+from mongoengine import PULL
 from bson.objectid import ObjectId, InvalidId
 from flask import Flask, request
 from flask_bcrypt import Bcrypt
@@ -23,6 +24,16 @@ import lib.catalogue.catalogue as catalogue
 import lib.collection.collection as collection
 import lib.album.album as album
 import lib.comment.comment as comment
+
+# Delete rules
+# photo.Photo.register_delete_rule(album.Album, "albums", PULL)
+# photo.Photo.register_delete_rule(collection.Collection, "collections", PULL)
+# user.User.register_delete_rule(album.Album, "albums", PULL)
+# user.User.register_delete_rule(collection.Collection, "collections", PULL)
+album.Album.register_delete_rule(user.User, "albums", PULL)
+album.Album.register_delete_rule(photo.Photo, "albums", PULL)
+collection.Collection.register_delete_rule(user.User, "collections", PULL)
+collection.Collection.register_delete_rule(photo.Photo, "collections", PULL)
 
 # JAJAC made functions
 
@@ -1609,8 +1620,6 @@ def _get_collection():
     owns = _collection.get_created_by() == _user
     if _collection.is_private() and _collection.get_created_by() != _user:
         return dumps({}), 401
-    if _collection.is_deleted():
-        raise Error.ValueError("Collection is deleted")
     user_price, price_without_own = collection_functions.get_user_price(
         _user, _collection
     )
@@ -1637,35 +1646,30 @@ def _get_all_collections():
 
     Parameters
     ----------
-    offset : int
-    limit : int
-    token : string
-    query : string
+    token: token
+    photoId: string
 
     Returns
     ------
     [{
         title: string,
-        photos: [Photo],
         creation_date: datetime,
         deleted: boolean,
         private: boolean,
         price, int
         tags: [string],
+        photoExists: boolean
     }]
     """
-    data = request.args.to_dict()
-    data["offset"] = int(data["offset"])
-    data["limit"] = int(data["limit"])
-
-    _user = user.User.objects.get(id=data["query"])
-    _collections = collection.Collection.objects(created_by=_user, deleted=False)
-    json_collection = []
-    # Add the id as a string
-    for index, col in enumerate(loads(_collections.to_json())):
-        json_collection.append(col)
-        json_collection[index]["id"] = col["_id"]["$oid"]
-    return dumps(json_collection)
+    json_collection = collection_functions.get_all_collections(request.args)
+    response = []
+    for entry in loads(json_collection):
+        response.append({
+            'title': entry['title'],
+            'id': entry['id'],
+            'photoExists': entry['photoExists']
+        })
+    return dumps(response)
 
 
 @app.route("/collection/add", methods=["POST"])
@@ -1787,16 +1791,19 @@ def _get_collection_photos():
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
 
+
     return dumps(collection_functions.collection_photo_search(data))
 
 
-@app.route("/collection/addphotos", methods=["PUT"])
+@app.route("/collection/updatephotos", methods=["PUT"])
 @validate_token
 def _add_collection_photo():
     """
     Description
     -----------
     Add a photo to the collection
+    Hacky collection update. Remove photo from all collections,
+    Add photo to collections in collectionlist
 
     Parameters
     ----------
@@ -1814,50 +1821,22 @@ def _add_collection_photo():
     u_id = token_functions.get_uid(params['token'])
     collection_ids = loads(params['collectionIds'])
     photo_id = params['photoId']
+    new_collections = []
 
     _photo = photo.Photo.objects.get(id=photo_id)
     _user = user.User.objects.get(id=u_id)
-    print(collection_ids)
+    for _col in _user.get_collections():
+        new_collections.append({'title': _col.get_title(),
+                                'id': str(_col.get_id()),
+                                'photoExists': False})
+        if _photo in _col.get_photos():
+            _col.remove_photo(_photo)
+        if str(_col.get_id()) in collection_ids:
+            collection_functions.add_collection_photo(_user, _photo, _col)
+            new_collections[-1]['photoExists'] = True
 
-    for col in collection_ids:
-        print(col)
-        _col = collection.Collection.objects.get(id=col)
-        collection_functions.add_collection_photo(_user, _photo, _col)
 
-    return dumps({"success": True})
-
-
-@app.route("/collection/removephoto", methods=["UPDATE"])
-@validate_token
-def _remove_collection_photo():
-    """
-    Description
-    -----------
-    Remove a photo from a Collection
-
-    Parameters
-    ----------
-    token: string
-    collection_id: string
-    photo_id: string
-
-    Returns
-    ----------
-    { 'success': boolean }
-    """
-
-    # Variables
-    u_id = token_functions.get_uid(request.args.get("token"))
-    collection_id = request.args.get("collection_id")
-    photo_id = request.args.get("photo_id")
-
-    _user = user.User.objects.get(id=u_id)
-    _collection = collection.Collection.objects.get(id=collection_id)
-    _photo = photo.Photo.objects.get(id=photo_id)
-
-    ret = collection_functions.remove_collection_photo(_user, _photo, _collection)
-
-    return dumps({"success": ret})
+    return dumps(new_collections)
 
 
 """
@@ -1941,7 +1920,7 @@ def _check_puchased():
     _album = album.Album.objects.get(id=request.args.get("albumId"))
 
     purchased = all(
-        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos() if not alb_photo.is_deleted()
+        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos()
     )
 
     return dumps({"purchased": purchased})
@@ -1963,8 +1942,7 @@ def _delete_album():
     _album = album.Album.objects.get(id=album_id)
     if _album.get_created_by() != _user:
         raise Error.ValidationError("User does not have permission to delete")
-    _album.delete_album()
-    _album.save()
+    _album.delete()
     return dumps({"success": True})
 
 

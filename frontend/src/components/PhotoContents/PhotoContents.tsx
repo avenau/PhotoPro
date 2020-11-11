@@ -13,10 +13,8 @@ import LoadingButton from "../../components/LoadingButton/LoadingButton";
 
 interface Collection {
   title: string;
-  authorId: string;
-  author: string;
-  created: string;
   id: string;
+  photoExists: boolean;
 }
 
 interface Props extends RouteComponentProps {
@@ -86,10 +84,11 @@ class PhotoContents extends React.Component<Props, any> {
         });
       })
       .catch(() => {});
-    if (localStorage.getItem("token")) {
-      const query = `/user/collections?token=${this.state.token}&query=${this.state.uId}&offset=0&limit=5`;
-      axios.get(query).then((res) => {
-        this.setState({ collections: res.data.map((obj: Collection) => obj) });
+      if (localStorage.getItem("token")) {
+      const query = `/collection/getall?token=${this.state.token}&photoId=${this.props.photoId}`
+      axios.get(query)
+        .then((res) => {
+          this.setState({ collections: res.data.map((obj: Collection) => obj) });
       });
     }
   }

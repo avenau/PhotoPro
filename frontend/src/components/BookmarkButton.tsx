@@ -3,12 +3,12 @@ import { Button, Form, Modal } from "react-bootstrap";
 import axios from "axios";
 
 interface Collection {
-  title: string;
+  title : string;
   authorId?: string;
   author?: string;
   created?: string;
   id?: string;
-  photos?: string[];
+  photoExists: boolean;
 }
 
 interface BookmarkProps {
@@ -23,10 +23,7 @@ interface State {
   uId?: string;
 }
 
-export default class BookmarkButton extends React.Component<
-  BookmarkProps,
-  State
-> {
+export default class BookmarkButton extends React.Component<BookmarkProps,State> {
   // If photo does not belong in any collections then it will be grey
   // Otherwise the button will be blue
   constructor(props: BookmarkProps) {
@@ -76,15 +73,16 @@ export default class BookmarkButton extends React.Component<
     const collections = [] as string[];
     Array.from(data.entries()).map((el) => collections.push(el[0]));
     axios
-      .put(`/collection/addphotos`, {
-        token: localStorage.getItem("token"),
-        collectionIds: JSON.stringify(collections),
-        photoId: this.props.pId,
-      })
-      .then((res) => (res ? console.log("Worked") : console.log("No")))
+      .put(`/collection/updatephotos`, {
+                                      token: localStorage.getItem('token'),
+                                      collectionIds: JSON.stringify(collections),
+                                      photoId: this.props.pId
+                                    })
+      .then((res) => this.setState({collections: res.data}))
       .then(() => this.closeModal())
-      .catch(() => {});
-  };
+      .catch(()=>{});
+
+  }
 
   render() {
     return (
@@ -114,28 +112,31 @@ export default class BookmarkButton extends React.Component<
           {localStorage.getItem("token") ? (
             <div className="BookmarkForm p-3">
               <Modal.Title>Add Photo to a Collection</Modal.Title>
-              <Form
-                className="updateCollection p-3"
-                onSubmit={this.updateCollections}
-              >
+              <Form className="updateCollection p-3" onSubmit={this.updateCollections}>
                 {this.state.collections.map((collection: Collection) => (
                   <Form.Group key={collection.id}>
                     <Form.Check
                       name={collection.id}
                       type="checkbox"
-                      label={collection.title}
+                      label={String(collection.title)}
+                      onClick={((e:any)=> e.target.removeAttribute("check"))}
+                      defaultChecked={collection.photoExists}
                     />
                   </Form.Group>
                 ))}
-                <div className="modalButtons">
+                <div>
                   <Button
-                    className="createNewCollectionbutton"
                     variant="primary"
                     onClick={this.openNewCol}
                   >
                     Create New Collection
                   </Button>
-                  <Button type="submit">Update Collections</Button>
+                  <Button
+                    className="updateCollectionButton ml-2"
+                    type="submit"
+                  >
+                    Update Collections
+                  </Button>
                 </div>
               </Form>
             </div>
@@ -154,19 +155,29 @@ export default class BookmarkButton extends React.Component<
           className="NewCollectionModal"
         >
           <Modal.Header closeButton />
-          <Modal.Title>Create New Collection</Modal.Title>
-          <Form onSubmit={this.handleNewCollection}>
-            <Form.Group>
-              <Form.Control
-                placeholder="Enter a name for your new Collection"
-                name="title"
-              />
-            </Form.Group>
-            <Button variant="primary" onClick={this.closeNewCol}>
-              Cancel
-            </Button>
-            <Button type="submit">Create</Button>
-          </Form>
+          <div className="createNewCollectionModal p-3">
+            <Modal.Title>Create New Collection</Modal.Title>
+            <Form onSubmit={this.handleNewCollection}>
+              <Form.Group>
+                <Form.Control
+                  placeholder="Enter a name for your new Collection"
+                  name="title"
+                />
+              </Form.Group>
+              <Button 
+                variant="danger"
+                onClick={this.closeNewCol}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                className="bookmarkButtonCancelButton ml-2"
+              >
+                Create
+              </Button>
+            </Form>
+          </div>
         </Modal>
       </div>
     );

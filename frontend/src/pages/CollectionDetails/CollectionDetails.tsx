@@ -14,13 +14,11 @@ interface MatchParams {
 }
 
 interface State {
-  uId: string;
+  uId?: string;
   token: string;
   title: string;
-  tags: string[];
   collectionId: string;
   isOwner: boolean;
-  isPrivate: boolean;
   price: number;
   originalPrice: number;
 }
@@ -30,13 +28,10 @@ class CollectionDetails extends React.Component<Props, State> {
     super(props);
     const collectionId = this.props.match.params.collection_id;
     this.state = {
-      uId: String(localStorage.getItem("u_id")),
       token: String(localStorage.getItem("token")),
       title: "",
       price: 0,
       originalPrice: 0,
-      tags: [],
-      isPrivate: true,
       collectionId,
       isOwner: !!props.isOwner,
     };
@@ -49,15 +44,13 @@ class CollectionDetails extends React.Component<Props, State> {
   private getCollection() {
     const { collectionId } = this.state;
     const { token } = this.state;
-    if (this.state.collectionId != "") {
+    if (this.state.collectionId !== "") {
       axios
         .get(`/collection/get?token=${token}&collectionId=${collectionId}`)
         .then((res) => {
           if (res.data) {
             this.setState({
               title: res.data.title,
-              tags: res.data.tags,
-              isPrivate: res.data.private,
               price: res.data.price,
               originalPrice: res.data.originalPrice,
               isOwner: res.data.isOwner,
@@ -71,7 +64,8 @@ class CollectionDetails extends React.Component<Props, State> {
   render() {
     return (
       <div className="create-collection-page">
-        <Container>
+        <Toolbar />
+        <Container className="mt-5">
           <div>
             <AlbumHeader
               isOwner={this.state.isOwner}
