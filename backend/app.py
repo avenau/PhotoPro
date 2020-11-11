@@ -745,7 +745,7 @@ def buy_photo():
     elif this_photo.is_deleted():
         raise Error.ValidationError("You can't purchase a deleted photo.")
     elif photo_price > user_credits:
-        raise Error.ValueError("You don't have enough credits to buy this photo.")
+        raise Error.ValueError("You don't have enough credits. Buy more at the purchases tab :)")
 
     # Do the purchase
     buyer.remove_credits(photo_price)
