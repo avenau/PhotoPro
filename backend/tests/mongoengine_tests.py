@@ -8,17 +8,10 @@ import lib.collection.collection as collection
 import lib.user.user as user
 import lib.album.album as album
 
-connect('angular-flask-muckaround')
+#connect('angular-flask-muckaround')
+# connect("mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin")
 
-photo.Photo.objects(title='new_photo').first().delete()
-user.User.objects(fname='Joe').first().delete()
+# connect("angular-flask-muckaround",
+connect("angular-flask-muckaround", host="mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin")
 
-
-new_photo = photo.Photo(title='new_photo', price=50)
-
-new_user = user.User(fname='Joe',
-                     lname='Aczel',
-                     email='j@czel.com',
-                     nickname='Jaczel',
-                     password=(b'123'))
 

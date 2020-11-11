@@ -228,11 +228,7 @@ class User(Document):
         """
         Get non-deleted collections
         """
-        collections = []
-        for coll in self.collections:
-            if not coll.deleted:
-                collections.append(coll)
-        return collections
+        return self.collections
 
     def add_album(self, _album):
         """
@@ -244,11 +240,7 @@ class User(Document):
         """
         Get non-deleted albums
         """
-        albums = []
-        for _album in self.albums:
-            if not _album.is_deleted():
-                albums.append(_album)
-        return albums
+        return self.albums
 
     def get_liked(self):
         """
@@ -354,6 +346,12 @@ class User(Document):
         Set keywords from photos a user has interacted with or search queries
         """
         self.recommend_keywords = keywords
+    
+    def add_following(self, user):
+        self.following.append(user)
+        
+    def remove_following(self, user):
+        self.following.remove(user)
 
     # User Document validation
     # ------------------------

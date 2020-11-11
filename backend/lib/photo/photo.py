@@ -150,22 +150,6 @@ class Photo(Document):
         '''
         return self.albums
 
-    def get_albums(self):
-        '''
-        Return the list of albums
-        '''
-        albums = []
-        for this_album in self.albums:
-            if not this_album.is_deleted():
-                albums.append(this_album)
-        return albums
-
-    def add_album(self, this_album):
-        '''
-        Add an album reference
-        '''
-        self.albums.append(this_album)
-
     def remove_album(self, this_album):
         '''
         Remove an album reference
@@ -290,9 +274,6 @@ class Photo(Document):
         Delete the photo by setting the deleted flag to False
         '''
         self.deleted = True
-        for this_collection in self.collections:
-            this_collection.remove_photo(self)
-            this_collection.save()
 
     def undelete_photo(self):
         '''

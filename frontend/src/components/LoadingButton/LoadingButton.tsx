@@ -14,7 +14,7 @@ export default class LoadingButton extends React.Component<Props> {
 
   render() {
     return (
-      <div
+      <span
         onClick={this.props.loading ? this.stopPropagation : this.props.onClick}
       >
         <Button disabled={this.props.loading} {...this.props} loading="">
@@ -26,7 +26,7 @@ export default class LoadingButton extends React.Component<Props> {
             this.props.children
           )}
         </Button>
-      </div>
+      </span>
     );
   }
 }

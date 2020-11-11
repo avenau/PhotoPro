@@ -135,7 +135,6 @@ def make_watermarked_copy(img_data, name, extension):
 
     watermarked_img_buf = BytesIO()
     img.save(watermarked_img_buf, format=img.format)
-    img.save("tmp"+extension, format=img.format)
     save_photo(watermarked_img_buf.getvalue(), watermarked_filename)
 
 def get_photo_edit(photo_id, token):

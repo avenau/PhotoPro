@@ -32,7 +32,7 @@ class UserList extends React.Component<Props> {
             <UserHeader
               name={`${profile.fname} ${profile.lname}`}
               currentUser={profile.id === localStorage.getItem("u_id")}
-              {...profile}
+              {...profile} userId={profile.id}
             />
           </div>
         ))}

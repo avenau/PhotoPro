@@ -18,8 +18,8 @@ class Toolbar extends React.Component<Props> {
           {nickname === null ? (
             <LoggedOut />
           ) : (
-            <LoggedIn nickname={nickname} credits={this.props.credits} />
-          )}
+              <LoggedIn nickname={nickname} credits={this.props.credits} />
+            )}
         </Nav>
         <Search />
       </Navbar>

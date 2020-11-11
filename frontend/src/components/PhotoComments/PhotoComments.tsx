@@ -194,8 +194,8 @@ export default function PhotoComments(props: CommentProps) {
                 />
               </svg>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </Button>
         </div>
         <a href={`/user/${props.author_id}`}>
