@@ -52,6 +52,7 @@ export default class FollowButton extends React.Component<FollowButtonProps, Fol
 
     handleFollow(e: React.MouseEvent<HTMLElement, MouseEvent>) {
         e.preventDefault();
+        e.stopPropagation();
         const token = localStorage.getItem("token") as string;
         if (token) {
 
