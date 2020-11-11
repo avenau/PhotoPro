@@ -5,6 +5,16 @@ from lib.showdown.showdown import Showdown
 from json import loads
 from lib.user.user import User
 
+to_ignore = [
+    "_id",
+    "posted",
+    "user",
+    "albums",
+    "collections",
+    "tags",
+    "comments",
+]
+
 
 def get_data(req_user):
     """
@@ -22,8 +32,11 @@ def get_data(req_user):
     if prev_winner != None:
         prev = loads(prev_winner.to_json())
         prev["metadata"], prev["photoStr"] = prev_winner.get_thumbnail(req_user)
-        prev["id"] = str(prev["_id"]["$oid"])
+        prev["id"] = str(prev_winner.get_id())
         prev["owns"] = prev_winner.is_owned(req_user_obj)
+        for key in to_ignore:
+            prev.pop(key)
+
     participants = current_showdown.get_participants()
     photos = []
     current_vote = ""
@@ -31,9 +44,11 @@ def get_data(req_user):
         photo = participant.get_photo()
         photo_json = loads(photo.to_json())
         photo_json["metadata"], photo_json["photoStr"] = photo.get_thumbnail(req_user)
-        photo_json["id"] = str(photo_json["_id"]["$oid"])
+        photo_json["id"] = str(photo.get_id())
         photos.append(photo_json)
         photo_json["owns"] = photo.is_owned(req_user_obj)
+        for key in to_ignore:
+            photo_json.pop(key)
         if req_user_obj in participant.get_votes():
             current_vote = str(participant.get_id())
 

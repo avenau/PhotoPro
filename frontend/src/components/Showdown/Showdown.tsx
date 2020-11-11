@@ -1,13 +1,38 @@
 import React from "react";
-import Image from "react-bootstrap/Image";
 import axios from "axios";
-import ShowdownLike from "./ShowdownLike";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import PrevShowdown from "./PrevShowdown";
+import CurrShowdown from "./CurrShowdown";
+import "./Showdown.scss";
 
-class Showdown extends React.Component<any, any> {
-  constructor(props: any) {
+interface Props extends RouteComponentProps {}
+
+interface State {
+  participants: Photo[];
+  currentVote: string;
+  prevWinnerPhoto: Photo | null;
+}
+
+interface Photo {
+  id: string;
+  title: string;
+  price: number;
+  discount: number;
+  photoStr: string;
+  metadata: string;
+  user: string;
+  owns: boolean; // purchased or posted
+  participantId: string;
+  votes: number;
+}
+
+class Showdown extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
-      imagePaths: [],
+      participants: [],
+      currentVote: "",
+      prevWinnerPhoto: null,
     };
   }
 
@@ -19,59 +44,29 @@ class Showdown extends React.Component<any, any> {
     axios
       .get("/showdown", { params: { token: localStorage.getItem("token") } })
       .then((res) => {
-        const imagePaths = res.data;
-        this.setState({ imagePaths });
+        const { participants, prevWinnerPhoto, currentVote } = res.data;
+        this.setState({
+          participants,
+          currentVote,
+          prevWinnerPhoto,
+        });
       });
   }
 
   render() {
     return (
-      <>
-        <div style={{ padding: "0% 5%" }}>
-          <h3>Yesterday&apos;s Showdown Winner</h3>
-
-          <div style={{ display: "flex", justifyContent: "left" }}>Content</div>
+      <div className="showdown-container">
+        <div className="subcontainer">
+          <h3>Last Showdown Winner</h3>
+          <PrevShowdown photo={this.state.prevWinnerPhoto} />
         </div>
-        <div style={{ padding: "0% 5%" }}>
-          <h3>Photo Showdown</h3>
-
-          <div style={{ display: "flex", justifyContent: "left" }}>Content</div>
+        <div className="subcontainer">
+          <h3>Today&apos;s Photo Showdown</h3>
+          <CurrShowdown photos={this.state.participants} />
         </div>
-      </>
+      </div>
     );
-    // OLD
-    // return (
-    //   <Container className="p-3">
-    //     <Row>
-    //       <h3 style={{ textAlign: "center" }}>Today&apos;s PHOTO SHOWDOWN</h3>
-    //     </Row>
-    //     <Container className="p-2">
-    //       <Row>
-    //         <Col>
-    //           <Image src={this.state.imagePaths.path_one} fluid />
-    //         </Col>
-    //         <Col xs={2}>
-    //           {" "}
-    //           <h3> VS </h3>{" "}
-    //         </Col>
-    //         <Col>
-    //           <Image src={this.state.imagePaths.path_two} fluid />
-    //         </Col>
-    //       </Row>
-    //       <Row>
-    //         <Col>
-    //           <Button variant="success">Apple</Button>
-    //           {/* <ShowdownLike partId="5fa92d58367cb28505115b06" sdId="5fa92d58367cb28505115b08" isLiked={false} likeCount={0} /> */}
-    //         </Col>
-    //         <Col xs={2} />
-    //         <Col>
-    //           <Button variant="success">Banana</Button>
-    //         </Col>
-    //       </Row>
-    //     </Container>
-    //   </Container>
-    // );
   }
 }
 
-export default Showdown;
+export default withRouter(Showdown);
