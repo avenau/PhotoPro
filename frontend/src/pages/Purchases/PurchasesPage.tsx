@@ -37,7 +37,6 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
   render() {
     return (
       <div className="purchasesPage">
-        <Toolbar />
         <Container className="mt-5">
           <Row className="align-items-center">
             <Col xs={9}>

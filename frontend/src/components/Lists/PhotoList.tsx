@@ -8,6 +8,7 @@ interface Props extends RouteComponentProps {
   popular?: boolean;
   addPhotoId?: (newPhotoId: string) => void;
   updatePage?: () => void;
+  refreshCredits?: () => void;
 }
 
 interface Photo {
@@ -22,7 +23,6 @@ interface Photo {
   likes: number;
 }
 
-
 class PhotoList extends React.Component<Props> {
   render() {
     return (
@@ -36,7 +36,12 @@ class PhotoList extends React.Component<Props> {
             key={photo.id}
             className="photo-result"
           >
-            <PhotoThumbnail {...photo} updatePage={this.props.updatePage} popular={this.props.popular}/>
+            <PhotoThumbnail
+              {...photo}
+              updatePage={this.props.updatePage}
+              popular={this.props.popular}
+              refreshCredits={this.props.refreshCredits}
+            />
           </div>
         ))}
       </div>

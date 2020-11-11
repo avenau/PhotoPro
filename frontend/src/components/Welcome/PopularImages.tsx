@@ -1,11 +1,13 @@
-import React, { Component } from 'react';
-import {
-  Container,
-} from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ContentLoader from '../ContentLoader/ContentLoader';
+import React, { Component } from "react";
+import { Container } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import ContentLoader from "../ContentLoader/ContentLoader";
 
-class PopularImages extends Component<any, any> {
+interface Props {
+  refreshCredits: () => void;
+}
+
+class PopularImages extends Component<Props, any> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -24,6 +26,7 @@ class PopularImages extends Component<any, any> {
             route="/welcome/getPopularImages"
             type="photo"
             popular={true}
+            refreshCredits={this.props.refreshCredits}
           />
         </Container>
       </div>

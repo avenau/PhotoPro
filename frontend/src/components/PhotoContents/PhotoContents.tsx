@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { RouteComponentProps, withRouter, Link } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import axios from "axios";
@@ -20,6 +20,7 @@ interface Collection {
 
 interface Props extends RouteComponentProps {
   photoId: string;
+  refreshCredits: () => void;
 }
 
 class PhotoContents extends React.Component<Props, any> {
@@ -43,36 +44,10 @@ class PhotoContents extends React.Component<Props, any> {
       loading: true,
       msg: "Loading...",
       collections: [],
-      token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
-      uId: localStorage.getItem('u_id') ? localStorage.getItem('u_id') : '',
-    }
+      token: localStorage.getItem("token") ? localStorage.getItem("token") : "",
+      uId: localStorage.getItem("u_id") ? localStorage.getItem("u_id") : "",
+    };
   }
-  // const [titleName, setTitle] = useState("Photo Title");
-  // const [nickname, setNick] = useState("Artist Nickname");
-  // const [email, setEmail] = useState("Artist Email");
-  // const [likes, set1s] = useState(0);
-  // const [isLoaded, setLoad] = useState(false);
-  // const [tags, setTags] = useState<string[]>([]);
-  // const [artist, setArtist] = useState("");
-  // const [status, setStatus] = useState(0);
-  // const [is_artist, setIsArtist] = useState(false);
-  // // TODO
-  // const [photo, setPhoto] = useState("");
-  // const [purchased, setPurchased] = useState<boolean>();
-  // const currentUser = localStorage.getItem("u_id") as string;
-  // const token = localStorage.getItem("token") as string;
-  // const [meta, setMeta] = useState("");
-  // const [price, setPrice] = useState(0);
-  // const [discount, setDiscount] = useState(0);
-  // const [deleted, setDeleted] = useState(false);
-  // const [loadMessage, setLoadMessage] = useState("Page Still Loading");
-  // const updateTags = (tag: string) => {
-  //   if (tag) {
-  //     setTags((tags) => [...tags, tag]);
-  //   } else if (tag !== "") {
-  //     setTags((tags) => [...tags, tag]);
-  //   }
-  // };
 
   componentDidMount() {
     axios
@@ -83,8 +58,10 @@ class PhotoContents extends React.Component<Props, any> {
         },
       })
       .then((res) => {
-        const tempComments:string[] = [];
-        res.data.comments.map((comment:any) => tempComments.push(JSON.parse(comment)));
+        const tempComments: string[] = [];
+        res.data.comments.map((comment: any) =>
+          tempComments.push(JSON.parse(comment))
+        );
         this.setState({
           comments: tempComments,
         });
@@ -106,15 +83,13 @@ class PhotoContents extends React.Component<Props, any> {
         });
       })
       .catch(() => {});
-
-    const query = `/user/collections?token=${this.state.token}&query=${this.state.uId}&offset=0&limit=5`
-    axios
-      .get(query)
-      .then((res) => {
-        this.setState({ collections: res.data.map((obj:Collection) => obj) })
+    if (localStorage.getItem("token")) {
+      const query = `/user/collections?token=${this.state.token}&query=${this.state.uId}&offset=0&limit=5`;
+      axios.get(query).then((res) => {
+        this.setState({ collections: res.data.map((obj: Collection) => obj) });
       });
+    }
   }
-
 
   purchasePhoto(e: any) {
     e.preventDefault();
@@ -129,6 +104,7 @@ class PhotoContents extends React.Component<Props, any> {
           purchased: res.data.purchased,
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
         });
+        this.props.refreshCredits();
       })
       .catch(() => {});
   }
@@ -172,7 +148,8 @@ class PhotoContents extends React.Component<Props, any> {
           </Button>
         </div>
       );
-    } if (this.state.purchased) {
+    }
+    if (this.state.purchased) {
       return (
         <div>
           <Button onClick={(e) => this.downloadPhoto(e)} className="ml-1">
@@ -211,7 +188,7 @@ class PhotoContents extends React.Component<Props, any> {
               isLiked={this.state.isLiked}
             />
             <BookmarkButton
-              pId={this.props.photoId} 
+              pId={this.props.photoId}
               collections={this.state.collections}
             />
             {this.returnDynamicButtons()}
