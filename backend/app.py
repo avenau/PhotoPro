@@ -78,7 +78,7 @@ from lib.schedule.schedule import initialise_schedule
 from lib.user.validate_login import login
 import lib.user.helper_functions
 import lib.user.password_reset as password_reset
-from lib.user.helper_functions import is_following
+from lib.user.helper_functions import is_following, update_follow
 
 # Purchases
 from lib.purchases.purchases import get_purchased_photos
@@ -627,6 +627,27 @@ def _is_followed():
     followed_u_id = data["followed_u_id"]
     
     return dumps({"is_followed" : is_following(follower_u_id, followed_u_id)})
+
+@app.route("/user/follow", methods=["POST"])
+def _follow():
+    """
+    Description
+    -----------
+    GET request to update following or unfollowing a user
+
+    Parameters
+    ----------
+    token : string
+    followed_u_id : string (User Id of the user being follwoed)
+
+    Returns
+    -------
+    {}
+    """
+    token = request.form.get("token")
+    followed_u_id = request.form.get("followed_u_id")
+    result = update_follow(token, followed_u_id)
+    return dumps({})
 
 
 @app.route("/user/purchasedphotos", methods=["GET"])

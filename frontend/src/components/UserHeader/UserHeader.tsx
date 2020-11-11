@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
+import FollowButton from "./FollowButton"
 
 interface Props {
   profilePic?: string[];
@@ -47,30 +48,33 @@ export default class UserHeader extends React.Component<Props> {
       return null;
     }
 
-    const alreadyFollowing = false;
-    if (alreadyFollowing) {
-      return (
-        <Button
-          className="button-container"
-          variant="outline-primary"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          Following
-        </Button>
-      );
-    }
+    /* const alreadyFollowing = false;
+     if (alreadyFollowing) {
+       return (
+         <Button
+           className="button-container"
+           variant="outline-primary"
+           onClick={(e) => {
+             e.stopPropagation();
+           }}
+         >
+           Following
+         </Button>
+       );
+     }
+     return (
+       <Button
+         className="button-container"
+         onClick={(e) => {
+           e.stopPropagation();
+         }}
+       >
+         Follow
+       </Button>
+     ); */
     return (
-      <Button
-        className="button-container"
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        Follow
-      </Button>
-    );
+      <FollowButton currentUser={this.props.currentUser} userId={this.props.userId} />
+    )
   }
 
   private getPic() {

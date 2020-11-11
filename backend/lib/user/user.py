@@ -354,6 +354,12 @@ class User(Document):
         Set keywords from photos a user has interacted with or search queries
         """
         self.recommend_keywords = keywords
+    
+    def add_following(self, user):
+        self.following.append(user)
+        
+    def remove_following(self, user):
+        self.following.remove(user)
 
     # User Document validation
     # ------------------------
