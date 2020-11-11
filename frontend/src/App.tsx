@@ -74,6 +74,8 @@ class App extends React.Component<Props, State> {
     }
   }
 
+  // Function to refresh number of credits displayed on toolbar
+  // Gets passed to each page where purchases can be made
   refreshCredits = () => {
     const token = localStorage.getItem("token");
     if (this.state.valid) {
@@ -105,7 +107,7 @@ class App extends React.Component<Props, State> {
             component={LoginPage}
           />
           <Route exact path="/">
-            <HomePage />
+            <HomePage refreshCredits={this.refreshCredits} />
           </Route>
           <AnonRoute
             valid={this.state.valid}

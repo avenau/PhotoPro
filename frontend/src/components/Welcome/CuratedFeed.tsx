@@ -3,26 +3,29 @@ import { Container } from "react-bootstrap";
 import axios from "axios";
 import ContentLoader from "../ContentLoader/ContentLoader";
 
-export default function CuratedFeed() {
+interface Props {
+  refreshCredits: () => void;
+}
+
+export default function CuratedFeed(props: Props) {
   const token = localStorage.getItem("token");
 
   return (
     <>
       <Container>
         <h3>Recommended for you</h3>
-        {token === null ? 
-        (
+        {token === null ? (
           <p>Create an account today, and we'll curate photos just for you.</p>
-        )
-        :
-          (<ContentLoader
+        ) : (
+          <ContentLoader
             query=""
             route="/welcome/recommend"
             type="photo"
             curatedFeed={true}
-          />)
-        }
+            refreshCredits={props.refreshCredits}
+          />
+        )}
       </Container>
     </>
-  )
+  );
 }
