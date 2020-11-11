@@ -111,7 +111,9 @@ class PhotoContents extends React.Component<Props, any> {
         });
         this.props.refreshCredits();
       })
-      .catch(() => {});
+      .catch(() => {
+        this.setState({ purchaseBtnLoading: false });
+      });
   }
 
   downloadPhoto(e: React.MouseEvent) {
@@ -138,7 +140,9 @@ class PhotoContents extends React.Component<Props, any> {
         link.click();
         link.remove();
       })
-      .catch(() => {});
+      .catch(() => {
+        this.setState({ downloadBtnLoading: false });
+      });
   }
 
   // Determine whether to show buttons for:
