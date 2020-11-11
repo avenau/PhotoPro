@@ -35,15 +35,9 @@ def validate_credit(credit):
     if credit < 0:
         raise Error.ValidationError("Credits cannot be below 0")
 
-
-
-def validate_extension(extension):
-    '''
-    Validate extension of the user photo
-    '''
-
-    mongoengine.StringField().validate(extension)
-    # TODO Properly handly no profile picture
-    exts = ["", ".jpg", ".jpeg", ".png", ".svg"]
-    if extension not in exts:
-        raise Error.ValueError("Unacceptable file type")
+def validate_email(email):
+    try:
+        mongoengine.EmailField().validate(email)
+    except Exception:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Email validation failed")

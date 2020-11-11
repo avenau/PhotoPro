@@ -19,7 +19,7 @@ def validate_discount(discount):
         print(traceback.format_exc())
         raise Error.ValidationError("Discount cannot be greater than 100")
 
-def validate_title(title, user):
+def validate_title(title, user, curr_albumid):
     """
     Check if the user can make an album with a given title.
     Duplicate album/collection names for a user are not 
@@ -32,10 +32,11 @@ def validate_title(title, user):
         raise ValueError("Please enter a title which is less than 40 characters")
 
     albums = user.get_albums()
-    
+
     for album in albums:
-        if title == album.get_title():
-            raise ValidationError("Please enter a unique album title")
+        if curr_albumid != album.get_id():
+            if title == album.get_title():
+                raise ValidationError("Please enter a unique album title")
     
     return True
         

@@ -83,7 +83,7 @@ import lib.user.password_reset as password_reset
 from lib.purchases.purchases import get_purchased_photos
 
 # Welcome
-from lib.welcome.recommend import generate_recommend, recommend_photos
+from lib.welcome.recommend import recommend_photos
 from lib.welcome.contributors import get_popular_contributors_images
 from lib.welcome.popular_images import get_popular_images
 
@@ -243,7 +243,6 @@ def _account_registration():
     None
     """
     new_user = request.form.to_dict()
-    print(new_user)
     # Make some hashbrowns
     hashed_password = bcrypt.generate_password_hash(new_user["password"])
     new_user["password"] = hashed_password
@@ -263,17 +262,20 @@ def _account_registration():
         nickname=new_user["nickname"],
         password=new_user["password"],
         profile_pic=new_user["profilePic"],
-        extension=new_user["extension"],
         location=new_user["location"],
         about_me=new_user["aboutMe"],
         created=datetime.now(),
     )
-    this_user.save()
+    try:
+        this_user.save()
+    except:
+        raise Error.ValueError("An account is already registered with this email")
 
     return dumps({})
 
 
 @app.route("/userdetails", methods=["GET"])
+@validate_token
 def user_info_with_token():
     """
     Description
@@ -291,9 +293,6 @@ def user_info_with_token():
 
     """
     token = request.args.get("token")
-    if token == "":
-        print("token is an empty string")
-        return {}
     u_id = token_functions.get_uid(token)
     this_user = lib.user.user.User.objects.get(id=u_id)
     if not this_user:
@@ -312,8 +311,33 @@ def user_info_with_token():
         }
     )
 
+@app.route("/user/credits", methods=["GET"])
+@validate_token
+def _get_credits():
+    """
+    Description
+    -----------
+    Return credits for given user.
+
+    Parameters
+    ----------
+    token : string
+
+    Returns
+    -------
+    {credits: int}
+
+    """
+    token = request.args.get("token")
+    u_id = token_functions.get_uid(token)
+    this_user = user.User.objects.get(id=u_id)
+    if not this_user:
+        raise Error.UserDNE("Could not find user")
+
+    return dumps({"credits": this_user.get_credits()})
 
 @app.route("/manageaccount/success", methods=["POST"])
+@validate_token
 def manage_account():
     """
     Description
@@ -345,6 +369,8 @@ def manage_account():
         data["profilePic"] = update_user_thumbnail(
             data["profilePic"], data["extension"]
         )
+    else:
+         data["profilePic"] = ["", ""]
 
     if this_user is None:
         raise Error.UserDNE("User with id " + this_user + "does not exist")
@@ -390,7 +416,6 @@ def password_check():
         data["password"] = "true"
     else:
         data["password"] = "false"
-    print(data)
 
     return data
 
@@ -764,7 +789,6 @@ def buy_album():
 
 
 @app.route("/download", methods=["GET"])
-@validate_token
 def download_full_photo():
     """
     Description
@@ -877,14 +901,12 @@ def _update_likes():
     sd_id = request.form.get("sd_id")
     part_id = request.form.get("part_id")
     result = showdown_likes.update_showdown_likes(token, sd_id, part_id)
-    print(result)
     return dumps(
         {
             "liked": result,
             "like_count": showdown_likes.get_showdown_likes(part_id),
         }
     )
-
 
 @app.route("/welcome/popularcontributors", methods=["GET"])
 def _welcome_get_contributors():
@@ -913,38 +935,21 @@ def _welcome_get_popular_images():
 
     Parameters
     ----------
-    N/A
+    token: str
 
     Returns
     -------
     {popular_images: tup}
         tuple of image paths
     """
-    images = get_popular_images()
-    return dumps({"popular_images": images})
-
-
-@app.route("/welcome/recommend/compute", methods=["GET"])
-@validate_token
-def welcome_compute_recommend():
-    """
-    Description
-    -----------
-    Use user data to recommend photos to the user on the main feed.
-    Return true if the system can recommend at least 3 photos.
-
-    Parameters
-    ----------
-    token: str
-
-    Returns
-    -------
-    success: bool
-
-    """
-    u_id = get_uid(request.args.get("token"))
-    return generate_recommend(u_id)
-
+    data = request.args.to_dict()
+    try:
+        u_id = get_uid(data["token"])
+    except:
+        u_id = ""
+    offset = int(data["offset"])
+    limit = int(data["limit"])
+    return dumps(get_popular_images(u_id, offset, limit))
 
 @app.route("/welcome/recommend", methods=["GET"])
 @validate_token
@@ -1082,7 +1087,6 @@ def _password_check():
         data["password"] = "true"
     else:
         data["password"] = "false"
-    print(data)
 
     return data
 
@@ -1223,44 +1227,6 @@ def _user_remove_photo():
     identifier = {"_id": ObjectId(img_id)}
     res = remove_photo(u_id, identifier)
     return dumps({"success": str(res)})
-
-
-@app.route("/user/profile/uploadphoto", methods=["POST"])
-@validate_token
-def _upload_photo():
-    """
-    Description
-    -----------
-    Parameters
-    ----------
-    img_path : string
-        e.g. http://imagesite.com/img.png
-    token : string
-    extension : string
-    Returns
-    -------
-    {}
-    """
-    """
-    TODO
-    """
-    token = request.form.get("token")
-    img_path = request.form.get("img_path")
-    extension = request.form.get("extension")
-    thumbnail_and_filetype = update_user_thumbnail(img_path, extension)
-    u_id = token_functions.get_uid(token)
-    _user = user.User.objects.get(id=u_id)
-    if not user:
-        raise Error.UserDNE("Could not find user " + u_id)
-    _user.update_user_thumbnail(thumbnail_and_filetype)
-    try:
-        _user.save()
-    except mongoengine.ValidationError:
-        print(traceback.format_exc())
-        raise Error.ValidationError("Could not update thumbnail")
-    # Update the database...
-    return dumps({"success": "True"})
-
 
 """
 ---------------
@@ -1473,13 +1439,8 @@ def _get_comments():
     }
     """
     photo_id = request.args.get("p_id")
-    # offset = request.args.get("offset")
-    # limit = request.args.get("limit")
     order = request.args.get("new_to_old")
-    print("getcomments")
-    print(order)
     current_date = datetime.now()
-    # print(current_date)
     all_comments = get_all_comments(photo_id, current_date, order)
 
     return dumps({"comments": all_comments, "status": True})
@@ -1535,8 +1496,6 @@ def _like_photo():
         u_id = ""
         logged_in = False
 
-    # print("APP TOKEN")
-    # print(token)
     liked = like_photo(u_id, photo_id)
     return dumps({"liked": liked, "loggedIn": logged_in})
 
@@ -1909,10 +1868,6 @@ def _get_album():
     title: string
     discount: integer
     tags: [string]
-    params = request.form.to_dict()
-    print(params)
-    token = request.args.get('token')
-    album_id = request.args.get('album_id')
     """
 
     token = request.args.get("token")
@@ -1926,6 +1881,7 @@ def _get_album():
         "tags": _album.get_tags(),
         "albumId": album_id,
         "owner": str(_album.get_created_by().get_id()),
+        "nickname": str(_album.get_created_by().get_nickname())
     }
 
 
@@ -1942,7 +1898,7 @@ def _check_puchased():
     _album = album.Album.objects.get(id=request.args.get("albumId"))
 
     purchased = all(
-        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos()
+        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos() if not alb_photo.is_deleted()
     )
 
     return dumps({"purchased": purchased})
@@ -2126,7 +2082,6 @@ def _test_decorator():
     Use this decorator to verify the token is
     valid and matches the secret
     """
-    print("YAY")
     return dumps({"success": "success"})
 
 
@@ -2138,7 +2093,6 @@ def _basic():
     arguments = {"first_name": "test", "colour": "test"}
     if request.args:
         arguments = request.args
-    print(arguments)
     return dumps(arguments)
 
 

@@ -44,7 +44,6 @@ def validate_token(function):
                 token = request.args.get('token')
             except:
                 token = request.form.to_dict()['token']
-            print("REACHED")
 
         elif request.method == 'PUT':
             token = request.form['token']

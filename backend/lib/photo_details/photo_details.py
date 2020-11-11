@@ -159,7 +159,7 @@ def like_photo(u_id, photo_id):
         this_photo.decrement_likes()
         this_photo.save()
         # Change PopularPhoto db collection
-        do_unlike(this_user, this_photo)
+        do_unlike(this_photo)
         return False
     # If not already liked, like the photo
     else:
@@ -168,5 +168,5 @@ def like_photo(u_id, photo_id):
         this_photo.increment_likes()
         this_photo.save()
         # Change PopularPhoto db collection
-        do_like(this_user, this_photo)
+        do_like(this_photo)
         return True

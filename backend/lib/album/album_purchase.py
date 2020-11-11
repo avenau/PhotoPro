@@ -1,5 +1,6 @@
 from lib.user.user import User
 from lib.album.album import Album
+from lib.Error import ValueError
 
 def get_price(_user, _album):
     # Price for the current user
@@ -14,7 +15,7 @@ def get_price(_user, _album):
     raw_album_discount = _album.get_discount()
 
     for photo in _album.get_photos():
-        if photo not in _user.get_purchased():
+        if photo not in _user.get_purchased() and not photo.is_deleted():
             your_price += photo.get_discounted_price()
             discounted_price += photo.get_discounted_price()
             original_price += photo.get_price()
@@ -55,7 +56,7 @@ def purchase_album(user_id, album_id):
     # Check that the buyer has sufficient money
     buyer_credits = buyer.get_credits()
     if buyer_credits < album_price:
-        raise Error.ValueError("You don't have enough credits to buy this photo.")
+        raise ValueError("You don't have enough credits to buy this photo.")
 
     # Exchange credits
     buyer.remove_credits(album_price)

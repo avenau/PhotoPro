@@ -49,7 +49,7 @@ def create_collection(_user, params):
     if "tags" in params:
         tags = params['tags']
 
-    validate_title(title, _user)
+    # validate_title(title, _user)
 
     new_collection = collection.Collection(
         title=title,

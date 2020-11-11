@@ -29,7 +29,7 @@ def validate_discount(discount):
     if discount > 100:
         raise ValidationError("Discount must be less than 100")
 
-def validate_title(title, user):
+def validate_title(title, user, cur_collectionid):
     """
     Check if the user can make an album with a given title.
     Duplicate album/collection names for a user are not 
@@ -37,7 +37,6 @@ def validate_title(title, user):
     @param title str
     @param user mongo obj
     """
-    print('yo')
     
     if len(title) > 40:
         raise ValueError("Please enter a title which is less than 40 characters")
@@ -45,9 +44,8 @@ def validate_title(title, user):
     collections = user.get_collections()
     
     for collection in collections:
-        print('hello')
-        print(collection.get_title())
-        if title == collection.get_title():
-            raise ValidationError("Please enter a unique collection title")
-    
+        if cur_collectionid != collection.get_id():
+            if title == collection.get_title():
+                raise ValidationError("Please enter a unique collection title")
+        
     return True

@@ -18,7 +18,6 @@ def update_showdown_likes(token, sd_id, part_id):
         oid = ObjectId(u_id)
     except InvalidId:
         print("u_id is not a valid ObjectId. Look closely at it")
-        print(u_id)
         raise TokenError("u_id is not a valid ObjectId." + u_id)
     try:
         _showdown = showdown.Showdown.objects.get(id=sd_id)
@@ -43,7 +42,7 @@ def update_showdown_likes(token, sd_id, part_id):
         showdown_like(u_id, _participant)
         return "liked"
     else:
-        if has_showdown_liked(u_id, _showdown.particpants[0]) == False:
+        if has_showdown_liked(u_id, _showdown.participants[0]) == False:
             showdown_like(u_id, _showdown.participants[0])
             showdown_unlike(u_id, _showdown.participants[1])
         else:

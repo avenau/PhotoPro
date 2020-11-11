@@ -95,8 +95,6 @@ def remove_photo_from_db(photos, identifier):
         print("Database find_one_and_delete failed")
         raise Error.DatabaseError("Database find_one_and_delete failed")
 
-    print(res.modified_count)
-
     return res.modified_count > 0
 
 

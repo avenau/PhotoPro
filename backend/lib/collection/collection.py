@@ -9,6 +9,7 @@ from mongoengine import IntField
 import lib.collection.validation as validation
 import lib.catalogue.catalogue
 
+from lib.collection.validation import validate_title
 
 class Collection(lib.catalogue.catalogue.Catalogue):
     '''
@@ -102,4 +103,5 @@ class Collection(lib.catalogue.catalogue.Catalogue):
         2) Update the price
         '''
         super().clean()
+        validate_title(self.title, self.created_by, self.id)
         self.update_price()

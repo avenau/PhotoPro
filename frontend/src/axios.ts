@@ -29,7 +29,6 @@ const errorHandler = (error: any) => {
   // TODO toastify back here
 
   if (error.response) {
-    console.log(error.response.data);
     alert(error.response.data.message);
   }
 

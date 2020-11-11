@@ -32,15 +32,13 @@ class User(Document):
     # User's last name
     lname = StringField(required=True)
     # User's email
-    email = EmailField(required=True, unique=True)
+    email = EmailField(required=True, unique=True, validation=validation.validate_email)
     # User's nickname
     nickname = StringField(required=True)
     # User's hashed password
     password = BinaryField(required=True)
     # User's profile pic, base64 encoded string
     profile_pic = ListField(StringField())
-    # User's profile pic extension
-    extension = StringField(validation=validation.validate_extension)
     # User's info about themself
     about_me = StringField()
     # User's country, validated again the location list
@@ -160,20 +158,6 @@ class User(Document):
         @param pic: string(base64)
         """
         self.profile_pic = pic
-
-    def get_extension(self):
-        """
-        Return the extension of the profile picture
-        """
-        return self.extension
-
-    def set_extension(self, ext):
-        """
-        Set the extension
-        Raises a ValidationError on failed vaidate_extension()
-        @param ext: str(e.g. .jpg)
-        """
-        self.extension = ext
 
     def get_about_me(self):
         """

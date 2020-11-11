@@ -8,25 +8,15 @@ class PopularContributors extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      contributors: [],
     };
   }
 
   componentDidMount() {
-    this.getPopularContributorsPaths();
+    this.checkContributors()
   }
 
-  getPopularContributorsPaths() {
-    const token = localStorage.getItem('token');
-    axios.get('/welcome/popularcontributors', {
-      params: {
-        token,
-      },
-    })
-      .then((res) => {
-        const { contributors } = res.data;
-        this.setState({ contributors });
-      });
+  checkContributors() {
+    axios.get('/')
   }
 
   render() {
