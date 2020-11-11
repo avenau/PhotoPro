@@ -12,10 +12,8 @@ import Tags from "../Tags";
 
 interface Collection {
   title: string;
-  authorId: string;
-  author: string;
-  created: string;
   id: string;
+  photoExists: boolean;
 }
 
 interface Props extends RouteComponentProps {
@@ -107,7 +105,7 @@ class PhotoContents extends React.Component<Props, any> {
       })
       .catch(() => {});
 
-    const query = `/user/collections?token=${this.state.token}&query=${this.state.uId}&offset=0&limit=5`
+      const query = `collection/getall?token=${localStorage.getItem('token')}&photoId=${this.props.photoId}`
     axios
       .get(query)
       .then((res) => {

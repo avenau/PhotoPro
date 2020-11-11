@@ -74,7 +74,7 @@ class Collection(lib.catalogue.catalogue.Catalogue):
 
         if old_photo in self.photos:
             self.photos.remove(old_photo)
-            self.save()
+g           self.save()
 
     def delete_collection(self):
         '''

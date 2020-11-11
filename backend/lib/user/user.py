@@ -230,6 +230,7 @@ class User(Document):
         """
         collections = []
         for coll in self.collections:
+            print("Collection ID " + str(coll.id))
             if not coll.deleted:
                 collections.append(coll)
         return collections

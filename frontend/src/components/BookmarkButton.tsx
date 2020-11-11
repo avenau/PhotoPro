@@ -4,11 +4,8 @@ import axios from 'axios';
 
 interface Collection {
   title : string;
-  authorId?: string;
-  author?: string;
-  created?: string;
   id?: string;
-  photos?: string[];
+  photoExists: boolean;
 }
 
 interface BookmarkProps {
@@ -73,14 +70,14 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
     const collections = [] as string[];
     Array.from(data.entries()).map((el) => collections.push(el[0]));
     axios
-    .put(`/collection/addphotos`, {
-                                    token: localStorage.getItem('token'),
-                                    collectionIds: JSON.stringify(collections),
-                                    photoId: this.props.pId
-                                  })
-    .then((res) => res ? console.log("Worked") : console.log("No"))
-    .then(() => this.closeModal())
-    .catch(()=>{});
+      .put(`/collection/updatephotos`, {
+                                      token: localStorage.getItem('token'),
+                                      collectionIds: JSON.stringify(collections),
+                                      photoId: this.props.pId
+                                    })
+      .then((res) => this.setState({collections: res.data}))
+      .then(() => this.closeModal())
+      .catch(()=>{});
 
   }
 
@@ -120,7 +117,9 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
                   <Form.Check
                     name={collection.id}
                     type="checkbox"
-                    label={collection.title}
+                    label={String(collection.title)}
+                    onClick={((e:any)=> e.target.removeAttribute("check"))}
+                    defaultChecked={collection.photoExists}
                   />
                 </Form.Group>
               ))}

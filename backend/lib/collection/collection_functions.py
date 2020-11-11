@@ -9,6 +9,7 @@ import mongoengine
 import lib.collection.collection as collection
 import lib.photo.photo as photo
 import lib.Error as Error
+import lib.user.user as user
 from json import loads
 from bson.json_util import dumps
 from bson.objectid import ObjectId
@@ -202,6 +203,31 @@ def get_user_price(_user, _collection):
         price_without_ownership += _photo.get_discounted_price()
 
     return user_price, price_without_ownership
+
+
+def get_all_collections(args):
+    '''
+    token: string
+    photoId (optional): string
+    '''
+    token = args.get('token')
+    photo_id = ''
+
+    _user = user.User.objects.get(id=get_uid(token))
+    if 'photoId' in args.keys():
+        photo_id = args.get('photoId')
+    res = loads(collection.Collection.objects(created_by=_user).to_json())
+
+    # Add the id entry and the photoExists entries
+    for entry in res:
+        entry['id'] = entry['_id']['$oid']
+        entry['photoExists'] = False
+        print(entry)
+        for this_photo in entry['photos']:
+            print(this_photo['$oid'], photo_id)
+            if this_photo['$oid'] == photo_id:
+                entry['photoExists'] = True
+    return dumps(res)
 
 
 def collection_photo_search(data):
