@@ -145,7 +145,6 @@ export default function ManageAccount(props: any) {
 
   return (
     <>
-      <Toolbar />
       <br />
       <Container>
         <h1>Change account details</h1>

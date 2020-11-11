@@ -5,14 +5,16 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import Toolbar from "../components/Toolbar/Toolbar";
 import UserHeader from "../components/UserHeader/UserHeader";
 import ContentLoader from "../components/ContentLoader/ContentLoader";
 import CreateCatalogueModal from "../components/ProfilePage/CreateCatalogueModal";
 import "./Profile.scss";
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps {
+  refreshCredits: () => void;
+}
 
 interface State {
   fname: string;
@@ -29,7 +31,7 @@ interface State {
   title: string;
 }
 
-export default class ProfilePage extends React.Component<Props, State> {
+class ProfilePage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const { params } = this.props.match;
@@ -121,7 +123,6 @@ export default class ProfilePage extends React.Component<Props, State> {
     const currentUser = this.state.userId === userId;
     return (
       <>
-        <Toolbar />
         <div>
           <Modal
             backdrop="static"
@@ -185,6 +186,7 @@ export default class ProfilePage extends React.Component<Props, State> {
                 query={this.state.userId}
                 route="/user/photos"
                 type="photo"
+                refreshCredits={this.props.refreshCredits}
               />
             </Tab>
             <Tab eventKey="albums" title="Albums" unmountOnExit>
@@ -223,3 +225,5 @@ export default class ProfilePage extends React.Component<Props, State> {
     );
   }
 }
+
+export default withRouter(ProfilePage);

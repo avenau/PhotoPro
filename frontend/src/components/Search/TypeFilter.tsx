@@ -14,7 +14,6 @@ interface State {
 const mapping: { [key: string]: string } = {
   all: "All",
   jpgpng: "JPG/PNG",
-  gif: "GIF",
   svg: "SVG",
 };
 
@@ -50,12 +49,6 @@ export default class TypeFilter extends React.Component<Props, State> {
             active={this.state.selection === "jpgpng"}
           >
             JPG/PNG
-          </Dropdown.Item>
-          <Dropdown.Item
-            onClick={() => this.updateSelection("gif")}
-            active={this.state.selection === "gif"}
-          >
-            GIF
           </Dropdown.Item>
           <Dropdown.Item
             onClick={() => this.updateSelection("svg")}

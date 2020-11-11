@@ -104,11 +104,9 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
   }
 
   returnGoogleURL() {
-    return (
-      `http://letmegooglethat.com/?q=+${this.state.price.toString()
-      }+usd+to+${this.state.location
-      }+currency`
-    );
+    return `http://letmegooglethat.com/?q=+${this.state.price.toString()}+usd+to+${
+      this.state.location
+    }+currency`;
   }
 
   setCreditsErr(ncredits: number) {
@@ -127,7 +125,6 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
   render() {
     return (
       <div className="buyCreditsPage">
-        <Toolbar />
         <BackButton href="/purchases" label="Purchases" />
         <Container className="mt-5">
           <Row>
@@ -163,8 +160,8 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
                     How much does this cost in my currency?
                   </a>
                 ) : (
-                    <></>
-                  )}
+                  <></>
+                )}
               </Col>
               <Col>
                 <Button id="paypalButton" type="submit" size="lg">

@@ -42,8 +42,7 @@ import lib.collection.collection_functions as collection_functions
 
 # Albums
 from lib.album.album_edit import create_album, get_albums
-from lib.album.album_functions import update_album
-from lib.album.album_functions import album_photo_search
+from lib.album.album_functions import update_album, album_photo_search, catalogue_thumbnail
 from lib.album.album_purchase import purchase_album, get_price
 
 # Comments
@@ -347,6 +346,7 @@ def _get_credits():
 
     return dumps({"credits": this_user.get_credits()})
 
+
 @app.route("/manageaccount/success", methods=["POST"])
 @validate_token
 def manage_account():
@@ -479,6 +479,19 @@ def _profile_details():
         }
     )
 
+@app.route("/collection/thumbnail", methods=["GET"])
+def _collection_thumbnail():
+    """
+    Get first photo from collection to use a thumbnail
+
+    """
+    collection_id = request.args.get("albumId")
+    _collection = lib.collection.collection.Collection.objects.get(id=collection_id)
+    try:
+        u_id = get_uid(request.args.get("token"))
+    except:
+        u_id = ""
+    return dumps(catalogue_thumbnail(_collection, u_id))
 
 """
 --------------------
@@ -756,7 +769,7 @@ def buy_photo():
     elif this_photo.is_deleted():
         raise Error.ValidationError("You can't purchase a deleted photo.")
     elif photo_price > user_credits:
-        raise Error.ValueError("You don't have enough credits to buy this photo.")
+        raise Error.ValueError("You don't have enough credits. Buy more at the purchases tab :)")
 
     # Do the purchase
     buyer.remove_credits(photo_price)
@@ -996,6 +1009,7 @@ def welcome_recommend_photos():
 
 
 @app.route("/userdetails", methods=["GET"])
+@validate_token
 def _user_info_with_token():
     """
     Description
@@ -1013,9 +1027,6 @@ def _user_info_with_token():
 
     """
     token = request.args.get("token")
-    if token == "":
-        print("token is an empty string")
-        return {}
     u_id = token_functions.get_uid(token)
     this_user = user.User.objects.get(id=u_id)
     if not this_user:
@@ -1815,7 +1826,6 @@ def _add_collection_photo():
     _photo = photo.Photo.objects.get(id=photo_id)
     _user = user.User.objects.get(id=u_id)
     for _col in _user.get_collections():
-        print("REACHED")
         new_collections.append({'title': _col.get_title(),
                                 'id': str(_col.get_id()),
                                 'photoExists': False})
@@ -1834,7 +1844,6 @@ def _add_collection_photo():
 - Album Routes -
 ---------------
 """
-
 
 @app.route("/album", methods=["GET"])
 @validate_token
@@ -1871,6 +1880,31 @@ def _get_album():
         "owner": str(_album.get_created_by().get_id()),
         "nickname": str(_album.get_created_by().get_nickname())
     }
+@app.route("/album/thumbnail", methods=["GET"])
+def _album_thumbnail():
+    """
+    Return thumbnail of first photo from an album to use as
+    the thumbnail for an album
+
+    Parameters
+    ----------
+    albumId: string
+    token: string
+
+    Returns
+    ----------
+    {
+        thumbnail: string
+    }
+    """
+    album_id = request.args.get("albumId")
+    _album = lib.album.album.Album.objects.get(id=album_id)
+
+    try:
+        u_id = get_uid(request.args.get("token"))
+    except:
+        u_id = ""
+    return dumps(catalogue_thumbnail(_album, u_id))
 
 
 @app.route("/album/checkpurchased", methods=["GET"])
