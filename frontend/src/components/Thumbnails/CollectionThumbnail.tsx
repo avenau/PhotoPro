@@ -13,7 +13,11 @@ interface Props {
   author: string;
 }
 
-export default class CollectionThumbnail extends React.Component<Props> {
+interface State {
+  collectionThumbnail: string;
+}
+
+export default class CollectionThumbnail extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -41,7 +45,7 @@ export default class CollectionThumbnail extends React.Component<Props> {
   render() {
     return (
       <>
-        <Image src={Thumbnail} className="collection-thumbnail" />
+        <Image src={this.state.collectionThumbnail} className="collection-thumbnail" />
         <div className="collection-overlay">
           <div>{this.props.title}</div>
           <Link
