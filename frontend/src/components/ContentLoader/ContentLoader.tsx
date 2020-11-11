@@ -68,8 +68,6 @@ export default class ContentLoader extends React.Component<Props, State> {
         },
       })
       .then((res) => {
-        console.log('in then')
-        console.log(res)
         this.setState((prevState) => ({
           loading: false,
           results: [...prevState.results, ...res.data],
@@ -88,9 +86,8 @@ export default class ContentLoader extends React.Component<Props, State> {
     if (this.state.results.length < 1 && this.state.atEnd) {
       if (this.props.curatedFeed === true) {
         return <p>Like and search more photos for a curated feed.</p>
-      } else {
-        return <p>No results were found :(</p>
       }
+      return <p>No results were found :(</p>
     }
 
     switch (this.props.type) {
@@ -154,7 +151,7 @@ export default class ContentLoader extends React.Component<Props, State> {
               <span className="sr-only">Loading...</span>
             </Spinner>
           ) : (
-              <></>
+            <></>
             )}
         </InfiniteScroll>
       </>

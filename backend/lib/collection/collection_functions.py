@@ -7,8 +7,13 @@ import traceback
 import datetime
 import mongoengine
 import lib.collection.collection as collection
+import lib.photo.photo as photo
 import lib.Error as Error
+from json import loads
+from bson.json_util import dumps
+from bson.objectid import ObjectId
 from lib.collection.validation import validate_title
+from lib.token_functions import get_uid
 
 def get_collection(_collection):
     """
@@ -66,9 +71,9 @@ def create_collection(_user, params):
         raise Error.ValidationError
 
     return {'title': new_collection.get_title(),
-            'collection_id': new_collection.get_id(),
+            'id': str(new_collection.get_id()),
             'tags': new_collection.get_tags(),
-            'creation_date': new_collection.get_creation_date()}
+            'creation_date': str(new_collection.get_creation_date())}
 
 
 def delete_collection(_user, _collection):
@@ -128,7 +133,7 @@ def add_collection_photo(_user, _photo, _collection):
         raise Error.AccessError("Collection does not exist")
     if not _photo:
         raise Error.PhotoDNE("Photo does not exist")
-    if _collection.get_user() != _user:
+    if _collection.get_created_by() != _user:
         raise PermissionError("User does not own collection")
 
     try:
@@ -197,3 +202,64 @@ def get_user_price(_user, _collection):
         price_without_ownership += _photo.get_discounted_price()
 
     return user_price, price_without_ownership
+
+
+def collection_photo_search(data):
+    '''
+    Get thumbnails of the photos in a collection
+    '''
+    try:
+        req_user = get_uid(data["token"])
+    except:
+        req_user = ""
+    try:
+        _id = ObjectId(data["query"])
+    except:
+        _id = ""
+    res = photo.Photo.objects().aggregate(
+        [
+            {"$match": {"collections": {"$in": [_id, "$collections"]}}},
+            {
+                "$project": {
+                    "title": 1,
+                    "price": 1,
+                    "deleted": 1,
+                    "user": {"$toString": "$user"},
+                    "id": {"$toString": "$_id"},
+                    "_id": 0,
+                },
+            },
+            {"$skip": data["offset"]},
+            {"$limit": data["limit"]},
+        ]
+    )
+    res = loads(dumps(res))
+    try:
+        # Get purchased photos of register user
+        cur_user = User.objects.get(id=req_user)
+        purchased = cur_user.get_all_purchased()
+    except:
+        # Anonymous user
+        purchased = []
+
+    remove_photo = []
+    for result in res:
+        cur_photo = photo.Photo.objects.get(id=result["id"])
+        result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
+
+        if cur_photo in purchased:
+            # Someone who has purchased a photo, should still be able to
+            # download deleted photo
+            result["owns"] = True
+        else:
+            result["owns"] = False
+            if result["deleted"] == True:
+                # Check if photo is deleted, if it is, remove from result list
+                remove_photo.append(result)
+            if req_user ==  str(cur_photo.get_user().get_id()):
+                result["owns"] = True
+
+    # Only return photos which have not been deleted
+    collection_photos = [i for i in res if i not in remove_photo]
+
+    return collection_photos

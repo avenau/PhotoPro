@@ -115,40 +115,6 @@ class PhotoContents extends React.Component<Props, any> {
       });
   }
 
-  // getPhotoDetails = async (photoId: string) => {
-  //   await axios
-  //     .get(`/photo_details?p_id=${photoId}&token=${token}`)
-  //     .then((response) => {
-  //       setArtist(response.data.u_id);
-  //       setNick(response.data.nickname);
-  //       setIsArtist(response.data.is_artist);
-  //       setEmail(response.data.email);
-  //       setLikes(response.data.likes);
-  //       setTags(response.data.tagsList);
-  //       setPurchased(response.data.purchased);
-  //       setDeleted(response.data.deleted);
-  //       setStatus(response.data.status);
-  //       setMeta(response.data.metadata);
-  //       setTitle(response.data.title);
-  //       setPrice(response.data.price);
-  //       setPhoto(`${response.data.metadata}${response.data.photoStr}`);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   getPhotoDetails(props.photoId);
-  //   if (purchased === true) {
-  //     setLoad(true);
-  //   } else if (deleted === true || artist === "") {
-  //     setLoad(false);
-  //     setLoadMessage("The photo does not exist!");
-  //   } else {
-  //     setLoad(true);
-  //   }
-  //   if (status === 0) {
-  //     setLoadMessage("Loading Photos...");
-  //   }
-  // }, [purchased, deleted, status, is_artist]);
 
   purchasePhoto(e: any) {
     e.preventDefault();

@@ -8,6 +8,7 @@ interface Collection {
   author?: string;
   created?: string;
   id?: string;
+  photos?: string[];
 }
 
 interface BookmarkProps {
@@ -19,7 +20,6 @@ interface State {
   showModal: boolean;
   showNewCol: boolean;
   collections: Collection[];
-  token?: string;
   uId?: string;
 }
 
@@ -47,15 +47,15 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
 
   closeNewCol = () => this.setState({ showNewCol: false });
 
-  handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  handleNewCollection = (event: React.FormEvent<HTMLFormElement>) => {
     if (event) {
       event.preventDefault();
     }
     const data = new FormData(event.currentTarget as HTMLFormElement)
     this.closeNewCol();
     axios
-      .post(`/collection/add`, {params: {token: this.state.token,
-                                         title: data.get('title')}})
+      .post(`/collection/add`, { token: localStorage.getItem('token'),
+                                 title: data.get('title')})
       .then((res) => {
               const newCollection = res.data;
               this.setState(prevState => ({
@@ -64,6 +64,25 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
             })
       .catch(()=>{});
   };
+
+  updateCollections = (event: React.FormEvent<HTMLFormElement>) => {
+    if (event) {
+      event.preventDefault();
+    }
+    const data = new FormData(event.currentTarget as HTMLFormElement)
+    const collections = [] as string[];
+    Array.from(data.entries()).map((el) => collections.push(el[0]));
+    axios
+    .put(`/collection/addphotos`, {
+                                    token: localStorage.getItem('token'),
+                                    collectionIds: JSON.stringify(collections),
+                                    photoId: this.props.pId
+                                  })
+    .then((res) => res ? console.log("Worked") : console.log("No"))
+    .then(() => this.closeModal())
+    .catch(()=>{});
+
+  }
 
   render() {
     return (
@@ -95,22 +114,25 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
           <Modal.Header closeButton />
           <div className="BookmarkForm p-3">
             <Modal.Title>Add Photo to a Collection</Modal.Title>
-            <Form className="p-3">
+            <Form className="updateCollection p-3" onSubmit={this.updateCollections}>
               {this.state.collections.map((collection: Collection) => (
                 <Form.Group key={collection.id}>
                   <Form.Check
+                    name={collection.id}
                     type="checkbox"
                     label={collection.title}
                   />
                 </Form.Group>
               ))}
+              <div className="modalButtons">
+                <Button className="createNewCollectionbutton" variant="primary" onClick={this.openNewCol}>
+                  Create New Collection
+                </Button>
+                <Button type="submit">
+                  Update Collections
+                </Button>
+              </div>
             </Form>
-            <div className="modalButtons">
-              <Button variant="primary" onClick={this.openNewCol}>
-                New Collection
-              </Button>
-              <Button onClick={this.closeModal}>Done</Button>
-            </div>
           </div>
         </Modal>
         <Modal
@@ -120,8 +142,8 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
           className="NewCollectionModal"
         >
           <Modal.Header closeButton />
-          <Modal.Title>Create a Collection</Modal.Title>
-          <Form onSubmit={this.handleSubmit}>
+          <Modal.Title>Create New Collection</Modal.Title>
+          <Form onSubmit={this.handleNewCollection}>
             <Form.Group>
               <Form.Control
                 placeholder="Enter a name for your new Collection"
