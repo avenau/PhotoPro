@@ -1,6 +1,7 @@
 import React from "react";
 import { PencilSquare, XSquare } from "react-bootstrap-icons";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
+import { OverlayTrigger, Tooltip } from "react-bootstrap"
 import "./AlbumHeader.scss";
 import axios from "axios";
 import ConfirmDelete from "./ConfirmDelete";
@@ -34,13 +35,26 @@ class AlbumHeader extends React.Component<AlbumHeaderProps, AlbumHeaderState> {
     .catch()
   }
 
+  renderTooltip = (props: any) => {
+    console.log(props)
+    return <Tooltip id="edit-album" {...props}>
+      Edit album
+    </Tooltip>
+  }
+
   render() {
     const path = `/${this.props.type}/manage/${this.props.catalogueId}`;
     return this.props.isOwner ? (
       <div className="album-header-container">
-        <Link to={path} className="mr-3">
-          <PencilSquare size="2rem" color="#343a40" />
-        </Link>
+        <OverlayTrigger 
+          placement="left"
+          delay={{ show: 250, hide: 400 }}
+          overlay={this.renderTooltip}
+          >
+            <Link to={path} className="mr-3">
+              <PencilSquare size="2rem" color="#343a40" />
+            </Link>
+        </OverlayTrigger>
         <div
           className="album-header-delete-button"
           onClick={() => this.setState({modalDelete: true})}

@@ -83,7 +83,6 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
         </Link>
         {this.props.isOwner ?
           <>
-          <br/>
           <div className="album-price-display">
             <p>{this.props.discount}% off original price!</p>
             <Savings albumId={this.state.albumId} />
