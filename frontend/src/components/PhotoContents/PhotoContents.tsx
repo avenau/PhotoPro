@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { RouteComponentProps, withRouter , Link } from "react-router-dom";
+import { RouteComponentProps, withRouter, Link } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import BookmarkButton from "../BookmarkButton";
 import LikeButton from "../LikeButton";
@@ -12,6 +12,7 @@ import Tags from "../Tags";
 
 interface Props extends RouteComponentProps {
   photoId: string;
+  refreshCredits: () => void;
 }
 
 class PhotoContents extends React.Component<Props, any> {
@@ -149,6 +150,7 @@ class PhotoContents extends React.Component<Props, any> {
           purchased: res.data.purchased,
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
         });
+        this.props.refreshCredits();
       })
       .catch(() => {});
   }
@@ -192,7 +194,8 @@ class PhotoContents extends React.Component<Props, any> {
           </Button>
         </div>
       );
-    } if (this.state.purchased) {
+    }
+    if (this.state.purchased) {
       return (
         <div>
           <Button onClick={(e) => this.downloadPhoto(e)} className="ml-1">
