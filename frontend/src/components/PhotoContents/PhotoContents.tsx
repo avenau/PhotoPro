@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { RouteComponentProps, withRouter , Link } from "react-router-dom";
+import { RouteComponentProps, withRouter, Link } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import BookmarkButton from "../BookmarkButton";
 import LikeButton from "../LikeButton";
@@ -9,6 +9,7 @@ import axios from "axios";
 import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../Tags";
+import { relative } from "path";
 
 interface Props extends RouteComponentProps {
   photoId: string;
@@ -98,7 +99,7 @@ class PhotoContents extends React.Component<Props, any> {
           loading: false,
         });
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   // getPhotoDetails = async (photoId: string) => {
@@ -150,7 +151,7 @@ class PhotoContents extends React.Component<Props, any> {
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
         });
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   downloadPhoto(e: React.MouseEvent) {
@@ -175,7 +176,7 @@ class PhotoContents extends React.Component<Props, any> {
         link.click();
         link.remove();
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   // Determine whether to show buttons for:
@@ -184,7 +185,7 @@ class PhotoContents extends React.Component<Props, any> {
     if (this.state.isArtist) {
       return (
         <div>
-          <Button onClick={(e) => this.downloadPhoto(e)}>
+          <Button onClick={(e) => this.downloadPhoto(e)} className="ml-3">
             Download Full Photo
           </Button>
           <Button href={`/edit/${this.props.photoId}`} className="ml-1">
@@ -195,7 +196,7 @@ class PhotoContents extends React.Component<Props, any> {
     } if (this.state.purchased) {
       return (
         <div>
-          <Button onClick={(e) => this.downloadPhoto(e)} className="ml-1">
+          <Button onClick={(e) => this.downloadPhoto(e)} className="ml-3">
             Download Full Photo
           </Button>
         </div>
@@ -203,7 +204,7 @@ class PhotoContents extends React.Component<Props, any> {
     }
     return (
       <div>
-        <Button className="ml-1" onClick={(e) => this.downloadPhoto(e)}>
+        <Button className="ml-3" onClick={(e) => this.downloadPhoto(e)}>
           Download Watermarked Photo
         </Button>
         <Button className="ml-1" onClick={(e) => this.purchasePhoto(e)}>
@@ -230,6 +231,8 @@ class PhotoContents extends React.Component<Props, any> {
               like_count={this.state.likes}
               isLiked={this.state.isLiked}
             />
+
+
             <BookmarkButton p_id={this.props.photoId} />
             {this.returnDynamicButtons()}
           </Row>
@@ -263,13 +266,13 @@ class PhotoContents extends React.Component<Props, any> {
           p_id={this.props.photoId}
           comments={this.state.comments}
         />
-      </div>
+      </div >
     ) : (
-      <div>
-        {" "}
-        <p>{this.state.msg}</p>{" "}
-      </div>
-    );
+        <div>
+          {" "}
+          <p>{this.state.msg}</p>{" "}
+        </div>
+      );
   }
 }
 

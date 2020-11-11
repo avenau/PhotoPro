@@ -5,7 +5,7 @@ import LoggedIn from "./LoggedIn";
 import LoggedOut from "./LoggedOut";
 import IToolbarState from "./IToolbarState";
 
-interface Props {}
+interface Props { }
 
 class Toolbar extends React.Component<Props, IToolbarState> {
   render() {
