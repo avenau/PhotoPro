@@ -165,15 +165,12 @@ class App extends React.Component<Props, State> {
             path="/edit/:photo_id"
             component={EditPhoto}
           />
-          <ProtectedRoute valid={this.state.valid} exact path="/purchases">
-            <PurchasesPage credits={this.state.credits} />
-          </ProtectedRoute>
-          {/* <ProtectedRoute
+          <ProtectedRoute
             valid={this.state.valid}
             exact
             path="/purchases"
             component={PurchasesPage}
-          /> */}
+          />
           <ProtectedRoute
             valid={this.state.valid}
             exact
