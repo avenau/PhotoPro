@@ -825,9 +825,8 @@ def _get_showdown():
     -------
     {
         participants: object[],
-        prev_winner_photo: object,
-        prev_winner_user: object,
-        current_vote: string <- either participant id or empty
+        prevWinnerPhoto: object,
+        currentVote: string <- either participant id or empty
     }
     """
     token = request.args.get("token")
