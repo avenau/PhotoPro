@@ -1,9 +1,9 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
-import Container from "react-bootstrap/Container";
+import { Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
-
+import ContentLoader from '../../components/ContentLoader/ContentLoader';
 import Toolbar from "../../components/Toolbar/Toolbar";
 import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
 
@@ -78,22 +78,34 @@ class AlbumDetails extends React.Component<Props, State> {
     return (
       <div className="createAlbumPage">
         <Container className="mt-5">
-          <AlbumHeader
-            isOwner={this.state.isOwner}
-            catalogueId={this.state.albumId}
-            token={this.state.token}
-            type="album"
-          />
           <h1>{this.state.title}</h1>
-          <AlbumDisplay
-            albumTitle={this.state.title}
-            discount={this.state.discount}
-            tags={this.state.tags}
-            photos={this.state.photos}
-            albumId={this.state.albumId}
-            isOwner={this.state.isOwner}
-            owner={this.state.owner}
-            nickname={this.state.nickname}
+          <Row>
+            <Col>
+              <AlbumDisplay
+                albumTitle={this.state.title}
+                discount={this.state.discount}
+                tags={this.state.tags}
+                photos={this.state.photos}
+                albumId={this.state.albumId}
+                isOwner={this.state.isOwner}
+                owner={this.state.owner}
+                nickname={this.state.nickname}
+              />
+            </Col>
+            <Col xs={7}>
+              <AlbumHeader
+                isOwner={this.state.isOwner}
+                catalogueId={this.state.albumId}
+                token={this.state.token}
+                type="album"
+              />
+            </Col>
+          </Row>
+          <ContentLoader
+            query={this.state.albumId}
+            route='/album/photos'
+            type="albumPhotos"
+            updatePage={() => {window.location.reload()}}
           />
         </Container>
       </div>

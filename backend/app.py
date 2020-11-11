@@ -1945,7 +1945,6 @@ def _check_puchased():
     purchased = all(
         alb_photo in _user.get_purchased() for alb_photo in _album.get_photos() if not alb_photo.is_deleted()
     )
-
     return dumps({"purchased": purchased})
 
 
