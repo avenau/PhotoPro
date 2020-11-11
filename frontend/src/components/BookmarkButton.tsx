@@ -127,7 +127,7 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
                 </Form.Group>
               ))}
               <div className="modalButtons">
-                <Button className="createNewCollectionbutton" variant="primary" onClick={this.openNewCol}>
+                <Button className="createNewCollectionbutton mr-1" variant="primary" onClick={this.openNewCol}>
                   Create New Collection
                 </Button>
                 <Button type="submit">
