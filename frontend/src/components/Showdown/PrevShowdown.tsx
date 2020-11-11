@@ -21,8 +21,6 @@ interface Photo {
 class PrevShowdown extends React.Component<Props> {
   render() {
     const { photo } = this.props;
-    console.log(photo);
-
     return (
       <div className="showdown-photo-container">
         {photo !== null ? (

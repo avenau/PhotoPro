@@ -14,9 +14,7 @@ export default class LoadingButton extends React.Component<Props> {
 
   render() {
     return (
-      <span
-        onClick={this.props.loading ? this.stopPropagation : this.props.onClick}
-      >
+      <span onClick={this.props.loading ? this.stopPropagation : undefined}>
         <Button disabled={this.props.loading} {...this.props} loading="">
           {this.props.loading ? (
             <Spinner animation="border" role="status" key="spin" size="sm">

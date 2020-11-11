@@ -16,7 +16,7 @@ interface Props extends RouteComponentProps {
   user: string;
   owns: boolean;
   popular?: boolean;
-  likes: number;
+  likes?: number;
   updatePage?: () => void;
   refreshCredits?: () => void;
 }
@@ -93,11 +93,14 @@ class PhotoThumbnail extends React.Component<
   }
 
   getLikes() {
-    return this.props.likes > 1 ? (
-      <div style={{ fontSize: "18px" }}> {this.props.likes} likes </div>
-    ) : (
-      <div style={{ fontSize: "18px" }}> {this.props.likes} like </div>
-    );
+    if (this.props.likes) {
+      return this.props.likes > 1 ? (
+        <div style={{ fontSize: "18px" }}> {this.props.likes} likes </div>
+      ) : (
+        <div style={{ fontSize: "18px" }}> {this.props.likes} like </div>
+      );
+    }
+    return <></>;
   }
 
   render() {

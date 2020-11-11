@@ -11,6 +11,8 @@ interface State {
   participants: Photo[];
   currentVote: string;
   prevWinnerPhoto: Photo | null;
+  currentId: string;
+  loading: boolean;
 }
 
 interface Photo {
@@ -24,6 +26,7 @@ interface Photo {
   owns: boolean; // purchased or posted
   participantId: string;
   votes: number;
+  deleted: boolean;
 }
 
 class Showdown extends React.Component<Props, State> {
@@ -33,6 +36,8 @@ class Showdown extends React.Component<Props, State> {
       participants: [],
       currentVote: "",
       prevWinnerPhoto: null,
+      currentId: "",
+      loading: true,
     };
   }
 
@@ -41,28 +46,49 @@ class Showdown extends React.Component<Props, State> {
   }
 
   getShowdownData() {
+    this.setState({ loading: true });
     axios
       .get("/showdown", { params: { token: localStorage.getItem("token") } })
       .then((res) => {
-        const { participants, prevWinnerPhoto, currentVote } = res.data;
+        const {
+          participants,
+          prevWinnerPhoto,
+          currentVote,
+          currentId,
+        } = res.data;
         this.setState({
+          loading: false,
           participants,
           currentVote,
           prevWinnerPhoto,
+          currentId,
         });
       });
   }
 
   render() {
+    // TODO update this to use loading spinner
     return (
       <div className="showdown-container">
         <div className="subcontainer">
           <h3>Last Showdown Winner</h3>
-          <PrevShowdown photo={this.state.prevWinnerPhoto} />
+          {this.state.loading ? (
+            <div>Loading...</div>
+          ) : (
+            <PrevShowdown photo={this.state.prevWinnerPhoto} />
+          )}
         </div>
         <div className="subcontainer">
           <h3>Today&apos;s Photo Showdown</h3>
-          <CurrShowdown photos={this.state.participants} />
+          {this.state.loading ? (
+            <div>Loading...</div>
+          ) : (
+            <CurrShowdown
+              photos={this.state.participants}
+              currentVote={this.state.currentVote}
+              currentId={this.state.currentId}
+            />
+          )}
         </div>
       </div>
     );

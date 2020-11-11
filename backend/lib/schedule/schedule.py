@@ -35,21 +35,26 @@ def create_showdown(prev_showdown):
     """
     Create a new showdown entry
     """
-    pop_photos = PopularPhoto.objects().order_by("-likes")[:2]
-    participants = []
-    if len(pop_photos) == 2:
-        for pop_photo in pop_photos:
-            photo = pop_photo.get_photo()
-            participant = Participant(photo=photo)
-            participant.save()
-            participants.append(participant)
 
+    participants = []
     showdown = Showdown(
         start_date=datetime.now(),
         previous=prev_showdown,
         duration=1440,
         participants=participants,
     )
+
+    showdown.save()
+
+    pop_photos = PopularPhoto.objects().order_by("-likes")[:2]
+    if len(pop_photos) == 2:
+        for pop_photo in pop_photos:
+            photo = pop_photo.get_photo()
+            participant = Participant(photo=photo, showdown=showdown)
+            participant.save()
+            showdown.add_participant(participant)
+            participants.append(participant)
+
     showdown.save()
 
     # Reset the popular lists

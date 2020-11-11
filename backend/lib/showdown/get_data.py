@@ -47,6 +47,8 @@ def get_data(req_user):
         photo_json["id"] = str(photo.get_id())
         photos.append(photo_json)
         photo_json["owns"] = photo.is_owned(req_user_obj)
+        photo_json["votes"] = len(participant.get_votes())
+        photo_json["participantId"] = str(participant.get_id())
         for key in to_ignore:
             photo_json.pop(key)
         if req_user_obj in participant.get_votes():
