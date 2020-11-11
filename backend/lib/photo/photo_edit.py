@@ -9,8 +9,7 @@ from io import BytesIO
 import mongoengine
 from bson.objectid import ObjectId
 from PIL import Image, ImageSequence, ImageDraw, ImageFont
-import cairosvg
-
+# import cairosvg
 
 from lib.photo.validate_photo import reformat_lists
 from lib.token_functions import get_uid
@@ -18,7 +17,6 @@ from lib.photo.fs_interactions import find_photo, save_photo
 import lib.Error as Error
 import lib.photo.photo
 import lib.user.user
-
 
 def create_photo_entry(photo_details):
     """
@@ -62,7 +60,6 @@ def create_photo_entry(photo_details):
         return {
             "success": "false"
         }
-
 
 def process_photo(base64_str, name, extension):
     """
@@ -131,13 +128,14 @@ def make_watermarked_copy(img_data, name, extension):
     draw = ImageDraw.Draw(img)
     medium_grey = (192,192,192)
     # Write "PhotoPro (c)" in grey
-    # Change font size if you want below
-    font_size = max([1, int(img_height/8)])
+    # Size determined via experimentation
+    font_size = max([1, int(img_width/11)])
     font = ImageFont.truetype('josefin-sans/JosefinSans-Regular.ttf', size=font_size)
     draw.text((x_quarter, y_middle), "PhotoPro (c)", font=font, fill=medium_grey)
 
     watermarked_img_buf = BytesIO()
     img.save(watermarked_img_buf, format=img.format)
+    img.save("tmp"+extension, format=img.format)
     save_photo(watermarked_img_buf.getvalue(), watermarked_filename)
 
 def get_photo_edit(photo_id, token):
@@ -174,7 +172,6 @@ def get_photo_edit(photo_id, token):
         "metadata": photo.get_metadata(),
         "deleted": photo.is_deleted()
     }
-
 
 # Update details of a photo object
 def update_photo_details(photo_details):
