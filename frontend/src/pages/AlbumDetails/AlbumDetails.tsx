@@ -1,8 +1,8 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { Container, Row, Col, Card } from "react-bootstrap";
-import Tags from "../../components/Tags";
 import axios from "axios";
+import Tags from "../../components/Tags";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
 import ContentLoader from '../../components/ContentLoader/ContentLoader';
 import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
@@ -94,22 +94,22 @@ class AlbumDetails extends React.Component<Props, State> {
             </Col>
             <Col xs={7}>
               <Container>
-                  <p><b>Tags</b></p>
-                  <Container>
-                    <Row>
+                <p><b>Tags</b></p>
+                <Container>
+                  <Row>
                     { this.state.tags.map((tag) => (
-                        <Tags key={tag} tagName={tag} type="album"/>
+                      <Tags key={tag} tagName={tag} type="album" />
                       ))
                     }
-                    </Row>
-                  </Container>
+                  </Row>
+                </Container>
               
-              <AlbumHeader
-                isOwner={this.state.isOwner}
-                catalogueId={this.state.albumId}
-                token={this.state.token}
-                type="album"
-              />
+                <AlbumHeader
+                  isOwner={this.state.isOwner}
+                  catalogueId={this.state.albumId}
+                  token={this.state.token}
+                  type="album"
+                />
               </Container>
             </Col>
           </Row>

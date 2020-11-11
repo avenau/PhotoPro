@@ -35,10 +35,15 @@ class AlbumHeader extends React.Component<AlbumHeaderProps, AlbumHeaderState> {
     .catch()
   }
 
-  renderTooltip = (props: any) => {
-    console.log(props)
+  renderAlbumTooltip = (props: any) => {
     return <Tooltip id="edit-album" {...props}>
       Edit album
+    </Tooltip>
+  }
+  
+  renderDeleteTooltip = (props: any) => {
+    return <Tooltip id="delete-album" {...props}>
+      Delete album
     </Tooltip>
   }
 
@@ -49,24 +54,30 @@ class AlbumHeader extends React.Component<AlbumHeaderProps, AlbumHeaderState> {
         <OverlayTrigger 
           placement="left"
           delay={{ show: 250, hide: 400 }}
-          overlay={this.renderTooltip}
-          >
-            <Link to={path} className="mr-3">
-              <PencilSquare size="2rem" color="#343a40" />
-            </Link>
-        </OverlayTrigger>
-        <div
-          className="album-header-delete-button"
-          onClick={() => this.setState({modalDelete: true})}
+          overlay={this.renderAlbumTooltip}
         >
-          <XSquare size="2rem" color="#b00b1e" />
-        </div>
+          <Link to={path} className="mr-3">
+            <PencilSquare size="2rem" color="#343a40" />
+          </Link>
+        </OverlayTrigger>
+        <OverlayTrigger 
+          placement="right"
+          delay={{ show: 250, hide: 400 }}
+          overlay={this.renderDeleteTooltip}
+        >
+          <div
+            className="album-header-delete-button"
+            onClick={() => this.setState({modalDelete: true})}
+          >
+            <XSquare size="2rem" color="#b00b1e" />
+          </div>
+        </OverlayTrigger>
         <ConfirmDelete 
           modalDelete={this.state.modalDelete}
           setModalDelete={(display: boolean) => this.setState({modalDelete: display})}
           catalogue={this.props.type}
           handleDelete={() => this.handleDelete()}
-          />
+        />
       </div>
     ) : (
       <></>

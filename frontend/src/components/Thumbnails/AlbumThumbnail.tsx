@@ -31,7 +31,7 @@ export default class AlbumThumbnail extends React.Component<Props, State> {
       .get("/album/thumbnail", {
         params: {
           albumId: this.props.id,
-          token: token
+          token
         }
       })
       .then((res) => {
