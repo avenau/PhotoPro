@@ -4,6 +4,7 @@ import axios from "axios";
 import Container from "react-bootstrap/Container";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
 import Toolbar from "../../components/Toolbar/Toolbar";
+import ContentLoader from '../../components/ContentLoader/ContentLoader';
 
 interface Props extends RouteComponentProps<MatchParams> {
   isOwner?: boolean;
@@ -82,6 +83,12 @@ class CollectionDetails extends React.Component<Props, State> {
             <h2>Price: {this.state.price}</h2>
             <h3>Regular Price: {this.state.originalPrice}</h3>
           </div>
+          <ContentLoader
+            query={this.state.collectionId}
+            route='/collection/photos'
+            type="collectionPhotos"
+            updatePage={() => {window.location.reload()}}
+          />
         </Container>
       </div>
     );
