@@ -7,8 +7,14 @@ import traceback
 import datetime
 import mongoengine
 import lib.collection.collection as collection
+import lib.photo.photo as photo
 import lib.Error as Error
-
+import lib.user.user as user
+from json import loads
+from bson.json_util import dumps
+from bson.objectid import ObjectId
+from lib.collection.validation import validate_title
+from lib.token_functions import get_uid
 
 def get_collection(_collection):
     """
@@ -18,7 +24,6 @@ def get_collection(_collection):
         title: string,
         photos: [Photo],
         creation_date: datetime,
-        deleted: boolean,
         private: boolean,
         price, int
         tags: [string],
@@ -49,6 +54,8 @@ def create_collection(_user, params):
     if "tags" in params:
         tags = params['tags']
 
+    # validate_title(title, _user)
+
     new_collection = collection.Collection(
         title=title,
         created_by=_user,
@@ -57,12 +64,16 @@ def create_collection(_user, params):
     )
     try:
         new_collection.save()
-        collection_id = str(new_collection.id)
+        _user.add_collection(new_collection)
+        _user.save()
     except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError
 
-    return collection_id
+    return {'title': new_collection.get_title(),
+            'id': str(new_collection.get_id()),
+            'tags': new_collection.get_tags(),
+            'creation_date': str(new_collection.get_creation_date())}
 
 
 def delete_collection(_user, _collection):
@@ -80,8 +91,7 @@ def delete_collection(_user, _collection):
         return ret
 
     try:
-        _collection.delete_collection()
-        _collection.save()
+        _collection.delete()
         ret = True
     except mongoengine.ValidationError:
         print(traceback.format_exc())
@@ -122,7 +132,7 @@ def add_collection_photo(_user, _photo, _collection):
         raise Error.AccessError("Collection does not exist")
     if not _photo:
         raise Error.PhotoDNE("Photo does not exist")
-    if _collection.get_user() != _user:
+    if _collection.get_created_by() != _user:
         raise PermissionError("User does not own collection")
 
     try:
@@ -191,3 +201,66 @@ def get_user_price(_user, _collection):
         price_without_ownership += _photo.get_discounted_price()
 
     return user_price, price_without_ownership
+
+
+def get_all_collections(args):
+    '''
+    token: string
+    photoId (optional): string
+    '''
+    token = args.get('token')
+    photo_id = ''
+
+    _user = user.User.objects.get(id=get_uid(token))
+    if 'photoId' in args.keys():
+        photo_id = args.get('photoId')
+    res = loads(collection.Collection.objects(created_by=_user).to_json())
+
+    # Add the id entry and the photoExists entries
+    for entry in res:
+        entry['id'] = entry['_id']['$oid']
+        entry['photoExists'] = False
+        print(entry)
+        if 'photos' in entry:
+            for this_photo in entry['photos']:
+                print(this_photo['$oid'], photo_id)
+                if this_photo['$oid'] == photo_id:
+                    entry['photoExists'] = True
+    return dumps(res)
+
+
+def collection_photo_search(data):
+    '''
+    Get thumbnails of the photos in a collection
+    '''
+    try:
+        req_user = get_uid(data["token"])
+    except:
+        req_user = ""
+    try:
+        _id = ObjectId(data["query"])
+    except:
+        _id = ""
+    if 'offset' in data:
+        offset = data['offset']
+    else:
+        offset = 0
+    if 'limit' in data:
+        limit = data['limit']
+    else:
+        limit = 5
+
+    _collection = collection.Collection.objects.get(id=_id)
+    _photos = _collection.get_photos()[offset:offset+limit]
+    ret_photos = []
+    for this_photo in _photos:
+        meta, thumbnail = this_photo.get_thumbnail(req_user)
+        ret_photos.append({
+                'title': this_photo.get_title(),
+                'price': this_photo.get_price(),
+                'discount': this_photo.get_discount(),
+                'photoStr': thumbnail,
+                'metadata': meta,
+                'id': str(this_photo.get_id())
+            })
+    return ret_photos

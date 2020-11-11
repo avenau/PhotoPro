@@ -20,11 +20,10 @@ class Catalogue(Document):
     Catalogue class
     """
 
-    title = StringField(required=True, max_length=200, unique=True)
+    title = StringField(required=True, max_length=40)
     photos = ListField(ReferenceField("photo.Photo"))
     creation_date = DateTimeField(required=True)
     created_by = ReferenceField("user.User")
-    deleted = BooleanField(default=False)
     tags = ListField(StringField())
     meta = {"allow_inheritance": True, "abstract": True}
 
@@ -61,9 +60,9 @@ class Catalogue(Document):
         self.update_tags()
 
     def set_tags(self, tags):
-        '''
+        """
         Delete old tags and set to these tags
-        '''
+        """
         self.tags = tags
 
     def update_tags(self):
@@ -77,15 +76,20 @@ class Catalogue(Document):
         """
         Get the list of photos
         """
-        return self.photos
+        photos = []
+        for this_photo in self.photos:
+            if not this_photo.is_deleted():
+                photos.append(this_photo)
+        return photos
 
     def add_photo(self, new_photo):
         """
         Add a single photo to the collection by default.
         Adds this collection to the photo
         """
-        self.photos.append(new_photo)
-        new_photo.add_collection(self)
+        if new_photo not in self.photos:
+            self.photos.append(new_photo)
+            new_photo.add_collection(self)
 
     def add_photos(self, new_photos):
         """
@@ -94,8 +98,7 @@ class Catalogue(Document):
         @param photos: list of photo references
         """
         for this_photo in new_photos:
-            self.photos.append(this_photo)
-            this_photo.add_collection(self)
+            self.add_photo(this_photo)
 
     def remove_photos(self, photos):
         """
@@ -111,22 +114,6 @@ class Catalogue(Document):
         Get when the Catalogue was made
         """
         return self.creation_date
-
-    def is_deleted(self):
-        """
-        Check whether the collection is deleted
-        """
-        return self.deleted
-
-    def delete_catalogue(self):
-        """
-        Soft deletion of the collection
-        Dereferences photos and removes self
-        """
-        self.deleted = True
-        for this_photo in self.photos:
-            this_photo.remove_collection(self)
-            this_photo.save()
 
     def get_created_by(self):
         """

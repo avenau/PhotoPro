@@ -21,7 +21,7 @@ class Config(object):
 
 
 class DevelopmentConfig(Config):
-    MONGO_URI = local_db
+    MONGO_URI = local_db 
     TESTING = True
     DEBUG = True
 
@@ -46,7 +46,6 @@ def defaultHandler(err):
     -------
     TODO
     """
-    print(err)
     response = err.get_response()
     response.data = dumps(
         {

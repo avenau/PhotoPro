@@ -3,48 +3,29 @@ import { Container } from "react-bootstrap";
 import axios from "axios";
 import ContentLoader from "../ContentLoader/ContentLoader";
 
-export default function CuratedFeed() {
-    const token = localStorage.getItem("token");
-    const [loading, setLoading] = useState(true)
-    
-    useEffect(() => {
-        if (token !== null) {
-            console.log(token)
-            // Compute metrics for recommendation algorithm
-            axios.get("/welcome/recommend/compute", {params: {
-                token
-            }})
-            .then((res) => {
-                // Load photos based on computed metrics
-                // If there are sufficient results
-                console.log(res)
-                if (res.data.success === true) {
-                    setLoading(false)
-                }
-            }
-            )
-            .catch(() => {
-            })
-        }
-    }, []
-    )
+interface Props {
+  refreshCredits: () => void;
+}
 
-    return(
-      <>
-        <Container>
-          {loading ?
-            <></>
-            :
-            <>
-              <h3>Recommended for you</h3>
-              <ContentLoader
-                query=""
-                route="/welcome/recommend"
-                type="photo"
-              />
-            </>
-          }
-        </Container>
-      </>
-    )
+export default function CuratedFeed(props: Props) {
+  const token = localStorage.getItem("token");
+
+  return (
+    <>
+      <Container>
+        <h3>Recommended for you</h3>
+        {token === null ? (
+          <p>Create an account today, and we'll curate photos just for you.</p>
+        ) : (
+          <ContentLoader
+            query=""
+            route="/welcome/recommend"
+            type="photo"
+            curatedFeed={true}
+            refreshCredits={props.refreshCredits}
+          />
+        )}
+      </Container>
+    </>
+  );
 }

@@ -15,7 +15,6 @@ def get_user_details(u_id, mongo):
         oid = ObjectId(u_id)
     except InvalidId:
         print("u_id is not a valid ObjectId. Look closely at it")
-        print(u_id)
         raise TokenError("u_id is not a valid ObjectId." + u_id)
 
     user = mongo.db.users.find_one({"_id": oid})

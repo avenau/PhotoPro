@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 from lib.token_functions import get_uid
 import lib.photo.photo as photo
 from lib.user.user import User
+from lib.album.album import Album
 
 def update_album(_album, title, discount, tags):
     '''
@@ -45,12 +46,7 @@ def album_photo_search(data):
                     "title": 1,
                     "price": 1,
                     "discount": 1,
-                    "extension": 1,
-                    '''
-                    "is_album": {
-                        "$in": [_id, "$albums"]
-                        },
-                    '''
+                    "deleted": 1,
                     "user": {"$toString": "$user"},
                     "id": {"$toString": "$_id"},
                     "_id": 0,
@@ -69,15 +65,44 @@ def album_photo_search(data):
         # Anonymous user
         purchased = []
 
+    remove_photo = []
     for result in res:
         cur_photo = photo.Photo.objects.get(id=result["id"])
         result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
 
-        if req_user == str(cur_photo.get_user().get_id()):
-            result["owns"] = True
-        elif cur_photo in purchased:
+        if cur_photo in purchased:
+            # Someone who has purchased a photo, should still be able to
+            # download deleted photo
             result["owns"] = True
         else:
             result["owns"] = False
+            if result["deleted"] == True:
+                # Check if photo is deleted, if it is, remove from result list
+                remove_photo.append(result)
+            if req_user ==  str(cur_photo.get_user().get_id()):
+                result["owns"] = True
 
-    return res
+    # Only return photos which have not been deleted
+    album_photos = [i for i in res if i not in remove_photo]
+
+    return album_photos
+
+def catalogue_thumbnail(catalogue_obj, u_id):
+    """
+    Get the thumbnail of first photo (not deleted) from an album
+    """
+
+    photos = catalogue_obj.get_photos()
+
+    thumbnail = {
+        "thumbnail": ""
+    }
+
+    for _photo in photos:
+        if not _photo.is_deleted():
+            # Get first image which has not been deleted
+            metadata, photoStr = _photo.get_thumbnail(u_id)
+            thumbnail["thumbnail"] = metadata + photoStr
+            break
+
+    return thumbnail

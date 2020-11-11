@@ -6,20 +6,8 @@ import Toolbar from "../../components/Toolbar/Toolbar";
 import countries from "../../constants";
 import "./ManageAccount.scss";
 
-function convertProfilePicToBase64(profilePic: [string, string]) {
-  // Get filetype
-  if (profilePic[0] === "" && profilePic[1] === "") {
-    return "";
-  }
-  // base64 of the tuple profilePic
-  const b64 = profilePic[0];
-  const metadata1 = "data:image/";
-  // Filetype of the tuple profilePic
-  const metadata2 = profilePic[1];
-  const metadata3 = ";base64, ";
-
-  const ret = `${metadata1}${metadata2}${metadata3} ${b64}`;
-  return ret;
+function addMetadataToBase64(profilePic: [string, string]) {
+  return `data:image/${profilePic[1]};base64,${profilePic[0]}`;
 }
 
 export default function ManageAccount(props: any) {
@@ -45,6 +33,8 @@ export default function ManageAccount(props: any) {
   const [profilePicInput, setProfilePicInput] = useState<HTMLElement | null>();
   const [profilePicPreview, setProfilePicPreview] = useState("");
   const [hasProfilePic, setHasProfilePic] = useState(false);
+  const [originalProfilePic, setOriginalProfilePic] = useState("");
+  const [originalExtension, setOriginalExtension] = useState("");
 
   const [showModal, setShow] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
@@ -57,7 +47,7 @@ export default function ManageAccount(props: any) {
     const token = localStorage.getItem("token");
     if (token !== null) {
       axios
-        .get(`http://localhost:8001/userdetails?token=${token}`)
+        .get(`/userdetails?token=${token}`)
         .then((response) => {
           setODetails({
             fname: response.data.fname,
@@ -68,9 +58,11 @@ export default function ManageAccount(props: any) {
             location: response.data.location,
           });
           if (response.data.profilePic[0]) {
-            setProfilePicPreview(
-              convertProfilePicToBase64(response.data.profilePic)
+            setProfilePicPreview(addMetadataToBase64(response.data.profilePic));
+            setOriginalProfilePic(
+              addMetadataToBase64(response.data.profilePic)
             );
+            setOriginalExtension(response.data.profilePic[1]);
             setHasProfilePic(true);
           }
         })
@@ -109,12 +101,14 @@ export default function ManageAccount(props: any) {
       setFormInput({ ...formInput, password });
     }
     setProfilePic().then((response: any) => {
+      console.log("here");
+      console.log(response);
       axios
         .post("/manageaccount/success", {
           ...oDetails,
           ...formInput,
-          profilePic: response[0],
-          extension: response[1],
+          profilePic: response[0] ? response[0] : originalProfilePic,
+          extension: response[1] ? response[1] : originalExtension,
           token: localStorage.getItem("token"),
         })
         .then((r) => {
@@ -139,7 +133,9 @@ export default function ManageAccount(props: any) {
         const photoExtension = match !== null ? match[0] : "";
         const reader = new FileReader();
         reader.readAsDataURL(thePhotoFile);
-        reader.onload = () => resolve([reader.result, photoExtension]);
+        reader.onload = () => {
+          resolve([reader.result, photoExtension]);
+        };
         reader.onerror = (err) => reject(err);
       } else {
         resolve(["", ""]);
@@ -149,7 +145,6 @@ export default function ManageAccount(props: any) {
 
   return (
     <>
-      <Toolbar />
       <br />
       <Container>
         <h1>Change account details</h1>

@@ -9,6 +9,7 @@ from mongoengine import IntField
 import lib.collection.validation as validation
 import lib.catalogue.catalogue
 
+from lib.collection.validation import validate_title
 
 class Collection(lib.catalogue.catalogue.Catalogue):
     '''
@@ -75,12 +76,6 @@ class Collection(lib.catalogue.catalogue.Catalogue):
             self.photos.remove(old_photo)
             self.save()
 
-    def delete_collection(self):
-        '''
-        Delete the collection
-        '''
-        super().delete_catalogue()
-
     def get_collection_json(self):
         '''
         Get collection as a json string
@@ -89,7 +84,6 @@ class Collection(lib.catalogue.catalogue.Catalogue):
             'title': self.get_title(),
             'photos': [this_photo.id for this_photo in self.get_photos()],
             'creation_date': str(self.get_creation_date()),
-            'deleted': self.is_deleted(),
             'private': self.is_private(),
             'price': self.get_price(),
             'tags': self.get_tags(),
@@ -102,4 +96,5 @@ class Collection(lib.catalogue.catalogue.Catalogue):
         2) Update the price
         '''
         super().clean()
+        validate_title(self.title, self.created_by, self.id)
         self.update_price()

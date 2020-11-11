@@ -61,7 +61,6 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
         ncredits: this.state.ncredits,
       })
       .then((response) => {
-        console.log(response);
         this.props.history.push("/purchases");
       })
       .catch((err) => {
@@ -82,7 +81,7 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
 
   setPriceMsg() {
     this.setState({
-      priceMsg: `Refund amount: ${  this.state.price.toString()  } USD.`,
+      priceMsg: `Refund amount: ${this.state.price.toString()} USD.`,
     });
   }
 
@@ -105,13 +104,9 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
   }
 
   returnGoogleURL() {
-    return (
-      `http://letmegooglethat.com/?q=+${ 
-      this.state.price.toString() 
-      }+usd+to+${ 
-      this.state.location 
-      }+currency`
-    );
+    return `http://letmegooglethat.com/?q=+${this.state.price.toString()}+usd+to+${
+      this.state.location
+    }+currency`;
   }
 
   setCreditsErr(ncredits: number) {
@@ -133,7 +128,6 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
   render() {
     return (
       <div className="refundCreditsPage">
-        <Toolbar />
         <BackButton href="/purchases" label="Purchases" />
         <Container className="mt-5">
           <Row>

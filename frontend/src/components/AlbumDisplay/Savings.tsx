@@ -49,17 +49,10 @@ export default class AlbumSavings extends React.Component<AlbumSavingsProps, Alb
   }
 
   render() {
-    return (this.state.savings > 0) ?
-    (
-      <>
+    return (<>
         <p><b>Originally, you would pay:</b> {this.state.originalPrice} CR </p>
         <p><b>After discount, you would pay:</b> {this.state.yourPrice} CR</p>
         <p><b>You save:</b> {this.state.savings} CR </p>
-      </>
-    ) :
-    (
-      <>
-        <p><b>Album price:</b> {this.state.yourPrice}</p>
       </>
     )
   }

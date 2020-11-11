@@ -8,6 +8,7 @@ import lib.catalogue.catalogue as catalogue
 import lib.album.validation as validation
 import lib.Error as Error
 
+from lib.album.validation import validate_title 
 
 class Album(catalogue.Catalogue):
     """
@@ -16,7 +17,7 @@ class Album(catalogue.Catalogue):
     """
 
     discount = IntField(default=0, validation=validation.validate_discount)
-
+    
     meta = {"collection": "albums"}
 
     def get_discount(self):
@@ -48,18 +49,13 @@ class Album(catalogue.Catalogue):
             self.photos.remove(old_photo)
             self.save()
 
-    def delete_album(self):
-        """
-        Delete the album by calling the super class
-        Essentially an alias
-        """
-        super().delete_catalogue()
-
     def clean(self):
         """
         Additional validation
         Check that photos are owned by the owner of the album
         """
+        validate_title(self.title, self.created_by, self.id)
+
         for photo in self.photos:
             if photo.get_user() != self.get_created_by():
                 print(traceback.format_exc())

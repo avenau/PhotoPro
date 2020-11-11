@@ -1,14 +1,13 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import {
-  Container,
-  Row,
-  Col,
-  Image,
-} from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { Component } from "react";
+import { Container } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import ContentLoader from "../ContentLoader/ContentLoader";
 
-class PopularImages extends Component<any, any> {
+interface Props {
+  refreshCredits: () => void;
+}
+
+class PopularImages extends Component<Props, any> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -16,35 +15,19 @@ class PopularImages extends Component<any, any> {
     };
   }
 
-  componentDidMount() {
-    this.getPopularImagesPaths();
-  }
-
-  getPopularImagesPaths() {
-    axios.get('/welcome/getPopularImages')
-      .then((res) => {
-        const images = res.data.popular_images;
-        this.setState({ popularImages: images });
-      })
-  }
-
   render() {
     // this.getPopularImagesPaths();
     return (
       <div>
         <Container>
-          <Row>
-            <h3>Popular Images</h3>
-          </Row>
-        </Container>
-        <Container>
-          <Row>
-            { this.state.popularImages.map((image: string, index: any) => (
-              <Col key={index}>
-                <Image src={image} fluid />
-              </Col>
-            ))}
-          </Row>
+          <h3>Popular images</h3>
+          <ContentLoader
+            query=""
+            route="/welcome/getPopularImages"
+            type="photo"
+            popular={true}
+            refreshCredits={this.props.refreshCredits}
+          />
         </Container>
       </div>
     );

@@ -6,7 +6,7 @@ interface PriceProps {
 }
 
 function calDiscount(discount: number, fullPrice: number) {
-  return Math.floor((1 - discount / 100) * fullPrice);
+  return Math.round((1 - discount / 100) * fullPrice);
 }
 
 export default function Price(props: PriceProps) {

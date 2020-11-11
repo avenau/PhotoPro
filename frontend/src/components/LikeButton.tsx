@@ -31,7 +31,7 @@ export default class LikeButton extends React.Component<LikeProps, any> {
           photoId: this.props.p_id,
           token,
         })
-        .catch(() => {});
+        .catch(() => { });
       if (!this.state.isLiked) {
         this.setState({
           likeCount: this.state.likeCount + 1,
@@ -57,25 +57,48 @@ export default class LikeButton extends React.Component<LikeProps, any> {
 
   // Popup window after liking photo
   alertMessage() {
-    return (
-      <div className="alertToast">
-        <Modal
-          show={this.state.showAlert}
-          onHide={() => this.setState({ showAlert: false })}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>PhotoPro</Modal.Title>
-          </Modal.Header>
+    /*<div className="alertToast">
+    <Modal
+      show={this.state.showAlert}
+      onHide={() => this.setState({ showAlert: false })}
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>PhotoPro</Modal.Title>
+      </Modal.Header>
 
-          <Modal.Body>{this.state.alertContent}</Modal.Body>
-        </Modal>
-      </div>
+      <Modal.Body>{this.state.alertContent}</Modal.Body>
+    </Modal>
+</div> */
+    return (
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        style={{
+          position: 'relative',
+          minHeight: '100px',
+        }}
+      >
+        <Toast
+          style={{
+            position: 'fixed',
+            top: 60,
+            right: 5,
+          }}
+          onClose={() => this.setState({ showAlert: false })} delay={3000} autohide>
+          <Toast.Header>
+            <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />
+            <strong className="mr-auto">PhotoPro</strong>
+          </Toast.Header>
+          <Toast.Body>{this.state.alertContent}</Toast.Body>
+        </Toast >
+
+      </div >
     );
   }
 
   render() {
     return (
-      <div>
+      <div style={{ position: 'absolute' }}>
         <Button
           variant={this.state.isLiked ? "primary" : "light"}
           onClick={(e) => this.handleLike(e)}

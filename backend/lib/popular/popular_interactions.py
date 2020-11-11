@@ -8,7 +8,7 @@ from lib.popular.popular_users import PopularUser
 from lib.user.user import User
 
 
-def do_like(user, photo):
+def do_like(photo):
     # Get Popular photo and user objects, create them if they don't exit yet
     try:
         pop_photo = PopularPhoto.objects.get(photo=photo)
@@ -16,9 +16,9 @@ def do_like(user, photo):
         pop_photo = PopularPhoto(photo=photo, likes=0)
         pop_photo.save()
     try:
-        pop_user = PopularUser.objects.get(user=user)
+        pop_user = PopularUser.objects.get(user=photo.get_user())
     except:
-        pop_user = PopularUser(user=user, likes=0)
+        pop_user = PopularUser(user=photo.get_user(), likes=0)
         pop_user.save()
 
     # Add likes to both user and photo
@@ -28,7 +28,7 @@ def do_like(user, photo):
     pop_photo.save()
 
 
-def do_unlike(user, photo):
+def do_unlike(photo):
     # Get Popular photo and user objects, create them if they don't exit yet
     try:
         pop_photo = PopularPhoto.objects.get(photo=photo)
@@ -36,9 +36,9 @@ def do_unlike(user, photo):
         pop_photo = PopularPhoto(photo=photo, likes=0)
         pop_photo.save()
     try:
-        pop_user = PopularUser.objects.get(user=user)
+        pop_user = PopularUser.objects.get(user=photo.get_user())
     except:
-        pop_user = PopularUser(user=user, likes=0)
+        pop_user = PopularUser(user=photo.get_user(), likes=0)
         pop_user.save()
 
     # Remove likes from both user and photo
