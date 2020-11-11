@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps, withRouter, Link } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import axios from "axios";
 import BookmarkButton from "../BookmarkButton";
 import LikeButton from "../LikeButton";
 import "./PhotoContents.scss";
-import axios from "axios";
 
 import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../Tags";
 import { relative } from "path";
+
+interface Collection {
+  title: string;
+  authorId: string;
+  author: string;
+  created: string;
+  id: string;
+}
 
 interface Props extends RouteComponentProps {
   photoId: string;
@@ -31,12 +39,14 @@ class PhotoContents extends React.Component<Props, any> {
       tags: [],
       purchased: false,
       photoB64: "",
-      deleted: false,
       isArtist: false,
       comments: [],
       loading: true,
       msg: "Loading...",
-    };
+      collections: [],
+      token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
+      uId: localStorage.getItem('u_id') ? localStorage.getItem('u_id') : '',
+    }
   }
   // const [titleName, setTitle] = useState("Photo Title");
   // const [nickname, setNick] = useState("Artist Nickname");
@@ -74,10 +84,8 @@ class PhotoContents extends React.Component<Props, any> {
         },
       })
       .then((res) => {
-        const tempComments = [];
-        for (const comment of res.data.comments) {
-          tempComments.push(JSON.parse(comment));
-        }
+        const tempComments: string[] = [];
+        res.data.comments.map((comment: any) => tempComments.push(JSON.parse(comment)));
         this.setState({
           comments: tempComments,
         });
@@ -94,48 +102,20 @@ class PhotoContents extends React.Component<Props, any> {
           tags: res.data.tagsList,
           purchased: res.data.purchased,
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
-          deleted: res.data.deleted,
           isArtist: res.data.is_artist,
           loading: false,
         });
       })
       .catch(() => { });
+
+    const query = `/user/collections?token=${this.state.token}&query=${this.state.uId}&offset=0&limit=5`
+    axios
+      .get(query)
+      .then((res) => {
+        this.setState({ collections: res.data.map((obj: Collection) => obj) })
+      });
   }
 
-  // getPhotoDetails = async (photoId: string) => {
-  //   await axios
-  //     .get(`/photo_details?p_id=${photoId}&token=${token}`)
-  //     .then((response) => {
-  //       setArtist(response.data.u_id);
-  //       setNick(response.data.nickname);
-  //       setIsArtist(response.data.is_artist);
-  //       setEmail(response.data.email);
-  //       setLikes(response.data.likes);
-  //       setTags(response.data.tagsList);
-  //       setPurchased(response.data.purchased);
-  //       setDeleted(response.data.deleted);
-  //       setStatus(response.data.status);
-  //       setMeta(response.data.metadata);
-  //       setTitle(response.data.title);
-  //       setPrice(response.data.price);
-  //       setPhoto(`${response.data.metadata}${response.data.photoStr}`);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   getPhotoDetails(props.photoId);
-  //   if (purchased === true) {
-  //     setLoad(true);
-  //   } else if (deleted === true || artist === "") {
-  //     setLoad(false);
-  //     setLoadMessage("The photo does not exist!");
-  //   } else {
-  //     setLoad(true);
-  //   }
-  //   if (status === 0) {
-  //     setLoadMessage("Loading Photos...");
-  //   }
-  // }, [purchased, deleted, status, is_artist]);
 
   purchasePhoto(e: any) {
     e.preventDefault();
@@ -185,7 +165,7 @@ class PhotoContents extends React.Component<Props, any> {
     if (this.state.isArtist) {
       return (
         <div>
-          <Button onClick={(e) => this.downloadPhoto(e)} className="ml-3">
+          <Button onClick={(e) => this.downloadPhoto(e)} className="ml-1">
             Download Full Photo
           </Button>
           <Button href={`/edit/${this.props.photoId}`} className="ml-1">
@@ -196,7 +176,7 @@ class PhotoContents extends React.Component<Props, any> {
     } if (this.state.purchased) {
       return (
         <div>
-          <Button onClick={(e) => this.downloadPhoto(e)} className="ml-3">
+          <Button onClick={(e) => this.downloadPhoto(e)} className="ml-1">
             Download Full Photo
           </Button>
         </div>
@@ -204,7 +184,7 @@ class PhotoContents extends React.Component<Props, any> {
     }
     return (
       <div>
-        <Button className="ml-3" onClick={(e) => this.downloadPhoto(e)}>
+        <Button className="ml-1" onClick={(e) => this.downloadPhoto(e)}>
           Download Watermarked Photo
         </Button>
         <Button className="ml-1" onClick={(e) => this.purchasePhoto(e)}>
@@ -231,9 +211,13 @@ class PhotoContents extends React.Component<Props, any> {
               like_count={this.state.likes}
               isLiked={this.state.isLiked}
             />
+            <div className="BookmarkButton">
+              <BookmarkButton
+                pId={this.props.photoId}
+                collections={this.state.collections}
+              />
+            </div>
 
-
-            <BookmarkButton p_id={this.props.photoId} />
             {this.returnDynamicButtons()}
           </Row>
           <div className="ArtistInfo">

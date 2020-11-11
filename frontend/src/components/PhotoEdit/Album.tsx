@@ -81,9 +81,11 @@ export default function Album(props: any) {
   }
 
   return (
-    <>
+    <div className="p-3">
       {newAlbumCard ? (
-        <Card className="text-center">
+        <Card
+          className="text-center p-3"
+        >
           <br />
           <Card.Title>Create new album</Card.Title>
           <Card.Text>
@@ -109,7 +111,7 @@ export default function Album(props: any) {
               <Col>
                 <Button
                   variant="secondary"
-                  onClick={(e) => {
+                  onClick={() => {
                     setNewAlbumCard(false);
                     setDisable(true);
                   }}
@@ -133,7 +135,7 @@ export default function Album(props: any) {
           </Form.Group>
         </Card>
       ) : (
-        <Card className="text-center">
+        <Card className="text-center p-3">
           <Card.Body>
             <Card.Title>Add photo to album(s)</Card.Title>
             <Form.Group className="albumSelection">
@@ -157,7 +159,7 @@ export default function Album(props: any) {
                 </small>
               </Card.Text>
               <Button
-                onClick={(e) => {
+                onClick={() => {
                   setNewAlbumCard(true);
                 }}
               >
@@ -168,6 +170,6 @@ export default function Album(props: any) {
           </Card.Body>
         </Card>
       )}
-    </>
+    </div>
   );
 }

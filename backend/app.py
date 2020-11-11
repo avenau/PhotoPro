@@ -1669,7 +1669,6 @@ def _create_collection():
     ----------
     token: string
     title: string,
-    discount, int
     tags: JSON([string]),
 
     Returns
@@ -1681,10 +1680,10 @@ def _create_collection():
     u_id = token_functions.get_uid(params["token"])
     # Get Objects
     _user = user.User.objects.get(id=u_id)
-    collection_id = collection_functions.create_collection(_user, params)
+    new_collection = collection_functions.create_collection(_user, params)
 
     # Return Collection ID
-    return dumps({"collection_id": collection_id})
+    return dumps(new_collection)
 
 
 @app.route("/collection/update", methods=["PUT"])
@@ -1746,7 +1745,7 @@ def _delete_collection():
     return dumps({"success": ret})
 
 
-@app.route("/collection/getphotos", methods=["GET"])
+@app.route("/collection/photos", methods=["GET"])
 @validate_token
 def _get_collection_photos():
     """
@@ -1757,27 +1756,30 @@ def _get_collection_photos():
     Parameters
     ----------
     token: string
-    collection_id: string
+    query: collectionId
+    offset: string
+    limit: string
+
 
     Returns
     ----------
-    { 'collection_id': string }
+    {
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        id : string
+    }
     """
-    # Get Arguments
-    u_id = token_functions.get_uid(request.args.get("token"))
-    collection_id = request.args.get("collection_id")
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
 
-    # Get Objects
-    _collection = collection.Collection.objects.get(id=collection_id)
-    _user = user.User.objects.get(id=u_id)
-
-    # List of photos
-    photos = collection_functions.get_collection_photos(_user, _collection)
-
-    return dumps({"photos": photos})
+    return dumps(collection_functions.collection_photo_search(data))
 
 
-@app.route("/collection/addphoto", methods=["UPDATE"])
+@app.route("/collection/addphotos", methods=["PUT"])
 @validate_token
 def _add_collection_photo():
     """
@@ -1788,8 +1790,8 @@ def _add_collection_photo():
     Parameters
     ----------
     token: string
-    collection_id: string
-    photo_id: string
+    collectionIds: []string
+    photoId: string
 
     Returns
     ----------
@@ -1797,16 +1799,21 @@ def _add_collection_photo():
     """
 
     # Get arguments
-    u_id = token_functions.get_uid(request.args.get("token"))
-    collection_id = request.args.get("collection_id")
-    photo_id = request.args.get("photo_id")
+    params = request.form.to_dict()
+    u_id = token_functions.get_uid(params['token'])
+    collection_ids = loads(params['collectionIds'])
+    photo_id = params['photoId']
 
-    _collection = collection.Collection.objects.get(id=collection_id)
     _photo = photo.Photo.objects.get(id=photo_id)
     _user = user.User.objects.get(id=u_id)
+    print(collection_ids)
 
-    ret = collection_functions.add_collection_photo(_user, _photo, _collection)
-    return dumps({"success": ret})
+    for col in collection_ids:
+        print(col)
+        _col = collection.Collection.objects.get(id=col)
+        collection_functions.add_collection_photo(_user, _photo, _col)
+
+    return dumps({"success": True})
 
 
 @app.route("/collection/removephoto", methods=["UPDATE"])
