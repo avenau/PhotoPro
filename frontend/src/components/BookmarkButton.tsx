@@ -137,12 +137,12 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
                   ))}
                   {this.state.collections.length > 0 &&
                   <div style={divStyle}>
-                  <Button
-                    className="updateCollectionButton"
-                    type="submit"
-                  >
-                    Update Collections
-                  </Button>
+                    <Button
+                      className="updateCollectionButton"
+                      type="submit"
+                    >
+                      Update Collections
+                    </Button>
                   </div>
                   }
                   <Button
@@ -186,7 +186,8 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
                   <Form.Control
                     type="title"
                     name="title"
-                    placeholder="Enter Collection title"/>
+                    placeholder="Enter Collection title"
+                  />
                   <Form.Text className="text-muted">
                     Enter a unique Collection title.
                   </Form.Text>

@@ -107,7 +107,7 @@ export default class UserHeader extends React.Component<Props> {
           {this.props.header ? (
             <h2>{this.props.name}</h2>
           ) : (
-              <h4>{this.props.name}</h4>
+            <h4>{this.props.name}</h4>
             )}
           <div>@{this.props.nickname}</div>
           <div>Based in {this.props.location}</div>
@@ -115,7 +115,7 @@ export default class UserHeader extends React.Component<Props> {
           {this.props.aboutMe !== undefined && this.props.aboutMe !== "" ? (
             <div>About me: {this.props.aboutMe}</div>
           ) : (
-              <></>
+            <></>
             )}
         </div>
         {this.getEditButton()}

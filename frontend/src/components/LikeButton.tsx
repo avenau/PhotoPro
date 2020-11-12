@@ -57,7 +57,7 @@ export default class LikeButton extends React.Component<LikeProps, any> {
 
   // Popup window after liking photo
   alertMessage() {
-    /*<div className="alertToast">
+    /* <div className="alertToast">
     <Modal
       show={this.state.showAlert}
       onHide={() => this.setState({ showAlert: false })}
@@ -84,15 +84,18 @@ export default class LikeButton extends React.Component<LikeProps, any> {
             top: 60,
             right: 5,
           }}
-          onClose={() => this.setState({ showAlert: false })} delay={3000} autohide>
+          onClose={() => this.setState({ showAlert: false })}
+          delay={3000}
+          autohide
+        >
           <Toast.Header>
             <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />
             <strong className="mr-auto">PhotoPro</strong>
           </Toast.Header>
           <Toast.Body>{this.state.alertContent}</Toast.Body>
-        </Toast >
+        </Toast>
 
-      </div >
+      </div>
     );
   }
 

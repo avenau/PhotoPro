@@ -5,7 +5,7 @@ import { Button, Modal } from "react-bootstrap";
 
 interface FollowButtonProps {
     currentUser: boolean,
-    userId: string, //This is the user_id of the person being followed
+    userId: string, // This is the user_id of the person being followed
 }
 
 interface FollowButtonState {
@@ -35,18 +35,18 @@ export default class FollowButton extends React.Component<FollowButtonProps, Fol
 
     private loginAlert() {
         return (
-            <div>
-                <Modal
-                    show={this.state.showAlert}
-                    onHide={() => this.setState({ showAlert: false })}
-                >
-                    <Modal.Header closeButton>
-                        <Modal.Title>PhotoPro</Modal.Title>
-                    </Modal.Header>
+          <div>
+            <Modal
+              show={this.state.showAlert}
+              onHide={() => this.setState({ showAlert: false })}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>PhotoPro</Modal.Title>
+              </Modal.Header>
 
-                    <Modal.Body>You must be logged in to follow!</Modal.Body>
-                </Modal>
-            </div>
+              <Modal.Body>You must be logged in to follow!</Modal.Body>
+            </Modal>
+          </div>
         )
     }
 
@@ -58,7 +58,7 @@ export default class FollowButton extends React.Component<FollowButtonProps, Fol
 
             axios
                 .post(`/user/follow`, {
-                    token: token,
+                    token,
                     followed_u_id: this.props.userId,
                 })
                 .catch(() => { });
@@ -75,6 +75,7 @@ export default class FollowButton extends React.Component<FollowButtonProps, Fol
 
 
     }
+
     private isFollowing() {
         axios
             .get(`/user/isfollowing?follower_u_id=${localStorage.getItem("u_id") as string}&followed_u_id=${this.props.userId}`)
@@ -91,11 +92,11 @@ export default class FollowButton extends React.Component<FollowButtonProps, Fol
 
     render() {
         return (
-            <div>
-                {this.props.currentUser ? null :
-                    <Button variant={this.state.buttonColour} onClick={(e) => this.handleFollow(e)}>{this.state.buttonContent}</Button>}
-                {this.state.showAlert ? this.loginAlert() : null}
-            </div>
+          <div>
+            {this.props.currentUser ? null :
+            <Button variant={this.state.buttonColour} onClick={(e) => this.handleFollow(e)}>{this.state.buttonContent}</Button>}
+            {this.state.showAlert ? this.loginAlert() : null}
+          </div>
 
         )
     }

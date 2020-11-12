@@ -157,7 +157,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
                   id="uploadButton"
                   loading={this.state.btnLoading}
                   onClick={() => {
-                    return;
+                    
                   }}
                   type="submit"
                 >

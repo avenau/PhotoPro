@@ -213,12 +213,12 @@ class ProfilePage extends React.Component<Props, State> {
                 />
               </Tab>
             ) : (
-                <></>
+              <></>
               )}
             {currentUser ? (
               <Tab title={this.createAddButton()} tabClassName="no-border" />
             ) : (
-                <></>
+              <></>
               )}
           </Tabs>
         </div>
