@@ -22,6 +22,7 @@ interface Props extends RouteComponentProps {
   refreshCredits: () => void;
 }
 
+
 class PhotoContents extends React.Component<Props, any> {
   constructor(props: Props) {
     super(props);
@@ -205,23 +206,27 @@ class PhotoContents extends React.Component<Props, any> {
             <img className="actualPhoto" src={this.state.photoB64} />
           </Row>
           <Row className="PhotoInteraction">
+            <div className="LikeButton">
             <LikeButton
               p_id={this.props.photoId}
               like_count={this.state.likes}
               isLiked={this.state.isLiked}
             />
-            <div className="BookmarkButton">
+            </div>
+            <div className="BookmarkButton" data-type="toggle" title="Add to Collection">
               <BookmarkButton
                 pId={this.props.photoId}
                 collections={this.state.collections}
               />
             </div>
 
+          </Row>
+          <Row>
             {this.returnDynamicButtons()}
           </Row>
           <div className="ArtistInfo">
             <Row>
-              <h2>
+              <h2 className="PhotoTitle">
                 <b>{this.state.title}</b>
               </h2>
             </Row>
