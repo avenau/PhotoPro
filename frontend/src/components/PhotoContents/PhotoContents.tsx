@@ -9,7 +9,7 @@ import "./PhotoContents.scss";
 import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../Tags";
-import LoadingButton from "../../components/LoadingButton/LoadingButton";
+import LoadingButton from "../LoadingButton/LoadingButton";
 
 interface Collection {
   title: string;
@@ -207,11 +207,11 @@ class PhotoContents extends React.Component<Props, any> {
           </Row>
           <Row className="PhotoInteraction">
             <div className="LikeButton">
-            <LikeButton
-              p_id={this.props.photoId}
-              like_count={this.state.likes}
-              isLiked={this.state.isLiked}
-            />
+              <LikeButton
+                p_id={this.props.photoId}
+                like_count={this.state.likes}
+                isLiked={this.state.isLiked}
+              />
             </div>
             <div className="BookmarkButton" data-type="toggle" title="Add to Collection">
               <BookmarkButton
@@ -254,12 +254,12 @@ class PhotoContents extends React.Component<Props, any> {
           p_id={this.props.photoId}
           comments={this.state.comments}
         />
-      </div >
+      </div>
     ) : (
-        <div>
-          {" "}
-          <p>{this.state.msg}</p>{" "}
-        </div>
+      <div>
+        {" "}
+        <p>{this.state.msg}</p>{" "}
+      </div>
       );
   }
 }

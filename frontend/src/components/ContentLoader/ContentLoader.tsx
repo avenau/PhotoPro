@@ -93,11 +93,11 @@ export default class ContentLoader extends React.Component<Props, State> {
     if (this.state.results.length < 1 && this.state.atEnd) {
       if (this.props.curatedFeed === true) {
         return <NoContent 
-        message="Like and search more photos for a curated feed. We won't recommend photos that you have already purchased."
+          message="Like and search more photos for a curated feed. We won't recommend photos that you have already purchased."
         />
       }
       return <NoContent 
-      message="No results were found :("
+        message="No results were found :("
       />
     }
 

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
-import ContentLoader from "../ContentLoader/ContentLoader";
 import Container from "react-bootstrap/Container"
+import ContentLoader from "../ContentLoader/ContentLoader";
 
 class PopularContributors extends Component<any, any> {
   constructor(props: any) {
