@@ -61,6 +61,8 @@ Fixed profile picture management.
 Removed support for gifs entirely.
 Fixed thumbnails and downloads for SVGs.
 Helped fix little bugs here and there such as discount rounding errors, refreshing thumbnails on purchase.
+Implemented credits being displayed on toolbar at all times.
+Improved the watermark.
 Tested on VLAB.
 Before submission, I plan to help with final implementation difficulties, cleaning up code (style, remove unused), and the Project Report.
 
