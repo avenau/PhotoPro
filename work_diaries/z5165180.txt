@@ -55,3 +55,14 @@ Obstacle was that PIL breaks the colours of some gifs after processing or drawin
 If we can't watermark animated gifs then we may only be able to display the first frame of the gif with a watermark.
 For next week I plan to implement purchasing and accessing of photos and albums. If I get that finished early then I will help out with other user stories such as feed recommendations, and photo showdown.
 
+Week 9
+Implemented purchasing and accessing of photos.
+Fixed profile picture management.
+Removed support for gifs entirely.
+Fixed thumbnails and downloads for SVGs.
+Helped fix little bugs here and there such as discount rounding errors, refreshing thumbnails on purchase.
+Tested on VLAB.
+Before submission, I plan to help with final implementation difficulties, cleaning up code (style, remove unused), and the Project Report.
+
+
+
