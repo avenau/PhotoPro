@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import axios from "axios";
 import ContentLoader from "../ContentLoader/ContentLoader";
+import NoContent from "../ContentLoader/NoContent";
 
 interface Props {
   refreshCredits: () => void;
@@ -15,7 +16,9 @@ export default function CuratedFeed(props: Props) {
       <Container>
         <h3>Recommended for you</h3>
         {token === null ? (
-          <p>Create an account today, and we'll curate photos just for you.</p>
+          <NoContent
+            message="Create an account today, and we'll curate photos just for you."
+          />
         ) : (
           <ContentLoader
             query=""
