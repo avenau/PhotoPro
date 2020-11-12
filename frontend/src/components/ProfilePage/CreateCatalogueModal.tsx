@@ -68,11 +68,11 @@ class CreateCatalogueModal extends React.Component<Props, State> {
             <Button variant="primary" type="submit">
               Save
             </Button>
-            {"   "}
             <Button
               variant="danger"
               type="reset"
               onClick={() => this.handleChange(false)}
+              className="newCatalogueCancelButton ml-2"
             >
               Cancel
             </Button>

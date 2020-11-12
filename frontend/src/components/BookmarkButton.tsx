@@ -23,6 +23,11 @@ interface State {
   uId?: string;
 }
 
+const divStyle = {
+  marginTop: `10px`,
+  marginBottom: `10px`
+}
+
 export default class BookmarkButton extends React.Component<BookmarkProps, State> {
   // If photo does not belong in any collections then it will be grey
   // Otherwise the button will be blue
@@ -108,23 +113,38 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
           onHide={this.closeModal}
           className="BookmarkModal"
         >
-          <Modal.Header closeButton />
           {localStorage.getItem("token") ? (
             <div className="BookmarkForm p-3">
-              <Modal.Title>Add Photo to a Collection</Modal.Title>
-              <Form className="updateCollection p-3" onSubmit={this.updateCollections}>
-                {this.state.collections.map((collection: Collection) => (
-                  <Form.Group key={collection.id}>
-                    <Form.Check
-                      name={collection.id}
-                      type="checkbox"
-                      label={String(collection.title)}
-                      onClick={((e: any) => e.target.removeAttribute("check"))}
-                      defaultChecked={collection.photoExists}
-                    />
-                  </Form.Group>
-                ))}
-                <div>
+              <Modal.Title className="text-muted">Add to Collection</Modal.Title>
+              <Modal.Body>
+                <Form 
+                  className="updateCollection p-3" 
+                  onSubmit={this.updateCollections}
+                >
+                  {this.state.collections.map((collection: Collection) => (
+                    <Form.Group
+                      key={collection.id}
+                      className="text-muted"
+                    >
+                      <Form.Check
+                        name={collection.id}
+                        type="checkbox"
+                        label={String(collection.title)}
+                        onClick={((e: any) => e.target.removeAttribute("check"))}
+                        defaultChecked={collection.photoExists}
+                      />
+                    </Form.Group>
+                  ))}
+                  {this.state.collections.length > 0 &&
+                  <div style={divStyle}>
+                  <Button
+                    className="updateCollectionButton"
+                    type="submit"
+                  >
+                    Update Collections
+                  </Button>
+                  </div>
+                  }
                   <Button
                     className="createNewCollectionbutton"
                     variant="primary"
@@ -133,51 +153,60 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
                     Create New Collection
                   </Button>
                   <Button
-                    className="updateCollectionButton ml-2"
-                    type="submit"
+                    className="cancelCollectionButton ml-2"
+                    variant="danger"
+                    onClick={this.closeModal}
                   >
-                    Update Collections
+                    Cancel
                   </Button>
-                </div>
-              </Form>
+                </Form>
+              </Modal.Body>
             </div>
           ) : (
-              <div>
-                <p style={{ textAlign: "center" }}>
-                  Please log in to create a collection
+            <div>
+              <p style={{ textAlign: "center" }}>
+                Please log in to create a collection
               </p>
-              </div>
+            </div>
             )}
         </Modal>
         <Modal
           animation={false}
           show={this.state.showNewCol}
+          backdrop="static"
           onHide={this.closeNewCol}
           className="NewCollectionModal"
+          centred
         >
-          <Modal.Header closeButton />
           <div className="createNewCollectionModal p-3">
-            <Modal.Title>Create New Collection</Modal.Title>
-            <Form onSubmit={this.handleNewCollection}>
-              <Form.Group>
-                <Form.Control
-                  placeholder="Enter a name for your new Collection"
-                  name="title"
-                />
-              </Form.Group>
-              <Button
-                variant="danger"
-                onClick={this.closeNewCol}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="bookmarkButtonCancelButton ml-2"
-              >
-                Create
-              </Button>
-            </Form>
+            <Modal.Title className="text-muted">Title</Modal.Title>
+            <Modal.Body>
+              <Form onSubmit={this.handleNewCollection}>
+                <Form.Group controlId="formNewCollection">
+                  <Form.Control
+                    type="title"
+                    name="title"
+                    placeholder="Enter Collection title"/>
+                  <Form.Text className="text-muted">
+                    Enter a unique Collection title.
+                  </Form.Text>
+                </Form.Group>
+                <Button
+                  type="submit"
+                  className="bookmarkButtonCreateButton"
+                >
+                  Create
+                </Button>
+                <Button
+                  className="boomarkButtonCancelButton ml-2"
+                  variant="danger"
+                  type="reset"
+                  onClick={this.closeNewCol}
+                >
+                  Cancel
+                </Button>
+              </Form>
+            </Modal.Body>
           </div>
         </Modal>
       </div>
