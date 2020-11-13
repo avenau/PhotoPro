@@ -10,6 +10,8 @@ import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../TagLinks";
 import LoadingButton from "../LoadingButton/LoadingButton";
+import HoverText from "../HoverText";
+import { ArrowDownSquare, PencilSquare, CartPlus } from "react-bootstrap-icons";
 
 interface Collection {
   title: string;
@@ -151,45 +153,91 @@ class PhotoContents extends React.Component<Props, any> {
     if (this.state.isArtist) {
       return (
         <div>
-          <LoadingButton
-            loading={this.state.downloadBtnLoading}
-            onClick={(e) => this.downloadPhoto(e)}
+          <HoverText
+            id="downloadButton"
+            helpfulText="Download"
+            placement="bottom"
           >
-            Download Full Photo
-          </LoadingButton>
-          <Button href={`/edit/${this.props.photoId}`} className="ml-1">
-            Manage Photo
-          </Button>
+            <LoadingButton
+              loading={this.state.downloadBtnLoading}
+              onClick={(e) => this.downloadPhoto(e)}
+              variant="light"
+              className="m-2"
+            >
+              <ArrowDownSquare />
+            </LoadingButton>
+          </HoverText>
+          <HoverText
+            id="manageButton"
+            helpfulText="Manage Photo"
+            placement="bottom"
+          >
+            <LoadingButton
+              loading={this.state.downloadBtnLoading}
+              onClick={(() => this.props.history.push(`/edit/${this.props.photoId}`))}
+              variant="light"
+              className="m-2"
+            >
+              <PencilSquare />
+            </LoadingButton>
+          </HoverText>
+          <Price
+            fullPrice={this.state.fullPrice}
+            discount={this.state.discount}
+          />
         </div>
       );
     }
     if (this.state.purchased) {
       return (
         <div>
-          <LoadingButton
-            loading={this.state.downloadBtnLoading}
-            onClick={(e) => this.downloadPhoto(e)}
+          <HoverText
+            id="downloadButton"
+            helpfulText="Download"
+            placement="bottom"
           >
-            Download Full Photo
-          </LoadingButton>
+            <LoadingButton
+              loading={this.state.downloadBtnLoading}
+              onClick={(e) => this.downloadPhoto(e)}
+              className="m-2"
+              variant="light"
+            >
+              <ArrowDownSquare />
+            </LoadingButton>
+          </HoverText>
         </div>
       );
     }
     return (
       <div>
-        <LoadingButton
-          loading={this.state.downloadBtnLoading}
-          onClick={(e) => this.downloadPhoto(e)}
+        <HoverText
+          id="downloadWatermarked"
+          helpfulText="Download Watermarked Photo"
+          placement="bottom"
         >
-          Download Watermarked Photo
-        </LoadingButton>
-        <LoadingButton
-          className="ml-1"
-          loading={this.state.purchaseBtnLoading}
-          onClick={(e) => this.purchasePhoto(e)}
+          <LoadingButton
+            loading={this.state.downloadBtnLoading}
+            onClick={(e) => this.downloadPhoto(e)}
+            className="m-2"
+            variant="secondary"
+          >
+            <ArrowDownSquare />
+          </LoadingButton>
+        </HoverText>
+        <HoverText
+          id="purchasePhoto"
+          helpfulText="Purchase Photo"
+          placement="bottom"
         >
-          Purchase Photo
-        </LoadingButton>
+          <LoadingButton
+            className="ml-1"
+            loading={this.state.purchaseBtnLoading}
+            onClick={(e) => this.purchasePhoto(e)}
+            variant="light"
+          >
+            <CartPlus />
+          </LoadingButton>
+        </HoverText>
         <Price
           fullPrice={this.state.fullPrice}
           discount={this.state.discount}
