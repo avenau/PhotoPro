@@ -26,10 +26,13 @@ interface State {
 
 const divStyle = {
   marginTop: `10px`,
-  marginBottom: `10px`
-}
+  marginBottom: `10px`,
+};
 
-export default class BookmarkButton extends React.Component<BookmarkProps, State> {
+export default class BookmarkButton extends React.Component<
+  BookmarkProps,
+  State
+> {
   // If photo does not belong in any collections then it will be grey
   // Otherwise the button will be blue
   constructor(props: BookmarkProps) {
@@ -41,7 +44,7 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
     };
   }
 
-  onComponentMount() { }
+  onComponentMount() {}
 
   openModal = () => this.setState({ showModal: true });
 
@@ -68,7 +71,7 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
           collections: [...prevState.collections, newCollection],
         }));
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 
   updateCollections = (event: React.FormEvent<HTMLFormElement>) => {
@@ -80,15 +83,14 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
     Array.from(data.entries()).map((el) => collections.push(el[0]));
     axios
       .put(`/collection/updatephotos`, {
-        token: localStorage.getItem('token'),
+        token: localStorage.getItem("token"),
         collectionIds: JSON.stringify(collections),
-        photoId: this.props.pId
+        photoId: this.props.pId,
       })
       .then((res) => this.setState({ collections: res.data }))
       .then(() => this.closeModal())
-      .catch(() => { });
-
-  }
+      .catch(() => {});
+  };
 
   render() {
     return (
@@ -122,36 +124,32 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
         >
           {localStorage.getItem("token") ? (
             <div className="BookmarkForm p-3">
-              <Modal.Title className="text-muted">Add to Collection</Modal.Title>
+              <Modal.Title className="text-muted">
+                Add to Collection
+              </Modal.Title>
               <Modal.Body>
-                <Form 
-                  className="updateCollection p-3" 
+                <Form
+                  className="updateCollection p-3"
                   onSubmit={this.updateCollections}
                 >
                   {this.state.collections.map((collection: Collection) => (
-                    <Form.Group
-                      key={collection.id}
-                      className="text-muted"
-                    >
+                    <Form.Group key={collection.id} className="text-muted">
                       <Form.Check
                         name={collection.id}
                         type="checkbox"
                         label={String(collection.title)}
-                        onClick={((e: any) => e.target.removeAttribute("check"))}
+                        onClick={(e: any) => e.target.removeAttribute("check")}
                         defaultChecked={collection.photoExists}
                       />
                     </Form.Group>
                   ))}
-                  {this.state.collections.length > 0 &&
-                  <div style={divStyle}>
-                    <Button
-                      className="updateCollectionButton"
-                      type="submit"
-                    >
-                      Update Collections
-                    </Button>
-                  </div>
-                  }
+                  {this.state.collections.length > 0 && (
+                    <div style={divStyle}>
+                      <Button className="updateCollectionButton" type="submit">
+                        Update Collections
+                      </Button>
+                    </div>
+                  )}
                   <Button
                     className="createNewCollectionbutton"
                     variant="primary"
@@ -175,7 +173,7 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
                 Please log in to create a collection
               </p>
             </div>
-            )}
+          )}
         </Modal>
         <Modal
           animation={false}
@@ -199,17 +197,13 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
                     Enter a unique Collection title.
                   </Form.Text>
                 </Form.Group>
-                <Button
-                  type="submit"
-                  className="bookmarkButtonCreateButton"
-                >
+                <Button type="submit" className="bookmarkButtonCreateButton">
                   Create
                 </Button>
                 <Button
                   className="boomarkButtonCancelButton ml-2"
                   variant="danger"
                   type="reset"
-                  onClick={this.closeNewCol}
                 >
                   Cancel
                 </Button>

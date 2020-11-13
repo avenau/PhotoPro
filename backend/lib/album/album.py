@@ -49,12 +49,21 @@ class Album(catalogue.Catalogue):
         Additional validation
         Check that photos are owned by the owner of the album
         """
+        _user = self.created_by
+        if self.id:
+            if Album.objects(
+                created_by=self.created_by, title=self.title, id__ne=self.id
+            ):
+                raise Error.ValidationError(
+                    "Cannot have two Albums with the same title"
+                )
+        else:
+            if Album.objects(created_by=self.created_by, title=self.title):
+                raise Error.ValidationError(
+                    "Cannot have two Albums with the same title"
+                )
 
         for photo in self.photos:
             if photo.get_user() != self.get_created_by():
                 print(traceback.format_exc())
-                raise Error.ValidationError("User does not own photo")
-
-        _user = self.created_by
-        if Album.objects(created_by=self.created_by, title=self.title):
-            raise Error.ValidationError("Cannot have two albums with the same title")
+                raise Error.ValidationError("You don't own this photo")

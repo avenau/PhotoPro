@@ -1,17 +1,16 @@
-import React from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
-import { Button, Col, Container, Row } from "react-bootstrap";
 import axios from "axios";
-import { ArrowDownSquare, PencilSquare, CartPlus } from 'react-bootstrap-icons';
+import React from "react";
+import { Col, Container, Image, Row } from "react-bootstrap";
+import { ArrowDownSquare, CartPlus, PencilSquare } from "react-bootstrap-icons";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import BookmarkButton from "../BookmarkButton";
+import HoverText from "../HoverText";
 import LikeButton from "../LikeButton";
-import "./PhotoContents.scss";
-
+import LoadingButton from "../LoadingButton/LoadingButton";
 import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../TagLinks";
-import LoadingButton from "../LoadingButton/LoadingButton";
-import BookmarkButton from "../BookmarkButton";
-import HoverText from '../HoverText';
+import "./PhotoContents.scss";
 
 interface Collection {
   title: string;
@@ -46,7 +45,6 @@ class PhotoContents extends React.Component<Props, any> {
       msg: "Loading...",
       collections: [],
       token: localStorage.getItem("token") ? localStorage.getItem("token") : "",
-      uId: localStorage.getItem("u_id") ? localStorage.getItem("u_id") : "",
       downloadBtnLoading: false,
       purchaseBtnLoading: false,
     };
@@ -87,12 +85,15 @@ class PhotoContents extends React.Component<Props, any> {
       })
       .catch(() => {});
     if (localStorage.getItem("token")) {
-      const query = `/collection/getall?token=${this.state.token}&photoId=${this.props.photoId}`
-      axios.get(query)
+      const query = `/collection/getall?token=${this.state.token}&photoId=${this.props.photoId}`;
+      axios
+        .get(query)
         .then((res) => {
-          this.setState({ collections: res.data.map((obj: Collection) => obj) });
+          this.setState({
+            collections: res.data.map((obj: Collection) => obj),
+          });
         })
-        .catch(()=> {});
+        .catch(() => {});
     }
   }
 
@@ -175,7 +176,9 @@ class PhotoContents extends React.Component<Props, any> {
             >
               <LoadingButton
                 loading={this.state.downloadBtnLoading}
-                onClick={(() => this.props.history.push(`/edit/${this.props.photoId}`))}
+                onClick={() =>
+                  this.props.history.push(`/edit/${this.props.photoId}`)
+                }
                 variant="light"
                 className="m-2"
               >
@@ -248,7 +251,7 @@ class PhotoContents extends React.Component<Props, any> {
         <Container className="photo-row">
           <Row>
             <Col className="photo-component">
-              <img className="actualPhoto" src={this.state.photoB64} />
+              <Image className="actualPhoto" src={this.state.photoB64} />
             </Col>
             <Col xs={8}>
               <div className="photo-info">
@@ -268,7 +271,9 @@ class PhotoContents extends React.Component<Props, any> {
                 <br />
                 <Row>
                   <Col>
-                    <Row><b>Tags</b> (click tag to search)</Row>
+                    <Row>
+                      <b>Tags</b> (click tag to search)
+                    </Row>
                     <Row>
                       {this.state.tags.map((tag: string) => (
                         <Tags key={tag} tagName={tag} type="photo" />
@@ -288,18 +293,16 @@ class PhotoContents extends React.Component<Props, any> {
                   />
                   {this.returnDynamicButtons()}
                 </Row>
-                {
-                this.state.isArtist || !this.state.purchased ?
+                {this.state.isArtist || !this.state.purchased ? (
                   <Row>
                     <Price
                       fullPrice={this.state.fullPrice}
                       discount={this.state.discount}
                     />
                   </Row>
-                :
-                  <>
-                  </>
-              }
+                ) : (
+                  <></>
+                )}
               </div>
             </Col>
           </Row>

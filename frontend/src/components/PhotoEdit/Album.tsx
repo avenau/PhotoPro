@@ -52,7 +52,7 @@ export default function Album(props: any) {
     }
 
     // Check if album title already exists
-    albums.map((currAlbum) => {
+    albums.forEach((currAlbum) => {
       const albumTitle = currAlbum[1];
       if (album === albumTitle) {
         setErrMsg("Please make a unique album title");
@@ -61,7 +61,7 @@ export default function Album(props: any) {
     });
   }
 
-  function createNewAlbum(event: React.FormEvent<HTMLElement>) {
+  function createNewAlbum() {
     axios
       .post("/album/add", {
         token,
@@ -79,9 +79,7 @@ export default function Album(props: any) {
   return (
     <div className="p-3">
       {newAlbumCard ? (
-        <Card
-          className="text-center p-3"
-        >
+        <Card className="text-center p-3">
           <br />
           <Card.Title>Create new album</Card.Title>
           <Card.Text>
@@ -119,8 +117,8 @@ export default function Album(props: any) {
               <Col>
                 <Button
                   disabled={disable}
-                  onClick={(e) => {
-                    createNewAlbum(e);
+                  onClick={() => {
+                    createNewAlbum();
                     setDisable(true);
                   }}
                 >

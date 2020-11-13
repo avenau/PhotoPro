@@ -15,6 +15,7 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 from lib.token_functions import get_uid
 
+
 def get_collection(_collection):
     """
     Get the collection referred to by collection_id
@@ -42,17 +43,18 @@ def create_collection(_user, params):
     @param tags: [string]
     @return collection_id: string
     """
-    title = ''
     tags = []
 
     if not _user:
         raise Error.UserDNE("No user found")
 
     if "title" in params:
-        title = params['title']
-    if "tags" in params:
-        tags = params['tags']
+        title = params["title"]
+    else:
+        title = ""
 
+    if "tags" in params:
+        tags = params["tags"]
 
     new_collection = collection.Collection(
         title=title,
@@ -66,12 +68,14 @@ def create_collection(_user, params):
         _user.save()
     except mongoengine.ValidationError:
         print(traceback.format_exc())
-        raise Error.ValidationError
+        raise Error.ValidationError("Couldn't create new collection")
 
-    return {'title': new_collection.get_title(),
-            'id': str(new_collection.get_id()),
-            'tags': new_collection.get_tags(),
-            'creation_date': str(new_collection.get_creation_date())}
+    return {
+        "title": new_collection.get_title(),
+        "id": str(new_collection.get_id()),
+        "tags": new_collection.get_tags(),
+        "creation_date": str(new_collection.get_creation_date()),
+    }
 
 
 def delete_collection(_user, _collection):
@@ -172,27 +176,29 @@ def remove_collection_photo(_user, _photo, _collection):
 
     return True
 
+
 def update_collection(params, _collection):
-    '''
+    """
     Update collection
-    '''
+    """
     print(params)
-    if 'title' in params:
-        _collection.update_title(params['title'])
-    if 'tags' in params:
-        tags = loads(params['tags'])
+    if "title" in params:
+        _collection.update_title(params["title"])
+    if "tags" in params:
+        tags = loads(params["tags"])
         _collection.set_tags(tags)
-    if 'private' in params:
-        if params['private'] == "true":
+    if "private" in params:
+        if params["private"] == "true":
             _collection.set_private()
-        if params['private'] == "false":
+        if params["private"] == "false":
             _collection.set_public()
     _collection.save()
 
+
 def get_user_price(_user, _collection):
-    '''
+    """
     Get the price for the current user
-    '''
+    """
     user_price = 0
     price_without_ownership = 0
     for _photo in _collection.get_photos():
@@ -204,35 +210,35 @@ def get_user_price(_user, _collection):
 
 
 def get_all_collections(args):
-    '''
+    """
     token: string
     photoId (optional): string
-    '''
-    token = args.get('token')
-    photo_id = ''
+    """
+    token = args.get("token")
+    photo_id = ""
 
     _user = user.User.objects.get(id=get_uid(token))
-    if 'photoId' in args.keys():
-        photo_id = args.get('photoId')
+    if "photoId" in args.keys():
+        photo_id = args.get("photoId")
     res = loads(collection.Collection.objects(created_by=_user).to_json())
 
     # Add the id entry and the photoExists entries
     for entry in res:
-        entry['id'] = entry['_id']['$oid']
-        entry['photoExists'] = False
+        entry["id"] = entry["_id"]["$oid"]
+        entry["photoExists"] = False
         print(entry)
-        if 'photos' in entry:
-            for this_photo in entry['photos']:
-                print(this_photo['$oid'], photo_id)
-                if this_photo['$oid'] == photo_id:
-                    entry['photoExists'] = True
+        if "photos" in entry:
+            for this_photo in entry["photos"]:
+                print(this_photo["$oid"], photo_id)
+                if this_photo["$oid"] == photo_id:
+                    entry["photoExists"] = True
     return dumps(res)
 
 
 def collection_photo_search(data):
-    '''
+    """
     Get thumbnails of the photos in a collection
-    '''
+    """
     try:
         req_user = get_uid(data["token"])
     except:
@@ -241,17 +247,17 @@ def collection_photo_search(data):
         _id = ObjectId(data["query"])
     except:
         _id = ""
-    if 'offset' in data:
-        offset = data['offset']
+    if "offset" in data:
+        offset = data["offset"]
     else:
         offset = 0
-    if 'limit' in data:
-        limit = data['limit']
+    if "limit" in data:
+        limit = data["limit"]
     else:
         limit = 5
 
     _collection = collection.Collection.objects.get(id=_id)
-    _photos = _collection.get_photos()[offset:offset+limit]
+    _photos = _collection.get_photos()[offset : offset + limit]
 
     try:
         _user = user.User.objects.get(id=req_user)
@@ -266,13 +272,15 @@ def collection_photo_search(data):
     ret_photos = []
     for this_photo in _photos:
         meta, thumbnail = this_photo.get_thumbnail(req_user)
-        ret_photos.append({
-                'title': this_photo.get_title(),
-                'price': this_photo.get_price(),
-                'discount': this_photo.get_discount(),
-                'photoStr': thumbnail,
-                'metadata': meta,
-                'id': str(this_photo.get_id()),
-                'owns': (this_photo in purchased) or (this_photo.get_user() == _user)
-            })
+        ret_photos.append(
+            {
+                "title": this_photo.get_title(),
+                "price": this_photo.get_price(),
+                "discount": this_photo.get_discount(),
+                "photoStr": thumbnail,
+                "metadata": meta,
+                "id": str(this_photo.get_id()),
+                "owns": (this_photo in purchased) or (this_photo.get_user() == _user),
+            }
+        )
     return ret_photos
