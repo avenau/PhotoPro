@@ -23,6 +23,12 @@ def get_data(req_user):
     Get all of the data related to showdown
     """
     current_showdown = Showdown.objects().order_by("-start_date").first()
+    if current_showdown == None:
+        return {
+            "participants": [],
+            "prevWinnerPhoto": {},
+            "currentVote": "",
+        }
     try:
         req_user_obj = User.objects.get(id=req_user)
     except:
