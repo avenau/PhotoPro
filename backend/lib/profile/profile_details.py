@@ -7,7 +7,32 @@ from lib.collection.collection import Collection
 from lib.photo.photo import Photo
 from lib.token_functions import get_uid
 from lib.user.user import User
+from lib import Error
 
+def get_profile_details(data):
+    try:
+        searcher = User.objects.get(id=get_uid(data["token"]))
+        following = searcher.get_following()
+    except:
+        following = []
+
+    try:
+        profile_owner = User.objects.get(id=data["u_id"])
+    except:
+        raise Error.UserDNE("User you're looking for doesn't exist.")
+
+    following = profile_owner in following
+    print(following)
+    return {
+            "fname": profile_owner.get_fname(),
+            "lname": profile_owner.get_lname(),
+            "nickname": profile_owner.get_nickname(),
+            "location": profile_owner.get_location(),
+            "email": profile_owner.get_email(),
+            "profilePic": profile_owner.get_profile_pic(),
+            "aboutMe": profile_owner.get_about_me(),
+            "following": following,
+            }
 
 def user_photo_search(data):
     try:
@@ -121,10 +146,10 @@ def user_following_search(data):
     skip = data["offset"]
     limit = data["limit"]
     user_obj = User.objects.get(id=u_id)
-    following = user_obj.get_following()[skip:skip+limit]
+    following_list = user_obj.get_following()[skip:skip+limit]
 
     res = []
-    for followed in following:
+    for followed in following_list:
         tmp_dict = {}
         tmp_dict['id'] = str(followed.get_id())
         tmp_dict['nickname'] = followed.get_nickname()

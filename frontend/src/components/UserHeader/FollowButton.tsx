@@ -5,14 +5,13 @@ import LoadingButton from "../../components/LoadingButton/LoadingButton";
 
 interface FollowButtonProps {
   userId: string; // This is the user_id of the person being followed
-  following?: boolean;
+  following: boolean;
 }
 
 interface State {
   showLoginAlert: boolean;
   following: boolean | undefined;
   btnLoading: boolean;
-  followBtnLoading: boolean;
 }
 
 export default class FollowButton extends React.Component<
@@ -25,8 +24,11 @@ export default class FollowButton extends React.Component<
       showLoginAlert: false,
       following: this.props.following,
       btnLoading: false,
-      followBtnLoading: true,
     };
+  }
+
+  componentWillReceiveProps(nextProps: FollowButtonProps) {
+    this.setState({ following: nextProps.following });
   }
 
   private loginAlert() {

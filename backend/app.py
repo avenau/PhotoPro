@@ -66,6 +66,7 @@ from lib.photo_details.photo_details import (
 # Profile
 from lib.profile.upload_photo import update_user_thumbnail
 from lib.profile.profile_details import (
+    get_profile_details,
     user_album_search,
     user_collection_search,
     user_following_search,
@@ -445,7 +446,8 @@ def _profile_details():
 
     Parameters
     ----------
-    u_id : str
+    token: str (token of the profile viewer),
+    u_id : str (id of the profile owner)
 
     Returns
     {
@@ -455,28 +457,40 @@ def _profile_details():
         location,
         email,
         profilePic,
-        aboutMe
+        aboutMe,
+        following
     }
     -------
     """
-    u_id = request.args.get("u_id")
-    if not u_id or u_id == "":
-        raise Error.UserDNE("Couldn't find user")
-    this_user = user.User.objects.get(id=u_id)
-    if not this_user:
-        raise Error.UserDNE("Couldn't find user")
+    data = request.args.to_dict()
+    return dumps(get_profile_details(data))
+    
+    # if not u_id or u_id == "":
+    #     raise Error.UserDNE("Couldn't find user")
 
-    return dumps(
-        {
-            "fname": this_user.get_fname(),
-            "lname": this_user.get_lname(),
-            "nickname": this_user.get_nickname(),
-            "location": this_user.get_location(),
-            "email": this_user.get_email(),
-            "profilePic": this_user.get_profile_pic(),
-            "aboutMe": this_user.get_about_me(),
-        }
-    )
+    # try:
+    #     profile_owner = user.User.objects.get(id=u_id)
+    # except mongoengine.queryset.DoesNotExist:
+    #     raise mongoengine.queryset.DoesNotExist("They tried to navigate to a profile which doesn't exist")
+
+    # try:
+    #     profile_viewer_id = token_functions.get_uid(token)
+    # except:
+    #     profile_viewer_id = ""
+
+    
+
+    # return dumps(
+    #     {
+    #         "fname": this_user.get_fname(),
+    #         "lname": this_user.get_lname(),
+    #         "nickname": this_user.get_nickname(),
+    #         "location": this_user.get_location(),
+    #         "email": this_user.get_email(),
+    #         "profilePic": this_user.get_profile_pic(),
+    #         "aboutMe": this_user.get_about_me(),
+    #     }
+    # )
 
 
 @app.route("/collection/thumbnail", methods=["GET"])

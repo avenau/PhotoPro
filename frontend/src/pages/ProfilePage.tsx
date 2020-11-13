@@ -29,6 +29,8 @@ interface State {
   newAlbum: boolean;
   newCollection: boolean;
   title: string;
+  following: boolean;
+  pageLoading: boolean;
 }
 
 class ProfilePage extends React.Component<Props, State> {
@@ -48,6 +50,8 @@ class ProfilePage extends React.Component<Props, State> {
       newAlbum: false,
       newCollection: false,
       title: "",
+      following: false,
+      pageLoading: true,
     };
   }
 
@@ -57,18 +61,22 @@ class ProfilePage extends React.Component<Props, State> {
 
   private getUserDetails(userId: string) {
     axios
-      .get(`/profiledetails?u_id=${userId}`)
+      .get(
+        `/profiledetails?u_id=${userId}&token=${localStorage.getItem("token")}`
+      )
       .then((r) => {
         const newState = this.state as any;
         Object.entries(r.data).forEach((item) => {
           [, newState[item[0]]] = item;
         });
         this.setState(newState);
+        this.setState({ pageLoading: false });
       })
       .catch(() => {
         const newState = this.state as any;
         newState.dne = true;
         this.setState(newState);
+        this.setState({ pageLoading: false });
       });
   }
 
@@ -121,7 +129,9 @@ class ProfilePage extends React.Component<Props, State> {
   render() {
     const userId = localStorage.getItem("u_id");
     const isCurrentUser = this.state.userId === userId;
-    return (
+    return this.state.pageLoading ? (
+      <div>Loading...</div>
+    ) : (
       <>
         <div>
           <Modal
@@ -175,6 +185,7 @@ class ProfilePage extends React.Component<Props, State> {
             profilePic={this.state.profilePic}
             userId={this.state.userId}
             className="user-header"
+            following={this.state.following}
           />
           <br />
           <Tabs

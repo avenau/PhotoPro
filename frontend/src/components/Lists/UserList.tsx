@@ -14,7 +14,7 @@ interface Profile {
   email: string;
   location: string;
   id: string;
-  following?: boolean;
+  following: boolean;
 }
 
 class UserList extends React.Component<Props> {
@@ -34,6 +34,7 @@ class UserList extends React.Component<Props> {
               isCurrentUser={profile.id === localStorage.getItem("u_id")}
               name={`${profile.fname} ${profile.lname}`}
               {...profile}
+              following={profile.following}
               userId={profile.id}
             />
           </div>
