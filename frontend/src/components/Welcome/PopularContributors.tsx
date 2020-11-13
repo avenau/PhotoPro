@@ -14,7 +14,7 @@ class PopularContributors extends Component<any, any> {
   }
 
   checkContributors() {
-    axios.get("/");
+    axios.get("/").catch(()=>{});
   }
 
   render() {

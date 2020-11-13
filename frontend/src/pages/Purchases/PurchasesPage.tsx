@@ -29,9 +29,7 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
       .then((res) => {
         this.setState({ credits: res.data.credits });
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(() => {});
   }
 
   render() {

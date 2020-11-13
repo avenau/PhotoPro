@@ -85,10 +85,12 @@ class PhotoContents extends React.Component<Props, any> {
       })
       .catch(() => {});
     if (localStorage.getItem("token")) {
-      const query = `/collection/getall?token=${this.state.token}&photoId=${this.props.photoId}`;
-      axios.get(query).then((res) => {
-        this.setState({ collections: res.data.map((obj: Collection) => obj) });
-      });
+      const query = `/collection/getall?token=${this.state.token}&photoId=${this.props.photoId}`
+      axios.get(query)
+        .then((res) => {
+          this.setState({ collections: res.data.map((obj: Collection) => obj) });
+        })
+        .catch(()=> {});
     }
   }
 

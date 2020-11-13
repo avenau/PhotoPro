@@ -32,7 +32,7 @@ class AlbumHeader extends React.Component<AlbumHeaderProps, AlbumHeaderState> {
       },
     })
     .then(() => this.props.history.push("/"))
-    .catch()
+    .catch(()=>{});
   }
 
   renderAlbumTooltip = (props: any) => {

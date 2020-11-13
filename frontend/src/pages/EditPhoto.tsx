@@ -64,9 +64,7 @@ export default function EditPhoto(props: any) {
       .then((response) => {
         props.history.push(`/photo/${photoId}`);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(() => {});
   }
 
   function handleDelete(event: React.FormEvent<HTMLElement>) {
@@ -84,9 +82,7 @@ export default function EditPhoto(props: any) {
         .then((response) => {
           props.history.push(`/user/${u_id}`);
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch(() => {});
     }
   }
 
@@ -105,8 +101,7 @@ export default function EditPhoto(props: any) {
           props.history.goBack();
         }
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         props.history.goBack();
       });
   }

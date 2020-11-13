@@ -55,6 +55,7 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
           this.setState({ purchased: true })
         }
       })
+      .catch(()=>{});
   }
 
   purchaseAlbum() {
@@ -68,9 +69,7 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
         this.setState({ purchased: true })
         window.location.reload()
       })
-      .catch((err) => {
-        console.log(err)
-      })
+      .catch(() => {});
   }
 
   render() {
