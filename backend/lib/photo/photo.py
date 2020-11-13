@@ -25,7 +25,6 @@ class Photo(Document):
     """
     Photo definition and methods
     """
-
     # Title of the photo
     title = StringField(required=True, validation=validation.validate_title)
     # Price of the photo

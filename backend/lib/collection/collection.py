@@ -9,7 +9,8 @@ from mongoengine import IntField
 import lib.collection.validation as validation
 import lib.catalogue.catalogue
 
-from lib.collection.validation import validate_title
+import lib.Error as Error
+from lib.collection.validation import validate_private
 
 class Collection(lib.catalogue.catalogue.Catalogue):
     '''
@@ -21,28 +22,11 @@ class Collection(lib.catalogue.catalogue.Catalogue):
         creation_date: datetime,
         deleted: boolean,
         private: boolean,
-        price, int
         tags: [string],
     }
     '''
-    private = BooleanField(default=False)
-    price = IntField(default=0, validation=validation.validate_price)
+    private = BooleanField(default=False, validation=validate_private)
     meta = {'collection': 'collections'}
-
-    def get_price(self):
-        '''
-        Get the price of the collection
-        '''
-        return self.price
-
-    def update_price(self):
-        '''
-        Iterate through the photos and update the price
-        '''
-        price = 0
-        for this_photo in self.photos:
-            price += this_photo.price
-        self.price = price
 
     def is_private(self):
         '''
@@ -85,7 +69,6 @@ class Collection(lib.catalogue.catalogue.Catalogue):
             'photos': [this_photo.id for this_photo in self.get_photos()],
             'creation_date': str(self.get_creation_date()),
             'private': self.is_private(),
-            'price': self.get_price(),
             'tags': self.get_tags(),
         }
 
@@ -95,6 +78,6 @@ class Collection(lib.catalogue.catalogue.Catalogue):
         1) Update the tags
         2) Update the price
         '''
-        super().clean()
-        validate_title(self.title, self.created_by, self.id)
-        self.update_price()
+        _user = self.created_by
+        if Collection.objects(created_by=self.created_by, title=self.title):
+            raise Error.ValidationError("Cannot have two Collections with the same title")
