@@ -99,7 +99,7 @@ def user_album_search(data):
                     "discount": 1,
                     "id": {"$toString": "$_id"},
                     "_id": 0,
-                }
+            }
             },
             {"$skip": data["offset"]},
             {"$limit": data["limit"]},
@@ -114,27 +114,25 @@ def user_album_search(data):
 
 def user_following_search(data):
     try:
-        req_user = get_uid(data["token"])
+        u_id = get_uid(data["token"])
     except:
-        req_user = ""
-    res = User.objects().aggregate(
-        [
-            {"$unwind": "$following"},
-            {
-                "$project": {
-                    "fname": 1,
-                    "lname": 1,
-                    "nickname": 1,
-                    "email": 1,
-                    "location": 1,
-                    "created": 1,
-                    "id": {"$toString": "$_id"},
-                    "_id": 0,
-                }
-            },
-            {"$skip": data["offset"]},
-            {"$limit": data["limit"]},
-        ]
-    )
-    res = loads(dumps(res))
+        raise Error.UserDNE("Sorry, couldn't identify you. Try logging out and back in.")
+    
+    skip = data["offset"]
+    limit = data["limit"]
+    user_obj = User.objects.get(id=u_id)
+    following = user_obj.get_following()[skip:skip+limit]
+
+    res = []
+    for followed in following:
+        tmp_dict = {}
+        tmp_dict['id'] = str(followed.get_id())
+        tmp_dict['nickname'] = followed.get_nickname()
+        tmp_dict['fname'] = followed.get_fname()
+        tmp_dict['lname'] = followed.get_lname()
+        tmp_dict['email'] = followed.get_email()
+        tmp_dict['location'] = followed.get_location()
+        tmp_dict['profilePic'] = followed.get_profile_pic()
+        res.append(tmp_dict)
+
     return res

@@ -596,6 +596,7 @@ def _get_album_from_user():
 
 
 @app.route("/user/following", methods=["GET"])
+@validate_token
 def _get_following_from_user():
     """
     Description
