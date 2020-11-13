@@ -71,6 +71,7 @@ def create_showdown(prev_showdown):
     # Declare winner for previous showdown
     if prev_showdown != None:
         prev_showdown.declare_winner()
+        prev_showdown.save()
 
     return showdown
 
