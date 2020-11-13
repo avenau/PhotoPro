@@ -12,7 +12,7 @@ import HoverText from "../HoverText";
 interface Props {
   profilePic?: string[];
   header: boolean;
-  currentUser: boolean;
+  isCurrentUser: boolean;
   showEdit: boolean;
   name: string;
   nickname: string;
@@ -21,6 +21,7 @@ interface Props {
   className: string;
   aboutMe?: string;
   userId: string;
+  following?: boolean;
 }
 
 export default class UserHeader extends React.Component<Props> {
@@ -33,7 +34,7 @@ export default class UserHeader extends React.Component<Props> {
 
   /** Return edit button if current user */
   private getEditButton() {
-    if (!this.props.showEdit || !this.props.currentUser) {
+    if (!this.props.showEdit || !this.props.isCurrentUser) {
       return null;
     }
     return (
@@ -51,7 +52,7 @@ export default class UserHeader extends React.Component<Props> {
 
   /** Return follow button if not current user */
   private getFollowButton() {
-    if (this.props.currentUser) {
+    if (this.props.isCurrentUser) {
       return null;
     }
 
@@ -81,8 +82,9 @@ export default class UserHeader extends React.Component<Props> {
      ); */
     return (
       <FollowButton
-        currentUser={this.props.currentUser}
-        userId={this.props.userId}
+        following={this.props.following}
+        // isCurrentUser={this.props.isCurrentUser}
+        // userId={this.props.userId}
       />
     );
   }

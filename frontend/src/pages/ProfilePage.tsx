@@ -120,7 +120,7 @@ class ProfilePage extends React.Component<Props, State> {
 
   render() {
     const userId = localStorage.getItem("u_id");
-    const currentUser = this.state.userId === userId;
+    const isCurrentUser = this.state.userId === userId;
     return (
       <>
         <div>
@@ -164,7 +164,7 @@ class ProfilePage extends React.Component<Props, State> {
             type="collection"
           />
           <UserHeader
-            currentUser={currentUser}
+            isCurrentUser={isCurrentUser}
             showEdit
             header
             name={`${this.state.fname} ${this.state.lname}`}
@@ -204,7 +204,7 @@ class ProfilePage extends React.Component<Props, State> {
                 type="collection"
               />
             </Tab>
-            {currentUser ? (
+            {isCurrentUser ? (
               <Tab eventKey="following" title="Following" unmountOnExit>
                 <ContentLoader
                   query={this.state.userId}
@@ -214,12 +214,12 @@ class ProfilePage extends React.Component<Props, State> {
               </Tab>
             ) : (
               <></>
-              )}
-            {currentUser ? (
+            )}
+            {isCurrentUser ? (
               <Tab title={this.createAddButton()} tabClassName="no-border" />
             ) : (
               <></>
-              )}
+            )}
           </Tabs>
         </div>
       </>
