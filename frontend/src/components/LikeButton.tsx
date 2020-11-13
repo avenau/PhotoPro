@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 import { Alert, Button, Toast } from "react-bootstrap";
-import HoverText from "./HoverText";
 import axios from "axios";
+import HoverText from "./HoverText";
 
 interface LikeProps {
   p_id: string;

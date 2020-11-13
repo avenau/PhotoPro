@@ -100,84 +100,84 @@ export default function PhotoComments(props: CommentProps) {
 
   return (
     <>
-    <div className="comment-form">
-      <h4>Comments</h4>
-      <Form onSubmit={handleSubmit}>
-        <Form.Row id="commentTextArea">
-          <Col>
-            <Form.Control
-              id="CommentInput"
-              as="textarea"
-              rows={4}
-              onChange={(e) => changeFunction(e.target.value)}
-              placeholder="Add a comment..."
-            />
-            <Form.Text id="WarningMessage" muted>
-              {limitMessage}
-            </Form.Text>
-          </Col>
-          <Col>
-            <Button
-              disabled={validComment}
-              variant="primary"
-              type="submit"
-              className="commentButton"
-            >
-              Comment
-            </Button>
-          </Col>
-        </Form.Row>
-      </Form>
-      <Dropdown>
-        <br />
-        <Dropdown.Toggle
-          variant="outline-dark"
-          id="dropdown-custom-components"
-          className="sort"
-        >
-          <span>Sort Comments By</span>
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-          <Dropdown.Item
-            as="button"
-            onClick={() => {
+      <div className="comment-form">
+        <h4>Comments</h4>
+        <Form onSubmit={handleSubmit}>
+          <Form.Row id="commentTextArea">
+            <Col>
+              <Form.Control
+                id="CommentInput"
+                as="textarea"
+                rows={4}
+                onChange={(e) => changeFunction(e.target.value)}
+                placeholder="Add a comment..."
+              />
+              <Form.Text id="WarningMessage" muted>
+                {limitMessage}
+              </Form.Text>
+            </Col>
+            <Col>
+              <Button
+                disabled={validComment}
+                variant="primary"
+                type="submit"
+                className="commentButton"
+              >
+                Comment
+              </Button>
+            </Col>
+          </Form.Row>
+        </Form>
+        <Dropdown>
+          <br />
+          <Dropdown.Toggle
+            variant="outline-dark"
+            id="dropdown-custom-components"
+            className="sort"
+          >
+            <span>Sort Comments By</span>
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item
+              as="button"
+              onClick={() => {
               sortCommentNewest();
             }}
-          >
-            Newest To Oldest
-          </Dropdown.Item>
-          <Dropdown.Item
-            as="button"
-            onClick={() => {
+            >
+              Newest To Oldest
+            </Dropdown.Item>
+            <Dropdown.Item
+              as="button"
+              onClick={() => {
               sortCommentOldest();
             }}
-          >
-            Oldest To Newest
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-    </div>
-    <div className="PhotoComments">
-      <Container>
-        <Row className="CommentDisplay">
-          {comments.map((comment) => (
-            <CommentMessage
-              author_id={comment.commenter_id}
-              message={comment.content}
-              author={comment.commenter}
-              exact_date={comment.exact_time}
-              time_after={comment.time_after}
-              comment_id={comment.comment_id}
-              photo_id={props.p_id}
-              profile_pic={comment.profile_pic}
-              key={comment.comment_id}
-              getComments={getComments}
-              new_to_old={new_to_old}
-            />
+            >
+              Oldest To Newest
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
+      <div className="PhotoComments">
+        <Container>
+          <Row className="CommentDisplay">
+            {comments.map((comment) => (
+              <CommentMessage
+                author_id={comment.commenter_id}
+                message={comment.content}
+                author={comment.commenter}
+                exact_date={comment.exact_time}
+                time_after={comment.time_after}
+                comment_id={comment.comment_id}
+                photo_id={props.p_id}
+                profile_pic={comment.profile_pic}
+                key={comment.comment_id}
+                getComments={getComments}
+                new_to_old={new_to_old}
+              />
           ))}
-        </Row>
-      </Container>
-    </div>
+          </Row>
+        </Container>
+      </div>
     </>
   );
 }

@@ -153,36 +153,36 @@ class PhotoContents extends React.Component<Props, any> {
     if (this.state.isArtist) {
       return (
         <>
-        <Row>
-          <HoverText
-            id="downloadButton"
-            helpfulText="Download"
-            placement="bottom"
-          >
-            <LoadingButton
-              loading={this.state.downloadBtnLoading}
-              onClick={(e) => this.downloadPhoto(e)}
-              variant="light"
-              className="m-2 ml-4"
+          <Row>
+            <HoverText
+              id="downloadButton"
+              helpfulText="Download"
+              placement="bottom"
             >
-              <ArrowDownSquare />
-            </LoadingButton>
-          </HoverText>
-          <HoverText
-            id="manageButton"
-            helpfulText="Manage Photo"
-            placement="bottom"
-          >
-            <LoadingButton
-              loading={this.state.downloadBtnLoading}
-              onClick={(() => this.props.history.push(`/edit/${this.props.photoId}`))}
-              variant="light"
-              className="m-2"
+              <LoadingButton
+                loading={this.state.downloadBtnLoading}
+                onClick={(e) => this.downloadPhoto(e)}
+                variant="light"
+                className="m-2 ml-4"
+              >
+                <ArrowDownSquare />
+              </LoadingButton>
+            </HoverText>
+            <HoverText
+              id="manageButton"
+              helpfulText="Manage Photo"
+              placement="bottom"
             >
-              <PencilSquare />
-            </LoadingButton>
-          </HoverText>
-        </Row>
+              <LoadingButton
+                loading={this.state.downloadBtnLoading}
+                onClick={(() => this.props.history.push(`/edit/${this.props.photoId}`))}
+                variant="light"
+                className="m-2"
+              >
+                <PencilSquare />
+              </LoadingButton>
+            </HoverText>
+          </Row>
         </>
       );
     }
@@ -207,37 +207,37 @@ class PhotoContents extends React.Component<Props, any> {
       );
     }
     return (
-    <>
-      <Row>
-        <HoverText
-          id="downloadWatermarked"
-          helpfulText="Download Watermarked Photo"
-          placement="bottom"
-        >
-          <LoadingButton
-            loading={this.state.downloadBtnLoading}
-            onClick={(e) => this.downloadPhoto(e)}
-            className="m-2 ml-4"
-            variant="light"
+      <>
+        <Row>
+          <HoverText
+            id="downloadWatermarked"
+            helpfulText="Download Watermarked Photo"
+            placement="bottom"
           >
-            <ArrowDownSquare />
-          </LoadingButton>
-        </HoverText>
-        <HoverText
-          id="purchasePhoto"
-          helpfulText="Purchase Photo"
-          placement="bottom"
-        >
-          <LoadingButton
-            className="m-2"
-            loading={this.state.purchaseBtnLoading}
-            onClick={(e) => this.purchasePhoto(e)}
-            variant="light"
+            <LoadingButton
+              loading={this.state.downloadBtnLoading}
+              onClick={(e) => this.downloadPhoto(e)}
+              className="m-2 ml-4"
+              variant="light"
+            >
+              <ArrowDownSquare />
+            </LoadingButton>
+          </HoverText>
+          <HoverText
+            id="purchasePhoto"
+            helpfulText="Purchase Photo"
+            placement="bottom"
           >
-            <CartPlus />
-          </LoadingButton>
-        </HoverText>
-      </Row>
+            <LoadingButton
+              className="m-2"
+              loading={this.state.purchaseBtnLoading}
+              onClick={(e) => this.purchasePhoto(e)}
+              variant="light"
+            >
+              <CartPlus />
+            </LoadingButton>
+          </HoverText>
+        </Row>
       </>
     );
   }
@@ -265,7 +265,7 @@ class PhotoContents extends React.Component<Props, any> {
                   on {this.state.postedDate}
                 </Row>
                 <Row>{this.state.email}</Row>
-                <br/>
+                <br />
                 <Row>
                   <Col>
                     <Row><b>Tags</b> (click tag to search)</Row>
@@ -287,28 +287,28 @@ class PhotoContents extends React.Component<Props, any> {
                     collections={this.state.collections}
                   />
                   {this.returnDynamicButtons()}
-              </Row>
-              {
-                this.state.isArtist || !this.state.purchased ?
-                <Row>
-                  <Price
-                    fullPrice={this.state.fullPrice}
-                    discount={this.state.discount}
-                  />
                 </Row>
+                {
+                this.state.isArtist || !this.state.purchased ?
+                  <Row>
+                    <Price
+                      fullPrice={this.state.fullPrice}
+                      discount={this.state.discount}
+                    />
+                  </Row>
                 :
-                <>
-                </>
+                  <>
+                  </>
               }
               </div>
             </Col>
           </Row>
         </Container>
         <Container>
-        <PhotoComments
-          p_id={this.props.photoId}
-          comments={this.state.comments}
-        />
+          <PhotoComments
+            p_id={this.props.photoId}
+            comments={this.state.comments}
+          />
         </Container>
       </div>
     ) : (

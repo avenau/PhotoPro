@@ -84,16 +84,16 @@ export default function CommentMessage(props: MessageProp) {
       <Row>
         <Col>
           <Container>
-          <Row>
-            <Link to={`/user/${props.author_id}`}>
-              <img src={getPic()} className="thumbnail" />
-            </Link>
-          </Row>
-          <Row>
-            <a href={`/user/${props.author_id}`}>
-              <b>{props.author}</b>
-            </a>
-          </Row>
+            <Row>
+              <Link to={`/user/${props.author_id}`}>
+                <img src={getPic()} className="thumbnail" />
+              </Link>
+            </Row>
+            <Row>
+              <a href={`/user/${props.author_id}`}>
+                <b>{props.author}</b>
+              </a>
+            </Row>
           </Container>
         </Col>
         <Col xs={9}>

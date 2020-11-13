@@ -96,7 +96,7 @@ class CollectionDetails extends React.Component<Props, State> {
                       <Tags key={tag} tagName={tag} type="collection" />
                       ))
                       :
-                      <p>No collection tags found</p>
+                    <p>No collection tags found</p>
                     }
                   </Row>
                 </Container>
