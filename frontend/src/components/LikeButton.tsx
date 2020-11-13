@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import { Alert, Button, Modal, Toast } from "react-bootstrap";
+import { Alert, Button, Toast } from "react-bootstrap";
+import HoverText from "./HoverText";
 import axios from "axios";
 
 interface LikeProps {
@@ -101,10 +102,15 @@ export default class LikeButton extends React.Component<LikeProps, any> {
 
   render() {
     return (
-      <div style={{ position: 'absolute' }}>
+      <div>
+      <HoverText
+        id="likeButton"
+        helpfulText="Like Photo"
+        placement="bottom">
         <Button
           variant={this.state.isLiked ? "primary" : "light"}
           onClick={(e) => this.handleLike(e)}
+          className="m-2"
         >
           <svg
             width="1em"
@@ -121,6 +127,7 @@ export default class LikeButton extends React.Component<LikeProps, any> {
           </svg>{" "}
           {this.state.likeCount}
         </Button>
+      </HoverText>
         {this.state.showAlert ? this.alertMessage() : <></>}
       </div>
     );
