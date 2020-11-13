@@ -13,4 +13,5 @@ def validate_private(private):
     try:
         mongoengine.BooleanField().validate(private)
     except mongoengine.ValidationError:
+        print(traceback.print_exc())
         raise Error.ValidationError("Private field is not correct")
