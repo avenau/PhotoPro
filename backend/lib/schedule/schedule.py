@@ -23,7 +23,6 @@ def initialise_schedule():
     if current_showdown == None or current_showdown.has_ended():
         # Create new showdown
         current_showdown = create_showdown(current_showdown)
-
     # Create timer with duration of showdown time remaining
     dur = current_showdown.get_time_remaining()
     timer = Timer(dur.total_seconds(), initialise_schedule)
@@ -35,6 +34,8 @@ def create_showdown(prev_showdown):
     """
     Create a new showdown entry
     """
+
+    print("Creating new showdown")
 
     participants = []
     showdown = Showdown(
@@ -51,7 +52,7 @@ def create_showdown(prev_showdown):
         photo = pop_photo.get_photo()
         if photo.is_deleted():
             continue
-        participant = Participant(photo=photo, showdown=showdown)
+        participant = Participant(photo=photo, showdown=showdown, user=photo.get_user())
         participant.save()
         participants.append(participant)
         if len(participants) == 2:
@@ -71,6 +72,7 @@ def create_showdown(prev_showdown):
     # Declare winner for previous showdown
     if prev_showdown != None:
         prev_showdown.declare_winner()
+        prev_showdown.save()
 
     return showdown
 

@@ -22,7 +22,7 @@ import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
-import ManageCollection from "./pages/ManageCollection/ManageCollection"
+import ManageCollection from "./pages/ManageCollection/ManageCollection";
 import AlbumDetails from "./pages/AlbumDetails/AlbumDetails";
 import CollectionDetails from "./pages/CollectionDetails/CollectionDetails";
 
@@ -139,8 +139,6 @@ class App extends React.Component<Props, State> {
           <Route path="/search/:type">
             <SearchPage refreshCredits={this.refreshCredits} />
           </Route>
-          {/* component={SearchPage} /> */}
-
           <Route valid={this.state.valid} path="/photo/:photo_id">
             <PhotoDetails refreshCredits={this.refreshCredits} />
           </Route>
@@ -202,7 +200,6 @@ class App extends React.Component<Props, State> {
             component={RefundCreditsPage}
           />
           <Route path="*" component={DoesNotExistPage} />
-          {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}
         </Switch>
       </Router>
     );

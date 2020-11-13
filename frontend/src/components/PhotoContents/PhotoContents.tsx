@@ -1,8 +1,8 @@
 import React from "react";
-import { RouteComponentProps, withRouter, Link } from "react-router-dom";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import axios from "axios";
-import BookmarkButton from "../BookmarkButton";
+import { ArrowDownSquare, PencilSquare, CartPlus } from 'react-bootstrap-icons';
 import LikeButton from "../LikeButton";
 import "./PhotoContents.scss";
 
@@ -10,8 +10,8 @@ import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import Tags from "../TagLinks";
 import LoadingButton from "../LoadingButton/LoadingButton";
-import HoverText from "../HoverText";
-import { ArrowDownSquare, PencilSquare, CartPlus } from "react-bootstrap-icons";
+import BookmarkButton from "../BookmarkButton";
+import HoverText from '../HoverText';
 
 interface Collection {
   title: string;

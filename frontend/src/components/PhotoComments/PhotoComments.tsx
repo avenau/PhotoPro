@@ -4,7 +4,6 @@ import CommentMessage from "./CommentMessage";
 import "./PhotoComments.scss";
 import axios from "axios";
 import _ from "lodash";
-import PhotoContents from "../PhotoContents/PhotoContents";
 
 interface CommentObject {
   content: string;

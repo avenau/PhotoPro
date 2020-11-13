@@ -66,6 +66,7 @@ from lib.photo_details.photo_details import (
 # Profile
 from lib.profile.upload_photo import update_user_thumbnail
 from lib.profile.profile_details import (
+    get_profile_details,
     user_album_search,
     user_collection_search,
     user_following_search,
@@ -85,7 +86,7 @@ from lib.schedule.schedule import initialise_schedule
 from lib.user.validate_login import login
 import lib.user.helper_functions
 import lib.user.password_reset as password_reset
-from lib.user.helper_functions import is_following, update_follow
+from lib.user.helper_functions import update_follow #, is_following
 
 # Purchases
 from lib.purchases.purchases import get_purchased_photos
@@ -445,7 +446,8 @@ def _profile_details():
 
     Parameters
     ----------
-    u_id : str
+    token: str (token of the profile viewer),
+    u_id : str (id of the profile owner)
 
     Returns
     {
@@ -455,27 +457,40 @@ def _profile_details():
         location,
         email,
         profilePic,
-        aboutMe
+        aboutMe,
+        following
     }
     -------
     """
-    u_id = request.args.get("u_id")
-    if not u_id or u_id == "":
-        raise Error.UserDNE("Couldn't find user")
-    this_user = user.User.objects.get(id=u_id)
-    if not this_user:
-        raise Error.UserDNE("Couldn't find user")
+    data = request.args.to_dict()
+    return dumps(get_profile_details(data))
+    
+    # if not u_id or u_id == "":
+    #     raise Error.UserDNE("Couldn't find user")
 
-    return dumps(
-        {
-            "fname": this_user.get_fname(),
-            "lname": this_user.get_lname(),
-            "nickname": this_user.get_nickname(),
-            "location": this_user.get_location(),
-            "email": this_user.get_email(),
-            "profilePic": this_user.get_profile_pic(),
-        }
-    )
+    # try:
+    #     profile_owner = user.User.objects.get(id=u_id)
+    # except mongoengine.queryset.DoesNotExist:
+    #     raise mongoengine.queryset.DoesNotExist("They tried to navigate to a profile which doesn't exist")
+
+    # try:
+    #     profile_viewer_id = token_functions.get_uid(token)
+    # except:
+    #     profile_viewer_id = ""
+
+    
+
+    # return dumps(
+    #     {
+    #         "fname": this_user.get_fname(),
+    #         "lname": this_user.get_lname(),
+    #         "nickname": this_user.get_nickname(),
+    #         "location": this_user.get_location(),
+    #         "email": this_user.get_email(),
+    #         "profilePic": this_user.get_profile_pic(),
+    #         "aboutMe": this_user.get_about_me(),
+    #     }
+    # )
 
 
 @app.route("/collection/thumbnail", methods=["GET"])
@@ -596,6 +611,7 @@ def _get_album_from_user():
 
 
 @app.route("/user/following", methods=["GET"])
+@validate_token
 def _get_following_from_user():
     """
     Description
@@ -612,13 +628,14 @@ def _get_following_from_user():
     Returns
     -------
     {
+        id : string
+        nickname : string 
         fname : string
         lname : string
-        nickname : string
         email : string
         location : string
-        created : string
-        id : string
+        profilePic: string[]
+        following: bool
     }
     """
     data = request.args.to_dict()
@@ -628,29 +645,29 @@ def _get_following_from_user():
     return dumps(user_following_search(data))
 
 
-@app.route("/user/isfollowing", methods=["GET"])
-def _is_followed():
-    """
-    Description
-    -----------
-    GET request to check whether a person is following someone
+# @app.route("/user/isfollowing", methods=["GET"])
+# def _is_followed():
+#     """
+#     Description
+#     -----------
+#     GET request to check whether a person is following someone
 
-    Parameters
-    ----------
-    follower_u_id : string
-    followed_u_id : string
+#     Parameters
+#     ----------
+#     follower_u_id : string
+#     followed_u_id : string
 
-    Returns
-    -------
-    {
-        is_followed : boolean
-    }
-    """
-    data = request.args.to_dict()
-    follower_u_id = data["follower_u_id"]
-    followed_u_id = data["followed_u_id"]
+#     Returns
+#     -------
+#     {
+#         is_followed : boolean
+#     }
+#     """
+#     data = request.args.to_dict()
+#     follower_u_id = data["follower_u_id"]
+#     followed_u_id = data["followed_u_id"]
 
-    return dumps({"is_followed": is_following(follower_u_id, followed_u_id)})
+#     return dumps({"is_followed": is_following(follower_u_id, followed_u_id)})
 
 
 @app.route("/user/follow", methods=["POST"])
@@ -658,12 +675,12 @@ def _follow():
     """
     Description
     -----------
-    GET request to update following or unfollowing a user
+    POST request to update following or unfollowing a user
 
     Parameters
     ----------
     token : string
-    followed_u_id : string (User Id of the user being follwoed)
+    followed_u_id : string (User Id of the user being followed)
 
     Returns
     -------
@@ -671,8 +688,8 @@ def _follow():
     """
     token = request.form.get("token")
     followed_u_id = request.form.get("followed_u_id")
-    result = update_follow(token, followed_u_id)
-    return dumps({})
+    followed = update_follow(token, followed_u_id)
+    return dumps({'followed': followed})
 
 
 @app.route("/user/purchasedphotos", methods=["GET"])
@@ -905,11 +922,11 @@ def download_full_photo():
 
 """
 --------------------
-- Main Feed Routes -
+- Showdown Routes -
 --------------------
 """
 
-# Returns the two showdown images for the day
+
 @app.route("/showdown", methods=["GET"])
 def _get_showdown():
     """
@@ -987,6 +1004,48 @@ def _update_likes():
             "votes": _participant.count_votes(),
         }
     )
+
+
+@app.route("/showdownwins/<string:type>", methods=["GET"])
+def _count_showdown_wins(type):
+    """
+    Description
+    -----------
+    Count how many times a user or photo has won a showdown
+
+    Parameters
+    ----------
+    id : string (Id to compare with showdown wins)
+
+    Returns
+    -------
+    {
+        "wins" : number
+    }
+    """
+    id = request.args.get("id")
+    wins = 0
+
+    try:
+        if type == "user":
+            wins = showdown_data.count_wins_user(id)
+        elif type == "photo":
+            wins = showdown_data.count_wins_photo(id)
+    except:
+        wins = 0
+
+    return dumps(
+        {
+            "wins": wins,
+        }
+    )
+
+
+"""
+--------------------
+- Main Feed Routes -
+--------------------
+"""
 
 
 @app.route("/welcome/popularcontributors", methods=["GET"])
@@ -1329,7 +1388,7 @@ def _search_user():
     offset : int
     limit : int
     orderby : string
-    token : string
+    token: string
 
     Returns
     -------
@@ -1339,6 +1398,9 @@ def _search_user():
         nickname: str,
         email: str,
         location: str,
+        profilePic: str[],
+        id: str,
+        following: bool,
     }
     """
     data = request.args.to_dict()

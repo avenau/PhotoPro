@@ -40,36 +40,40 @@ def update_value(bcrypt, user, key, value):
 
     user.save()
     
-def is_following(follower_id, followed_id):
-    try:
-        follower_user = user.User.objects.get(id=follower_id)
-    except:
-        return False
-    
-    followed_user = user.User.objects.get(id=followed_id)
-    if not followed_user:
-        raise UserDNE("User does not exist " + followed_id)
-        
-    return (followed_user in follower_user.following)
-    
 def update_follow(token, followed_id):
+    '''
+    User with token 'token' follows user with id 'followed_id'.
+    Returns True if action is follow, False if action is unfollow.
+    '''
     try:
-        user_id = token_functions.verify_token(token)["u_id"]
+        user_id = token_functions.get_uid(token)
     except (InvalidSignatureError, DecodeError, TokenError, InvalidTokenError):
         raise UserDNE("You must be logged in to follow!")
-    followed_user = user.User.objects.get(id=followed_id)
-    if not followed_user:
-        raise UserDNE("User does not exist " + followed_id)
+
+    try:
+        followed_user = user.User.objects.get(id=followed_id)
+    except:
+        raise UserDNE("User with ID " + followed_id + " doesn't exist")
         
-    following_user = user.User.objects.get(id=user_id)
-    if not following_user:
-        raise UserDNE("User does not exist " + user_id)
+    try:
+        following_user = user.User.objects.get(id=user_id)
+    except:
+        raise UserDNE("Your user ID " + user_id + " doesn't exist")
     
-    if (is_following(user_id, followed_id) == False):
+    if (is_following(following_user, followed_user) == False):
         following_user.add_following(followed_user)
+        following_user.save()
+        followed = True
     else:
         following_user.remove_following(followed_user)
-        
-    following_user.save()
+        following_user.save()
+        followed = False
+    
+    return followed
+
+def is_following(follower, followed):
+    return followed in follower.get_following()
+    
+
     
     
