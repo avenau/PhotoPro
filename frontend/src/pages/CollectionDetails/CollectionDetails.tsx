@@ -64,6 +64,36 @@ class CollectionDetails extends React.Component<Props, State> {
     return (
       <div className="create-collection-page">
         <Container className="mt-5">
+          <h1>{this.state.title}</h1>
+          <Row>
+            <Col>
+              <Link
+                to={`/user/${this.props.owner}`}
+              >
+                By @​​​​​​​{this.props.nickname}
+              </Link>
+            </Col>
+            <Col xs={7}>
+              <Container>
+                <p><b>Tags</b></p>
+                <Container>
+                  <Row>
+                    { this.state.tags.map((tag) => (
+                      <Tags key={tag} tagName={tag} type="album" />
+                      ))
+                    }
+                  </Row>
+                </Container>
+              
+                <AlbumHeader
+                  isOwner={this.state.isOwner}
+                  catalogueId={this.state.albumId}
+                  token={this.state.token}
+                  type="album"
+                />
+              </Container>
+            </Col>
+          </Row>
           <div>
             <AlbumHeader
               isOwner={this.state.isOwner}
@@ -71,7 +101,7 @@ class CollectionDetails extends React.Component<Props, State> {
               token={this.state.token}
               type="collection"
             />
-            <h1>{this.state.title}</h1>
+            
             <h2>Price: {this.state.price}</h2>
             <h3>Regular Price: {this.state.originalPrice}</h3>
           </div>
