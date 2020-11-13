@@ -3,7 +3,7 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import HoverText from "../../components/HoverText";
+import HoverText from "../HoverText";
 
 export default function Tags(props: any) {
   const [tagButtons, setTagButtons] = useState<JSX.Element[]>();

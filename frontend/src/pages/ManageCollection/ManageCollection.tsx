@@ -129,11 +129,12 @@ class ManageCollection extends React.Component<Props, State> {
               prefill={this.state.tags}
             />
             <Form.Group controlId="formBasicCheckbox">
-                <Form.Check
+              <Form.Check
                 checked={this.state.private}
                 type="checkbox"
                 label="Make collection private"
-                onClick={() => this.setState({private: !this.state.private})}/>
+                onClick={() => this.setState({private: !this.state.private})}
+              />
             </Form.Group>
             {this.getButton()}
           </Form>
