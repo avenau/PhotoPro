@@ -2,6 +2,7 @@ from lib.user.user import User
 from lib.album.album import Album
 from lib.Error import ValueError
 
+
 def get_price(_user, _album):
     # Price for the current user
     your_price = 0
@@ -25,11 +26,12 @@ def get_price(_user, _album):
     savings = original_price - your_price
 
     return {
-        'yourPrice': str(your_price),
-        'albumPrice': str(discounted_price),
-        'rawAlbumDiscount': str(raw_album_discount),
-        'savings': str(discounted_price - your_price)
+        "yourPrice": str(your_price),
+        "albumPrice": str(discounted_price),
+        "rawAlbumDiscount": str(raw_album_discount),
+        "savings": str(discounted_price - your_price),
     }
+
 
 def purchase_album(user_id, album_id):
     """
@@ -41,17 +43,17 @@ def purchase_album(user_id, album_id):
     album = Album.objects.get(id=album_id)
     album_owner = album.get_created_by().get_id()
     seller = User.objects.get(id=album_owner)
-    
+
     # Check that the buyer is not the seller
     if buyer.get_id() == seller.get_id():
         raise Error.ValueError("You cannot buy your own album")
 
     album_photos = album.get_photos()
     buyer_photos = buyer.get_purchased()
-    
+
     # Get price for buyer. Only includes photos which they
     # have not yet purchased
-    album_price = int(get_price(buyer, album)['yourPrice'])
+    album_price = int(get_price(buyer, album)["yourPrice"])
 
     # Check that the buyer has sufficient money
     buyer_credits = buyer.get_credits()
@@ -63,7 +65,7 @@ def purchase_album(user_id, album_id):
 
     # Seller gets 80% of profits. Photopro takes 20%
     seller.add_credits(int(0.80 * album_price))
-    
+
     # Add photos to buyer's purchased list
     for photo in album_photos:
         if photo not in buyer.get_purchased():

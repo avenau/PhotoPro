@@ -9,6 +9,7 @@ from lib.token_functions import get_uid
 from lib.user.user import User
 from lib import Error
 
+
 def get_profile_details(data):
     try:
         searcher = User.objects.get(id=get_uid(data["token"]))
@@ -24,15 +25,16 @@ def get_profile_details(data):
     following = profile_owner in following
     print(following)
     return {
-            "fname": profile_owner.get_fname(),
-            "lname": profile_owner.get_lname(),
-            "nickname": profile_owner.get_nickname(),
-            "location": profile_owner.get_location(),
-            "email": profile_owner.get_email(),
-            "profilePic": profile_owner.get_profile_pic(),
-            "aboutMe": profile_owner.get_about_me(),
-            "following": following,
-            }
+        "fname": profile_owner.get_fname(),
+        "lname": profile_owner.get_lname(),
+        "nickname": profile_owner.get_nickname(),
+        "location": profile_owner.get_location(),
+        "email": profile_owner.get_email(),
+        "profilePic": profile_owner.get_profile_pic(),
+        "aboutMe": profile_owner.get_about_me(),
+        "following": following,
+    }
+
 
 def user_photo_search(data):
     try:
@@ -75,9 +77,12 @@ def user_photo_search(data):
         cur_photo = Photo.objects.get(id=result["id"])
         result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
         if req_user:
-            result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (cur_photo.is_photo_owner(req_user_obj))
+            result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (
+                cur_photo.is_photo_owner(req_user_obj)
+            )
 
     return res
+
 
 def user_collection_search(data):
     try:
@@ -124,7 +129,7 @@ def user_album_search(data):
                     "discount": 1,
                     "id": {"$toString": "$_id"},
                     "_id": 0,
-            }
+                }
             },
             {"$skip": data["offset"]},
             {"$limit": data["limit"]},
@@ -141,24 +146,28 @@ def user_following_search(data):
     try:
         u_id = get_uid(data["token"])
     except:
-        raise Error.UserDNE("Sorry, couldn't identify you. Try logging out and back in.")
-    
+        raise Error.UserDNE(
+            "Sorry, couldn't identify you. Try logging out and back in."
+        )
+
     skip = data["offset"]
     limit = data["limit"]
     user_obj = User.objects.get(id=u_id)
-    following_list = user_obj.get_following()[skip:skip+limit]
+    following_list = user_obj.get_following()[skip : skip + limit]
 
     res = []
     for followed in following_list:
         tmp_dict = {}
-        tmp_dict['id'] = str(followed.get_id())
-        tmp_dict['nickname'] = followed.get_nickname()
-        tmp_dict['fname'] = followed.get_fname()
-        tmp_dict['lname'] = followed.get_lname()
-        tmp_dict['email'] = followed.get_email()
-        tmp_dict['location'] = followed.get_location()
-        tmp_dict['profilePic'] = followed.get_profile_pic()
-        tmp_dict['following'] = followed in user_obj.get_following()[skip:skip+limit]
+        tmp_dict["id"] = str(followed.get_id())
+        tmp_dict["nickname"] = followed.get_nickname()
+        tmp_dict["fname"] = followed.get_fname()
+        tmp_dict["lname"] = followed.get_lname()
+        tmp_dict["email"] = followed.get_email()
+        tmp_dict["location"] = followed.get_location()
+        tmp_dict["profilePic"] = followed.get_profile_pic()
+        tmp_dict["following"] = (
+            followed in user_obj.get_following()[skip : skip + limit]
+        )
         res.append(tmp_dict)
 
     return res

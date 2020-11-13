@@ -51,46 +51,50 @@ class User(Document):
     # User's email
     email = EmailField(required=True, unique=True, validation=validation.validate_email)
     # User's nickname
-    nickname = StringField(required=True,
-                           validation=validation.validate_nickname)
+    nickname = StringField(required=True, validation=validation.validate_nickname)
     # User's hashed password
-    password = BinaryField(required=True,
-                           validation=validation.validate_password)
+    password = BinaryField(required=True, validation=validation.validate_password)
     # User's profile pic, base64 encoded string
-    profile_pic = ListField(StringField(),
-                            validation=validation.validate_profile_pic)
+    profile_pic = ListField(StringField(), validation=validation.validate_profile_pic)
     # User's info about themself
     about_me = StringField(validation=validation.validate_about_me)
     # User's country, validated again the location list
     location = StringField(validation=validation.validate_location)
     # Array of Photo references that the user has posted
-    posts = ListField(ReferenceField("photo.Photo"),
-                      validation=validation.validate_posts)
+    posts = ListField(
+        ReferenceField("photo.Photo"), validation=validation.validate_posts
+    )
     # Array of Album references that the user has created
-    albums = ListField(ReferenceField("album.Album"),
-                       validation=validation.validate_albums)
+    albums = ListField(
+        ReferenceField("album.Album"), validation=validation.validate_albums
+    )
     # Array of Collection references that the user has created
-    collections = ListField(ReferenceField("collection.Collection"),
-                            validation=validation.validate_collections)
+    collections = ListField(
+        ReferenceField("collection.Collection"),
+        validation=validation.validate_collections,
+    )
     # Array of liked Photo references
-    likes = ListField(ReferenceField("photo.Photo"),
-                      validation=validation.validate_likes)
+    likes = ListField(
+        ReferenceField("photo.Photo"), validation=validation.validate_likes
+    )
     # Array of purchased Photo references
-    purchased = ListField(ReferenceField("photo.Photo"),
-                          validation=validation.validate_purchased)
+    purchased = ListField(
+        ReferenceField("photo.Photo"), validation=validation.validate_purchased
+    )
     # User's current credits
     credits = IntField(default=0, validation=validation.validate_credit)
     # When the user was created
-    created = DateTimeField(required=True,
-                            validation=validation.validate_created)
+    created = DateTimeField(required=True, validation=validation.validate_created)
     # List of the searches made by the user, ordered with recent searches first
     searches = ListField(StringField(), validation=validation.validate_searches)
     # Reference to all users this user is following
-    following = ListField(ReferenceField("User"),
-                          validation=validation.validate_following)
+    following = ListField(
+        ReferenceField("User"), validation=validation.validate_following
+    )
     # List of keywords, which act as metrics for recommending photos for the user
-    recommend_keywords = ListField(StringField(),
-                                   validation=validation.validate_recommended_keywords)
+    recommend_keywords = ListField(
+        StringField(), validation=validation.validate_recommended_keywords
+    )
     # Meta data about the User collection
     meta = {"collection": "users"}
 
@@ -374,13 +378,13 @@ class User(Document):
         Set keywords from photos a user has interacted with or search queries
         """
         self.recommend_keywords = keywords
-    
+
     def add_following(self, user):
         self.following.append(user)
-        
+
     def remove_following(self, user):
         self.following.remove(user)
-    
+
     def get_following(self):
         return self.following
 

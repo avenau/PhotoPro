@@ -8,6 +8,7 @@ import traceback
 import lib.Error as Error
 import lib.album
 
+
 def create_album(title, user):
     """
     Create a new album for a user

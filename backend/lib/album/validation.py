@@ -1,15 +1,16 @@
-'''
+"""
 Album specific validation
-'''
+"""
 import traceback
 import mongoengine
 import lib.Error as Error
 from lib.Error import ValidationError
 
+
 def validate_discount(discount):
-    '''
+    """
     Essentially the same as photo.validation.validate_price
-    '''
+    """
     try:
         mongoengine.IntField().validate(discount)
     except mongoengine.ValidationError:

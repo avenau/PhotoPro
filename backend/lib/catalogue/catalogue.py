@@ -21,12 +21,18 @@ class Catalogue(Document):
     Catalogue class
     """
 
-    title = StringField(required=True, max_length=40, validation=validation.validate_title)
-    photos = ListField(ReferenceField("photo.Photo"), validation=validation.validate_photos)
-    creation_date = DateTimeField(required=True, validation=validation.validate_creation_date)
-    created_by = ReferenceField("user.User",
-                                validation=validation.validate_created_by,
-                                required=True)
+    title = StringField(
+        required=True, max_length=40, validation=validation.validate_title
+    )
+    photos = ListField(
+        ReferenceField("photo.Photo"), validation=validation.validate_photos
+    )
+    creation_date = DateTimeField(
+        required=True, validation=validation.validate_creation_date
+    )
+    created_by = ReferenceField(
+        "user.User", validation=validation.validate_created_by, required=True
+    )
     tags = ListField(StringField(), validation=validation.validate_tags)
     meta = {"allow_inheritance": True, "abstract": True}
 

@@ -10,6 +10,7 @@ from lib.token_functions import get_uid
 from lib.photo.photo import Photo
 from bson.objectid import ObjectId
 
+
 def recommend_keywords(u_id):
     """
     Get the default or 10 top photo keywords based on recently liked,
@@ -34,7 +35,8 @@ def recommend_keywords(u_id):
     except:
         return []
 
-def count_res(u_id,keywords):
+
+def count_res(u_id, keywords):
     """
     Count the number of results returned based on keyword metrics
     @param: u_id, userid
@@ -59,12 +61,10 @@ def count_res(u_id,keywords):
                     ],
                     "deleted": False,
                     "user": {"$ne": ObjectId(u_id)},
-                    "_id": {"$nin": purchased_id}
+                    "_id": {"$nin": purchased_id},
                 }
             },
-            {
-                "$count": "num_recommend"
-            },
+            {"$count": "num_recommend"},
         ]
     )
     res = json.loads(dumps(res))
@@ -73,6 +73,7 @@ def count_res(u_id,keywords):
     except:
         num_rec = 0
     return num_rec
+
 
 def recommend_photos(data):
     u_id = get_uid(data["token"])
@@ -96,7 +97,7 @@ def recommend_photos(data):
                     ],
                     "deleted": False,
                     "user": {"$ne": ObjectId(u_id)},
-                    "_id": {"$nin": purchased_id}
+                    "_id": {"$nin": purchased_id},
                 }
             },
             {
@@ -116,8 +117,11 @@ def recommend_photos(data):
     )
     res = json.loads(dumps(res))
     for result in res:
-        result["metadata"], result["photoStr"] = Photo.objects.get(id=result["id"]).get_thumbnail(u_id)
+        result["metadata"], result["photoStr"] = Photo.objects.get(
+            id=result["id"]
+        ).get_thumbnail(u_id)
     return res
+
 
 def aggregate_photo_keywords(photos):
     """
@@ -138,6 +142,7 @@ def aggregate_photo_keywords(photos):
 
     return keywords
 
+
 def get_top_keywords(keywords, count=10):
     """
     Get most frequently occuring (tags and titles) from a list of keywords
@@ -149,6 +154,7 @@ def get_top_keywords(keywords, count=10):
         freq[word] += 1
     freq = sorted(freq, key=freq.get, reverse=True)[:count]
     return freq
+
 
 def search_history_keywords(u_id):
     """
@@ -166,6 +172,7 @@ def search_history_keywords(u_id):
             keywords.append(i.lower())
     return keywords
 
+
 def liked_photo_keywords(u_id, count=10):
     """
     Get tags and titles of count/25 most recently like photos of user
@@ -177,6 +184,7 @@ def liked_photo_keywords(u_id, count=10):
 
     photo_keywords = aggregate_photo_keywords(liked_photos)
     return photo_keywords
+
 
 def purchased_photo_keywords(u_id, count=10):
     """

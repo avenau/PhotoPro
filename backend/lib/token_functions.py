@@ -23,17 +23,17 @@ def get_user_details(u_id, mongo):
 
 
 def create_token(u_id):
-    '''
+    """
     Create a unique JSON Web Token which is a function of
     the user's u_id and the secret defined above.
-    '''
+    """
     return jwt.encode({"u_id": u_id}, secret).decode()
 
 
 def verify_token(token):
-    '''
+    """
     Returns the u_id of the token, otherwise raises an exception
-    '''
+    """
     try:
         res = jwt.decode(token, secret)
     except InvalidSignatureError:
@@ -49,7 +49,7 @@ def verify_token(token):
 
 
 def get_uid(token):
-    '''
+    """
     Return the u_id string from the token
-    '''
-    return verify_token(token)['u_id']
+    """
+    return verify_token(token)["u_id"]

@@ -37,15 +37,20 @@ class Photo(Document):
     comments: [Comment]
     deleted: boolean
     """
+
     # Title of the photo
     title = StringField(required=True, validation=validation.validate_title)
     # Price of the photo
     price = IntField(required=True, validation=validation.validate_price)
     # List of Albums references that the photo is associated with
-    albums = ListField(ReferenceField("album.Album"), validation=validation.validate_albums)
+    albums = ListField(
+        ReferenceField("album.Album"), validation=validation.validate_albums
+    )
     # List of Collection references that the photo is associated with
-    collections = ListField(ReferenceField("collection.Collection"),
-                            validation=validation.validate_collections)
+    collections = ListField(
+        ReferenceField("collection.Collection"),
+        validation=validation.validate_collections,
+    )
     # List of Tags, updated to be unique on save
     tags = ListField(StringField(), validation=validation.validate_tags)
     # Metadata of the photo
@@ -62,8 +67,9 @@ class Photo(Document):
     likes = IntField(default=0, validation=validation.validate_likes)
     # List of Comments associated with the photo
     # comments = ListField(ObjectIdField())
-    comments = ListField(ReferenceField("comment.Comment"),
-                         validation=validation.validate_comments)
+    comments = ListField(
+        ReferenceField("comment.Comment"), validation=validation.validate_comments
+    )
     # Whether the photo is deleted or not
     deleted = BooleanField(default=False, validation=validation.validate_deleted)
     # Metadata of the photo {collection: collection-name}
@@ -394,9 +400,9 @@ class Photo(Document):
         return this_user == self.get_user()
 
     def is_owned(self, req_user):
-        '''
+        """
         @param req_user:mongoengine.Document.User
-        '''
+        """
         try:
             return (self in req_user.get_all_purchased()) or (
                 self.is_photo_owner(req_user)

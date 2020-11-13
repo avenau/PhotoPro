@@ -15,8 +15,10 @@ from flask.helpers import send_file
 from flask_cors import CORS
 from functools import wraps
 
+
 class Config(object):
     PORT_NUMBER = os.getenv("FS_API_PORT")
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -27,13 +29,16 @@ secretkey = "PhotoProSecretAPIKey"
 HELPERS
 """
 
+
 def validate_secret(function):
     @wraps(function)
     def inner():
         if request.headers.get("secretkey") != secretkey:
             abort(401)
         return function()
+
     return inner
+
 
 def dir_check(function):
     @wraps(function)
@@ -41,13 +46,16 @@ def dir_check(function):
         if not os.path.exists("./backend/images"):
             os.makedirs("./backend/images")
         return function()
+
     return inner
+
 
 """
 ROUTES
 """
 
-@app.route('/save', methods=['POST'])
+
+@app.route("/save", methods=["POST"])
 @validate_secret
 @dir_check
 def upload_photo():
@@ -67,11 +75,12 @@ def upload_photo():
     """
     r = request.form.to_dict()
     with open(f"./backend/images/{r['filename']}", "wb") as f:
-        f.write(base64.b64decode(r['photo']))
+        f.write(base64.b64decode(r["photo"]))
     return dumps({})
 
+
 # TODO get actual photo not static
-@app.route('/get', methods=['GET'])
+@app.route("/get", methods=["GET"])
 @validate_secret
 @dir_check
 def get_photo():
@@ -97,7 +106,8 @@ def get_photo():
     except:
         abort(404)
 
-@app.route('/download', methods=['GET'])
+
+@app.route("/download", methods=["GET"])
 @validate_secret
 @dir_check
 def get_iamges():
@@ -117,60 +127,60 @@ def get_iamges():
     print(r)
     try:
         memory_file = BytesIO()
-        with zipfile.ZipFile(memory_file, 'w') as zf:
+        with zipfile.ZipFile(memory_file, "w") as zf:
             for individualFile in os.listdir(path="./backend/images"):
-                zf.write(f"./backend/images/{individualFile}", arcname=f"{individualFile}")
+                zf.write(
+                    f"./backend/images/{individualFile}", arcname=f"{individualFile}"
+                )
         memory_file.seek(0)
-        return send_file(memory_file, attachment_filename='images.zip', as_attachment=True)
+        return send_file(
+            memory_file, attachment_filename="images.zip", as_attachment=True
+        )
     except Exception as e:
         print(e)
         abort(404)
 
 
-'''
+"""
 ---------------
 - Test Routes -
 ---------------
-'''
+"""
 
-@app.route('/testsecret', methods=['GET'])
+
+@app.route("/testsecret", methods=["GET"])
 @validate_secret
 def test_secret():
-    '''
+    """
     Testing decorator for validating token
     Use this decorator to verify the token is
     valid and matches the secret
-    '''
+    """
     print("YAY")
-    return dumps({
-        "success": "success"
-    })
+    return dumps({"success": "success"})
 
-@app.route('/testdir', methods=['GET'])
+
+@app.route("/testdir", methods=["GET"])
 @validate_secret
 @dir_check
 def test_dir():
-    '''
+    """
     Testing decorator for ensuring images directory exists
-    '''
+    """
 
-    return dumps({
-        "success": "success"
-    })
+    return dumps({"success": "success"})
 
 
-@app.route('/', methods=['GET'])
+@app.route("/", methods=["GET"])
 def basic():
     """
     Basic Test route
     """
-    arguments = {
-            'first_name': 'test',
-            'colour': 'test'
-            }
+    arguments = {"first_name": "test", "colour": "test"}
     if request.args:
         arguments = request.args
     return dumps(arguments)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(port=8101, debug=False)

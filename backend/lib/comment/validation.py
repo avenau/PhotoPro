@@ -1,15 +1,16 @@
-'''
+"""
 Comment Validation
-'''
+"""
 import traceback
 import mongoengine
 import lib.Error as Error
 import lib.user.user as user
 
+
 def validate_posted(posted):
-    '''
+    """
     @param posted:datetime
-    '''
+    """
     try:
         mongoengine.DateTimeField().validate(posted)
     except mongoengine.ValidationError:
@@ -18,9 +19,9 @@ def validate_posted(posted):
 
 
 def validate_content(content):
-    '''
+    """
     @param content:string
-    '''
+    """
     try:
         mongoengine.StringField().validate(content)
     except mongoengine.ValidationError:

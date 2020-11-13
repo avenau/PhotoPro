@@ -34,7 +34,7 @@ def get_popular_images(u_id, offset, limit):
     )
 
     res = json.loads(dumps(res))
-    
+
     try:
         # Get purchased photos of register user
         cur_user = User.objects.get(id=u_id)
@@ -42,7 +42,7 @@ def get_popular_images(u_id, offset, limit):
     except:
         # Anonymous user
         purchased = []
-    
+
     deleted_photos = []
 
     for result in res:
@@ -63,7 +63,6 @@ def get_popular_images(u_id, offset, limit):
                 result["owns"] = True
             else:
                 result["owns"] = False
-           
 
     res = [i for i in res if i not in deleted_photos]
     return res

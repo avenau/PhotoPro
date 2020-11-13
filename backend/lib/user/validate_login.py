@@ -9,7 +9,7 @@ import lib.user.user
 
 
 def login(bcrypt, email, password):
-    '''
+    """
     Login the user
     1) Email Validation
     2) Password validation
@@ -21,7 +21,7 @@ def login(bcrypt, email, password):
     @param email: string
     @param password: binary
     @return user: {u_id: string, token: string, nickname: string}
-    '''
+    """
     user = lib.user.user.User.objects(email=email).first()
     if not user:
         raise EmailError("That email isn't registered.")
@@ -38,8 +38,4 @@ def login(bcrypt, email, password):
         print(traceback.format_exc())
         raise PasswordError("That password is incorrect.")
 
-    return {
-        "u_id": str(u_id),
-        "token": token,
-        "nickname": nickname
-    }
+    return {"u_id": str(u_id), "token": token, "nickname": nickname}

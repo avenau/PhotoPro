@@ -7,6 +7,7 @@ from io import BytesIO
 import base64
 from PIL import Image
 
+
 def extension_to_mimetype(extension):
     """
     Return mimetype based on given extension
@@ -25,6 +26,7 @@ def extension_to_mimetype(extension):
         return extension
 
     return mime
+
 
 def update_user_thumbnail(base64_image, extension):
     """
