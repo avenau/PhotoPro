@@ -91,9 +91,12 @@ class CollectionDetails extends React.Component<Props, State> {
                 <p><b>Tags</b></p>
                 <Container>
                   <Row>
-                    { this.state.tags.map((tag) => (
+                    {this.state.tags.length > 0 ?
+                    this.state.tags.map((tag) => (
                       <Tags key={tag} tagName={tag} type="collection" />
                       ))
+                      :
+                      <p>No collection tags found</p>
                     }
                   </Row>
                 </Container>
