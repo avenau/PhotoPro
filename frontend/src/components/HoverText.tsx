@@ -7,13 +7,9 @@ interface Props extends Omit<OverlayTriggerProps, "overlay"> {
 }
 
 export default class HoverText extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
-
-  renderTooltip() {
+  renderTooltip = () => {
     return <Tooltip id={this.props.id}>{this.props.helpfulText}</Tooltip>;
-  }
+  };
 
   render() {
     return (
@@ -21,8 +17,13 @@ export default class HoverText extends React.Component<Props> {
         placement="top"
         delay={{ show: 100, hide: 150 }}
         overlay={this.renderTooltip()}
+        transition={false}
       >
-        {this.props.children}
+        {({ ref, ...triggerHandler }) => (
+          <div ref={ref} {...triggerHandler}>
+            {this.props.children}
+          </div>
+        )}
       </OverlayTrigger>
     );
   }
