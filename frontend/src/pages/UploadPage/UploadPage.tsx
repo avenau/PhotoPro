@@ -1,22 +1,18 @@
+import axios from "axios";
 import React from "react";
-import "./UploadPage.css";
+import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import { RouteChildrenProps } from "react-router-dom";
-import axios from "axios";
-import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Toolbar from "../../components/Toolbar/Toolbar";
+import { RouteChildrenProps } from "react-router-dom";
 import LoadingButton from "../../components/LoadingButton/LoadingButton";
-
-// Functional components
-import Title from "../../components/PhotoEdit/Title";
-import Price from "../../components/PhotoEdit/Price";
-import Tags from "../../components/PhotoEdit/Tags";
 import Album from "../../components/PhotoEdit/Album";
 import FileUpload from "../../components/PhotoEdit/FileUpload";
+import Price from "../../components/PhotoEdit/Price";
+import Tags from "../../components/PhotoEdit/Tags";
+import Title from "../../components/PhotoEdit/Title";
+import "./UploadPage.css";
 
 class UploadPage extends React.Component<RouteChildrenProps, any> {
   constructor(props: RouteChildrenProps) {
@@ -46,7 +42,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       if (fileInput.files && fileInput.files[0]) {
         const thePhotoFile = fileInput.files[0];
         const photoFileName = thePhotoFile.name;
-        const match = photoFileName.toLowerCase().match(/\.[^\.]*$/);
+        const match = photoFileName.toLowerCase().match(/\.[^.]*$/);
         const photoExtension = match !== null ? match[0] : "";
         const reader = new FileReader();
         reader.readAsDataURL(thePhotoFile);
@@ -76,7 +72,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
           extension: response[1],
           token,
         })
-        .then((response) => {
+        .then(() => {
           this.setState({ btnLoading: false });
           const uid = localStorage.getItem("u_id");
           this.props.history.push(`/user/${uid}`);
@@ -153,12 +149,11 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
                     />
                   </Col>
                 </Row>
+                <br />
                 <LoadingButton
                   id="uploadButton"
                   loading={this.state.btnLoading}
-                  onClick={() => {
-                    
-                  }}
+                  onClick={() => {}}
                   type="submit"
                 >
                   Upload Photo
