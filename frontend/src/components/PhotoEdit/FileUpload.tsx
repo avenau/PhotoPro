@@ -46,7 +46,7 @@ export default function FileUpload(props: InterfaceFile) {
     } else {
       setErrMsg("");
       props.pickedPhoto(true);
-      props.onChange(document.getElementById("photo"));
+      props.onChange(document.getElementById("photoId"));
       props.activateUploadButton();
       // Set image preview
       // Source: https://stackoverflow.com/questions/4459379/preview-an-image-before-it-is-uploaded
@@ -60,7 +60,7 @@ export default function FileUpload(props: InterfaceFile) {
     <>
       <Form.Group>
         <Form.File
-          id="photo"
+          id="photoId"
           label="Select A Photo"
           accept=".jpeg, .jpg, .png, .svg"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
