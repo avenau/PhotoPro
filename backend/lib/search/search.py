@@ -162,6 +162,7 @@ def collection_search(data):
     sort = get_sort_method(data["orderby"])
     try:
         req_user = get_uid(data["token"])
+        req_user = ObjectId(req_user)
     except:
         req_user = ""
     res = Collection.objects.aggregate(
@@ -172,7 +173,7 @@ def collection_search(data):
                         {"title": {"$regex": data["query"], "$options": "i"}},
                         {"tags": {"$in": [data["query"]]}},
                     ],
-                    "$or": [{"private": False}, {"created_by": ObjectId(req_user)}],
+                    "$or": [{"private": False}, {"created_by": req_user}],
                 }
             },
             {

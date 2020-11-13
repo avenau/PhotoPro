@@ -178,14 +178,16 @@ def update_collection(params, _collection):
     '''
     Update collection
     '''
+    print(params)
     if 'title' in params:
-        _collection.set_title(params['title'])
+        _collection.update_title(params['title'])
     if 'tags' in params:
-        _collection.set_tags()
+        tags = loads(params['tags'])
+        _collection.set_tags(tags)
     if 'private' in params:
-        if params['private'] == 'true':
+        if params['private'] == "true":
             _collection.set_private()
-        if params['private'] == 'false':
+        if params['private'] == "false":
             _collection.set_public()
     _collection.save()
 
@@ -252,6 +254,17 @@ def collection_photo_search(data):
 
     _collection = collection.Collection.objects.get(id=_id)
     _photos = _collection.get_photos()[offset:offset+limit]
+
+    try:
+        _user = user.User.objects.get(id=req_user)
+    except:
+        _user = ""
+
+    try:
+        purchased = _user.get_purchased()
+        print([i for i in purchased])
+    except:
+        purchased = []
     ret_photos = []
     for this_photo in _photos:
         meta, thumbnail = this_photo.get_thumbnail(req_user)
@@ -261,6 +274,7 @@ def collection_photo_search(data):
                 'discount': this_photo.get_discount(),
                 'photoStr': thumbnail,
                 'metadata': meta,
-                'id': str(this_photo.get_id())
+                'id': str(this_photo.get_id()),
+                'owns': (this_photo in purchased) or (this_photo.get_user() == _user)
             })
     return ret_photos

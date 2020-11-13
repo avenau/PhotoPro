@@ -23,10 +23,13 @@ interface Props extends RouteComponentProps {
   refreshCredits?: () => void;
 }
 
-class PhotoThumbnail extends React.Component<
-  Props,
-  { owns: boolean; photoB64: string; loading: boolean }
-> {
+interface BetterInterface {
+  owns: boolean;
+  photoB64: string;
+  loading: boolean
+}
+
+class PhotoThumbnail extends React.Component<Props, BetterInterface> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -106,7 +109,7 @@ class PhotoThumbnail extends React.Component<
   }
 
   render() {
-    return this.props.deleted ? (
+    return !this.state.owns && this.props.deleted ? (
       <>
         <Image src={NoImage} className="photo-thumbnail" />
         <div className="photo-overlay">This photo has been deleted</div>

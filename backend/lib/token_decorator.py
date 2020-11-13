@@ -59,7 +59,7 @@ def validate_token(function):
         if token == '':
             print("Token is an empty string")
             raise TokenError("Please log in to use this feature.")
-
+        
         # Try decoding
         try:
             jwt.decode(token, secret)
@@ -68,10 +68,10 @@ def validate_token(function):
             raise TokenError("Invalid secret")
         except DecodeError:
             print("Token failed validation")
-            raise TokenError("Token failed validation")
+            raise TokenError("We couldn't find what you're looking for :( ")
         except InvalidTokenError:
             print("Token failed validation")
-            raise TokenError("Token failed validation")
+            raise TokenError("We couldn't find what you're looking for :( ")
 
         return function(*args, **kwargs)
 
