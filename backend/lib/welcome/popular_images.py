@@ -1,6 +1,7 @@
 import json
 from lib.popular.popular_photos import PopularPhoto
 from lib.photo.photo import Photo
+from lib.user.user import User
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 
@@ -37,7 +38,7 @@ def get_popular_images(u_id, offset, limit):
     try:
         # Get purchased photos of register user
         cur_user = User.objects.get(id=u_id)
-        purchased = cur_user.get_all_purchased()
+        purchased = cur_user.get_purchased()
     except:
         # Anonymous user
         purchased = []
