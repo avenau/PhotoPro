@@ -474,6 +474,7 @@ def _profile_details():
             "location": this_user.get_location(),
             "email": this_user.get_email(),
             "profilePic": this_user.get_profile_pic(),
+            "aboutMe": this_user.get_about_me(),
         }
     )
 
