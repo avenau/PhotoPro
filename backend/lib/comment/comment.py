@@ -9,15 +9,19 @@ from mongoengine import StringField
 from mongoengine import ReferenceField
 
 import lib.user.user as user
+import lib.comment.validation as validation
 
 
 class Comment(Document):
     '''
     Comment mongoengine class
     '''
-    posted = DateTimeField(required=True, default=datetime.datetime.now())
-    content = StringField(required=True)
+    posted = DateTimeField(required=True,
+                           validation=validation.validate_posted)
+    content = StringField(required=True,
+                          validation=validation.validate_content)
     commenter = ReferenceField('user.User', required=True)
+
     def get_id(self):
         '''
         Object id of the photo

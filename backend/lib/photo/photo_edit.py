@@ -2,6 +2,7 @@
 Create and modify photos which are uploaded by a user
 
 """
+import json
 import base64
 import datetime
 import traceback
@@ -11,7 +12,6 @@ from bson.objectid import ObjectId
 from PIL import Image, ImageSequence, ImageDraw, ImageFont
 import cairosvg
 
-from lib.photo.validate_photo import reformat_lists
 from lib.token_functions import get_uid
 from lib.photo.fs_interactions import find_photo, save_photo
 import lib.Error as Error
@@ -56,7 +56,6 @@ def create_photo_entry(photo_details):
             "success": "true"
         }
     except Exception as e:
-        print(e)
         return {
             "success": "false"
         }
@@ -212,3 +211,36 @@ def update_photo_details(photo_details):
     return {
         "success": "true"
     }
+
+def reformat_lists(photo_details):
+    '''
+    1) Lower case for tags
+    2) Convert JSON album list to python
+    '''
+    photo_details = lower_tags(photo_details)
+    photo_details = convert_album_list(photo_details)
+    return photo_details
+
+
+def lower_tags(photo_details):
+    '''
+    Convert tags to lowercase
+    '''
+    tags = photo_details["tags"]
+    if not isinstance(tags, list):
+        tags = json.loads(tags)
+
+    photo_details.pop("tags")
+    tags = [i.lower() for i in tags]
+    photo_details.update({"tags": tags})
+    return photo_details
+
+def convert_album_list(photo_details):
+    """
+    Convert JSON album list to python
+    """
+    albums = photo_details["albums"]
+    if not isinstance(albums, list):
+        albums = json.loads(albums)
+    photo_details["albums"] = albums
+    return photo_details

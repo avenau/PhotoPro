@@ -1,3 +1,7 @@
+'''
+Purchases helper functions
+'''
+
 from json import loads
 
 from bson.json_util import dumps
@@ -8,6 +12,11 @@ from lib.user.user import User
 from lib import Error
 
 def get_purchased_photos(data):
+    '''
+    @param data: {token: string,
+                  offset: int,
+                  limit: int}
+    '''
     try:
         u_id = get_uid(data["token"])
     except:

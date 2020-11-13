@@ -25,44 +25,72 @@ class User(Document):
     """
     Mongoengine User definition
     NOTE: Password is assumed to always be a binary hash
+    fname: string
+    lname: string
+    email: email
+    nickname: string
+    password: binary
+    profile_pic: [string]
+    about_me: string
+    location: string
+    posts: [Post]
+    albums: [Album]
+    collections: [Collection]
+    likes: integer
+    purchased: [Photo]
+    credits: integer
+    created: datetime
+    following: [User]
+    recommended_keywords: [string]
     """
 
     # User's first name
-    fname = StringField(required=True)
+    fname = StringField(required=True, validation=validation.validate_fname)
     # User's last name
-    lname = StringField(required=True)
+    lname = StringField(required=True, validation=validation.validate_lname)
     # User's email
     email = EmailField(required=True, unique=True, validation=validation.validate_email)
     # User's nickname
-    nickname = StringField(required=True)
+    nickname = StringField(required=True,
+                           validation=validation.validate_nickname)
     # User's hashed password
-    password = BinaryField(required=True)
+    password = BinaryField(required=True,
+                           validation=validation.validate_password)
     # User's profile pic, base64 encoded string
-    profile_pic = ListField(StringField())
+    profile_pic = ListField(StringField(),
+                            validation=validation.validate_profile_pic)
     # User's info about themself
-    about_me = StringField()
+    about_me = StringField(validation=validation.validate_about_me)
     # User's country, validated again the location list
-    location = StringField(validation=validate_registration.valid_location)
+    location = StringField(validation=validation.validate_location)
     # Array of Photo references that the user has posted
-    posts = ListField(ReferenceField("photo.Photo"))
+    posts = ListField(ReferenceField("photo.Photo"),
+                      validation=validation.validate_posts)
     # Array of Album references that the user has created
-    albums = ListField(ReferenceField("album.Album"))
+    albums = ListField(ReferenceField("album.Album"),
+                       validation=validation.validate_albums)
     # Array of Collection references that the user has created
-    collections = ListField(ReferenceField("collection.Collection"))
+    collections = ListField(ReferenceField("collection.Collection"),
+                            validation=validation.validate_collections)
     # Array of liked Photo references
-    likes = ListField(ReferenceField("photo.Photo"))
+    likes = ListField(ReferenceField("photo.Photo"),
+                      validation=validation.validate_likes)
     # Array of purchased Photo references
-    purchased = ListField(ReferenceField("photo.Photo"))
+    purchased = ListField(ReferenceField("photo.Photo"),
+                          validation=validation.validate_purchased)
     # User's current credits
     credits = IntField(default=0, validation=validation.validate_credit)
     # When the user was created
-    created = DateTimeField(required=True)
+    created = DateTimeField(required=True,
+                            validation=validation.validate_created)
     # List of the searches made by the user, ordered with recent searches first
-    searches = ListField(StringField())
+    searches = ListField(StringField(), validation=validation.validate_searches)
     # Reference to all users this user is following
-    following = ListField(ReferenceField("User"))
+    following = ListField(ReferenceField("User"),
+                          validation=validation.validate_following)
     # List of keywords, which act as metrics for recommending photos for the user
-    recommend_keywords = ListField(StringField())
+    recommend_keywords = ListField(StringField(),
+                                   validation=validation.validate_recommended_keywords)
     # Meta data about the User collection
     meta = {"collection": "users"}
 
