@@ -76,7 +76,7 @@ class ManageCollection extends React.Component<Props, State> {
         private: this.state.private
       })
       .then((res) => {
-        this.props.history.push(`/user/${this.state.uId}`);
+        this.props.history.push(`/collection/${this.state.collectionId}`);
       })
       .catch();
   }

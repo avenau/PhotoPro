@@ -49,6 +49,7 @@ class CollectionDetails extends React.Component<Props, State> {
   private getCollection() {
     const { collectionId } = this.state;
     const { token } = this.state;
+    
     if (this.state.collectionId !== "") {
       axios
         .get(`/collection/get?token=${token}&collectionId=${collectionId}`)
@@ -63,7 +64,9 @@ class CollectionDetails extends React.Component<Props, State> {
             });
           }
         })
-        .catch(() => {});
+        .catch((err) => {
+          this.props.history.push("/page-not-found")
+        });
     }
   }
 
@@ -79,6 +82,9 @@ class CollectionDetails extends React.Component<Props, State> {
               >
                 By @​​​​​​​{this.state.nickname}
               </Link>
+              <div className="album-price-display">
+                <p>{this.state.nickname}'s {this.state.title} collection. They've bookmarked photos into this collection.</p>
+              </div>
             </Col>
             <Col xs={7}>
               <Container>
@@ -86,7 +92,7 @@ class CollectionDetails extends React.Component<Props, State> {
                 <Container>
                   <Row>
                     { this.state.tags.map((tag) => (
-                      <Tags key={tag} tagName={tag} type="album" />
+                      <Tags key={tag} tagName={tag} type="collection" />
                       ))
                     }
                   </Row>
