@@ -200,61 +200,68 @@ class PhotoContents extends React.Component<Props, any> {
 
   render() {
     return !this.state.loading ? (
-      <div className="PhotoContents">
-        <Container className="container">
+      <div className="photo-contents">
+        <Container>
           <Row className="PhotoRow">
-            <img className="actualPhoto" src={this.state.photoB64} />
-          </Row>
-          <Row className="PhotoInteraction">
-            <div className="LikeButton">
-              <LikeButton
-                p_id={this.props.photoId}
-                like_count={this.state.likes}
-                isLiked={this.state.isLiked}
-              />
-            </div>
-            <div
-              className="BookmarkButton"
-              data-type="toggle"
-              title="Add to Collection"
-            >
-              <BookmarkButton
-                pId={this.props.photoId}
-                collections={this.state.collections}
-              />
-            </div>
-          </Row>
-          <Row>{this.returnDynamicButtons()}</Row>
-          <div className="ArtistInfo">
-            <Row>
-              <h2 className="PhotoTitle">
-                <b>{this.state.title}</b>
-              </h2>
-            </Row>
-            <Row>
-              by{" "}
-              <a className="mx-1" href={`/user/${this.state.artistId}`}>
-                {this.state.nickname}
-              </a>{" "}
-              on {this.state.postedDate}
-            </Row>
-            <Row>{this.state.email}</Row>
-          </div>
-          <Row className="ContentRow">
-            <Col className="Details">
-              <Row>Tags (click tag to search)</Row>
-              <Row>
-                {this.state.tags.map((tag: string) => (
-                  <Tags key={tag} tagName={tag} type="photo" />
-                ))}
+            <Col>
+              
+              <img className="actualPhoto" src={this.state.photoB64} />
+            </Col>
+            <Col>
+              <div className="PhotoInfo">
+                <Row>
+                  <h2 className="PhotoTitle">
+                    <b>{this.state.title}</b>
+                  </h2>
+                </Row>
+                <Row>
+                  by{" "}
+                  <a className="mx-1" href={`/user/${this.state.artistId}`}>
+                    {this.state.nickname}
+                  </a>{" "}
+                  on {this.state.postedDate}
+                </Row>
+                <Row>{this.state.email}</Row>
+                <Row>
+                  <Col>
+                    <Row><b>Tags </b> (click tag to search)</Row>
+                    <Row>
+                      {this.state.tags.map((tag: string) => (
+                        <Tags key={tag} tagName={tag} type="photo" />
+                      ))}
+                    </Row>
+                  </Col>
+                </Row>
+                <Row className="PhotoInteraction">
+                <div className="LikeButton">
+                  <LikeButton
+                    p_id={this.props.photoId}
+                    like_count={this.state.likes}
+                    isLiked={this.state.isLiked}
+                  />
+                </div>
+                <div
+                  className="BookmarkButton"
+                  data-type="toggle"
+                  title="Add to Collection"
+                >
+                  <BookmarkButton
+                    pId={this.props.photoId}
+                    collections={this.state.collections}
+                  />
+                </div>
               </Row>
+              <Row>{this.returnDynamicButtons()}</Row>
+              </div>
             </Col>
           </Row>
         </Container>
+        <Container>
         <PhotoComments
           p_id={this.props.photoId}
           comments={this.state.comments}
         />
+        </Container>
       </div>
     ) : (
       <div>
