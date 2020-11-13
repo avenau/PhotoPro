@@ -1,34 +1,30 @@
-/*.PhotoContents {
-    max-width: 500px;
-    margin: auto;
-    display: flex;
-    align-items:center;
-    justify-content: center;
-    text-align: center;
+.photo-contents {
+    margin-top: 30px;
 }
 
-.PhotoInteraction {
-    border: 1px solid black;
-}*/
-
-/*.container {
-    text-align: center;
-    margin: auto;
-    flex-direction: column;
-}*/
+.photo-component {
+    background-color: #e9ecef;
+    border-radius: 2%;
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+}
 
 .actualPhoto {
     height: 100%;
     width: auto;
-    padding-top: 10px;
 }
 
-.BookmarkButton {
-    padding-top: 10px;
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-bottom: 10px;
+
+.photo-info {
+    padding: 15px;
+    margin-left: 50px;
 }
+.photo-interactions {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 
 .DownloadButton {
     padding-top: 10px;
@@ -37,11 +33,7 @@
     padding-bottom: 10px;
 }
 
-.LikeButton {
-    padding-top: 10px;
-    padding-right: 30px;
-    padding-bottom: 10px;
-}
+
 
 .DynamicButtonRow {
     padding-top: 10px;

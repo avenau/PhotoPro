@@ -1,14 +1,20 @@
+.comment-form {
+    margin-top: 40px;
+}
+
+
 .PhotoComments {
     display: flex;
     justify-content: center;
     padding-top: 10px;
+    margin-top: 15px;
+    margin-bottom: 20px;
 }
 
 .CommentDisplay {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-top: 10px;
 }
 
 .CommentMessages {

@@ -152,41 +152,43 @@ class PhotoContents extends React.Component<Props, any> {
   returnDynamicButtons() {
     if (this.state.isArtist) {
       return (
-        <div>
-          <HoverText
-            id="downloadButton"
-            helpfulText="Download"
-            placement="bottom"
-          >
-            <LoadingButton
-              loading={this.state.downloadBtnLoading}
-              onClick={(e) => this.downloadPhoto(e)}
-              variant="light"
-              className="m-2"
+        <>
+          <Row>
+            <HoverText
+              id="downloadButton"
+              helpfulText="Download"
+              placement="bottom"
             >
-              <ArrowDownSquare />
-            </LoadingButton>
-          </HoverText>
-          <HoverText
-            id="manageButton"
-            helpfulText="Manage Photo"
-            placement="bottom"
-          >
-            <LoadingButton
-              loading={this.state.downloadBtnLoading}
-              onClick={(() => this.props.history.push(`/edit/${this.props.photoId}`))}
-              variant="light"
-              className="m-2"
+              <LoadingButton
+                loading={this.state.downloadBtnLoading}
+                onClick={(e) => this.downloadPhoto(e)}
+                variant="light"
+                className="m-2 ml-4"
+              >
+                <ArrowDownSquare />
+              </LoadingButton>
+            </HoverText>
+            <HoverText
+              id="manageButton"
+              helpfulText="Manage Photo"
+              placement="bottom"
             >
-              <PencilSquare />
-            </LoadingButton>
-          </HoverText>
-        </div>
+              <LoadingButton
+                loading={this.state.downloadBtnLoading}
+                onClick={(() => this.props.history.push(`/edit/${this.props.photoId}`))}
+                variant="light"
+                className="m-2"
+              >
+                <PencilSquare />
+              </LoadingButton>
+            </HoverText>
+          </Row>
+        </>
       );
     }
     if (this.state.purchased) {
       return (
-        <div>
+        <Row>
           <HoverText
             id="downloadButton"
             helpfulText="Download"
@@ -195,102 +197,119 @@ class PhotoContents extends React.Component<Props, any> {
             <LoadingButton
               loading={this.state.downloadBtnLoading}
               onClick={(e) => this.downloadPhoto(e)}
-              className="m-2"
+              className="m-2 ml-4"
               variant="light"
             >
               <ArrowDownSquare />
             </LoadingButton>
           </HoverText>
-        </div>
+        </Row>
       );
     }
     return (
-      <div>
-        <HoverText
-          id="downloadWatermarked"
-          helpfulText="Download Watermarked Photo"
-          placement="bottom"
-        >
-          <LoadingButton
-            loading={this.state.downloadBtnLoading}
-            onClick={(e) => this.downloadPhoto(e)}
-            className="m-2"
-            variant="secondary"
+      <>
+        <Row>
+          <HoverText
+            id="downloadWatermarked"
+            helpfulText="Download Watermarked Photo"
+            placement="bottom"
           >
-            <ArrowDownSquare />
-          </LoadingButton>
-        </HoverText>
-        <HoverText
-          id="purchasePhoto"
-          helpfulText="Purchase Photo"
-          placement="bottom"
-        >
-          <LoadingButton
-            className="ml-1"
-            loading={this.state.purchaseBtnLoading}
-            onClick={(e) => this.purchasePhoto(e)}
-            variant="light"
+            <LoadingButton
+              loading={this.state.downloadBtnLoading}
+              onClick={(e) => this.downloadPhoto(e)}
+              className="m-2 ml-4"
+              variant="light"
+            >
+              <ArrowDownSquare />
+            </LoadingButton>
+          </HoverText>
+          <HoverText
+            id="purchasePhoto"
+            helpfulText="Purchase Photo"
+            placement="bottom"
           >
-            <CartPlus />
-          </LoadingButton>
-        </HoverText>
-        <Price
-          fullPrice={this.state.fullPrice}
-          discount={this.state.discount}
-        />
-      </div>
+            <LoadingButton
+              className="m-2"
+              loading={this.state.purchaseBtnLoading}
+              onClick={(e) => this.purchasePhoto(e)}
+              variant="light"
+            >
+              <CartPlus />
+            </LoadingButton>
+          </HoverText>
+        </Row>
+      </>
     );
   }
 
   render() {
     return !this.state.loading ? (
-      <div className="PhotoContents">
-        <Container className="container">
-          <Row className="PhotoRow">
-            <img className="actualPhoto" src={this.state.photoB64} />
-          </Row>
-          <Row className="PhotoInteraction">
-            <LikeButton
-              p_id={this.props.photoId}
-              like_count={this.state.likes}
-              isLiked={this.state.isLiked}
-            />
-            <BookmarkButton
-              pId={this.props.photoId}
-              collections={this.state.collections}
-            />
-            {this.returnDynamicButtons()}
-          </Row>
-          <div className="ArtistInfo">
-            <Row>
-              <h2 className="PhotoTitle">
-                <b>{this.state.title}</b>
-              </h2>
-            </Row>
-            <Row>
-              by{" "}
-              <a className="mx-1" href={`/user/${this.state.artistId}`}>
-                {this.state.nickname}
-              </a>{" "}
-              on {this.state.postedDate}
-            </Row>
-            <Row>{this.state.email}</Row>
-          </div>
-          <Row className="ContentRow">
-            <Col className="Details">
-              <Row>Tags (click tag to search)</Row>
-              <Row>
-                {this.state.tags.map((tag: string) => (
-                  <Tags key={tag} tagName={tag} type="photo" />
-                ))}
-              </Row>
+      <div className="photo-contents">
+        <Container className="photo-row">
+          <Row>
+            <Col className="photo-component">
+              <img className="actualPhoto" src={this.state.photoB64} />
+            </Col>
+            <Col xs={8}>
+              <div className="photo-info">
+                <Row>
+                  <h2 className="PhotoTitle">
+                    <b>{this.state.title}</b>
+                  </h2>
+                </Row>
+                <Row>
+                  by{" "}
+                  <a className="mx-1" href={`/user/${this.state.artistId}`}>
+                    {this.state.nickname}
+                  </a>{" "}
+                  on {this.state.postedDate}
+                </Row>
+                <Row>{this.state.email}</Row>
+                <br />
+                <Row>
+                  <Col>
+                    <Row><b>Tags</b> (click tag to search)</Row>
+                    <Row>
+                      {this.state.tags.map((tag: string) => (
+                        <Tags key={tag} tagName={tag} type="photo" />
+                      ))}
+                    </Row>
+                  </Col>
+                </Row>
+                <Row className="photo-interactions">
+                  <LikeButton
+                    p_id={this.props.photoId}
+                    like_count={this.state.likes}
+                    isLiked={this.state.isLiked}
+                  />
+                  <BookmarkButton
+                    pId={this.props.photoId}
+                    collections={this.state.collections}
+                  />
+                  {this.returnDynamicButtons()}
+                </Row>
+                {
+                this.state.isArtist || !this.state.purchased ?
+                  <Row>
+                    <Price
+                      fullPrice={this.state.fullPrice}
+                      discount={this.state.discount}
+                    />
+                  </Row>
+                :
+                  <>
+                  </>
+              }
+              </div>
             </Col>
           </Row>
         </Container>
-        <PhotoComments
-          p_id={this.props.photoId}
-          comments={this.state.comments}
-        />
+        <Container>
+          <PhotoComments
+            p_id={this.props.photoId}
+            comments={this.state.comments}
+          />
+        </Container>
       </div>
     ) : (
       <div>

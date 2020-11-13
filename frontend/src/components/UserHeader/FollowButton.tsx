@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { Button, Modal } from "react-bootstrap";
-import LoadingButton from "../../components/LoadingButton/LoadingButton";
+import LoadingButton from "../LoadingButton/LoadingButton";
 
 interface FollowButtonProps {
   userId: string; // This is the user_id of the person being followed
