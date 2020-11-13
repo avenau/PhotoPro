@@ -1,55 +1,63 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
-import axios from 'axios';
+import axios from "axios";
 import _ from "lodash";
+import { Link } from "react-router-dom";
+import Button from "react-bootstrap/Button"
 import profilePic from "../../static/profile-pic.png";
 import "./CommentMessage.scss";
+import { Row, Col, Container } from "react-bootstrap";
+
 
 interface MessageProp {
   message: string;
-  author: string
+  author: string;
   exact_date: string;
   time_after: string;
-  className: string;
   author_id: string;
   comment_id: string;
   photo_id: string;
-  get_comments: Function;
+  getComments: Function;
   profile_pic: string[];
-}
+  new_to_old: boolean;
 
+}
 
 export default function CommentMessage(props: MessageProp) {
   const [showingDate, setDate] = useState(props.time_after);
   const [showDelete, setDelete] = useState(false);
-  const currentUser = localStorage.getItem('u_id') as string
+  const currentUser = localStorage.getItem("u_id") as string;
+
+
   const showExactDate = () => {
-    setDate(props.exact_date)
-  }
+    setDate(props.exact_date);
+  };
   const showTimeAfter = () => {
-    setDate(props.time_after)
-  }
+    setDate(props.time_after);
+  };
 
   function DetermineDeleteButton() {
-
     if (currentUser === props.author_id) {
       setDelete(true);
     }
   }
 
   const DeleteComment = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     const c_id = props.comment_id;
     const p_id = props.photo_id;
-
     axios
-     .post('/comments/delete_comments',{token,c_id,p_id,})
-     .catch(()=>{});
-  }
+      .post("/comments/delete_comments", {
+        token,
+        c_id,
+        p_id,
+      })
+      .then((response) => {
+        props.getComments(p_id, props.new_to_old);
+      });
+  };
 
   function getPic() {
     // Get filetype
-
     if (_.isEqual(props.profile_pic, ["", ""])) {
       return profilePic;
     }
@@ -72,22 +80,56 @@ export default function CommentMessage(props: MessageProp) {
   }, [showDelete]);
 
   return (
-    <div className={props.className}>
-      <div>
-        <img src={getPic()} className="image" />
-
-        <Button className="DeleteButton" variant="light" onClick={DeleteComment}>
-          {showDelete ? <svg width="1em" height="1em" viewBox="0 0 16 16" className="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path fillRule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z" />
-          </svg> : ''}
-        </Button>
-      </div>
-      <b>{props.author}</b>
-      <div>{props.message}</div>
-
-
-      <br />
-      <div onMouseOver={showExactDate} onMouseLeave={showTimeAfter}>{showingDate}</div>
+    <div className="comment">
+      <Row>
+        <Col>
+          <Container>
+            <Row>
+              <Link to={`/user/${props.author_id}`}>
+                <img src={getPic()} className="thumbnail" />
+              </Link>
+            </Row>
+            <Row>
+              <a href={`/user/${props.author_id}`}>
+                <b>{props.author}</b>
+              </a>
+            </Row>
+          </Container>
+        </Col>
+        <Col xs={9}>
+          <div>{props.message}</div>
+        </Col>
+        <Col>
+          {showDelete ? 
+            <Button
+              className="DeleteButton"
+              variant="light"
+              onClick={DeleteComment}
+            >
+              <svg
+                width="1em"
+                height="1em"
+                viewBox="0 0 16 16"
+                className="bi bi-trash-fill"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"
+                />
+              </svg>
+            </Button>
+            :
+            <></>
+          }
+        </Col>
+      </Row>
+      <Row className="time">
+        <div onMouseOver={showExactDate} onMouseLeave={showTimeAfter}>
+          {showingDate}
+        </div>
+      </Row>
     </div>
   );
 }

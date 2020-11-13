@@ -380,6 +380,9 @@ class User(Document):
         
     def remove_following(self, user):
         self.following.remove(user)
+    
+    def get_following(self):
+        return self.following
 
     # User Document validation
     # ------------------------

@@ -96,7 +96,8 @@ export default class BookmarkButton extends React.Component<BookmarkProps, State
         <HoverText
           id="BookmarkButtonHoverText"
           helpfulText="Add photo to Collection"
-          placement="bottom">
+          placement="bottom"
+        >
           <Button variant="light" onClick={this.openModal} className="m-2">
             <svg
               width="1em"

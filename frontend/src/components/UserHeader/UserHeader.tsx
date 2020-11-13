@@ -2,17 +2,17 @@ import _ from "lodash";
 import React from "react";
 import { Image } from "react-bootstrap";
 import { PencilSquare } from "react-bootstrap-icons";
-import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
 import FollowButton from "./FollowButton";
+import ShowdownBadge from "../Showdown/ShowdownBadge";
 import HoverText from "../HoverText";
 
 interface Props {
   profilePic?: string[];
   header: boolean;
-  currentUser: boolean;
+  isCurrentUser: boolean;
   showEdit: boolean;
   name: string;
   nickname: string;
@@ -21,6 +21,7 @@ interface Props {
   className: string;
   aboutMe?: string;
   userId: string;
+  following: boolean;
 }
 
 export default class UserHeader extends React.Component<Props> {
@@ -33,7 +34,7 @@ export default class UserHeader extends React.Component<Props> {
 
   /** Return edit button if current user */
   private getEditButton() {
-    if (!this.props.showEdit || !this.props.currentUser) {
+    if (!this.props.showEdit || !this.props.isCurrentUser) {
       return null;
     }
     return (
@@ -51,37 +52,13 @@ export default class UserHeader extends React.Component<Props> {
 
   /** Return follow button if not current user */
   private getFollowButton() {
-    if (this.props.currentUser) {
+    if (this.props.isCurrentUser) {
       return null;
     }
-
-    /* const alreadyFollowing = false;
-     if (alreadyFollowing) {
-       return (
-         <Button
-           className="button-container"
-           variant="outline-primary"
-           onClick={(e) => {
-             e.stopPropagation();
-           }}
-         >
-           Following
-         </Button>
-       );
-     }
-     return (
-       <Button
-         className="button-container"
-         onClick={(e) => {
-           e.stopPropagation();
-         }}
-       >
-         Follow
-       </Button>
-     ); */
+    console.log(`userheader says ${  this.props.following}`);
     return (
       <FollowButton
-        currentUser={this.props.currentUser}
+        following={this.props.following}
         userId={this.props.userId}
       />
     );
@@ -128,6 +105,7 @@ export default class UserHeader extends React.Component<Props> {
             <></>
           )}
         </div>
+        <ShowdownBadge type="user" entryId={this.props.userId} />
         {this.getEditButton()}
         {this.getFollowButton()}
       </div>

@@ -16,6 +16,7 @@ interface Photo {
   user: string;
   owns: boolean; // purchased or posted
   votes: number;
+  deleted: boolean;
 }
 
 class PrevShowdown extends React.Component<Props> {
@@ -27,7 +28,7 @@ class PrevShowdown extends React.Component<Props> {
           <div
             onClick={(e) => {
               e.preventDefault();
-              this.props.history.push(`/photo/${photo.id}`);
+              if (!photo.deleted) this.props.history.push(`/photo/${photo.id}`);
             }}
             className="showdown-photo"
           >
