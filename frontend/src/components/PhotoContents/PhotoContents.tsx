@@ -272,7 +272,9 @@ class PhotoContents extends React.Component<Props, any> {
                 <Row>
                   <Col>
                     <Row>
-                      <b>Tags</b> (click tag to search)
+                      <div>
+                        <b>Tags</b> (click tag to search)
+                      </div>
                     </Row>
                     <Row>
                       {this.state.tags.map((tag: string) => (
@@ -283,8 +285,8 @@ class PhotoContents extends React.Component<Props, any> {
                 </Row>
                 <Row className="photo-interactions">
                   <LikeButton
-                    p_id={this.props.photoId}
-                    like_count={this.state.likes}
+                    pId={this.props.photoId}
+                    likeCount={this.state.likes}
                     isLiked={this.state.isLiked}
                   />
                   <BookmarkButton
