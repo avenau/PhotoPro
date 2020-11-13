@@ -388,10 +388,11 @@ def manage_account():
         for key, value in data.items():
             lib.user.helper_functions.update_value(bcrypt, this_user, key, value)
         success = True
-    except Exception:
+    except Exception as e:
         print("Errors... :-(")
         print(traceback.format_exc())
         success = False
+        raise e
 
     return dumps({"success": success})
 

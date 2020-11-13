@@ -33,6 +33,8 @@ export default function Register(props: RouteChildrenProps) {
   const [validPassword, setValidPass] = useState(false);
   const [password, setPassword] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   // Profile pic stuff
   const [profilePicInput, setProfilePicInput] = useState<HTMLElement | null>();
   const [profilePicPreview, setProfilePicPreview] = useState("");
@@ -60,6 +62,7 @@ export default function Register(props: RouteChildrenProps) {
     const form = event.currentTarget;
     event.preventDefault();
     event.stopPropagation();
+    setLoading(true);
     setProfilePic().then((response: any) => {
       if (form.checkValidity() === true) {
         axios
@@ -78,9 +81,12 @@ export default function Register(props: RouteChildrenProps) {
             if (r.status !== 200) {
               throw new Error();
             }
+            setLoading(false);
             props.history.push("/login");
           })
-          .catch(() => {});
+          .catch(() => {
+            setLoading(false);
+          });
         setFeedback(true);
       }
     });
@@ -92,6 +98,7 @@ export default function Register(props: RouteChildrenProps) {
       <Container>
         <h1>Join PhotoPro</h1>
         <UserDetails
+          loading={loading}
           validateFeedback={validateFeedback}
           validPassword={validPassword}
           countries={countries}

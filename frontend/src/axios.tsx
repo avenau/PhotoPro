@@ -39,7 +39,9 @@ const errorHandler = (error: any) => {
         delay={3000}
         autohide
         onClose={() => {
-          return document.getElementById("toast")?.firstChild?.remove();
+          ReactDOM.unmountComponentAtNode(
+            document.getElementById("toast") as Element
+          );
         }}
       >
         <Toast.Header closeButton>

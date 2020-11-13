@@ -1,11 +1,11 @@
 import React from "react";
-import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Image from "react-bootstrap/Image";
 import FileUpload from "../PhotoEdit/FileUpload";
 import ValidatePassword from "./ValidatePassword";
+import LoadingButton from "../LoadingButton/LoadingButton";
 
 export default function UserDetails(props: any) {
   return (
@@ -128,13 +128,23 @@ export default function UserDetails(props: any) {
         </Form.Control>
       </Form.Group>
       {props.required ? (
-        <Button disabled={!props.validPassword} type="submit">
+        <LoadingButton
+          disabled={!props.validPassword}
+          type="submit"
+          loading={props.loading}
+          onClick={() => {}}
+        >
           Submit
-        </Button>
+        </LoadingButton>
       ) : (
-        <Button disabled={!props.validPassword} type="submit">
+        <LoadingButton
+          disabled={!props.validPassword}
+          type="submit"
+          loading={props.loading}
+          onClick={() => {}}
+        >
           Submit
-        </Button>
+        </LoadingButton>
       )}
     </Form>
   );
