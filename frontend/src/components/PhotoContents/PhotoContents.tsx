@@ -8,7 +8,7 @@ import "./PhotoContents.scss";
 
 import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
-import Tags from "../Tags";
+import Tags from "../TagLinks";
 import LoadingButton from "../LoadingButton/LoadingButton";
 
 interface Collection {
@@ -21,7 +21,6 @@ interface Props extends RouteComponentProps {
   photoId: string;
   refreshCredits: () => void;
 }
-
 
 class PhotoContents extends React.Component<Props, any> {
   constructor(props: Props) {
@@ -84,7 +83,7 @@ class PhotoContents extends React.Component<Props, any> {
           loading: false,
         });
       })
-      .catch(() => { });
+      .catch(() => {});
     if (localStorage.getItem("token")) {
       const query = `/collection/getall?token=${this.state.token}&photoId=${this.props.photoId}`
       axios.get(query)
@@ -214,17 +213,18 @@ class PhotoContents extends React.Component<Props, any> {
                 isLiked={this.state.isLiked}
               />
             </div>
-            <div className="BookmarkButton" data-type="toggle" title="Add to Collection">
+            <div
+              className="BookmarkButton"
+              data-type="toggle"
+              title="Add to Collection"
+            >
               <BookmarkButton
                 pId={this.props.photoId}
                 collections={this.state.collections}
               />
             </div>
-
           </Row>
-          <Row>
-            {this.returnDynamicButtons()}
-          </Row>
+          <Row>{this.returnDynamicButtons()}</Row>
           <div className="ArtistInfo">
             <Row>
               <h2 className="PhotoTitle">
@@ -261,7 +261,7 @@ class PhotoContents extends React.Component<Props, any> {
         {" "}
         <p>{this.state.msg}</p>{" "}
       </div>
-      );
+    );
   }
 }
 

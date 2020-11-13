@@ -2,9 +2,9 @@ import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import axios from "axios";
-import Tags from "../../components/Tags";
+import Tags from "../../components/TagLinks";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
-import ContentLoader from '../../components/ContentLoader/ContentLoader';
+import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
 
 interface Props extends RouteComponentProps<MatchParams> {
@@ -94,16 +94,17 @@ class AlbumDetails extends React.Component<Props, State> {
             </Col>
             <Col xs={7}>
               <Container>
-                <p><b>Tags</b></p>
+                <p>
+                  <b>Tags</b>
+                </p>
                 <Container>
                   <Row>
-                    { this.state.tags.map((tag) => (
+                    {this.state.tags.map((tag) => (
                       <Tags key={tag} tagName={tag} type="album" />
-                      ))
-                    }
+                    ))}
                   </Row>
                 </Container>
-              
+
                 <AlbumHeader
                   isOwner={this.state.isOwner}
                   catalogueId={this.state.albumId}
@@ -115,9 +116,11 @@ class AlbumDetails extends React.Component<Props, State> {
           </Row>
           <ContentLoader
             query={this.state.albumId}
-            route='/album/photos'
+            route="/album/photos"
             type="albumPhotos"
-            updatePage={() => {window.location.reload()}}
+            updatePage={() => {
+              window.location.reload();
+            }}
           />
         </Container>
       </div>
