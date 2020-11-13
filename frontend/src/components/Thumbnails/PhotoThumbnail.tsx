@@ -109,7 +109,7 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
   }
 
   render() {
-    return this.props.deleted ? (
+    return !this.state.owns && this.props.deleted ? (
       <>
         <Image src={NoImage} className="photo-thumbnail" />
         <div className="photo-overlay">This photo has been deleted</div>

@@ -7,7 +7,7 @@ import ContentLoader from '../../components/ContentLoader/ContentLoader';
 import "../AlbumDetails/AlbumDetails.scss"
 import { Row, Col } from "react-bootstrap"
 import { stringify } from "qs";
-import Tags from "../../components/Tags";
+import Tags from "../../components/TagLinks";
 
 interface Props extends RouteComponentProps<MatchParams> {
   isOwner?: boolean;
