@@ -40,17 +40,11 @@ export default function CommentMessage(props: MessageProp) {
   const DeleteComment = () => {
     const token = localStorage.getItem('token');
     const c_id = props.comment_id;
-    const p_id = props.photo_id
+    const p_id = props.photo_id;
 
-    axios.post('/comments/delete_comments',
-      {
-        token,
-        c_id,
-        p_id,
-      })
-      .then((response) => {
-        // props.get_comments();
-      })
+    axios
+     .post('/comments/delete_comments',{token,c_id,p_id,})
+     .catch(()=>{});
   }
 
   function getPic() {

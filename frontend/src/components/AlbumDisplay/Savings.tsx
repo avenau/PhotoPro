@@ -39,7 +39,6 @@ export default class AlbumSavings extends React.Component<AlbumSavingsProps, Alb
     axios
       .get(`/album/price?token=${token}&albumId=${this.state.albumId}`)
       .then((res) => {
-        console.log(res)
         this.setState({
           yourPrice: res.data.yourPrice,
           originalPrice: res.data.albumPrice,
@@ -47,6 +46,7 @@ export default class AlbumSavings extends React.Component<AlbumSavingsProps, Alb
           savings: res.data.savings
         })
       })
+      .catch(()=>{});
   }
 
   render() {

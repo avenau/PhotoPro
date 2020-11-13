@@ -90,7 +90,8 @@ class PhotoContents extends React.Component<Props, any> {
       axios.get(query)
         .then((res) => {
           this.setState({ collections: res.data.map((obj: Collection) => obj) });
-        });
+        })
+        .catch(()=> {});
     }
   }
 

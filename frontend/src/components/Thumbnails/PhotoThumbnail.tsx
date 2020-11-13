@@ -23,10 +23,13 @@ interface Props extends RouteComponentProps {
   refreshCredits?: () => void;
 }
 
-class PhotoThumbnail extends React.Component<
-  Props,
-  { owns: boolean; photoB64: string; loading: boolean }
-> {
+interface BetterInterface {
+  owns: boolean;
+  photoB64: string;
+  loading: boolean
+}
+
+class PhotoThumbnail extends React.Component<Props, BetterInterface> {
   constructor(props: Props) {
     super(props);
     this.state = {

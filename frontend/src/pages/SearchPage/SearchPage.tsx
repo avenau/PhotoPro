@@ -6,7 +6,6 @@ import OrderBy from "../../components/Search/OrderBy";
 import PriceFilter from "../../components/Search/PriceFilter";
 import Search from "../../components/Search/Search";
 import TypeFilter from "../../components/Search/TypeFilter";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import "./SearchPage.scss";
 

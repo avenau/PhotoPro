@@ -11,10 +11,7 @@ interface Props {
   artistImg: string;
 }
 
-export default class ArtistThumbnail extends React.Component<
-  Props,
-  { owns: boolean }
-> {
+export default class ArtistThumbnail extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
 
