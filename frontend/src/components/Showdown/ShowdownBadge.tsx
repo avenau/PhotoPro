@@ -1,7 +1,6 @@
 import React from "react";
 import axios from "axios";
 import { Award } from "react-bootstrap-icons";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import "./ShowdownBadge.scss";
 import HoverText from "../HoverText";
 
@@ -42,6 +41,7 @@ export default class ShowdownBadge extends React.Component<Props, State> {
     return this.state.count > 0 ? (
       <div className="showdown-badge">
         <HoverText
+          placement="top"
           helpfulText={`This ${this.props.type} has won ${this.state.count} ${
             this.state.count === 1 ? "showdown" : "showdowns"
           }!`}
