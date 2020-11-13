@@ -2,13 +2,14 @@ import React from "react";
 import "./UploadPage.css";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import { RouteChildrenProps } from "react-router-dom";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Toolbar from "../../components/Toolbar/Toolbar";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
 
 // Functional components
 import Title from "../../components/PhotoEdit/Title";
@@ -32,6 +33,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
       imagePreview: null,
       albums: [],
       photoElement: "",
+      btnLoading: false,
     };
     this.setState = this.setState.bind(this);
     this.activateUploadButton = this.activateUploadButton.bind(this);
@@ -59,6 +61,7 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
     if (this.state.tagsList.length < 1) {
       return;
     }
+    this.setState({ btnLoading: true });
     this.setPhoto().then((response: any) => {
       const token = localStorage.getItem("token");
       axios
@@ -69,17 +72,17 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
           albums: JSON.stringify(this.state.albums),
           // The photo, encoded as a base64 string
           photo: response[0],
-          // The file extension e.g. ".jpg" or ".gif"
+          // The file extension e.g. ".jpg"
           extension: response[1],
-          token: token,
+          token,
         })
         .then((response) => {
-          console.log(response);
+          this.setState({ btnLoading: false });
           const uid = localStorage.getItem("u_id");
           this.props.history.push(`/user/${uid}`);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          this.setState({ btnLoading: false });
         });
     });
   }
@@ -97,28 +100,25 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
   render() {
     return (
       <div className="uploadPage">
-        <Toolbar />
         <Container className="mt-5">
           <h1>Upload Photo</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Title
               deactivateUploadButton={this.deactivateUploadButton}
               activateUploadButton={this.activateUploadButton}
-              onChange={(title: string) => this.setState({ title: title })}
-              titleDef={""}
+              onChange={(title: string) => this.setState({ title })}
+              titleDef=""
             />
             <Price
               deactivateUploadButton={this.deactivateUploadButton}
               activateUploadButton={this.activateUploadButton}
-              onChange={(price: number) => this.setState({ price: price })}
+              onChange={(price: number) => this.setState({ price })}
             />
             <Tags
               deactivateUploadButton={this.deactivateUploadButton}
               activateUploadButton={this.activateUploadButton}
               tagsList={this.state.tagsList}
-              setTagsList={(tagsList: any) =>
-                this.setState({ tagsList: tagsList })
-              }
+              setTagsList={(tagsList: any) => this.setState({ tagsList })}
             />
             <FileUpload
               deactivateUploadButton={this.deactivateUploadButton}
@@ -146,20 +146,23 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
                   </Col>
                   <Col>
                     <Album
-                      setAlbums={(albums: string[]) => {
-                        this.setState({ albums: albums });
+                      setSelAlbums={(selAlbums: string[]) => {
+                        this.setState({ albums: selAlbums });
                       }}
+                      selectedAlbums={this.state.albums}
                     />
-                    <Row>
-                      <Col>
-                        <Button> Create a new album</Button>
-                      </Col>
-                    </Row>
                   </Col>
                 </Row>
-                <Button id="uploadButton" className="mt-2" type="submit">
+                <LoadingButton
+                  id="uploadButton"
+                  loading={this.state.btnLoading}
+                  onClick={() => {
+                    
+                  }}
+                  type="submit"
+                >
                   Upload Photo
-                </Button>
+                </LoadingButton>
               </div>
             ) : (
               <></>

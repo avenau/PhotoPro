@@ -1,8 +1,15 @@
 [MASTER]
 
+load-plugins=pylint_mongoengine
+
 [MESSAGES CONTROL]
 # broad-except: General Except statements (e.g. without ValueError, etc.)
 # fix-me: Don't lint TODO: sections (feel free to remove)
 disable=
     broad-except,
-    fixme
+    fixme,
+    too-many-public-methods,
+    too-many-instance-attributes,
+    unused-import,
+    raise-missing-from,
+    bare-except

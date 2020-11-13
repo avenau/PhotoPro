@@ -11,6 +11,12 @@ interface State {
   selection: string;
 }
 
+const mapping: { [key: string]: string } = {
+  all: "All",
+  jpgpng: "JPG/PNG",
+  svg: "SVG",
+};
+
 export default class TypeFilter extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -19,8 +25,8 @@ export default class TypeFilter extends React.Component<Props, State> {
     };
   }
 
-  private updateSelection(name: string, typeid: string) {
-    this.setState({ selection: name });
+  private updateSelection(typeid: string) {
+    this.setState({ selection: typeid });
     if (this.props.onChange !== undefined) this.props.onChange(typeid);
   }
 
@@ -30,29 +36,23 @@ export default class TypeFilter extends React.Component<Props, State> {
         <DropdownButton
           className="search-dropdown"
           variant="light"
-          title={this.state.selection}
+          title={mapping[this.state.selection]}
         >
           <Dropdown.Item
-            onClick={() => this.updateSelection("All", "all")}
-            active={this.state.selection === "All"}
+            onClick={() => this.updateSelection("all")}
+            active={this.state.selection === "all"}
           >
             All
           </Dropdown.Item>
           <Dropdown.Item
-            onClick={() => this.updateSelection("JPG/PNG", "jpgpng")}
-            active={this.state.selection === "JPG/PNG"}
+            onClick={() => this.updateSelection("jpgpng")}
+            active={this.state.selection === "jpgpng"}
           >
             JPG/PNG
           </Dropdown.Item>
           <Dropdown.Item
-            onClick={() => this.updateSelection("GIF", "gif")}
-            active={this.state.selection === "GIF"}
-          >
-            GIF
-          </Dropdown.Item>
-          <Dropdown.Item
-            onClick={() => this.updateSelection("SVG", "svg")}
-            active={this.state.selection === "SVG"}
+            onClick={() => this.updateSelection("svg")}
+            active={this.state.selection === "svg"}
           >
             SVG
           </Dropdown.Item>

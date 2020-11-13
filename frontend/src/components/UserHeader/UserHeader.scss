@@ -18,8 +18,8 @@
     display: flex;
     margin-right: 10px;
     .image {
-      height: 100%;
-      width: auto;
+      object-fit: cover;
+      width: 100%;
     }
   }
 }

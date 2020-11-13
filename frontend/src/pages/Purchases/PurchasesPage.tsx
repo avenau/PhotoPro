@@ -3,12 +3,11 @@ import { RouteChildrenProps } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Jumbotron from "react-bootstrap/Jumbotron";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import axios from "axios";
+import Toolbar from "../../components/Toolbar/Toolbar";
+import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import "./PurchasesPage.css";
 
 class PurchasesPage extends React.Component<RouteChildrenProps, any> {
@@ -24,7 +23,7 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
     axios
       .get("/userdetails", {
         params: {
-          token: token,
+          token,
         },
       })
       .then((res) => {
@@ -38,7 +37,6 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
   render() {
     return (
       <div className="purchasesPage">
-        <Toolbar />
         <Container className="mt-5">
           <Row className="align-items-center">
             <Col xs={9}>
@@ -63,11 +61,11 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
           <Row id="purchasesHeading">
             <h1>Your Purchases</h1>
           </Row>
-          {/* TODO: Actually display purchases here */}
-          <Tabs defaultActiveKey="photos" transition={false}>
-            <Tab eventKey="photos" title="Photos"></Tab>
-            <Tab eventKey="albums" title="Albums"></Tab>
-          </Tabs>
+          <ContentLoader
+            query={localStorage.getItem("u_id")!}
+            route="/user/purchasedphotos"
+            type="photo"
+          />
         </Container>
       </div>
     );

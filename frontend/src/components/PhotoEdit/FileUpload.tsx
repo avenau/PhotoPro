@@ -21,7 +21,7 @@ export default function FileUpload(props: InterfaceFile) {
     const fileExtension = match !== null ? match[0] : "";
     if (!fileExtension) {
       setErrMsg(
-        "Couldn't get file extension. Make sure your file is a .jpg, .png, ,.gif, .svg."
+        "Couldn't get file extension. Make sure your file is a .jpeg, .jpg, .png, or .svg."
       );
     }
     // If no file, or file removed, remove "Upload" button and remove error msg
@@ -31,10 +31,13 @@ export default function FileUpload(props: InterfaceFile) {
       setErrMsg("");
       props.pickedPhoto(false);
     } else if (
-      ![".jpg", ".jpeg", ".png", ".gif", ".svg"].includes(fileExtension)
+      fileExtension !== ".jpg" &&
+      fileExtension !== ".jpeg" &&
+      fileExtension !== ".png" &&
+      fileExtension !== ".svg"
     ) {
       setErrMsg(
-        "Sorry, we only support .jpg, .png, ,.gif, and .svg images at the moment."
+        "Sorry, we only support .jpeg, .jpg, .png, and .svg images at the moment."
       );
       props.pickedPhoto(false);
       props.onChange(null);
@@ -43,7 +46,7 @@ export default function FileUpload(props: InterfaceFile) {
     } else {
       setErrMsg("");
       props.pickedPhoto(true);
-      props.onChange(document.getElementById("photo"));
+      props.onChange(document.getElementById("photoId"));
       props.activateUploadButton();
       // Set image preview
       // Source: https://stackoverflow.com/questions/4459379/preview-an-image-before-it-is-uploaded
@@ -57,14 +60,15 @@ export default function FileUpload(props: InterfaceFile) {
     <>
       <Form.Group>
         <Form.File
-          id="photo"
-          label={props.label}
-          accept=".jpg, .jpeg, .png, .gif, .svg"
+          id="photoId"
+          label="Select A Photo"
+          accept=".jpeg, .jpg, .png, .svg"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            handleFileChange(e)}
+            handleFileChange(e)
+          }
         />
         <Form.Text className="text-muted">
-          We accept .jp(e)g, .png, .gif, and .svg images.
+          We accept .jp(e)g, .png, and .svg images.
           <p className="error">{fileErrMsg}</p>
         </Form.Text>
       </Form.Group>

@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Help features
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]
+then
+    echo "Usage: prepare.sh [PORT]"
+    echo "  -h, --help  Show help options"
+    exit 0
+fi
+
 cd backend
 
 export FLASK_APP=app.py

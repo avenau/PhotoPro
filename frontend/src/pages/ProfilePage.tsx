@@ -5,16 +5,16 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { RouteComponentProps } from "react-router-dom";
-import AlbumList from "../components/ProfileLists/AlbumList";
-import CollectionList from "../components/ProfileLists/CollectionList";
-import FollowingList from "../components/ProfileLists/FollowingList";
-import PhotoList from "../components/ProfileLists/PhotoList";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import Toolbar from "../components/Toolbar/Toolbar";
 import UserHeader from "../components/UserHeader/UserHeader";
+import ContentLoader from "../components/ContentLoader/ContentLoader";
+import CreateCatalogueModal from "../components/ProfilePage/CreateCatalogueModal";
 import "./Profile.scss";
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps {
+  refreshCredits: () => void;
+}
 
 interface State {
   fname: string;
@@ -23,11 +23,15 @@ interface State {
   location: string;
   email: string;
   userId: string;
+  aboutMe?: string;
   dne: boolean;
   profilePic: string[];
+  newAlbum: boolean;
+  newCollection: boolean;
+  title: string;
 }
 
-export default class ProfilePage extends React.Component<Props, State> {
+class ProfilePage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const { params } = this.props.match;
@@ -41,6 +45,9 @@ export default class ProfilePage extends React.Component<Props, State> {
       userId,
       dne: false,
       profilePic: ["", ""],
+      newAlbum: false,
+      newCollection: false,
+      title: "",
     };
   }
 
@@ -93,7 +100,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert("Navigating to new album");
+              this.setState({ newAlbum: true });
             }}
           >
             Create an Album
@@ -101,7 +108,7 @@ export default class ProfilePage extends React.Component<Props, State> {
           <Dropdown.Item
             as="button"
             onClick={() => {
-              alert("Navigating to new collection");
+              this.setState({ newCollection: true });
             }}
           >
             Create a Collection
@@ -111,79 +118,113 @@ export default class ProfilePage extends React.Component<Props, State> {
     );
   }
 
-  private redirect() {
-    this.props.history.goBack();
-  }
-
   render() {
     const userId = localStorage.getItem("u_id");
     const currentUser = this.state.userId === userId;
     return (
       <>
-        <Modal
-          backdrop="static"
-          show={this.state.dne}
-          onHide={() => this.redirect()}
-          animation={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>User Not Found</Modal.Title>
-          </Modal.Header>
+        <div>
+          <Modal
+            backdrop="static"
+            show={this.state.dne}
+            onHide={() => this.props.history.goBack()}
+            animation={false}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>User Not Found</Modal.Title>
+            </Modal.Header>
 
-          <Modal.Body>
-            <p>
-              The user you were looking for could not be found, please try again
-              later.
-            </p>
-          </Modal.Body>
+            <Modal.Body>
+              <p>
+                The user you were looking for could not be found, please try
+                again later. Maybe tomorrow...
+              </p>
+            </Modal.Body>
 
-          <Modal.Footer>
-            <Button variant="primary" onClick={() => this.redirect()}>
-              Go Back
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        <Toolbar />
-        <UserHeader
-          currentUser={currentUser}
-          showEdit
-          header
-          name={`${this.state.fname} ${this.state.lname}`}
-          nickname={this.state.nickname}
-          location={this.state.location}
-          email={this.state.email}
-          profilePic={this.state.profilePic}
-          className="user-header"
-        />
-        <br />
-        <Tabs
-          defaultActiveKey="showcase"
-          id="uncontrolled-tab-example"
-          transition={false}
-        >
-          <Tab eventKey="showcase" title="Showcase">
-            <PhotoList />
-          </Tab>
-          <Tab eventKey="albums" title="Albums">
-            <AlbumList />
-          </Tab>
-          <Tab eventKey="collections" title="Collections">
-            <CollectionList />
-          </Tab>
-          {currentUser ? (
-            <Tab eventKey="following" title="Following">
-              <FollowingList />
+            <Modal.Footer>
+              <Button
+                variant="primary"
+                onClick={() => this.props.history.goBack()}
+              >
+                Go Back
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          {/* Passing state down to Album Modal */}
+          <CreateCatalogueModal
+            active={this.state.newAlbum}
+            onCatalogueChange={(active) => this.setState({ newAlbum: active })}
+            type="album"
+          />
+          <CreateCatalogueModal
+            active={this.state.newCollection}
+            onCatalogueChange={(active) =>
+              this.setState({ newCollection: active })
+            }
+            type="collection"
+          />
+          <UserHeader
+            currentUser={currentUser}
+            showEdit
+            header
+            name={`${this.state.fname} ${this.state.lname}`}
+            nickname={this.state.nickname}
+            location={this.state.location}
+            email={this.state.email}
+            aboutMe={this.state.aboutMe}
+            profilePic={this.state.profilePic}
+            userId={this.state.userId}
+            className="user-header"
+          />
+          <br />
+          <Tabs
+            defaultActiveKey="showcase"
+            id="uncontrolled-tab-example"
+            transition={false}
+          >
+            <Tab eventKey="showcase" title="Showcase" unmountOnExit>
+              <ContentLoader
+                query={this.state.userId}
+                route="/user/photos"
+                type="photo"
+                refreshCredits={this.props.refreshCredits}
+              />
             </Tab>
-          ) : (
-            <></>
-          )}
-          {currentUser ? (
-            <Tab title={this.createAddButton()} tabClassName="no-border" />
-          ) : (
-            <></>
-          )}
-        </Tabs>
+            <Tab eventKey="albums" title="Albums" unmountOnExit>
+              <ContentLoader
+                query={this.state.userId}
+                route="/user/albums"
+                type="album"
+              />
+            </Tab>
+            <Tab eventKey="collections" title="Collections" unmountOnExit>
+              <ContentLoader
+                query={this.state.userId}
+                route="/user/collections"
+                type="collection"
+              />
+            </Tab>
+            {currentUser ? (
+              <Tab eventKey="following" title="Following" unmountOnExit>
+                <ContentLoader
+                  query={this.state.userId}
+                  route="/user/following"
+                  type="user"
+                />
+              </Tab>
+            ) : (
+              <></>
+              )}
+            {currentUser ? (
+              <Tab title={this.createAddButton()} tabClassName="no-border" />
+            ) : (
+              <></>
+              )}
+          </Tabs>
+        </div>
       </>
     );
   }
 }
+
+export default withRouter(ProfilePage);

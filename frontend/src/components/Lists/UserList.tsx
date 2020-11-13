@@ -4,7 +4,7 @@ import UserHeader from "../UserHeader/UserHeader";
 import "./UserList.scss";
 
 interface Props extends RouteComponentProps {
-  profiles: Profile[];
+  users: Profile[];
 }
 
 interface Profile {
@@ -20,7 +20,7 @@ class UserList extends React.Component<Props> {
   render() {
     return (
       <>
-        {this.props.profiles.map((profile) => (
+        {this.props.users.map((profile) => (
           <div
             onClick={(e) => {
               e.preventDefault();
@@ -33,6 +33,7 @@ class UserList extends React.Component<Props> {
               name={`${profile.fname} ${profile.lname}`}
               currentUser={profile.id === localStorage.getItem("u_id")}
               {...profile}
+              userId={profile.id}
             />
           </div>
         ))}

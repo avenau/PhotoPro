@@ -7,13 +7,15 @@ Future Updates: Allow for admin users to delete a photo
 @updated 23/10/2020
 '''
 
-from ..Error import DatabaseError
+import traceback
 import os
+import lib.Error as Error
+import lib.photo.photo
 
 PHOTO_DIRECTORY = ''
 
 
-def remove_photo(photos, u_id, identifier):
+def remove_photo(u_id, identifier):
     '''
     Description
     -----------
@@ -32,31 +34,22 @@ def remove_photo(photos, u_id, identifier):
 
     '''
     # Get the photo object
+    p_id = str(identifier['_id'])
+    photo = lib.photo.photo.Photo.objects.get(id=p_id)
+    if not photo:
+        raise Error.PhotoDNE("Couldn't find requested photo")
+    if str(photo.get_user().get_id()) != u_id:
+        raise PermissionError("User does not have permission to edit")
+
+    # Delete the photo, database handles the rest
+    photo.delete_photo()
     try:
-        photo = get_photo(photos, identifier)
-    except DatabaseError:
-        print("Could not find photo", identifier)
-        raise DatabaseError("Could not find photo")
+        photo.save()
+    except Exception:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Could not delete photo")
+    # TODO: Do we need to remove the photo from the directory?
 
-    if photo is None:
-        print("Couldn't find photo", identifier)
-        # raise DatabaseError("Could not find photo", identifier)
-        return False
-    # Check the user is authorised to delete the photo
-    if not is_authorised(u_id, photo):
-        return False
-
-    # Remove photo fromthe DatabaseError
-    if remove_photo_from_db(photos, identifier) is False:
-        print("Photo already deleted")
-    '''
-    TODO: Remove the photo from the directory structure
-    # Remove the photo from the file system
-    if remove_photo_from_directory(photo['path']) is not True:
-        raise FileExistsError("Couldn't find photo")
-    '''
-
-    # Return True on success
     return True
 
 
@@ -98,13 +91,11 @@ def remove_photo_from_db(photos, identifier):
         res = photos.update_one(identifier, {
                                                 '$set': {'deleted': True}
                                                })
-    except DatabaseError:
+    except Error.DatabaseError:
         print("Database find_one_and_delete failed")
-        raise DatabaseError("Database find_one_and_delete failed")
+        raise Error.DatabaseError("Database find_one_and_delete failed")
 
-    print(res.modified_count)
-
-    return True if res.modified_count > 0 else False
+    return res.modified_count > 0
 
 
 def remove_photo_from_directory(photo_path):

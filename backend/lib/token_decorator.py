@@ -40,7 +40,11 @@ def validate_token(function):
         elif request.method == 'POST':
             token = request.form['token']
         elif request.method == 'DELETE':
-            token = request.args.get('token')
+            try:
+                token = request.args.get('token')
+            except:
+                token = request.form.to_dict()['token']
+
         elif request.method == 'PUT':
             token = request.form['token']
         else:
@@ -51,10 +55,10 @@ def validate_token(function):
         # Check that token is correct format
         if isinstance(token, str) is False:
             print("Token is not a string")
-            raise TokenError("Token is not a string")
+            raise TokenError("Please log in to use this feature.")
         if token == '':
             print("Token is an empty string")
-            raise TokenError("Token is an empty string")
+            raise TokenError("Please log in to use this feature.")
 
         # Try decoding
         try:

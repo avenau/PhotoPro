@@ -1,5 +1,29 @@
 #!/bin/bash
 
+local=0
+
+for arg in $@
+do
+  if [ "$arg" = "-l" ]
+  then
+    local=1
+    continue
+  fi
+  if [ "$arg" = "-h" ] || [ "$arg" = "--help" ]
+  then
+    echo "Usage: prepare.sh [OPTION]"
+    echo "  -l,         Only install but don't build production"
+    echo "  -h, --help  Show help options"
+    exit 0
+  fi
+  if [[ "$arg" =~ ^- ]]
+  then
+    echo -e "Unknown option $arg\nUsage: $0 [-d] [-l]" >&2
+    exit 1
+  fi
+done
+
+
 echo "========== Beginning installation =============="
 ./utils/install.sh
 if [ $? -ne 0 ]
@@ -8,7 +32,7 @@ then
   exit 1
 fi
 
-if [ "$1" = "-l" ]
+if [ $local -eq 1 ]
 then
   exit 0
 fi

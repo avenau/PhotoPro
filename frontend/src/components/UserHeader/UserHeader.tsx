@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
+import FollowButton from "./FollowButton"
 
 interface Props {
   profilePic?: string[];
@@ -17,6 +18,8 @@ interface Props {
   location: string;
   email: string;
   className: string;
+  aboutMe?: string;
+  userId: string;
 }
 
 export default class UserHeader extends React.Component<Props> {
@@ -45,30 +48,33 @@ export default class UserHeader extends React.Component<Props> {
       return null;
     }
 
-    const alreadyFollowing = false;
-    if (alreadyFollowing) {
-      return (
-        <Button
-          className="button-container"
-          variant="outline-primary"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          Following
-        </Button>
-      );
-    }
+    /* const alreadyFollowing = false;
+     if (alreadyFollowing) {
+       return (
+         <Button
+           className="button-container"
+           variant="outline-primary"
+           onClick={(e) => {
+             e.stopPropagation();
+           }}
+         >
+           Following
+         </Button>
+       );
+     }
+     return (
+       <Button
+         className="button-container"
+         onClick={(e) => {
+           e.stopPropagation();
+         }}
+       >
+         Follow
+       </Button>
+     ); */
     return (
-      <Button
-        className="button-container"
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        Follow
-      </Button>
-    );
+      <FollowButton currentUser={this.props.currentUser} userId={this.props.userId} />
+    )
   }
 
   private getPic() {
@@ -102,10 +108,15 @@ export default class UserHeader extends React.Component<Props> {
             <h2>{this.props.name}</h2>
           ) : (
             <h4>{this.props.name}</h4>
-          )}
+            )}
           <div>@{this.props.nickname}</div>
           <div>Based in {this.props.location}</div>
           <div>{this.props.email}</div>
+          {this.props.aboutMe !== undefined && this.props.aboutMe !== "" ? (
+            <div>About me: {this.props.aboutMe}</div>
+          ) : (
+            <></>
+            )}
         </div>
         {this.getEditButton()}
         {this.getFollowButton()}

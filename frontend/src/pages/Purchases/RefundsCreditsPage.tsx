@@ -7,9 +7,9 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { RouteChildrenProps } from "react-router-dom";
+import axios from "axios";
 import BackButton from "../../components/BackButton/BackButton";
 import Toolbar from "../../components/Toolbar/Toolbar";
-import axios from "axios";
 import "./BuyCreditsPage.css";
 
 class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
@@ -33,7 +33,7 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
     axios
       .get("/userdetails", {
         params: {
-          token: token,
+          token,
         },
       })
       .then((res) => {
@@ -57,11 +57,10 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
     const token = localStorage.getItem("token");
     axios
       .post("/purchases/refundcredits", {
-        token: token,
+        token,
         ncredits: this.state.ncredits,
       })
       .then((response) => {
-        console.log(response);
         this.props.history.push("/purchases");
       })
       .catch((err) => {
@@ -71,18 +70,18 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
 
   handleCreditsChange(e: any) {
     const ncredits = Number(e.target.value);
-    this.setState({ ncredits: ncredits }, this.setPrice);
+    this.setState({ ncredits }, this.setPrice);
     this.setCreditsErr(ncredits);
   }
 
   setPrice() {
     const price = Number(this.state.ncredits / 100).toFixed(2);
-    this.setState({ price: price }, this.setPriceMsg);
+    this.setState({ price }, this.setPriceMsg);
   }
 
   setPriceMsg() {
     this.setState({
-      priceMsg: "Refund amount: " + this.state.price.toString() + " USD.",
+      priceMsg: `Refund amount: ${this.state.price.toString()} USD.`,
     });
   }
 
@@ -105,13 +104,9 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
   }
 
   returnGoogleURL() {
-    return (
-      "http://letmegooglethat.com/?q=+" +
-      this.state.price.toString() +
-      "+usd+to+" +
-      this.state.location +
-      "+currency"
-    );
+    return `http://letmegooglethat.com/?q=+${this.state.price.toString()}+usd+to+${
+      this.state.location
+    }+currency`;
   }
 
   setCreditsErr(ncredits: number) {
@@ -133,7 +128,6 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
   render() {
     return (
       <div className="refundCreditsPage">
-        <Toolbar />
         <BackButton href="/purchases" label="Purchases" />
         <Container className="mt-5">
           <Row>
@@ -155,7 +149,7 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
                 <Form.Control
                   type="number"
                   onChange={(e) => this.handleCreditsChange(e)}
-                ></Form.Control>
+                />
                 <Form.Text className="text-muted">
                   <p className="error">{this.state.creditsErrMsg}</p>
                 </Form.Text>

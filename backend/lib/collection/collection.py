@@ -1,0 +1,100 @@
+'''
+Collection related methods
+'''
+
+from mongoengine import BooleanField
+from mongoengine import IntField
+
+# Own class import
+import lib.collection.validation as validation
+import lib.catalogue.catalogue
+
+from lib.collection.validation import validate_title
+
+class Collection(lib.catalogue.catalogue.Catalogue):
+    '''
+    Collection class definition
+    Sub class of Catalogue
+    Collection {
+        title: string,
+        photos: [Photo],
+        creation_date: datetime,
+        deleted: boolean,
+        private: boolean,
+        price, int
+        tags: [string],
+    }
+    '''
+    private = BooleanField(default=False)
+    price = IntField(default=0, validation=validation.validate_price)
+    meta = {'collection': 'collections'}
+
+    def get_price(self):
+        '''
+        Get the price of the collection
+        '''
+        return self.price
+
+    def update_price(self):
+        '''
+        Iterate through the photos and update the price
+        '''
+        price = 0
+        for this_photo in self.photos:
+            price += this_photo.price
+        self.price = price
+
+    def is_private(self):
+        '''
+        Get whether the Collection is private
+        '''
+        return self.private
+
+    def set_private(self):
+        '''
+        Set the collection to private
+        '''
+        self.private = True
+
+    def set_public(self):
+        '''
+        Set the collection to public
+        '''
+        self.private = False
+
+    def remove_photo(self, old_photo):
+        '''
+        Remove a photo from this collection
+        Remove this collection from the photo
+        @param photo: Photo(Document)
+        '''
+        if self in old_photo.collections:
+            old_photo.collections.remove(self)
+            old_photo.save()
+
+        if old_photo in self.photos:
+            self.photos.remove(old_photo)
+            self.save()
+
+    def get_collection_json(self):
+        '''
+        Get collection as a json string
+        '''
+        return {
+            'title': self.get_title(),
+            'photos': [this_photo.id for this_photo in self.get_photos()],
+            'creation_date': str(self.get_creation_date()),
+            'private': self.is_private(),
+            'price': self.get_price(),
+            'tags': self.get_tags(),
+        }
+
+    def clean(self):
+        '''
+        Methods to be performed on a self.save()
+        1) Update the tags
+        2) Update the price
+        '''
+        super().clean()
+        validate_title(self.title, self.created_by, self.id)
+        self.update_price()

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { RouteChildrenProps } from "react-router-dom";
+import { RouteChildrenProps, RouteComponentProps } from "react-router-dom";
 import axios from "axios";
 import {
   Button,
@@ -10,7 +10,6 @@ import {
   Col,
   Image,
 } from "react-bootstrap";
-import { RouteComponentProps } from "react-router-dom";
 
 // Functional components
 import Title from "../components/PhotoEdit/Title";
@@ -18,7 +17,6 @@ import Toolbar from "../components/Toolbar/Toolbar";
 import Price from "../components/PhotoEdit/Price";
 import Tags from "../components/PhotoEdit/Tags";
 import Album from "../components/PhotoEdit/Album";
-import AlbumList from "../components/ProfileLists/AlbumList";
 import Discount from "../components/PhotoEdit/Discount";
 
 export default function EditPhoto(props: any) {
@@ -55,13 +53,13 @@ export default function EditPhoto(props: any) {
     const token = localStorage.getItem("token");
     axios
       .put("/user/updatephoto", {
-        title: title,
-        price: price,
+        title,
+        price,
         tags: JSON.stringify(tags),
         albums: JSON.stringify(albums),
-        discount: discount,
-        token: token,
-        photoId: photoId,
+        discount,
+        token,
+        photoId,
       })
       .then((response) => {
         props.history.push(`/photo/${photoId}`);
@@ -79,7 +77,7 @@ export default function EditPhoto(props: any) {
       axios
         .delete("/user/updatephoto", {
           params: {
-            token: token,
+            token,
             imgId: photoId,
           },
         })
@@ -97,12 +95,11 @@ export default function EditPhoto(props: any) {
     axios
       .get("/user/updatephoto/deleted", {
         params: {
-          photoId: photoId,
-          token: token,
+          photoId,
+          token,
         },
       })
       .then((response) => {
-        console.log(response);
         if (response.data.deleted === true) {
           // Do not navigate to deleted page
           props.history.goBack();
@@ -119,12 +116,11 @@ export default function EditPhoto(props: any) {
     axios
       .get("/user/updatephoto", {
         params: {
-          photoId: photoId,
-          token: token,
+          photoId,
+          token,
         },
       })
       .then((response) => {
-        console.log(response.data);
         if (response.data.deleted === true) {
           // Do not navigate to deleted page
           props.history.goBack();
@@ -166,7 +162,6 @@ export default function EditPhoto(props: any) {
     <div>Loading...</div>
   ) : (
     <>
-      <Toolbar />
       <Container className="mt-5">
         <h1>Edit Photo</h1>
         <Form>
@@ -211,15 +206,11 @@ export default function EditPhoto(props: any) {
             </Col>
             <Col>
               <Album
-                setAlbums={(albums: string[]) => {
-                  setAlbums(albums);
+                setSelAlbums={(selAlbums: string[]) => {
+                  setAlbums(selAlbums);
                 }}
+                selectedAlbums={albums}
               />
-              <Row>
-                <Col>
-                  <Button>Create a new album</Button>
-                </Col>
-              </Row>
             </Col>
           </Row>
           <br />

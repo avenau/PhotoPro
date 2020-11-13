@@ -1,0 +1,8 @@
+.album-header-container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 15px;
+  .album-header-delete-button {
+      cursor: pointer;
+  }
+}

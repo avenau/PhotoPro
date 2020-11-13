@@ -25,6 +25,15 @@ class UserDNE(HTTPException):
     toast = False
 
 
+class PhotoDNE(HTTPException):
+    '''
+    PhotoDNE: Error when photo does not exist
+    '''
+    code = 400
+    message = 'No message specified'
+    toast = False
+
+
 class ValueError(HTTPException):
     '''
     ValueError: Error with the content given
@@ -76,4 +85,12 @@ class DatabaseError(HTTPException):
     '''
     code = 500
     message = 'No message specified'
+    toast = True
+
+class ValidationError(HTTPException):
+    '''
+    ValidationError: When mongoengine can't validate the changes
+    '''
+    code = 406
+    message = "Validation on Database failed. Input error"
     toast = True
