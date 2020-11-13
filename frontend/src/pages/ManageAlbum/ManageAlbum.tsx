@@ -49,19 +49,20 @@ class ManageAlbum extends React.Component<Props, State> {
     const { token } = this.state;
     const { albumId } = this.state;
     if (this.state.albumId != "") {
-      axios.get(`/album?token=${token}&album_id=${albumId}`)
+      axios
+        .get(`/album?token=${token}&album_id=${albumId}`)
         .then((res) => {
           if (res.data) {
             this.setState({
               title: res.data.title,
               discount: res.data.discount,
               tags: res.data.tags,
-          });
+            });
           }
         })
-        .catch(()=>{});
-      }
+        .catch(() => {});
     }
+  }
 
   handleSubmit(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
@@ -79,7 +80,7 @@ class ManageAlbum extends React.Component<Props, State> {
       .then(() => {
         this.props.history.push(`/user/${this.state.uId}`);
       })
-      .catch(()=>{});
+      .catch(() => {});
   }
 
   activateCreateButton() {

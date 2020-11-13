@@ -3,9 +3,9 @@ import { RouteComponentProps, Link } from "react-router-dom";
 import axios from "axios";
 import Container from "react-bootstrap/Container";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
-import ContentLoader from '../../components/ContentLoader/ContentLoader';
-import "../AlbumDetails/AlbumDetails.scss"
-import { Row, Col } from "react-bootstrap"
+import ContentLoader from "../../components/ContentLoader/ContentLoader";
+import "../AlbumDetails/AlbumDetails.scss";
+import { Row, Col } from "react-bootstrap";
 import { stringify } from "qs";
 import Tags from "../../components/TagLinks";
 
@@ -49,7 +49,7 @@ class CollectionDetails extends React.Component<Props, State> {
   private getCollection() {
     const { collectionId } = this.state;
     const { token } = this.state;
-    
+
     if (this.state.collectionId !== "") {
       axios
         .get(`/collection/get?token=${token}&collectionId=${collectionId}`)
@@ -60,12 +60,12 @@ class CollectionDetails extends React.Component<Props, State> {
               isOwner: res.data.isOwner,
               owner: res.data.owner,
               nickname: res.data.nickname,
-              tags: res.data.tags
+              tags: res.data.tags,
             });
           }
         })
         .catch((err) => {
-          this.props.history.push("/page-not-found")
+          this.props.history.push("/page-not-found");
         });
     }
   }
@@ -77,27 +77,30 @@ class CollectionDetails extends React.Component<Props, State> {
           <h1>{this.state.title}</h1>
           <Row>
             <Col>
-              <Link
-                to={`/user/${this.state.owner}`}
-              >
+              <Link to={`/user/${this.state.owner}`}>
                 By @​​​​​​​{this.state.nickname}
               </Link>
               <div className="album-price-display">
-                <p>{this.state.nickname}'s {this.state.title} collection. They've bookmarked photos into this collection.</p>
+                <p>
+                  {this.state.nickname}'s {this.state.title} collection. They've
+                  bookmarked photos into this collection.
+                </p>
               </div>
             </Col>
             <Col xs={7}>
               <Container>
-                <p><b>Tags</b></p>
+                <p>
+                  <b>Tags</b>
+                </p>
                 <Container>
                   <Row>
-                    {this.state.tags.length > 0 ?
-                    this.state.tags.map((tag) => (
-                      <Tags key={tag} tagName={tag} type="collection" />
+                    {this.state.tags.length > 0 ? (
+                      this.state.tags.map((tag) => (
+                        <Tags key={tag} tagName={tag} type="collection" />
                       ))
-                      :
-                    <p>No collection tags found</p>
-                    }
+                    ) : (
+                      <p>No collection tags found</p>
+                    )}
                   </Row>
                 </Container>
                 <AlbumHeader
@@ -111,9 +114,11 @@ class CollectionDetails extends React.Component<Props, State> {
           </Row>
           <ContentLoader
             query={this.state.collectionId}
-            route='/collection/photos'
+            route="/collection/photos"
             type="collectionPhotos"
-            updatePage={() => {window.location.reload()}}
+            updatePage={() => {
+              window.location.reload();
+            }}
           />
         </Container>
       </div>

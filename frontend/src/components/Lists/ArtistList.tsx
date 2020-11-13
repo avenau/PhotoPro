@@ -4,7 +4,6 @@ import ArtistThumbnail from "../Thumbnails/ArtistThumbnail";
 
 import "./PhotoList.scss";
 
-
 interface Props extends RouteComponentProps {
   artists: Artist[];
 }
@@ -23,19 +22,16 @@ class ArtistList extends React.Component<Props> {
           {this.props.artists.map((artist) => (
             <div
               onClick={(e) => {
-              e.preventDefault();
-              this.props.history.push(`/user/${artist.user}`);
-            }}
+                e.preventDefault();
+                this.props.history.push(`/user/${artist.user}`);
+              }}
               className="photo-result"
               key={artist.user}
             >
-              <ArtistThumbnail
-                {...artist}
-              />
+              <ArtistThumbnail {...artist} />
             </div>
-        ))}
+          ))}
         </div>
-
       </>
     );
   }

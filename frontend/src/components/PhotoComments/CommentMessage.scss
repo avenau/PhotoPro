@@ -1,35 +1,33 @@
-
-.DeleteButton{
-    position: absolute;
-    float: right;
+.DeleteButton {
+  position: absolute;
+  float: right;
 }
 
 .sort {
-    font-size: "12pt";
-    padding: "0rem 0.2rem";
-    line-height: "20pt";
-    border-style: solid;
-    border-color:#e4e8ec;
+  font-size: "12pt";
+  padding: "0rem 0.2rem";
+  line-height: "20pt";
+  border-style: solid;
+  border-color: #e4e8ec;
 }
 .comment {
-    border-style: solid;
-    border-width: 2px;
-    border-color:#e4e8ec;
-    border-radius: 5px;
-    margin-top: 15px;
-    margin-bottom: 10px;
-    padding: 15px;
-    padding-top: 20px;
-    text-align: left;
-
+  border-style: solid;
+  border-width: 2px;
+  border-color: #e4e8ec;
+  border-radius: 5px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  padding: 15px;
+  padding-top: 20px;
+  text-align: left;
 }
 
 .thumbnail {
-    width: 100px;
-    height: auto;
-    border-radius: 5%;
+  width: 100px;
+  height: auto;
+  border-radius: 5%;
 }
 
 .time {
-    padding-left: 15px;
+  padding-left: 15px;
 }

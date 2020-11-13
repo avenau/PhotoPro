@@ -20,7 +20,7 @@ interface State {
   discount: number;
   tags: string[];
   collectionId?: string;
-  private: boolean
+  private: boolean;
 }
 
 class ManageCollection extends React.Component<Props, State> {
@@ -34,7 +34,7 @@ class ManageCollection extends React.Component<Props, State> {
       discount: 0,
       tags: [],
       collectionId,
-      private: true
+      private: true,
     };
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -49,16 +49,18 @@ class ManageCollection extends React.Component<Props, State> {
     const { token } = this.state;
     const { collectionId } = this.state;
     if (this.state.collectionId != "") {
-      axios.get(`/collection/get?token=${token}&collectionId=${collectionId}`).then((res) => {
-        console.log(res)
-        if (res.data) {
-          this.setState({
-            title: res.data.title,
-            tags: res.data.tags,
-            private: res.data.private,
-          });
-        }
-      });
+      axios
+        .get(`/collection/get?token=${token}&collectionId=${collectionId}`)
+        .then((res) => {
+          console.log(res);
+          if (res.data) {
+            this.setState({
+              title: res.data.title,
+              tags: res.data.tags,
+              private: res.data.private,
+            });
+          }
+        });
     }
   }
 
@@ -73,7 +75,7 @@ class ManageCollection extends React.Component<Props, State> {
         tags: JSON.stringify(this.state.tags),
         token: localStorage.getItem("token"),
         collectionId: this.state.collectionId,
-        private: this.state.private
+        private: this.state.private,
       })
       .then((res) => {
         this.props.history.push(`/collection/${this.state.collectionId}`);
@@ -133,7 +135,7 @@ class ManageCollection extends React.Component<Props, State> {
                 checked={this.state.private}
                 type="checkbox"
                 label="Make collection private"
-                onClick={() => this.setState({private: !this.state.private})}
+                onClick={() => this.setState({ private: !this.state.private })}
               />
             </Form.Group>
             {this.getButton()}

@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import _ from "lodash";
 import { Link } from "react-router-dom";
-import Button from "react-bootstrap/Button"
+import Button from "react-bootstrap/Button";
 import profilePic from "../../static/profile-pic.png";
 import "./CommentMessage.scss";
 import { Row, Col, Container } from "react-bootstrap";
-
 
 interface MessageProp {
   message: string;
@@ -19,14 +18,12 @@ interface MessageProp {
   getComments: Function;
   profile_pic: string[];
   new_to_old: boolean;
-
 }
 
 export default function CommentMessage(props: MessageProp) {
   const [showingDate, setDate] = useState(props.time_after);
   const [showDelete, setDelete] = useState(false);
   const currentUser = localStorage.getItem("u_id") as string;
-
 
   const showExactDate = () => {
     setDate(props.exact_date);
@@ -100,7 +97,7 @@ export default function CommentMessage(props: MessageProp) {
           <div>{props.message}</div>
         </Col>
         <Col>
-          {showDelete ? 
+          {showDelete ? (
             <Button
               className="DeleteButton"
               variant="light"
@@ -120,9 +117,9 @@ export default function CommentMessage(props: MessageProp) {
                 />
               </svg>
             </Button>
-            :
+          ) : (
             <></>
-          }
+          )}
         </Col>
       </Row>
       <Row className="time">

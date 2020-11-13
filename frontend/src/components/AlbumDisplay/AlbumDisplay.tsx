@@ -1,13 +1,12 @@
 import React from "react";
 
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
 import axios from "axios";
-import { RouteComponentProps, withRouter, Link } from 'react-router-dom';
+import { RouteComponentProps, withRouter, Link } from "react-router-dom";
 import Savings from "./Savings";
 import Album from "../PhotoEdit/Album";
-import "./AlbumDisplay.scss"
-
+import "./AlbumDisplay.scss";
 
 interface AlbumDisplayProps extends RouteComponentProps {
   albumTitle?: string;
@@ -29,7 +28,10 @@ interface AlbumDisplayState {
   purchased: boolean;
 }
 
-class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState> {
+class AlbumDisplay extends React.Component<
+  AlbumDisplayProps,
+  AlbumDisplayState
+> {
   constructor(props: AlbumDisplayProps) {
     super(props);
     this.state = {
@@ -39,35 +41,39 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
       photos: props.photos,
       albumId: props.albumId,
       purchased: false,
-    }
+    };
   }
 
   componentDidMount() {
-    this.checkIfPurchased()
+    this.checkIfPurchased();
   }
 
   checkIfPurchased() {
-    const token = localStorage.getItem('token') ? localStorage.getItem('token') : '';
+    const token = localStorage.getItem("token")
+      ? localStorage.getItem("token")
+      : "";
     axios
       .get(`/album/checkpurchased?token=${token}&albumId=${this.state.albumId}`)
       .then((res) => {
         if (res.data.purchased) {
-          this.setState({ purchased: true })
+          this.setState({ purchased: true });
         }
       })
-      .catch(()=>{});
+      .catch(() => {});
   }
 
   purchaseAlbum() {
-    const token = localStorage.getItem('token') ? localStorage.getItem('token') : '';
+    const token = localStorage.getItem("token")
+      ? localStorage.getItem("token")
+      : "";
     axios
       .post("/purchasealbum", {
         token,
-        albumId: this.state.albumId
+        albumId: this.state.albumId,
       })
       .then((res) => {
-        this.setState({ purchased: true })
-        window.location.reload()
+        this.setState({ purchased: true });
+        window.location.reload();
       })
       .catch(() => {});
   }
@@ -75,30 +81,33 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
   render() {
     return (
       <>
-        <Link
-          to={`/user/${this.props.owner}`}
-        >
+        <Link to={`/user/${this.props.owner}`}>
           By @​​​​​​​{this.props.nickname}
         </Link>
-        {this.props.isOwner ?
+        {this.props.isOwner ? (
           <>
             <div className="album-price-display">
               <p>{this.props.discount}% off original price!</p>
               <Savings albumId={this.state.albumId} />
             </div>
-          </> :
-          this.state.purchased ? 
-            <p>You've purchased this album already</p>
-            :
-            <div className="album-price-display">
-              <p>{this.props.discount}% off original price!</p>
-              <Savings albumId={this.state.albumId} />
-              <Button onClick={() => { this.purchaseAlbum() }}>
-                Purchase
-              </Button>
-            </div>
-        }
-      </>);
+          </>
+        ) : this.state.purchased ? (
+          <p>You've purchased this album already</p>
+        ) : (
+          <div className="album-price-display">
+            <p>{this.props.discount}% off original price!</p>
+            <Savings albumId={this.state.albumId} />
+            <Button
+              onClick={() => {
+                this.purchaseAlbum();
+              }}
+            >
+              Purchase
+            </Button>
+          </div>
+        )}
+      </>
+    );
   }
 }
-export default withRouter(AlbumDisplay)
+export default withRouter(AlbumDisplay);

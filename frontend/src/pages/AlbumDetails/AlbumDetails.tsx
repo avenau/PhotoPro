@@ -99,13 +99,13 @@ class AlbumDetails extends React.Component<Props, State> {
                 </p>
                 <Container>
                   <Row>
-                    {this.state.tags.length > 0 ?
+                    {this.state.tags.length > 0 ? (
                       this.state.tags.map((tag) => (
                         <Tags key={tag} tagName={tag} type="album" />
                       ))
-                      :
+                    ) : (
                       <p>No album tags found</p>
-                    }
+                    )}
                   </Row>
                 </Container>
 

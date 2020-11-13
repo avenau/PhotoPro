@@ -55,7 +55,7 @@ export default class UserHeader extends React.Component<Props> {
     if (this.props.isCurrentUser) {
       return null;
     }
-    console.log(`userheader says ${  this.props.following}`);
+    console.log(`userheader says ${this.props.following}`);
     return (
       <FollowButton
         following={this.props.following}

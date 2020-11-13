@@ -26,7 +26,7 @@ interface Props extends RouteComponentProps {
 interface BetterInterface {
   owns: boolean;
   photoB64: string;
-  loading: boolean
+  loading: boolean;
 }
 
 class PhotoThumbnail extends React.Component<Props, BetterInterface> {

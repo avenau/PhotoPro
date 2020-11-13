@@ -66,7 +66,7 @@ class Showdown extends React.Component<Props, State> {
           currentId,
         });
       })
-      .catch(()=>{});
+      .catch(() => {});
   }
 
   render() {

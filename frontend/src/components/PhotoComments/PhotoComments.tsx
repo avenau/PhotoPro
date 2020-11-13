@@ -48,12 +48,12 @@ export default function PhotoComments(props: CommentProps) {
           clearCommentInput();
           getComments(photoId, new_to_old);
         })
-        .catch(()=>{});
+        .catch(() => {});
     }
   };
 
-   // Order is newest to oldest then true
-   const getComments = async (photoId: string, order: boolean) => {
+  // Order is newest to oldest then true
+  const getComments = async (photoId: string, order: boolean) => {
     await axios
       .get(`/comments/get_comments?p_id=${photoId}&new_to_old=${order}`)
       .then((response) => {
@@ -64,7 +64,7 @@ export default function PhotoComments(props: CommentProps) {
         setComments(tempComments);
         setStatus(response.data.status);
       })
-      .catch(()=>{});
+      .catch(() => {});
   };
 
   function clearCommentInput() {
@@ -95,8 +95,6 @@ export default function PhotoComments(props: CommentProps) {
     setOrder(false);
     getComments(props.p_id, false);
   };
-
-  
 
   return (
     <>
@@ -141,16 +139,16 @@ export default function PhotoComments(props: CommentProps) {
             <Dropdown.Item
               as="button"
               onClick={() => {
-              sortCommentNewest();
-            }}
+                sortCommentNewest();
+              }}
             >
               Newest To Oldest
             </Dropdown.Item>
             <Dropdown.Item
               as="button"
               onClick={() => {
-              sortCommentOldest();
-            }}
+                sortCommentOldest();
+              }}
             >
               Oldest To Newest
             </Dropdown.Item>
@@ -174,7 +172,7 @@ export default function PhotoComments(props: CommentProps) {
                 getComments={getComments}
                 new_to_old={new_to_old}
               />
-          ))}
+            ))}
           </Row>
         </Container>
       </div>

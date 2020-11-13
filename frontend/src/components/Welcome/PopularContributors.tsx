@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import Container from "react-bootstrap/Container"
+import Container from "react-bootstrap/Container";
 import ContentLoader from "../ContentLoader/ContentLoader";
 
 class PopularContributors extends Component<any, any> {
@@ -14,12 +14,11 @@ class PopularContributors extends Component<any, any> {
   }
 
   checkContributors() {
-    axios.get("/").catch(()=>{});
+    axios.get("/").catch(() => {});
   }
 
   render() {
     return (
-      
       <Container>
         <h3>Popular contributors</h3>
 

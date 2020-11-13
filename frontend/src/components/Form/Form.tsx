@@ -1,7 +1,7 @@
-import React from 'react';
-import IFormProps from './IFormProps';
-import IFormState from './IFormState';
-import './Form.scss';
+import React from "react";
+import IFormProps from "./IFormProps";
+import IFormState from "./IFormState";
+import "./Form.scss";
 
 export default class Form extends React.Component<IFormProps, IFormState> {
   constructor(props: IFormProps) {
@@ -10,15 +10,15 @@ export default class Form extends React.Component<IFormProps, IFormState> {
   }
 
   static defaultProps = {
-    title: 'title',
+    title: "title",
   };
 
   handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     if (event) {
       event.preventDefault();
     }
-    fetch('http://localhost:8001/start', {
-      method: 'POST',
+    fetch("http://localhost:8001/start", {
+      method: "POST",
       body: JSON.stringify(this.state),
     });
   }

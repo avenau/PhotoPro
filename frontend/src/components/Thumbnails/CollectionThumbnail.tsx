@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "react-bootstrap/Image";
-import axios from "axios"
+import axios from "axios";
 import { Link } from "react-router-dom";
 import Thumbnail from "../../static/catalouge.png";
 
@@ -22,31 +22,34 @@ export default class CollectionThumbnail extends React.Component<Props, State> {
     super(props);
     this.state = {
       collectionThumbnail: Thumbnail,
-    }
+    };
   }
 
   componentDidMount() {
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("token");
     axios
       .get("/collection/thumbnail", {
         params: {
           albumId: this.props.id,
-          token
-        }
+          token,
+        },
       })
       .then((res) => {
-        console.log(res.data)
+        console.log(res.data);
         if (res.data.thumbnail !== "") {
-          this.setState({collectionThumbnail: res.data.thumbnail})
+          this.setState({ collectionThumbnail: res.data.thumbnail });
         }
       })
-      .catch(()=>{});
+      .catch(() => {});
   }
 
   render() {
     return (
       <>
-        <Image src={this.state.collectionThumbnail} className="collection-thumbnail" />
+        <Image
+          src={this.state.collectionThumbnail}
+          className="collection-thumbnail"
+        />
         <div className="collection-overlay">
           <div>{this.props.title}</div>
           <Link
