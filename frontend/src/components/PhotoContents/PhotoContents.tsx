@@ -201,14 +201,13 @@ class PhotoContents extends React.Component<Props, any> {
   render() {
     return !this.state.loading ? (
       <div className="photo-contents">
-        <Container>
-          <Row className="PhotoRow">
-            <Col>
-              
+        <Container className="photo-row">
+          <Row>
+            <Col className="photo-component">
               <img className="actualPhoto" src={this.state.photoB64} />
             </Col>
-            <Col>
-              <div className="PhotoInfo">
+            <Col xs={8}>
+              <div className="photo-info">
                 <Row>
                   <h2 className="PhotoTitle">
                     <b>{this.state.title}</b>

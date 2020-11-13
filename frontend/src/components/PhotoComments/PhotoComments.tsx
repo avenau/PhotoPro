@@ -100,63 +100,66 @@ export default function PhotoComments(props: CommentProps) {
   
 
   return (
-    <div className="PhotoComments">
-      <Container className="container">
-        <h3>Comments</h3>
-        <Form onSubmit={handleSubmit}>
-          <Form.Row id="commentTextArea">
-            <Col>
-              <Form.Control
-                id="CommentInput"
-                as="textarea"
-                rows={4}
-                onChange={(e) => changeFunction(e.target.value)}
-                placeholder="Add a comment..."
-              />
-              <Form.Text id="WarningMessage" muted>
-                {limitMessage}
-              </Form.Text>
-            </Col>
-            <Col>
-              <Button
-                disabled={validComment}
-                variant="primary"
-                type="submit"
-                className="commentButton"
-              >
-                Comment
-              </Button>
-            </Col>
-          </Form.Row>
-        </Form>
-        <Dropdown>
-          <br />
-          <Dropdown.Toggle
-            variant="outline-dark"
-            id="dropdown-custom-components"
-            className="sort"
+    <>
+    <div className="comment-form">
+      <h4>Comments</h4>
+      <Form onSubmit={handleSubmit}>
+        <Form.Row id="commentTextArea">
+          <Col>
+            <Form.Control
+              id="CommentInput"
+              as="textarea"
+              rows={4}
+              onChange={(e) => changeFunction(e.target.value)}
+              placeholder="Add a comment..."
+            />
+            <Form.Text id="WarningMessage" muted>
+              {limitMessage}
+            </Form.Text>
+          </Col>
+          <Col>
+            <Button
+              disabled={validComment}
+              variant="primary"
+              type="submit"
+              className="commentButton"
+            >
+              Comment
+            </Button>
+          </Col>
+        </Form.Row>
+      </Form>
+      <Dropdown>
+        <br />
+        <Dropdown.Toggle
+          variant="outline-dark"
+          id="dropdown-custom-components"
+          className="sort"
+        >
+          <span>Sort Comments By</span>
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+          <Dropdown.Item
+            as="button"
+            onClick={() => {
+              sortCommentNewest();
+            }}
           >
-            <span>Sort Comments By</span>
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item
-              as="button"
-              onClick={() => {
-                sortCommentNewest();
-              }}
-            >
-              Newest To Oldest
-            </Dropdown.Item>
-            <Dropdown.Item
-              as="button"
-              onClick={() => {
-                sortCommentOldest();
-              }}
-            >
-              Oldest To Newest
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+            Newest To Oldest
+          </Dropdown.Item>
+          <Dropdown.Item
+            as="button"
+            onClick={() => {
+              sortCommentOldest();
+            }}
+          >
+            Oldest To Newest
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    </div>
+    <div className="PhotoComments">
+      <Container>
         <Row className="CommentDisplay">
           {comments.map((comment) => (
             <CommentMessage
@@ -176,5 +179,6 @@ export default function PhotoComments(props: CommentProps) {
         </Row>
       </Container>
     </div>
+    </>
   );
 }

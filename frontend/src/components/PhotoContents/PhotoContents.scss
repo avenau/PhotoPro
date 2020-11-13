@@ -2,10 +2,22 @@
     margin-top: 30px;
 }
 
+.photo-component {
+    background-color: #e9ecef;
+    border-radius: 2%;
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+}
+
+.photo-info {
+    padding: 15px;
+    margin-left: 50px;
+}
+
 .actualPhoto {
     height: 100%;
     width: auto;
-    padding-top: 10px;
 }
 
 .BookmarkButton {
