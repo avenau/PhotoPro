@@ -37,13 +37,13 @@ class AlbumHeader extends React.Component<AlbumHeaderProps, AlbumHeaderState> {
 
   renderAlbumTooltip = (props: any) => {
     return <Tooltip id="edit-album" {...props}>
-      Edit album
+      Edit {this.props.type}
     </Tooltip>
   }
   
   renderDeleteTooltip = (props: any) => {
     return <Tooltip id="delete-album" {...props}>
-      Delete album
+      Delete {this.props.type}
     </Tooltip>
   }
 

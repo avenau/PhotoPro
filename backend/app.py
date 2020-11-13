@@ -1672,6 +1672,7 @@ def _get_collection():
         originalPrice: int
     }
     """
+    print(request.args)
     token = request.args.get("token")
     collection_id = request.args.get("collectionId")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
@@ -1679,19 +1680,15 @@ def _get_collection():
     owns = _collection.get_created_by() == _user
     if _collection.is_private() and _collection.get_created_by() != _user:
         return dumps({}), 401
-    user_price, price_without_own = collection_functions.get_user_price(
-        _user, _collection
-    )
 
     return dumps(
         {
             "title": _collection.get_title(),
             "private": _collection.is_private(),
-            "price": user_price,
             "tags": _collection.get_tags(),
-            "price": user_price,
-            "originalPrice": price_without_own,
             "isOwner": owns,
+            "owner": str(_collection.get_created_by().get_id()),
+            "nickname": _collection.get_created_by().get_nickname()
         }
     )
 
@@ -1776,10 +1773,12 @@ def _update_collection():
     private: boolean
     tags: string[]
     """
+    print('past token decorator')
     params = request.form.to_dict()
-    token = request.args.get("token")
+    token = params["token"]
+    collection_id = params["collectionId"]
     u_id = token_functions.get_uid(token)
-    collection_id = request.args.get("collectionId")
+    
     _user = user.User.objects.get(id=u_id)
     if not _user:
         raise Error.UserDNE("Could not find user")
@@ -1790,7 +1789,7 @@ def _update_collection():
         raise PermissionError("User not permitted to edit this Collection")
 
     collection_functions.update_collection(params, _collection)
-
+    return dumps({})
 
 @app.route("/collection/delete", methods=["DELETE"])
 @validate_token

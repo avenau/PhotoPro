@@ -13,7 +13,6 @@ import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
-// import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import ProfilePage from "./pages/ProfilePage";
 import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
@@ -23,6 +22,7 @@ import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
 import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
+import ManageCollection from "./pages/ManageCollection/ManageCollection"
 import AlbumDetails from "./pages/AlbumDetails/AlbumDetails";
 import CollectionDetails from "./pages/CollectionDetails/CollectionDetails";
 
@@ -149,6 +149,12 @@ class App extends React.Component<Props, State> {
             exact
             path="/album/manage/:album_id"
             component={ManageAlbum}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
+            path="/collection/manage/:collection_id"
+            component={ManageCollection}
           />
           <ProtectedRoute
             valid={this.state.valid}
