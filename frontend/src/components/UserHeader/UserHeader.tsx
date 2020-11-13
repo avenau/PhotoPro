@@ -40,6 +40,7 @@ export default class UserHeader extends React.Component<Props> {
       <HoverText
         id="manage-account-hover"
         helpfulText="Manage your account details"
+        placement="right"
       >
         <Link to="/manage_account" className="button-container">
           <PencilSquare size="2rem" color="#343a40" />

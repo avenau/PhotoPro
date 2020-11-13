@@ -149,7 +149,11 @@ export default function Tags(props: any) {
               }
             />
           </Col>
-          <HoverText id="add-tags-hover" helpfulText="Click to add your tags">
+          <HoverText
+            id="add-tags-hover"
+            helpfulText="Click to add your tags"
+            placement="top"
+          >
             <Button onClick={handleAddTags}>Add Tags</Button>
           </HoverText>
         </Row>
