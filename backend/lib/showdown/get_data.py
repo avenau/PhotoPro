@@ -1,6 +1,7 @@
 """
 Showdown related functions
 """
+from lib.photo.photo import Photo
 from lib.showdown.showdown import Showdown
 from json import loads
 from lib.user.user import User
@@ -63,3 +64,25 @@ def get_data(req_user):
         "prevWinnerPhoto": prev,
         "currentVote": current_vote,
     }
+
+def count_wins_user(id):
+    """
+    Count all of the showdowns that the user with id given has won
+    """
+    wins = 0
+    user = User.objects.get(id=id)
+
+
+
+    return wins
+
+def count_wins_photo(id):
+    """
+    Count all of the showdowns that the user with id given has won
+    """
+    wins = 0
+    photo = Photo.objects.get(id=id)
+    
+
+
+    return wins

@@ -128,7 +128,7 @@ export default class UserHeader extends React.Component<Props> {
             <></>
           )}
         </div>
-        <ShowdownBadge type="user" entry_id="" />
+        <ShowdownBadge type="user" entry_id={this.props.userId} />
         {this.getEditButton()}
         {this.getFollowButton()}
       </div>
