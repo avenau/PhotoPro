@@ -4,7 +4,7 @@ Comment Validation
 import traceback
 import mongoengine
 import lib.Error as Error
-import lib.user.User as user
+import lib.user.user as user
 
 def validate_posted(posted):
     '''

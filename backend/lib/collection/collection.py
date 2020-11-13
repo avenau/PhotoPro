@@ -79,5 +79,5 @@ class Collection(lib.catalogue.catalogue.Catalogue):
         2) Update the price
         '''
         _user = self.created_by
-        if Collection.objects(created_by=self.created_by, title=self.title):
+        if Collection.objects(created_by=self.created_by, title=self.title, id__ne=self.id):
             raise Error.ValidationError("Cannot have two Collections with the same title")

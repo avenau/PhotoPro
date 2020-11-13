@@ -108,7 +108,7 @@ def validate_albums(albums):
     '''
     try:
         mongoengine.ListField().validate(albums)
-    except mongoengine.ValidationError():
+    except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError
 
@@ -122,7 +122,7 @@ def validate_collections(collections):
     '''
     try:
         mongoengine.ListField().validate(collections)
-    except mongoengine.ValidationError():
+    except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError
 
@@ -132,7 +132,7 @@ def validate_metadata(metadata):
     '''
     try:
         mongoengine.StringField().validate(metadata)
-    except mongoengine.ValidationError():
+    except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError
 
@@ -141,8 +141,8 @@ def validate_posted(posted):
     @param posted: datetime
     '''
     try:
-        mongoengine.DateTimeField('user.User').validate(posted)
-    except mongoengine.ValidationError():
+        mongoengine.DateTimeField().validate(posted)
+    except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError
 
@@ -153,7 +153,7 @@ def validate_user(this_user):
     '''
     try:
         mongoengine.ReferenceField('user.User').validate(this_user)
-    except mongoengine.ValidationError():
+    except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError
 
@@ -163,7 +163,7 @@ def validate_likes(likes):
     '''
     try:
         mongoengine.IntField().validate(likes)
-    except mongoengine.ValidationError():
+    except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError
 
@@ -173,7 +173,7 @@ def validate_comments(comments):
     '''
     try:
         mongoengine.ListField().validate(comments)
-    except mongoengine.ValidationError():
+    except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError
 
@@ -183,6 +183,6 @@ def validate_deleted(deleted):
     '''
     try:
         mongoengine.BooleanField().validate(deleted)
-    except mongoengine.ValidationError():
+    except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError

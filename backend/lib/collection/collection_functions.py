@@ -13,7 +13,6 @@ import lib.user.user as user
 from json import loads
 from bson.json_util import dumps
 from bson.objectid import ObjectId
-from lib.collection.validation import validate_title
 from lib.token_functions import get_uid
 
 def get_collection(_collection):
@@ -54,7 +53,6 @@ def create_collection(_user, params):
     if "tags" in params:
         tags = params['tags']
 
-    # validate_title(title, _user)
 
     new_collection = collection.Collection(
         title=title,

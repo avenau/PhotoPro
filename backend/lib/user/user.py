@@ -65,7 +65,7 @@ class User(Document):
     location = StringField(validation=validation.validate_location)
     # Array of Photo references that the user has posted
     posts = ListField(ReferenceField("photo.Photo"),
-                      validation=validation.validateposts)
+                      validation=validation.validate_posts)
     # Array of Album references that the user has created
     albums = ListField(ReferenceField("album.Album"),
                        validation=validation.validate_albums)

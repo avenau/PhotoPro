@@ -62,10 +62,20 @@ def validate_profile_pic(profile_pic):
     @param profile_pic: string
     '''
     try:
-        mongoengine.StringField().validate(profile_pic)
-    except mongoengine.ValidationError:
+        mongoengine.ListField().validate(profile_pic)
+    except mongoengine.errors.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError("Could not validate profile picture")
+    try:
+        mongoengine.StringField().validate(profile_pic[0])
+    except mongoengine.errors.ValidationError:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Could not validate profile picture byte string")
+    try:
+        mongoengine.StringField().validate(profile_pic[1])
+    except mongoengine.errors.ValidationError:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Could not validate profile picture metadata")
 
 def validate_about_me(about_me):
     '''
@@ -88,6 +98,7 @@ def validate_location(location):
         print(traceback.format_exc())
         raise Error.ValidationError("Could not validate About Me")
     if location not in countries:
+        print(traceback.format_exc())
         raise Error.ValidationError("Location not a valid country")
 
 def validate_posts(posts):
@@ -97,6 +108,7 @@ def validate_posts(posts):
     try:
         mongoengine.ListField().validate(posts)
     except mongoengine.ValidationError:
+        print(traceback.format_exc())
         raise Error.ValidationError("Could not validate posts")
 
 
@@ -107,15 +119,16 @@ def validate_likes(likes):
     '''
 
     try:
-        mongoengine.IntField().validate(likes)
+        mongoengine.ListField().validate(likes)
     except mongoengine.ValidationError:
+        print(traceback.format_exc())
         raise Error.ValidationError("Could not validate likes")
 
 
     unreasonable_number_of_likes = 999999
-    if likes < 0:
+    if len(likes) < 0:
         raise Error.ValidationError("Likes need to be more than 0")
-    if likes > unreasonable_number_of_likes:
+    if len(likes) > unreasonable_number_of_likes:
         raise Error.ValidationError("Cool your jets.")
 
 
@@ -243,3 +256,18 @@ def validate_recommended_keywords(recommended_keywords):
             mongoengine.StringField().validate(keyword)
         except mongoengine.ValidationError():
             raise Error.ValidationError("Keyword could not be verified")
+
+def validate_searches(searches):
+    '''
+    @param searches: [string]
+    '''
+    try:
+        mongoengine.ListField().validate(searches)
+    except mongoengine.ValidationError():
+        print(traceback.format_exc())
+        raise Error.ValidationError("Searches failed validation")
+    for search in searches:
+        try:
+            mongoengine.StringField().validate(search)
+        except mongoengine.ValidationError():
+            raise Error.ValidationError("Search could not be verified")
