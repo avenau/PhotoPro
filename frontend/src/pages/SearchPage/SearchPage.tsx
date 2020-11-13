@@ -85,7 +85,7 @@ class SearchPage extends React.Component<Props, State> {
             <div />
           )}
           <Search
-            prefill={search}
+            prefill={decodeURIComponent(search)}
             type={type}
             order={orderby}
             filetype={filetype}
