@@ -1,5 +1,8 @@
+import React from "react";
+import ReactDOM from "react-dom";
 import axios from "axios";
 import qs from "qs";
+import { Toast } from "react-bootstrap";
 
 axios.defaults.baseURL = `http://localhost:${(window as any).BACKEND_PORT}/`;
 axios.defaults.headers.put["Content-Type"] =
@@ -26,10 +29,27 @@ const errorHandler = (error: any) => {
   // if has response show the error
   console.error(error);
 
-  // TODO toastify back here
-
-  if (error.response) {
-    alert(error.response.data.message);
+  if (error.response && error.response.data && error.response.data.show_toast) {
+    console.error(error.response);
+    ReactDOM.render(
+      <Toast
+        style={{
+          fontSize: "1.2rem",
+        }}
+        delay={3000}
+        autohide
+        onClose={() => {
+          return document.getElementById("toast")?.firstChild?.remove();
+        }}
+      >
+        <Toast.Header closeButton>
+          {/* <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" /> */}
+          <strong className="mr-auto">PhotoPro</strong>
+        </Toast.Header>
+        <Toast.Body>{error.response.data.message}</Toast.Body>
+      </Toast>,
+      document.getElementById("toast")
+    );
   }
 
   return Promise.reject({ ...error });
