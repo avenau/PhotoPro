@@ -67,6 +67,7 @@ class Catalogue(Document):
         Delete old tags and set to these tags
         """
         self.tags = tags
+        self.update_tags()
 
     def update_tags(self):
         """

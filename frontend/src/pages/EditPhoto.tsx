@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { RouteChildrenProps, RouteComponentProps } from "react-router-dom";
 import axios from "axios";
 import {
   Button,
@@ -13,7 +12,6 @@ import {
 
 // Functional components
 import Title from "../components/PhotoEdit/Title";
-import Toolbar from "../components/Toolbar/Toolbar";
 import Price from "../components/PhotoEdit/Price";
 import Tags from "../components/PhotoEdit/Tags";
 import Album from "../components/PhotoEdit/Album";
@@ -61,17 +59,17 @@ export default function EditPhoto(props: any) {
         token,
         photoId,
       })
-      .then((response) => {
+      .then(() => {
         props.history.push(`/photo/${photoId}`);
       })
       .catch(() => {});
   }
 
-  function handleDelete(event: React.FormEvent<HTMLElement>) {
+  function handleDelete() {
     // Navigate back to user profile
     const token = localStorage.getItem("token");
     if (token !== null) {
-      const u_id = localStorage.getItem("u_id");
+      const uId = localStorage.getItem("u_id");
       axios
         .delete("/user/updatephoto", {
           params: {
@@ -79,19 +77,19 @@ export default function EditPhoto(props: any) {
             imgId: photoId,
           },
         })
-        .then((response) => {
-          props.history.push(`/user/${u_id}`);
+        .then(() => {
+          props.history.push(`/user/${uId}`);
         })
         .catch(() => {});
     }
   }
 
-  function checkDelete(photoId: string) {
+  function checkDelete(pId: string) {
     const token = localStorage.getItem("token");
     axios
       .get("/user/updatephoto/deleted", {
         params: {
-          photoId,
+          photoId: pId,
           token,
         },
       })
@@ -106,12 +104,12 @@ export default function EditPhoto(props: any) {
       });
   }
 
-  function getPhotoDetails(photoId: string) {
+  function getPhotoDetails(pId: string) {
     const token = localStorage.getItem("token");
     axios
       .get("/user/updatephoto", {
         params: {
-          photoId,
+          photoId: pId,
           token,
         },
       })
@@ -137,8 +135,7 @@ export default function EditPhoto(props: any) {
         setPreview(response.data.metadata + response.data.photoStr);
         setLoading(false);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         props.history.goBack();
       });
   }
@@ -161,7 +158,7 @@ export default function EditPhoto(props: any) {
         <h1>Edit Photo</h1>
         <Form>
           <Title
-            onChange={(title: string) => setTitle(title)}
+            onChange={(newTitle: string) => setTitle(newTitle)}
             deactivateUploadButton={deactivateSaveButton}
             activateUploadButton={activateSaveButton}
             titleDef={title}
@@ -173,7 +170,7 @@ export default function EditPhoto(props: any) {
           <Price
             deactivateUploadButton={deactivateSaveButton}
             activateUploadButton={activateSaveButton}
-            onChange={(price: number) => setPrice(price)}
+            onChange={(newPrice: number) => setPrice(newPrice)}
             priceDef={price}
           />
           <p style={{ fontSize: "13px" }}>
@@ -193,7 +190,7 @@ export default function EditPhoto(props: any) {
             price={price}
             oPrice={originalVal.oPrice}
             oDiscount={originalVal.oDiscount}
-            onChange={(discount: number) => setDiscount(discount)}
+            onChange={(newDiscount: number) => setDiscount(newDiscount)}
           />
           <Row>
             <Col xs={6}>
@@ -286,8 +283,8 @@ export default function EditPhoto(props: any) {
             <Button
               id="deleteConfirmed"
               variant="danger"
-              onClick={(e) => {
-                handleDelete(e);
+              onClick={() => {
+                handleDelete();
               }}
             >
               Delete photo

@@ -86,7 +86,7 @@ from lib.schedule.schedule import initialise_schedule
 from lib.user.validate_login import login
 import lib.user.helper_functions
 import lib.user.password_reset as password_reset
-from lib.user.helper_functions import update_follow #, is_following
+from lib.user.helper_functions import update_follow  # , is_following
 
 # Purchases
 from lib.purchases.purchases import get_purchased_photos
@@ -464,7 +464,7 @@ def _profile_details():
     """
     data = request.args.to_dict()
     return dumps(get_profile_details(data))
-    
+
     # if not u_id or u_id == "":
     #     raise Error.UserDNE("Couldn't find user")
 
@@ -477,8 +477,6 @@ def _profile_details():
     #     profile_viewer_id = token_functions.get_uid(token)
     # except:
     #     profile_viewer_id = ""
-
-    
 
     # return dumps(
     #     {
@@ -629,7 +627,7 @@ def _get_following_from_user():
     -------
     {
         id : string
-        nickname : string 
+        nickname : string
         fname : string
         lname : string
         email : string
@@ -689,7 +687,7 @@ def _follow():
     token = request.form.get("token")
     followed_u_id = request.form.get("followed_u_id")
     followed = update_follow(token, followed_u_id)
-    return dumps({'followed': followed})
+    return dumps({"followed": followed})
 
 
 @app.route("/user/purchasedphotos", methods=["GET"])
@@ -1313,6 +1311,7 @@ def _update_photo():
     success or error
     """
     these_photo_details = request.form.to_dict()
+    print(these_photo_details)
     # Update either price, title, keywords or add discount
     return dumps(update_photo_details(these_photo_details))
 
@@ -1750,7 +1749,7 @@ def _get_collection():
             "tags": _collection.get_tags(),
             "isOwner": owns,
             "owner": str(_collection.get_created_by().get_id()),
-            "nickname": _collection.get_created_by().get_nickname()
+            "nickname": _collection.get_created_by().get_nickname(),
         }
     )
 
@@ -1835,12 +1834,12 @@ def _update_collection():
     private: boolean
     tags: string[]
     """
-    print('past token decorator')
+    print("past token decorator")
     params = request.form.to_dict()
     token = params["token"]
     collection_id = params["collectionId"]
     u_id = token_functions.get_uid(token)
-    
+
     _user = user.User.objects.get(id=u_id)
     if not _user:
         raise Error.UserDNE("Could not find user")
@@ -1852,6 +1851,7 @@ def _update_collection():
 
     collection_functions.update_collection(params, _collection)
     return dumps({})
+
 
 @app.route("/collection/delete", methods=["DELETE"])
 @validate_token
