@@ -35,6 +35,15 @@ def user_search(data):
     """
     Search user collection
     """
+    # Handle anon users with this try-except
+    try:
+        searcher = User.objects.get(id=get_uid(data["token"]))
+        following = searcher.get_following()
+        for idx, followed in enumerate(following):
+            following[idx] = ObjectId(followed.get_id())
+    except:
+        following = []
+
     sort = get_sort_method(data["orderby"])
     res = User.objects.aggregate(
         [
@@ -55,6 +64,7 @@ def user_search(data):
                     "email": 1,
                     "location": 1,
                     "created": 1,
+                    "following": {"$in": ["$_id", following]},
                     "profilePic": "$profile_pic",
                     "id": {"$toString": "$_id"},
                     "_id": 0,
