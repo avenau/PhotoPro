@@ -5,7 +5,7 @@ import PhotoThumbnail from "../Thumbnails/PhotoThumbnail";
 import LoadingButton from "../LoadingButton/LoadingButton";
 
 interface Props extends RouteComponentProps {
-  photos: Photo[] | null;
+  photos: Photo[];
   currentVote: string;
   currentId: string;
   refreshCredits: () => void;
@@ -99,9 +99,11 @@ class CurrShowdown extends React.Component<Props, State> {
   render() {
     const { photos } = this.props;
     const { votes } = this.state;
+    console.log(photos);
+
     return (
       <div className="showdown-photo-container">
-        {photos !== null ? (
+        {photos.length !== 0 ? (
           photos.map((photo: Photo) => (
             <div style={{ padding: "10px" }} key={photo.id}>
               <div>
