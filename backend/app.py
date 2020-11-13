@@ -922,11 +922,11 @@ def download_full_photo():
 
 """
 --------------------
-- Main Feed Routes -
+- Showdown Routes -
 --------------------
 """
 
-# Returns the two showdown images for the day
+
 @app.route("/showdown", methods=["GET"])
 def _get_showdown():
     """
@@ -1004,6 +1004,48 @@ def _update_likes():
             "votes": _participant.count_votes(),
         }
     )
+
+
+@app.route("/showdownwins/<string:type>", methods=["GET"])
+def _count_showdown_wins(type):
+    """
+    Description
+    -----------
+    Count how many times a user or photo has won a showdown
+
+    Parameters
+    ----------
+    id : string (Id to compare with showdown wins)
+
+    Returns
+    -------
+    {
+        "wins" : number
+    }
+    """
+    id = request.args.get("id")
+    wins = 0
+
+    try:
+        if type == "user":
+            wins = showdown_data.count_wins_user(id)
+        elif type == "photo":
+            wins = showdown_data.count_wins_photo(id)
+    except:
+        wins = 0
+
+    return dumps(
+        {
+            "wins": wins,
+        }
+    )
+
+
+"""
+--------------------
+- Main Feed Routes -
+--------------------
+"""
 
 
 @app.route("/welcome/popularcontributors", methods=["GET"])

@@ -2,11 +2,11 @@ import _ from "lodash";
 import React from "react";
 import { Image } from "react-bootstrap";
 import { PencilSquare } from "react-bootstrap-icons";
-import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
 import FollowButton from "./FollowButton";
+import ShowdownBadge from "../Showdown/ShowdownBadge";
 import HoverText from "../HoverText";
 
 interface Props {
@@ -105,6 +105,7 @@ export default class UserHeader extends React.Component<Props> {
             <></>
           )}
         </div>
+        <ShowdownBadge type="user" entryId={this.props.userId} />
         {this.getEditButton()}
         {this.getFollowButton()}
       </div>
