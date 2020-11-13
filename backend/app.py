@@ -909,6 +909,7 @@ def download_full_photo():
 --------------------
 """
 
+
 @app.route("/showdown", methods=["GET"])
 def _get_showdown():
     """
@@ -988,8 +989,7 @@ def _update_likes():
     )
 
 
-@app.route("/showdownwins/<string:type>", methods=["POST"])
-@validate_token
+@app.route("/showdownwins/<string:type>", methods=["GET"])
 def _count_showdown_wins(type):
     """
     Description
@@ -1006,7 +1006,7 @@ def _count_showdown_wins(type):
         "wins" : number
     }
     """
-    id = request.form.get("id")
+    id = request.args.get("id")
     wins = 0
 
     try:
@@ -1014,7 +1014,7 @@ def _count_showdown_wins(type):
             wins = showdown_data.count_wins_user(id)
         elif type == "photo":
             wins = showdown_data.count_wins_photo(id)
-    except: 
+    except:
         wins = 0
 
     return dumps(
@@ -1023,11 +1023,13 @@ def _count_showdown_wins(type):
         }
     )
 
+
 """
 --------------------
 - Main Feed Routes -
 --------------------
 """
+
 
 @app.route("/welcome/popularcontributors", methods=["GET"])
 def _welcome_get_contributors():

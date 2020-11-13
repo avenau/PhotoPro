@@ -18,6 +18,7 @@ class Participant(Document):
     """
 
     photo = ReferenceField("photo.Photo")
+    user = ReferenceField("user.User")
     votes = ListField(ReferenceField("user.User"))
     showdown = ReferenceField("showdown.Showdown")
     won = BooleanField(default=False)
@@ -40,6 +41,9 @@ class Participant(Document):
 
     def get_votes(self):
         return self.votes
+
+    def get_user(self):
+        return self.user
 
     def count_votes(self):
         return len(self.votes)

@@ -1,12 +1,13 @@
 import React from "react";
 import axios from "axios";
 import { Award } from "react-bootstrap-icons";
-import { OverlayTrigger, Popover, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import "./ShowdownBadge.scss";
+import HoverText from "../HoverText";
 
 interface Props {
   type: "photo" | "user";
-  entry_id: string;
+  entryId: string;
 }
 
 interface State {
@@ -28,32 +29,29 @@ export default class ShowdownBadge extends React.Component<Props, State> {
   countWins() {
     axios
       .get(`/showdownwins/${this.props.type}`, {
-        params: { id: this.props.entry_id },
+        params: { id: this.props.entryId },
       })
       .then((res) => {
         this.setState({
-          count: res.data.count,
+          count: res.data.wins,
         });
       });
   }
 
   render() {
-    return this.state.count > -1 ? (
+    return this.state.count > 0 ? (
       <div className="showdown-badge">
-        <OverlayTrigger
-          placement="left"
-          delay={{ show: 250, hide: 400 }}
-          overlay={
-            <Tooltip id="popover-basic">
-              This {this.props.type} has won {this.state.count} showdowns!
-            </Tooltip>
-          }
+        <HoverText
+          helpfulText={`This ${this.props.type} has won ${this.state.count} ${
+            this.state.count === 1 ? "showdown" : "showdowns"
+          }!`}
+          id="showdown-badge"
         >
           <div>
             <Award size="2rem" style={{ color: "goldenrod" }} />
             {this.state.count}
           </div>
-        </OverlayTrigger>
+        </HoverText>
       </div>
     ) : (
       <></>

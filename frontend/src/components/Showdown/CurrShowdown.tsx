@@ -99,8 +99,6 @@ class CurrShowdown extends React.Component<Props, State> {
   render() {
     const { photos } = this.props;
     const { votes } = this.state;
-    console.log(photos);
-
     return (
       <div className="showdown-photo-container">
         {photos.length !== 0 ? (

@@ -24,7 +24,7 @@ class Showdown(Document):
     # When did the showdown begin
     start_date = DateTimeField(required=True)
     # Which photo was the winner of this showdown
-    winner = ReferenceField("photo.Photo")
+    winner = ReferenceField("participant.Participant")
     # Which photos are participating in the showdown
     participants = ListField(
         ReferenceField("participant.Participant"),
@@ -56,7 +56,10 @@ class Showdown(Document):
         """
         Get the winner of the current showdown
         """
-        return self.winner
+        if self.winner:
+            print("----------------------------")
+            return self.winner
+        return self.get_prev_winner()
 
     def get_prev_winner(self):
         """
