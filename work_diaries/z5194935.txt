@@ -52,7 +52,6 @@ __Week 8__
 - Finished migrating database from pymongo to mongoengine
   - Reworked `app`.py` to use classes rather than pymongo calls
   - Reworked validation to be used within classes rather than within methods
-
 - Started working on Collections and Albums
   - User can create a Collection from Profile page
   - User can create an Album from teh Profile page
