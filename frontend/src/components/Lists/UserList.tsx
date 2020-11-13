@@ -31,8 +31,8 @@ class UserList extends React.Component<Props> {
             key={profile.id}
           >
             <UserHeader
-              name={`${profile.fname} ${profile.lname}`}
               isCurrentUser={profile.id === localStorage.getItem("u_id")}
+              name={`${profile.fname} ${profile.lname}`}
               {...profile}
               userId={profile.id}
             />

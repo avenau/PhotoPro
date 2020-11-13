@@ -55,36 +55,10 @@ export default class UserHeader extends React.Component<Props> {
     if (this.props.isCurrentUser) {
       return null;
     }
-
-    /* const alreadyFollowing = false;
-     if (alreadyFollowing) {
-       return (
-         <Button
-           className="button-container"
-           variant="outline-primary"
-           onClick={(e) => {
-             e.stopPropagation();
-           }}
-         >
-           Following
-         </Button>
-       );
-     }
-     return (
-       <Button
-         className="button-container"
-         onClick={(e) => {
-           e.stopPropagation();
-         }}
-       >
-         Follow
-       </Button>
-     ); */
     return (
       <FollowButton
         following={this.props.following}
-        // isCurrentUser={this.props.isCurrentUser}
-        // userId={this.props.userId}
+        userId={this.props.userId}
       />
     );
   }

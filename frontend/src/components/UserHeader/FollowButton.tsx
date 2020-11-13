@@ -3,49 +3,37 @@ import axios from "axios";
 import { Button, Modal } from "react-bootstrap";
 
 interface FollowButtonProps {
-  isCurrentUser?: boolean;
-  userId?: string; // This is the user_id of the person being followed
+  userId: string; // This is the user_id of the person being followed
   following?: boolean;
 }
 
-interface FollowButtonState {
-  isFollowed: boolean;
-  buttonContent: string;
-  buttonColour: string;
-  showAlert: boolean;
+interface State {
+  showLoginAlert: boolean;
+  following: boolean | undefined;
 }
 
 export default class FollowButton extends React.Component<
   FollowButtonProps,
-  FollowButtonState
+  State
 > {
   constructor(props: FollowButtonProps) {
     super(props);
     this.state = {
-      isFollowed: false,
-      buttonContent: "",
-      buttonColour: "primary",
-      showAlert: false,
+      showLoginAlert: false,
+      following: this.props.following,
     };
   }
-
-  //   componentDidMount() {
-  //     if (this.props.isCurrentUser === false) {
-  //       this.isFollowing();
-  //     }
-  //   }
 
   private loginAlert() {
     return (
       <div>
         <Modal
-          show={this.state.showAlert}
-          onHide={() => this.setState({ showAlert: false })}
+          show={this.state.showLoginAlert}
+          onHide={() => this.setState({ showLoginAlert: false })}
         >
           <Modal.Header closeButton>
             <Modal.Title>PhotoPro</Modal.Title>
           </Modal.Header>
-
           <Modal.Body>You must be logged in to follow!</Modal.Body>
         </Modal>
       </div>
@@ -62,58 +50,28 @@ export default class FollowButton extends React.Component<
           token,
           followed_u_id: this.props.userId,
         })
+        .then((res) => {
+          this.setState({ following: res.data.followed });
+        })
         .catch(() => {});
-      if (this.state.isFollowed === true) {
-        this.setState({
-          isFollowed: false,
-          buttonContent: "Follow",
-          buttonColour: "primary",
-        });
-      } else {
-        this.setState({
-          isFollowed: true,
-          buttonContent: "Following",
-          buttonColour: "secondary",
-        });
-      }
     } else {
-      this.setState({ showAlert: true });
+      this.setState({ showLoginAlert: true });
     }
   }
 
-  //   private isFollowing() {
-  //     axios
-  //       .get(
-  //         `/user/isfollowing?follower_u_id=${
-  //           localStorage.getItem("u_id") as string
-  //         }&followed_u_id=${this.props.userId}`
-  //       )
-  //       .then((r) => {
-  //         this.setState({ isFollowed: r.data.is_followed });
-  //         if (r.data.is_followed === true) {
-  //           this.setState({
-  //             buttonContent: "Following",
-  //             buttonColour: "secondary",
-  //           });
-  //         } else {
-  //           this.setState({ buttonContent: "Follow", buttonColour: "primary" });
-  //         }
-  //       })
-  //       .catch(() => {});
-  //   }
-
   render() {
     return (
-      <div>
-        {this.props.isCurrentUser ? null : this.props.following ? null : (
-          <Button
-            variant={this.state.buttonColour}
-            onClick={(e) => this.handleFollow(e)}
-          >
+      <div onClick={(e) => e.stopPropagation()}>
+        {this.state.following ? (
+          <Button variant="secondary" onClick={(e) => this.handleFollow(e)}>
+            Unfollow
+          </Button>
+        ) : (
+          <Button variant="primary" onClick={(e) => this.handleFollow(e)}>
             Follow
           </Button>
         )}
-        {this.state.showAlert ? this.loginAlert() : null}
+        {this.state.showLoginAlert ? this.loginAlert() : null}
       </div>
     );
   }

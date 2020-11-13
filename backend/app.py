@@ -85,7 +85,7 @@ from lib.schedule.schedule import initialise_schedule
 from lib.user.validate_login import login
 import lib.user.helper_functions
 import lib.user.password_reset as password_reset
-from lib.user.helper_functions import is_following, update_follow
+from lib.user.helper_functions import update_follow #, is_following
 
 # Purchases
 from lib.purchases.purchases import get_purchased_photos
@@ -631,29 +631,29 @@ def _get_following_from_user():
     return dumps(user_following_search(data))
 
 
-@app.route("/user/isfollowing", methods=["GET"])
-def _is_followed():
-    """
-    Description
-    -----------
-    GET request to check whether a person is following someone
+# @app.route("/user/isfollowing", methods=["GET"])
+# def _is_followed():
+#     """
+#     Description
+#     -----------
+#     GET request to check whether a person is following someone
 
-    Parameters
-    ----------
-    follower_u_id : string
-    followed_u_id : string
+#     Parameters
+#     ----------
+#     follower_u_id : string
+#     followed_u_id : string
 
-    Returns
-    -------
-    {
-        is_followed : boolean
-    }
-    """
-    data = request.args.to_dict()
-    follower_u_id = data["follower_u_id"]
-    followed_u_id = data["followed_u_id"]
+#     Returns
+#     -------
+#     {
+#         is_followed : boolean
+#     }
+#     """
+#     data = request.args.to_dict()
+#     follower_u_id = data["follower_u_id"]
+#     followed_u_id = data["followed_u_id"]
 
-    return dumps({"is_followed": is_following(follower_u_id, followed_u_id)})
+#     return dumps({"is_followed": is_following(follower_u_id, followed_u_id)})
 
 
 @app.route("/user/follow", methods=["POST"])
@@ -661,12 +661,12 @@ def _follow():
     """
     Description
     -----------
-    GET request to update following or unfollowing a user
+    POST request to update following or unfollowing a user
 
     Parameters
     ----------
     token : string
-    followed_u_id : string (User Id of the user being follwoed)
+    followed_u_id : string (User Id of the user being followed)
 
     Returns
     -------
@@ -674,8 +674,8 @@ def _follow():
     """
     token = request.form.get("token")
     followed_u_id = request.form.get("followed_u_id")
-    result = update_follow(token, followed_u_id)
-    return dumps({})
+    followed = update_follow(token, followed_u_id)
+    return dumps({'followed': followed})
 
 
 @app.route("/user/purchasedphotos", methods=["GET"])
@@ -1332,7 +1332,7 @@ def _search_user():
     offset : int
     limit : int
     orderby : string
-    token : string
+    token: string
 
     Returns
     -------
@@ -1342,6 +1342,9 @@ def _search_user():
         nickname: str,
         email: str,
         location: str,
+        profilePic: str[],
+        id: str,
+        following: bool,
     }
     """
     data = request.args.to_dict()
