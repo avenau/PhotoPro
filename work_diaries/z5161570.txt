@@ -50,3 +50,8 @@ I updated GIF thumbnails to be an animated version of the GIF rather than a stat
 I completed JAJAC-7, JAJAC-13, JAJAC-52, JAJAC-51.
 I added missing functionality on profile to display anything a user has uploaded.
 I added ordering and filetype filtering to search.
+
+---------------- Week 9 ----------------
+I completed JAJAC-62, JAJAC-61, JAJAC-59.
+I fixed some minor bugs to do with showdown and search.
+I completed some style improvements.
