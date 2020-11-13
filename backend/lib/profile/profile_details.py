@@ -133,6 +133,7 @@ def user_following_search(data):
         tmp_dict['email'] = followed.get_email()
         tmp_dict['location'] = followed.get_location()
         tmp_dict['profilePic'] = followed.get_profile_pic()
+        tmp_dict['following'] = followed in user_obj.get_following()[skip:skip+limit]
         res.append(tmp_dict)
 
     return res

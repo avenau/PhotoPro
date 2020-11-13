@@ -614,13 +614,14 @@ def _get_following_from_user():
     Returns
     -------
     {
+        id : string
+        nickname : string 
         fname : string
         lname : string
-        nickname : string
         email : string
         location : string
-        created : string
-        id : string
+        profilePic: string[]
+        following: bool
     }
     """
     data = request.args.to_dict()
