@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
+import HoverText from "../../components/HoverText";
 
 export default function Tags(props: any) {
   const [tagButtons, setTagButtons] = useState<JSX.Element[]>();
@@ -10,15 +11,14 @@ export default function Tags(props: any) {
   const [tagsErrMsg, setTagsErr] = useState(
     "Remember to add at least one keyword!"
   );
-  const [tagsLength, setTagsLength] = useState(0)
+  const [tagsLength, setTagsLength] = useState(0);
 
   useEffect(() => {
     if (props.tagsList != undefined) {
-      refreshTagButtons(props.tagsList)
-      refreshTagsErr(props.tagsList)
+      refreshTagButtons(props.tagsList);
+      refreshTagsErr(props.tagsList);
     }
-  }, [props.tagsList]
-  )
+  }, [props.tagsList]);
 
   function clearTagInput() {
     const tagInput = document.getElementById("tags") as HTMLInputElement;
@@ -79,7 +79,7 @@ export default function Tags(props: any) {
         </span>
       );
     });
-    setTagsLength(updatedTagsList.length)
+    setTagsLength(updatedTagsList.length);
     setTagButtons(newTagButtons);
     clearTagInput();
   }
@@ -149,7 +149,9 @@ export default function Tags(props: any) {
               }
             />
           </Col>
-          <Button onClick={handleAddTags}>Add Tags</Button>
+          <HoverText id="add-tags-hover" helpfulText="Click to add your tags">
+            <Button onClick={handleAddTags}>Add Tags</Button>
+          </HoverText>
         </Row>
         <Form.Text className="text-muted tagsInfo">
           You can include 1 to 10 keywords. Keywords should describe the main

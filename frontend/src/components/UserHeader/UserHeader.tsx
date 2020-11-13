@@ -8,6 +8,7 @@ import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
 import FollowButton from "./FollowButton";
 import ShowdownBadge from "../Showdown/ShowdownBadge";
+import HoverText from "../HoverText";
 
 interface Props {
   profilePic?: string[];
@@ -37,9 +38,14 @@ export default class UserHeader extends React.Component<Props> {
       return null;
     }
     return (
-      <Link to="/manage_account" className="button-container">
-        <PencilSquare size="2rem" color="#343a40" />
-      </Link>
+      <HoverText
+        id="manage-account-hover"
+        helpfulText="Manage your account details"
+      >
+        <Link to="/manage_account" className="button-container">
+          <PencilSquare size="2rem" color="#343a40" />
+        </Link>
+      </HoverText>
     );
   }
 

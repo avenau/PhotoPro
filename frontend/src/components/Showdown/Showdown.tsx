@@ -5,7 +5,9 @@ import PrevShowdown from "./PrevShowdown";
 import CurrShowdown from "./CurrShowdown";
 import "./Showdown.scss";
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps {
+  refreshCredits: () => void;
+}
 
 interface State {
   participants: Photo[];
@@ -87,6 +89,7 @@ class Showdown extends React.Component<Props, State> {
               photos={this.state.participants}
               currentVote={this.state.currentVote}
               currentId={this.state.currentId}
+              refreshCredits={this.props.refreshCredits}
             />
           )}
         </div>
