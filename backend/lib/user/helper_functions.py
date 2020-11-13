@@ -62,17 +62,16 @@ def update_follow(token, followed_id):
     
     if (is_following(following_user, followed_user) == False):
         following_user.add_following(followed_user)
-        ret = True
+        following_user.save()
+        followed = True
     else:
         following_user.remove_following(followed_user)
-        ret = False
-        
-    following_user.save()
-    print("followed: "+str(ret))
-    return ret
+        following_user.save()
+        followed = False
+    
+    return followed
 
 def is_following(follower, followed):
-
     return followed in follower.get_following()
     
 

@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { Button, Modal } from "react-bootstrap";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
 
 interface FollowButtonProps {
   userId: string; // This is the user_id of the person being followed
@@ -10,6 +11,8 @@ interface FollowButtonProps {
 interface State {
   showLoginAlert: boolean;
   following: boolean | undefined;
+  btnLoading: boolean;
+  followBtnLoading: boolean;
 }
 
 export default class FollowButton extends React.Component<
@@ -21,6 +24,8 @@ export default class FollowButton extends React.Component<
     this.state = {
       showLoginAlert: false,
       following: this.props.following,
+      btnLoading: false,
+      followBtnLoading: true,
     };
   }
 
@@ -43,6 +48,7 @@ export default class FollowButton extends React.Component<
   handleFollow(e: React.MouseEvent<HTMLElement, MouseEvent>) {
     e.preventDefault();
     e.stopPropagation();
+    this.setState({ btnLoading: true });
     const token = localStorage.getItem("token") as string;
     if (token) {
       axios
@@ -51,11 +57,13 @@ export default class FollowButton extends React.Component<
           followed_u_id: this.props.userId,
         })
         .then((res) => {
-          this.setState({ following: res.data.followed });
+          this.setState({ btnLoading: false, following: res.data.followed });
         })
-        .catch(() => {});
+        .catch(() => {
+          this.setState({ btnLoading: false });
+        });
     } else {
-      this.setState({ showLoginAlert: true });
+      this.setState({ showLoginAlert: true, btnLoading: false });
     }
   }
 
@@ -63,13 +71,21 @@ export default class FollowButton extends React.Component<
     return (
       <div onClick={(e) => e.stopPropagation()}>
         {this.state.following ? (
-          <Button variant="secondary" onClick={(e) => this.handleFollow(e)}>
+          <LoadingButton
+            loading={this.state.btnLoading}
+            variant="secondary"
+            onClick={(e) => this.handleFollow(e)}
+          >
             Unfollow
-          </Button>
+          </LoadingButton>
         ) : (
-          <Button variant="primary" onClick={(e) => this.handleFollow(e)}>
+          <LoadingButton
+            loading={this.state.btnLoading}
+            variant="primary"
+            onClick={(e) => this.handleFollow(e)}
+          >
             Follow
-          </Button>
+          </LoadingButton>
         )}
         {this.state.showLoginAlert ? this.loginAlert() : null}
       </div>
