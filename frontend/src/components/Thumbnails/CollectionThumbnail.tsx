@@ -40,7 +40,7 @@ export default class CollectionThumbnail extends React.Component<Props, State> {
           this.setState({collectionThumbnail: res.data.thumbnail})
         }
       })
-      .catch();
+      .catch(()=>{});
   }
 
   render() {

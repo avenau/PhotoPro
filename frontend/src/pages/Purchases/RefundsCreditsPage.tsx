@@ -42,9 +42,7 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
           location: res.data.location,
         });
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(() => {});
   }
 
   handleSubmit(e: React.FormEvent<HTMLElement>) {
@@ -63,9 +61,7 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, any> {
       .then((response) => {
         this.props.history.push("/purchases");
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(() => {});
   }
 
   handleCreditsChange(e: any) {

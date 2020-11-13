@@ -58,10 +58,11 @@ export default function PhotoComments(props: CommentProps) {
         commentContent,
         commentDate,
       })
-      .then((response) => {
+      .then(() => {
         clearCommentInput();
         getComments(photoId, new_to_old);
-      });
+      })
+      .catch(()=>{});
   };
 
   // Order is newest to oldest then true
@@ -75,7 +76,8 @@ export default function PhotoComments(props: CommentProps) {
         }
         setComments(tempComments);
         setStatus(response.data.status);
-      });
+      })
+      .catch(()=>{});
   };
 
   // useEffect(() => {

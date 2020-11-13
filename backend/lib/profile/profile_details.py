@@ -27,11 +27,13 @@ def user_photo_search(data):
                     "price": 1,
                     "discount": 1,
                     "extension": 1,
+                    "posted": 1,
                     "user": {"$toString": "$user"},
                     "id": {"$toString": "$_id"},
                     "_id": 0,
                 }
             },
+            {"$sort": {"posted": -1}},
             {"$skip": data["offset"]},
             {"$limit": data["limit"]},
         ]

@@ -40,7 +40,7 @@ export default class AlbumThumbnail extends React.Component<Props, State> {
           this.setState({albumThumbnail: res.data.thumbnail})
         }
       })
-      .catch();
+      .catch(()=>{});
   }
 
   render() {

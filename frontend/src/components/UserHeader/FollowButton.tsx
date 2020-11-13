@@ -51,25 +51,24 @@ export default class FollowButton extends React.Component<FollowButtonProps, Fol
     }
 
     handleFollow(e: React.MouseEvent<HTMLElement, MouseEvent>) {
-        e.preventDefault();
-        e.stopPropagation();
-        const token = localStorage.getItem("token") as string;
-        if (token) {
-
-            axios
-                .post(`/user/follow`, {
-                    token,
-                    followed_u_id: this.props.userId,
-                })
-                .catch(() => { });
-            if (this.state.isFollowed === true) {
-                this.setState({ isFollowed: false, buttonContent: "Follow", buttonColour: "primary" });
-            } else {
-                this.setState({ isFollowed: true, buttonContent: "Following", buttonColour: "secondary" });
-            }
+      e.preventDefault();
+      e.stopPropagation();
+      const token = localStorage.getItem("token") as string;
+      if (token) {
+        axios
+          .post(`/user/follow`, {
+            token,
+            followed_u_id: this.props.userId,
+          })
+          .catch(() => { });
+        if (this.state.isFollowed === true) {
+          this.setState({ isFollowed: false, buttonContent: "Follow", buttonColour: "primary" });
         } else {
-            this.setState({ showAlert: true });
+          this.setState({ isFollowed: true, buttonContent: "Following", buttonColour: "secondary" });
         }
+      } else {
+        this.setState({ showAlert: true });
+      }
 
 
 
@@ -77,7 +76,7 @@ export default class FollowButton extends React.Component<FollowButtonProps, Fol
     }
 
     private isFollowing() {
-        axios
+      axios
             .get(`/user/isfollowing?follower_u_id=${localStorage.getItem("u_id") as string}&followed_u_id=${this.props.userId}`)
             .then((r) => {
                 this.setState({ isFollowed: r.data.is_followed });

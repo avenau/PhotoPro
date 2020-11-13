@@ -22,9 +22,7 @@ export default function Album(props: any) {
         const albumOptions = res.data.albumList;
         setAlbums(albumOptions);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(() => {});
   }, []);
 
   function addAlbums(event: React.FormEvent<HTMLInputElement>) {
@@ -75,9 +73,7 @@ export default function Album(props: any) {
         albums.push([albumId, newAlbumTitle]);
         setNewAlbumCard(false);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(() => {});
   }
 
   return (
