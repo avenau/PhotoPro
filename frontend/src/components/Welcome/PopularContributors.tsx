@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
+import Container from "react-bootstrap/Container"
 import ContentLoader from "../ContentLoader/ContentLoader";
 
 class PopularContributors extends Component<any, any> {
@@ -18,7 +19,8 @@ class PopularContributors extends Component<any, any> {
 
   render() {
     return (
-      <div style={{ padding: "0% 5%" }}>
+      
+      <Container>
         <h3>Popular contributors</h3>
 
         <div style={{ display: "flex", justifyContent: "left" }}>
@@ -28,7 +30,7 @@ class PopularContributors extends Component<any, any> {
             type="artist"
           />
         </div>
-      </div>
+      </Container>
     );
   }
 }
