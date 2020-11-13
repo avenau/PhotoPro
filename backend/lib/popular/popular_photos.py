@@ -7,6 +7,7 @@ from mongoengine import Document
 from mongoengine import ReferenceField
 
 import lib.photo.photo as photo
+import lib.popular.validation as validation
 
 
 class PopularPhoto(Document):
@@ -17,7 +18,7 @@ class PopularPhoto(Document):
     # Which photo is being tracked
     photo = ReferenceField("photo.Photo")
     # Number of likes received
-    likes = IntField()
+    likes = IntField(validation=validation.validate_likes)
 
     meta = {"collection": "popular-photos"}
 

@@ -22,3 +22,24 @@ def validate_participants(participants):
         raise Error.ValidationError(
             "There cannot be more than two participants in a showdown"
         )
+
+def validate_start_date(start_date):
+    '''
+    @param: start_date: DateTime
+    '''
+    try:
+        mongoengine.DateTimeField().validate(start_date)
+    except:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Start Date validation failed")
+
+def validate_duration(duration):
+    '''
+    @param duration: int
+    '''
+    try:
+        mongoengine.IntField().validate(duration)
+    except:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Duration validation failed")
+    
