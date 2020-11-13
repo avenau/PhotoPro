@@ -178,14 +178,16 @@ def update_collection(params, _collection):
     '''
     Update collection
     '''
+    print(params)
     if 'title' in params:
-        _collection.set_title(params['title'])
+        _collection.update_title(params['title'])
     if 'tags' in params:
-        _collection.set_tags()
+        tags = loads(params['tags'])
+        _collection.set_tags(tags)
     if 'private' in params:
-        if params['private'] == 'true':
+        if params['private'] == "true":
             _collection.set_private()
-        if params['private'] == 'false':
+        if params['private'] == "false":
             _collection.set_public()
     _collection.save()
 

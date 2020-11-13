@@ -1,9 +1,13 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, Link } from "react-router-dom";
 import axios from "axios";
 import Container from "react-bootstrap/Container";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
 import ContentLoader from '../../components/ContentLoader/ContentLoader';
+import "../AlbumDetails/AlbumDetails.scss"
+import { Row, Col } from "react-bootstrap"
+import { stringify } from "qs";
+import Tags from "../../components/Tags";
 
 interface Props extends RouteComponentProps<MatchParams> {
   isOwner?: boolean;
@@ -18,8 +22,9 @@ interface State {
   title: string;
   collectionId: string;
   isOwner: boolean;
-  price: number;
-  originalPrice: number;
+  owner: string;
+  nickname: string;
+  tags: string[];
 }
 
 class CollectionDetails extends React.Component<Props, State> {
@@ -29,10 +34,11 @@ class CollectionDetails extends React.Component<Props, State> {
     this.state = {
       token: String(localStorage.getItem("token")),
       title: "",
-      price: 0,
-      originalPrice: 0,
       collectionId,
       isOwner: !!props.isOwner,
+      owner: "",
+      nickname: "",
+      tags: [],
     };
   }
 
@@ -50,9 +56,10 @@ class CollectionDetails extends React.Component<Props, State> {
           if (res.data) {
             this.setState({
               title: res.data.title,
-              price: res.data.price,
-              originalPrice: res.data.originalPrice,
               isOwner: res.data.isOwner,
+              owner: res.data.owner,
+              nickname: res.data.nickname,
+              tags: res.data.tags
             });
           }
         })
@@ -68,9 +75,9 @@ class CollectionDetails extends React.Component<Props, State> {
           <Row>
             <Col>
               <Link
-                to={`/user/${this.props.owner}`}
+                to={`/user/${this.state.owner}`}
               >
-                By @​​​​​​​{this.props.nickname}
+                By @​​​​​​​{this.state.nickname}
               </Link>
             </Col>
             <Col xs={7}>
@@ -84,27 +91,15 @@ class CollectionDetails extends React.Component<Props, State> {
                     }
                   </Row>
                 </Container>
-              
                 <AlbumHeader
                   isOwner={this.state.isOwner}
-                  catalogueId={this.state.albumId}
+                  catalogueId={this.state.collectionId}
                   token={this.state.token}
-                  type="album"
+                  type="collection"
                 />
               </Container>
             </Col>
           </Row>
-          <div>
-            <AlbumHeader
-              isOwner={this.state.isOwner}
-              catalogueId={this.state.collectionId}
-              token={this.state.token}
-              type="collection"
-            />
-            
-            <h2>Price: {this.state.price}</h2>
-            <h3>Regular Price: {this.state.originalPrice}</h3>
-          </div>
           <ContentLoader
             query={this.state.collectionId}
             route='/collection/photos'

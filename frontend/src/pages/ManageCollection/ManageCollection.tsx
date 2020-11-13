@@ -5,14 +5,12 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 
-import Discount from "../../components/AlbumDisplay/Discount";
-
 import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
 
 interface Props extends RouteComponentProps<MatchParams> {}
 interface MatchParams {
-  album_id: string;
+  collection_id: string;
 }
 
 interface State {
@@ -21,20 +19,22 @@ interface State {
   title: string;
   discount: number;
   tags: string[];
-  albumId?: string;
+  collectionId?: string;
+  private: boolean
 }
 
-class ManageAlbum extends React.Component<Props, State> {
+class ManageCollection extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    const albumId = this.props.match.params.album_id;
+    const collectionId = this.props.match.params.collection_id;
     this.state = {
       uId: String(localStorage.getItem("u_id")),
       token: String(localStorage.getItem("token")),
       title: "",
       discount: 0,
       tags: [],
-      albumId,
+      collectionId,
+      private: true
     };
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -42,19 +42,20 @@ class ManageAlbum extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.getAlbum();
+    this.getCollection();
   }
 
-  getAlbum() {
+  getCollection() {
     const { token } = this.state;
-    const { albumId } = this.state;
-    if (this.state.albumId != "") {
-      axios.get(`/album?token=${token}&album_id=${albumId}`).then((res) => {
+    const { collectionId } = this.state;
+    if (this.state.collectionId != "") {
+      axios.get(`/collection/get?token=${token}&collectionId=${collectionId}`).then((res) => {
+        console.log(res)
         if (res.data) {
           this.setState({
             title: res.data.title,
-            discount: res.data.discount,
             tags: res.data.tags,
+            private: res.data.private,
           });
         }
       });
@@ -67,12 +68,12 @@ class ManageAlbum extends React.Component<Props, State> {
       return;
     }
     axios
-      .put("/albums/update", {
+      .put("/collection/update", {
         title: this.state.title,
-        discount: this.state.discount,
         tags: JSON.stringify(this.state.tags),
-        token: this.state.token,
-        albumId: this.state.albumId,
+        token: localStorage.getItem("token"),
+        collectionId: this.state.collectionId,
+        private: this.state.private
       })
       .then((res) => {
         this.props.history.push(`/user/${this.state.uId}`);
@@ -91,16 +92,16 @@ class ManageAlbum extends React.Component<Props, State> {
   }
 
   getButton() {
-    if (this.state.albumId == "") {
+    if (this.state.collectionId == "") {
       return (
         <Button id="createButton" className="mt-2" type="submit">
-          Create Album
+          Create Collection
         </Button>
       );
     }
     return (
       <Button id="createButton" className="mt-2" type="submit">
-        Update Album {"  "}
+        Update Collection {"  "}
       </Button>
     );
   }
@@ -109,32 +110,31 @@ class ManageAlbum extends React.Component<Props, State> {
     return (
       <div className="createAlbumPage">
         <Container className="mt-5">
-          <h1>Manage your album</h1>
+          <h1>Manage your collection</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Title
-              titleType="Album"
+              titleType="Collection"
               deactivateUpdateButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}
               onChange={(title: string) => this.setState({ title })}
               titleDef={this.state.title}
               prefill={this.state.title}
             />
-            <Discount
-              deactivateCreateButton={this.deactivateCreateButton}
-              activateCreateButton={this.activateCreateButton}
-              onChange={(discount: number) => this.setState({ discount })}
-              discountDef={this.state.discount}
-              prefill={this.state.discount}
-              currencyType="Credits"
-            />
             <Tags
-              tagType="Album"
+              tagType="Collection"
               deactivateUploadButton={this.deactivateCreateButton}
               activateUploadButton={this.activateCreateButton}
               tagsList={this.state.tags}
               setTagsList={(tags: string[]) => this.setState({ tags })}
               prefill={this.state.tags}
             />
+            <Form.Group controlId="formBasicCheckbox">
+                <Form.Check
+                checked={this.state.private}
+                type="checkbox"
+                label="Make collection private"
+                onClick={() => this.setState({private: !this.state.private})}/>
+            </Form.Group>
             {this.getButton()}
           </Form>
         </Container>
@@ -143,4 +143,4 @@ class ManageAlbum extends React.Component<Props, State> {
   }
 }
 
-export default ManageAlbum;
+export default ManageCollection;
