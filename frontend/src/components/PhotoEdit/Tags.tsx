@@ -14,15 +14,15 @@ export default function Tags(props: any) {
   const [tagsLength, setTagsLength] = useState(0);
 
   useEffect(() => {
-    if (props.tagsList != undefined) {
+    if (props.tagsList !== undefined) {
       refreshTagButtons(props.tagsList);
       refreshTagsErr(props.tagsList);
     }
   }, [props.tagsList]);
 
   function clearTagInput() {
-    const tagInput = document.getElementById("tags") as HTMLInputElement;
-    tagInput.value = "";
+    const input = document.getElementById("tags") as HTMLInputElement;
+    input.value = "";
     setTagInput("");
   }
 
@@ -136,8 +136,8 @@ export default function Tags(props: any) {
     <>
       <Form.Group controlId="tags">
         <Form.Label>
-          Space-separated keywords, e.g. "cat dog mouse". Click "Add Tags" to
-          detect your keywords.
+          Space-separated keywords, e.g. &quot;cat dog mouse&quot;. Click
+          &quot;Add Tags&quot; to detect your keywords.
         </Form.Label>
         <Row>
           <Col xs={9}>

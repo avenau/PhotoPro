@@ -70,6 +70,13 @@ class Photo(Document):
         # Ensure unique
         self.tags = set(tags).union(set(self.tags))
 
+    def set_tags(self, tags):
+        """
+        Add a list of tags
+        @params tags: list
+        """
+        self.tags = set(tags)
+
     def add_tag(self, tag):
         """
         Add an individual tag

@@ -1,6 +1,6 @@
-'''
+"""
 Album Functions
-'''
+"""
 
 from json import loads
 from bson.json_util import dumps
@@ -10,26 +10,28 @@ import lib.photo.photo as photo
 from lib.user.user import User
 from lib.album.album import Album
 
+
 def update_album(_album, title, discount, tags):
-    '''
+    """
     @param title: string
     @param discount: int
     @param tags: [string]
     @return success: boolean
-    '''
+    """
     if title:
         _album.update_title(title)
     if discount:
         _album.set_discount(int(discount))
     if tags:
-        _album.add_tags(tags)
+        _album.set_tags(tags)
     _album.save()
     return True
 
+
 def album_photo_search(data):
-    '''
+    """
     Get thumbnails of the photos in an album
-    '''
+    """
     try:
         req_user = get_uid(data["token"])
     except:
@@ -79,13 +81,14 @@ def album_photo_search(data):
             if result["deleted"] == True:
                 # Check if photo is deleted, if it is, remove from result list
                 remove_photo.append(result)
-            if req_user ==  str(cur_photo.get_user().get_id()):
+            if req_user == str(cur_photo.get_user().get_id()):
                 result["owns"] = True
 
     # Only return photos which have not been deleted
     album_photos = [i for i in res if i not in remove_photo]
 
     return album_photos
+
 
 def catalogue_thumbnail(catalogue_obj, u_id):
     """
@@ -94,9 +97,7 @@ def catalogue_thumbnail(catalogue_obj, u_id):
 
     photos = catalogue_obj.get_photos()
 
-    thumbnail = {
-        "thumbnail": ""
-    }
+    thumbnail = {"thumbnail": ""}
 
     for _photo in photos:
         if not _photo.is_deleted():
