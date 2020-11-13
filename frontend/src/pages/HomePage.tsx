@@ -15,7 +15,7 @@ class WelcomePage extends React.Component<Props> {
     return (
       <div className="HomePage">
         <WelcomeHeader />
-        <Showdown />
+        <Showdown refreshCredits={this.props.refreshCredits} />
         <br />
         <CuratedFeed refreshCredits={this.props.refreshCredits} />
         <PopularContributors />

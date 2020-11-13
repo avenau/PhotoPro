@@ -42,9 +42,7 @@ export default class LoginPage extends React.Component<
         this.handleLoginClick();
         this.props.history.push("/");
       })
-      .catch((e) => {
-        console.log(e);
-      });
+      .catch(() => {});
   }
 
   handleChange(event: any) {

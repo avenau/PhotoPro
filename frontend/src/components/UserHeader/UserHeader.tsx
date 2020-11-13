@@ -6,7 +6,8 @@ import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
-import FollowButton from "./FollowButton"
+import FollowButton from "./FollowButton";
+import HoverText from "../HoverText";
 
 interface Props {
   profilePic?: string[];
@@ -36,9 +37,15 @@ export default class UserHeader extends React.Component<Props> {
       return null;
     }
     return (
-      <Link to="/manage_account" className="button-container">
-        <PencilSquare size="2rem" color="#343a40" />
-      </Link>
+      <HoverText
+        id="manage-account-hover"
+        helpfulText="Manage your account details"
+        placement="right"
+      >
+        <Link to="/manage_account" className="button-container">
+          <PencilSquare size="2rem" color="#343a40" />
+        </Link>
+      </HoverText>
     );
   }
 
@@ -73,8 +80,11 @@ export default class UserHeader extends React.Component<Props> {
        </Button>
      ); */
     return (
-      <FollowButton currentUser={this.props.currentUser} userId={this.props.userId} />
-    )
+      <FollowButton
+        currentUser={this.props.currentUser}
+        userId={this.props.userId}
+      />
+    );
   }
 
   private getPic() {
@@ -108,7 +118,7 @@ export default class UserHeader extends React.Component<Props> {
             <h2>{this.props.name}</h2>
           ) : (
             <h4>{this.props.name}</h4>
-            )}
+          )}
           <div>@{this.props.nickname}</div>
           <div>Based in {this.props.location}</div>
           <div>{this.props.email}</div>
@@ -116,7 +126,7 @@ export default class UserHeader extends React.Component<Props> {
             <div>About me: {this.props.aboutMe}</div>
           ) : (
             <></>
-            )}
+          )}
         </div>
         {this.getEditButton()}
         {this.getFollowButton()}

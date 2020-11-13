@@ -8,6 +8,7 @@ interface Props extends RouteComponentProps {
   photos: Photo[] | null;
   currentVote: string;
   currentId: string;
+  refreshCredits: () => void;
 }
 
 interface Photo {
@@ -115,7 +116,10 @@ class CurrShowdown extends React.Component<Props, State> {
                 }}
                 className="showdown-photo"
               >
-                <PhotoThumbnail {...photo} />
+                <PhotoThumbnail
+                  {...photo}
+                  refreshCredits={this.props.refreshCredits}
+                />
               </div>
               <LoadingButton
                 loading={this.state.loading}

@@ -42,9 +42,7 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
           location: res.data.location,
         });
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(() => {});
   }
 
   handleSubmit(e: React.FormEvent<HTMLElement>) {
@@ -60,12 +58,10 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
         token,
         ncredits: this.state.ncredits,
       })
-      .then((response) => {
+      .then(() => {
         this.props.history.push("/purchases");
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(() => {});
   }
 
   handleCreditsChange(e: any) {
