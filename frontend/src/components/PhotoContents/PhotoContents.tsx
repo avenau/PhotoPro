@@ -152,7 +152,8 @@ class PhotoContents extends React.Component<Props, any> {
   returnDynamicButtons() {
     if (this.state.isArtist) {
       return (
-        <div>
+        <>
+        <Row>
           <HoverText
             id="downloadButton"
             helpfulText="Download"
@@ -162,7 +163,7 @@ class PhotoContents extends React.Component<Props, any> {
               loading={this.state.downloadBtnLoading}
               onClick={(e) => this.downloadPhoto(e)}
               variant="light"
-              className="m-2"
+              className="m-2 ml-4"
             >
               <ArrowDownSquare />
             </LoadingButton>
@@ -181,16 +182,13 @@ class PhotoContents extends React.Component<Props, any> {
               <PencilSquare />
             </LoadingButton>
           </HoverText>
-          <Price
-            fullPrice={this.state.fullPrice}
-            discount={this.state.discount}
-          />
-        </div>
+        </Row>
+        </>
       );
     }
     if (this.state.purchased) {
       return (
-        <div>
+        <Row>
           <HoverText
             id="downloadButton"
             helpfulText="Download"
@@ -199,17 +197,18 @@ class PhotoContents extends React.Component<Props, any> {
             <LoadingButton
               loading={this.state.downloadBtnLoading}
               onClick={(e) => this.downloadPhoto(e)}
-              className="m-2"
+              className="m-2 ml-4"
               variant="light"
             >
               <ArrowDownSquare />
             </LoadingButton>
           </HoverText>
-        </div>
+        </Row>
       );
     }
     return (
-      <div>
+    <>
+      <Row>
         <HoverText
           id="downloadWatermarked"
           helpfulText="Download Watermarked Photo"
@@ -218,8 +217,8 @@ class PhotoContents extends React.Component<Props, any> {
           <LoadingButton
             loading={this.state.downloadBtnLoading}
             onClick={(e) => this.downloadPhoto(e)}
-            className="m-2"
-            variant="secondary"
+            className="m-2 ml-4"
+            variant="light"
           >
             <ArrowDownSquare />
           </LoadingButton>
@@ -230,7 +229,7 @@ class PhotoContents extends React.Component<Props, any> {
           placement="bottom"
         >
           <LoadingButton
-            className="ml-1"
+            className="m-2"
             loading={this.state.purchaseBtnLoading}
             onClick={(e) => this.purchasePhoto(e)}
             variant="light"
@@ -238,11 +237,8 @@ class PhotoContents extends React.Component<Props, any> {
             <CartPlus />
           </LoadingButton>
         </HoverText>
-        <Price
-          fullPrice={this.state.fullPrice}
-          discount={this.state.discount}
-        />
-      </div>
+      </Row>
+      </>
     );
   }
 
@@ -269,9 +265,10 @@ class PhotoContents extends React.Component<Props, any> {
                   on {this.state.postedDate}
                 </Row>
                 <Row>{this.state.email}</Row>
+                <br/>
                 <Row>
                   <Col>
-                    <Row><b>Tags </b> (click tag to search)</Row>
+                    <Row><b>Tags</b> (click tag to search)</Row>
                     <Row>
                       {this.state.tags.map((tag: string) => (
                         <Tags key={tag} tagName={tag} type="photo" />
@@ -279,26 +276,30 @@ class PhotoContents extends React.Component<Props, any> {
                     </Row>
                   </Col>
                 </Row>
-                <Row className="PhotoInteraction">
-                <div className="LikeButton">
+                <Row className="photo-interactions">
                   <LikeButton
                     p_id={this.props.photoId}
                     like_count={this.state.likes}
                     isLiked={this.state.isLiked}
                   />
-                </div>
-                <div
-                  className="BookmarkButton"
-                  data-type="toggle"
-                  title="Add to Collection"
-                >
                   <BookmarkButton
                     pId={this.props.photoId}
                     collections={this.state.collections}
                   />
-                </div>
+                  {this.returnDynamicButtons()}
               </Row>
-              <Row>{this.returnDynamicButtons()}</Row>
+              {
+                this.state.isArtist || !this.state.purchased ?
+                <Row>
+                  <Price
+                    fullPrice={this.state.fullPrice}
+                    discount={this.state.discount}
+                  />
+                </Row>
+                :
+                <>
+                </>
+              }
               </div>
             </Col>
           </Row>
