@@ -46,7 +46,6 @@ class PopularUser(Document):
         Remove a like - THIS SHOULD ALLOW NEGATIVE VALUES
         """
         self.likes -= 1
-        
 
     def reset_likes(self):
         """
