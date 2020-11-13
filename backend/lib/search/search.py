@@ -4,8 +4,9 @@ Methods relating to getting search results
 from json import loads
 from bson.json_util import dumps
 from bson.objectid import ObjectId
-from lib.album.album import Album
+import urllib.parse
 
+from lib.album.album import Album
 from lib.collection.collection import Collection
 from lib.user.user import User
 from lib.photo.photo import Photo
@@ -35,6 +36,7 @@ def user_search(data):
     """
     Search user collection
     """
+    query = urllib.parse.unquote_plus(data["query"])
     # Handle anon users with this try-except
     try:
         searcher = User.objects.get(id=get_uid(data["token"]))
@@ -50,9 +52,9 @@ def user_search(data):
             {
                 "$match": {
                     "$or": [
-                        {"fname": {"$regex": data["query"], "$options": "i"}},
-                        {"lname": {"$regex": data["query"], "$options": "i"}},
-                        {"nickname": {"$regex": data["query"], "$options": "i"}},
+                        {"fname": {"$regex": query, "$options": "i"}},
+                        {"lname": {"$regex": query, "$options": "i"}},
+                        {"nickname": {"$regex": query, "$options": "i"}},
                     ]
                 }
             },
@@ -83,7 +85,9 @@ def photo_search(data):
     """
     Search photo collection
     """
+    query = urllib.parse.unquote_plus(data["query"])
     sort = get_sort_method(data["orderby"])
+
     valid_extensions = [".jpg", ".jpeg", ".png", ".svg"]
     if data["filetype"] == "jpgpng":
         valid_extensions = [".jpg", ".jpeg", ".png"]
@@ -93,9 +97,9 @@ def photo_search(data):
     try:
         req_user = get_uid(data["token"])
         this_user = User.objects.get(id=req_user)
-        if data["query"] != "":
+        if query != "":
             print(this_user.get_searches())
-            this_user.add_search(data["query"])
+            this_user.add_search(query)
             this_user.save()
     except:
         req_user = ""
@@ -113,8 +117,9 @@ def photo_search(data):
             {
                 "$match": {
                     "$or": [
-                        {"title": {"$regex": data["query"], "$options": "i"}},
-                        {"tags": {"$in": [data["query"]]}},
+                        {"title": {"$regex": query, "$options": "i"}},
+                        {"tags": {"$in": [query]}},
+                        {"tags": {"$in": query.split(" ")}},
                     ],
                     "extension": {"$in": valid_extensions},
                     "deleted": False,
@@ -159,6 +164,7 @@ def collection_search(data):
     """
     Search collections collection
     """
+    query = urllib.parse.unquote_plus(data["query"])
     sort = get_sort_method(data["orderby"])
     try:
         req_user = get_uid(data["token"])
@@ -170,8 +176,9 @@ def collection_search(data):
             {
                 "$match": {
                     "$or": [
-                        {"title": {"$regex": data["query"], "$options": "i"}},
-                        {"tags": {"$in": [data["query"]]}},
+                        {"title": {"$regex": query, "$options": "i"}},
+                        {"tags": {"$in": [query]}},
+                        {"tags": {"$in": query.split(" ")}},
                     ],
                     "$or": [{"private": False}, {"created_by": req_user}],
                 }
@@ -190,7 +197,6 @@ def collection_search(data):
             {"$limit": data["limit"]},
         ]
     )
-    # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
     for result in res:
         result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
@@ -202,14 +208,16 @@ def album_search(data):
     """
     Search albums collection
     """
+    query = urllib.parse.unquote_plus(data["query"])
     sort = get_sort_method(data["orderby"])
     res = Album.objects.aggregate(
         [
             {
                 "$match": {
                     "$or": [
-                        {"title": {"$regex": data["query"], "$options": "i"}},
-                        {"tags": {"$in": [data["query"]]}},
+                        {"title": {"$regex": query, "$options": "i"}},
+                        {"tags": {"$in": [query]}},
+                        {"tags": {"$in": query.split(" ")}},
                     ],
                 }
             },
@@ -228,7 +236,6 @@ def album_search(data):
             {"$limit": data["limit"]},
         ]
     )
-    # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
     for result in res:
         result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
