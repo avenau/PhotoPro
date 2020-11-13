@@ -162,7 +162,6 @@ def collection_search(data):
                         {"title": {"$regex": data["query"], "$options": "i"}},
                         {"tags": {"$in": [data["query"]]}},
                     ],
-                    "deleted": False,
                     "$or": [{"private": False}, {"created_by": ObjectId(req_user)}],
                 }
             },
@@ -201,7 +200,6 @@ def album_search(data):
                         {"title": {"$regex": data["query"], "$options": "i"}},
                         {"tags": {"$in": [data["query"]]}},
                     ],
-                    "deleted": False,
                 }
             },
             {
