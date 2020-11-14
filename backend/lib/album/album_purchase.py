@@ -1,9 +1,21 @@
+"""
+Album functions used to purchase an album
+
+"""
+
 from lib.user.user import User
 from lib.album.album import Album
 from lib.Error import ValueError
 
 
 def get_price(_user, _album):
+    """
+    Calculate the price of an album for a user, before and after discount.
+    Do not include photos they have purchased already.
+    @param: _user obj
+    @param: _album obj
+    return: {yourPrice, albumPrice, rawAlbumDiscount, savings}
+    """
     # Price for the current user
     your_price = 0
     # Price with discounts, no ownership
@@ -37,7 +49,9 @@ def purchase_album(user_id, album_id):
     """
     Purchase album. Add photos to purchased for buyer.
     Reduce credits for buyer and increase credits for photo owner.
-
+    @param: str(user_id)
+    @param: str(album_id)
+    return: {purchased: boolean}
     """
     buyer = User.objects.get(id=user_id)
     album = Album.objects.get(id=album_id)

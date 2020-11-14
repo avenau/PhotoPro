@@ -10,6 +10,7 @@ from lib.Error import ValidationError
 def validate_discount(discount):
     """
     Essentially the same as photo.validation.validate_price
+    @param: int(discount)
     """
     try:
         mongoengine.IntField().validate(discount)

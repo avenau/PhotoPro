@@ -21,12 +21,14 @@ class Album(catalogue.Catalogue):
     def get_discount(self):
         """
         Get the price of an album
+        return: int(discount)
         """
         return self.discount
 
     def set_discount(self, discount):
         """
         Set the price of the album
+        @param: int(discount)
         """
         self.discount = discount
 

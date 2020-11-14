@@ -14,7 +14,7 @@ def create_album(title, user):
     Create a new album for a user
     @param title(str): title of album
     @param user: user object
-    returns: albumid of created album
+    return: str(albumid) of created album
     """
 
     album = lib.album.album.Album(
@@ -38,7 +38,7 @@ def get_albums(user):
     """
     Get albums of a user
     @param user: user object
-    returns: 2D array of albums. Inner array: [albumId: albumTitle]
+    return: 2D array of albums. Inner array: [albumId: albumTitle]
     """
     albums = user.get_albums()
 

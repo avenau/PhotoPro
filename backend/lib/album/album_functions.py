@@ -1,5 +1,5 @@
 """
-Album Functions
+Miscellaneous Album functions
 """
 
 from json import loads
@@ -13,10 +13,11 @@ from lib.album.album import Album
 
 def update_album(_album, title, discount, tags):
     """
+    Update details of a user's album
     @param title: string
     @param discount: int
     @param tags: [string]
-    @return success: boolean
+    return: boolean
     """
     if title:
         _album.update_title(title)
@@ -31,6 +32,8 @@ def update_album(_album, title, discount, tags):
 def album_photo_search(data):
     """
     Get thumbnails of the photos in an album
+    @param: dict(data)
+    return: [photo_obj]
     """
     try:
         req_user = get_uid(data["token"])
@@ -93,6 +96,9 @@ def album_photo_search(data):
 def catalogue_thumbnail(catalogue_obj, u_id):
     """
     Get the thumbnail of first photo (not deleted) from an album
+    @param: catalogue_obj
+    @param: str(u_id)
+    return: {"thumbnail": photostr}
     """
 
     photos = catalogue_obj.get_photos()
