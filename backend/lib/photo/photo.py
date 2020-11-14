@@ -96,6 +96,7 @@ class Photo(Document):
         @params tags: list
         """
         self.tags = set(tags)
+        self.update_tags()
 
     def add_tag(self, tag):
         """
