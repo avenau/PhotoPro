@@ -195,8 +195,9 @@ def _auth_password_reset_request():
     email = request.form.get("email")
 
     msg = password_reset.password_reset_request(email)
-    mail = Mail(app)
-    mail.send(msg)
+    if msg != None:
+        mail = Mail(app)
+        mail.send(msg)
 
     return dumps({})
 
