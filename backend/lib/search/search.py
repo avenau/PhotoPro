@@ -46,8 +46,6 @@ def user_search(data):
     except:
         following = []
 
-    print(query.split(" "))
-
     sort = get_sort_method(data["orderby"])
     res = User.objects.aggregate(
         [

@@ -46,7 +46,6 @@ def get_albums(user):
     # [[albumid: title, albumid], [title2: albumid]:...]
     albumList = list()
     for i in albums:
-        print(i)
         albumList.append((str(i.get_id()), i.get_title()))
 
     return {"albumList": albumList}

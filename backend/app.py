@@ -400,12 +400,13 @@ def manage_account():
         print(traceback.format_exc())
         success = False
         raise e
-    if 'nickname' in data:
-        nickname = data['nickname']
+
+    if "nickname" in data:
+        nickname = data["nickname"]
     else:
         nickname = None
 
-    return dumps({"success": success, 'nickname': nickname})
+    return dumps({"success": success, "nickname": nickname})
 
 
 @app.route("/manageaccount/confirm", methods=["GET", "POST"])
@@ -1847,7 +1848,6 @@ def _update_collection():
     private: boolean
     tags: string[]
     """
-    print("past token decorator")
     params = request.form.to_dict()
     token = params["token"]
     collection_id = params["collectionId"]

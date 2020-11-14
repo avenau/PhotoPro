@@ -161,8 +161,6 @@ def get_photo_edit(photo_id, token):
     for i in photo.get_albums():
         albums.append(str(i.id))
 
-    print(albums)
-
     return {
         "title": photo.get_title(),
         "price": photo.get_price(),
@@ -207,7 +205,6 @@ def update_photo_details(photo_details):
     try:
 
         photo.save()
-        print("saved")
     except mongoengine.ValidationError:
         print(traceback.format_exc())
         raise Error.ValidationError("Could not update photo")

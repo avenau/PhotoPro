@@ -181,7 +181,6 @@ def update_collection(params, _collection):
     """
     Update collection
     """
-    print(params)
     if "title" in params:
         _collection.update_title(params["title"])
     if "tags" in params:
@@ -226,10 +225,8 @@ def get_all_collections(args):
     for entry in res:
         entry["id"] = entry["_id"]["$oid"]
         entry["photoExists"] = False
-        print(entry)
         if "photos" in entry:
             for this_photo in entry["photos"]:
-                print(this_photo["$oid"], photo_id)
                 if this_photo["$oid"] == photo_id:
                     entry["photoExists"] = True
     return dumps(res)
@@ -266,7 +263,6 @@ def collection_photo_search(data):
 
     try:
         purchased = _user.get_purchased()
-        print([i for i in purchased])
     except:
         purchased = []
     ret_photos = []
