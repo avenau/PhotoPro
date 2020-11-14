@@ -9,6 +9,7 @@ import {
   Modal,
   Row,
 } from "react-bootstrap";
+import LoadingButton from "../components/LoadingButton/LoadingButton";
 import Album from "../components/PhotoEdit/Album";
 import Discount from "../components/PhotoEdit/Discount";
 import Price from "../components/PhotoEdit/Price";
@@ -31,6 +32,7 @@ export default function EditPhoto(props: any) {
   const [modalSave, setModalSave] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   // Original values to display on page
   const [originalVal, setOriginal] = useState({
@@ -48,6 +50,7 @@ export default function EditPhoto(props: any) {
   function handleSave(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
     const token = localStorage.getItem("token");
+    setSaveLoading(true);
     axios
       .put("/user/updatephoto", {
         title,
@@ -59,9 +62,12 @@ export default function EditPhoto(props: any) {
         photoId,
       })
       .then(() => {
+        setSaveLoading(false);
         props.history.push(`/photo/${photoId}`);
       })
-      .catch(() => {});
+      .catch(() => {
+        setSaveLoading(false);
+      });
   }
 
   function handleDelete() {
@@ -244,7 +250,8 @@ export default function EditPhoto(props: any) {
             Are you sure you want to make changes to your photo?!
           </Modal.Body>
           <Modal.Footer>
-            <Button
+            <LoadingButton
+              loading={saveLoading}
               id="saveConfirmed"
               variant="primary"
               onClick={(e) => {
@@ -252,7 +259,7 @@ export default function EditPhoto(props: any) {
               }}
             >
               Save photo
-            </Button>
+            </LoadingButton>
             <Button
               id="cancelSave"
               variant="secondary"

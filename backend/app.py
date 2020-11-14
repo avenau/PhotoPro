@@ -80,7 +80,7 @@ from lib.search.search import album_search, photo_search, user_search, collectio
 import lib.showdown.get_data as showdown_data
 
 # Schedule
-from lib.schedule.schedule import initialise_schedule
+from lib.schedule.schedule import initialise_schedule, end_showdown
 
 # User
 from lib.user.validate_login import login
@@ -107,14 +107,14 @@ from lib.token_functions import get_uid
 from config import DevelopmentConfig, defaultHandler
 
 
-app = Flask(__name__, static_url_path="/static")
+app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
-app.register_error_handler(HTTPException, defaultHandler)
+app.register_error_handler(Error.CustomError, defaultHandler)
 CORS(app)
 bcrypt = Bcrypt(app)
 mongoengine.connect("angular-flask-muckaround", host=app.config["MONGO_URI"])
 
-initialise_schedule()
+initialise_schedule(app.config["SHOWDOWN_LENGTH"])
 
 """
 --------------------------
@@ -1052,6 +1052,28 @@ def _count_showdown_wins(type):
         }
     )
 
+@app.route("/showdown/end", methods=["GET"])
+def _end_showdown():
+    """
+    Description
+    -----------
+    NOTICE - THIS SHOULD ONLY BE USED IN DEMONSTRATIONS AND TESTING. IN
+    A PRODUCTION ENVIRONMENT THIS ENDPOINT SHOULD BE REMOVED OR SECURED
+
+    End the currently running showdown - this also resets
+    popular contributor and photo counters
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    {}
+    """
+    end_showdown()
+    initialise_schedule(app.config["SHOWDOWN_LENGTH"])
+    return dumps({})
 
 """
 --------------------

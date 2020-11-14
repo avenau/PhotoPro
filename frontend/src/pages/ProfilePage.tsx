@@ -137,7 +137,7 @@ class ProfilePage extends React.Component<Props, State> {
       <LoadingPage />
     ) : (
       <>
-        <div>
+        <div className="profile-page">
           <Modal
             backdrop="static"
             show={this.state.dne}

@@ -6,8 +6,12 @@ ValueError: Error with the content given
 
 from werkzeug.exceptions import HTTPException
 
+class CustomError(HTTPException):
+    """
+    Base class
+    """
 
-class AccessError(HTTPException):
+class AccessError(CustomError):
     """
     AccessError: Error when user cannot access an item
     """
@@ -17,7 +21,7 @@ class AccessError(HTTPException):
     toast = True
 
 
-class UserDNE(HTTPException):
+class UserDNE(CustomError):
     """
     UserDNE: Error when user does not exist
     """
@@ -27,7 +31,7 @@ class UserDNE(HTTPException):
     toast = False
 
 
-class PhotoDNE(HTTPException):
+class PhotoDNE(CustomError):
     """
     PhotoDNE: Error when photo does not exist
     """
@@ -37,7 +41,7 @@ class PhotoDNE(HTTPException):
     toast = False
 
 
-class ValueError(HTTPException):
+class ValueError(CustomError):
     """
     ValueError: Error with the content given
     """
@@ -47,7 +51,7 @@ class ValueError(HTTPException):
     toast = True
 
 
-class EmailError(HTTPException):
+class EmailError(CustomError):
     """
     EmailError: Error with the email given
     """
@@ -57,7 +61,7 @@ class EmailError(HTTPException):
     toast = True
 
 
-class PasswordError(HTTPException):
+class PasswordError(CustomError):
     """
     PasswordError: Error with the email given
     """
@@ -67,7 +71,7 @@ class PasswordError(HTTPException):
     toast = True
 
 
-class LocationError(HTTPException):
+class LocationError(CustomError):
     """
     PasswordError: Error with the email given
     """
@@ -77,7 +81,7 @@ class LocationError(HTTPException):
     toast = True
 
 
-class TokenError(HTTPException):
+class TokenError(CustomError):
     """
     TokenError: When something went wrong with the Token
     """
@@ -87,7 +91,7 @@ class TokenError(HTTPException):
     toast = True
 
 
-class DatabaseError(HTTPException):
+class DatabaseError(CustomError):
     """
     DatabaseError: When something unexpected happens in the database
     """
@@ -97,7 +101,7 @@ class DatabaseError(HTTPException):
     toast = True
 
 
-class ValidationError(HTTPException):
+class ValidationError(CustomError):
     """
     ValidationError: When mongoengine can't validate the changes
     """

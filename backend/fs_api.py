@@ -79,7 +79,6 @@ def upload_photo():
     return dumps({})
 
 
-# TODO get actual photo not static
 @app.route("/get", methods=["GET"])
 @validate_secret
 @dir_check

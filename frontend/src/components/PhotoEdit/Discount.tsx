@@ -53,6 +53,7 @@ export default function Discount(props: IDiscount) {
         <Form.Label>Discount</Form.Label>
         <Form.Control
           required
+          placeholder={props.discountDef?.toString()}
           type="number"
           onChange={(e) => setDiscount(Number(e.target.value))}
         />

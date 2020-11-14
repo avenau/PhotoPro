@@ -195,7 +195,7 @@ class PhotoContents extends React.Component<Props, State> {
               placement="bottom"
             >
               <LoadingButton
-                loading={this.state.downloadBtnLoading}
+                loading={false}
                 onClick={() =>
                   this.props.history.push(`/edit/${this.props.photoId}`)
                 }
