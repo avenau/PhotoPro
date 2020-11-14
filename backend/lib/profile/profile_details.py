@@ -33,6 +33,7 @@ def get_profile_details(data):
         "profilePic": profile_owner.get_profile_pic(),
         "aboutMe": profile_owner.get_about_me(),
         "following": following,
+        "contributor": bool(profile_owner.get_posts())
     }
 
 

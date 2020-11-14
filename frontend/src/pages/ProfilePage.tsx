@@ -31,6 +31,7 @@ interface State {
   title: string;
   following: boolean;
   pageLoading: boolean;
+  contributor: boolean;
 }
 
 class ProfilePage extends React.Component<Props, State> {
@@ -52,6 +53,7 @@ class ProfilePage extends React.Component<Props, State> {
       title: "",
       following: false,
       pageLoading: true,
+      contributor: true,
     };
   }
 
@@ -186,6 +188,7 @@ class ProfilePage extends React.Component<Props, State> {
             userId={this.state.userId}
             className="user-header"
             following={this.state.following}
+            contributor={this.state.contributor}
           />
           <br />
           <Tabs
