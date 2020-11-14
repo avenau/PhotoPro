@@ -7,6 +7,8 @@ import { takeRight } from "lodash";
 interface FollowButtonProps {
   userId: string; // This is the user_id of the person being followed
   following: boolean;
+  followBtnsDisabled?: boolean;
+  setFollowBtnsDisabled?: (set: boolean) => void;
 }
 
 interface State {
@@ -44,10 +46,19 @@ export default class FollowButton extends React.Component<
     );
   }
 
+  enableFollowButtons() {
+    let unused = this.props.setFollowBtnsDisabled?.(false);
+  }
+
+  disableFollowButtons() {
+    let unused = this.props.setFollowBtnsDisabled?.(true);
+  }
+
   handleFollow(e: React.MouseEvent<HTMLElement, MouseEvent>) {
     e.preventDefault();
     e.stopPropagation();
     this.setState({ btnLoading: true });
+    this.disableFollowButtons();
     const token = localStorage.getItem("token") as string;
     if (token) {
       axios
@@ -57,18 +68,19 @@ export default class FollowButton extends React.Component<
         })
         .then((res) => {
           this.setState({ btnLoading: false, following: res.data.followed });
+          this.enableFollowButtons();
         })
         .catch(() => {
           this.setState({ btnLoading: false });
+          this.enableFollowButtons();
         });
     } else {
       this.setState({ showLoginAlert: true, btnLoading: false });
+      this.enableFollowButtons();
     }
   }
 
   render() {
-    // If not yet clicked, use props.following
-    // If has been clicked, use state.following
     return (
       <div onClick={(e) => e.stopPropagation()}>
         {this.state.following ? (
@@ -76,6 +88,7 @@ export default class FollowButton extends React.Component<
             loading={this.state.btnLoading}
             variant="secondary"
             onClick={(e) => this.handleFollow(e)}
+            disabled={this.props.followBtnsDisabled}
           >
             Unfollow
           </LoadingButton>
@@ -84,6 +97,7 @@ export default class FollowButton extends React.Component<
             loading={this.state.btnLoading}
             variant="primary"
             onClick={(e) => this.handleFollow(e)}
+            disabled={this.props.followBtnsDisabled}
           >
             Follow
           </LoadingButton>

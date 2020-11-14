@@ -23,6 +23,8 @@ interface Props {
   userId: string;
   following: boolean;
   contributor?: boolean;
+  followBtnsDisabled?: boolean;
+  setFollowBtnsDisabled?: (set: boolean) => void;
 }
 
 export default class UserHeader extends React.Component<Props> {
@@ -60,6 +62,8 @@ export default class UserHeader extends React.Component<Props> {
       <FollowButton
         following={this.props.following}
         userId={this.props.userId}
+        followBtnsDisabled={this.props.followBtnsDisabled}
+        setFollowBtnsDisabled={this.props.setFollowBtnsDisabled}
       />
     );
   }
@@ -96,11 +100,7 @@ export default class UserHeader extends React.Component<Props> {
           ) : (
             <h4>{this.props.name}</h4>
           )}
-          {this.props.contributor ? (
-            <b>Contributor</b>
-          ) : (
-            <b>Explorer</b>
-          )}
+          {this.props.contributor ? <b>Contributor</b> : <b>Explorer</b>}
           <div>@{this.props.nickname}</div>
           <div>Based in {this.props.location}</div>
           <div>{this.props.email}</div>

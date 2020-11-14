@@ -13,9 +13,9 @@ export default class LoadingButton extends React.Component<Props> {
   }
 
   render() {
-    const { loading } = this.props;
+    const { loading, disabled } = this.props;
     return (
-      <div onClick={loading ? this.stopPropagation : undefined}>
+      <div onClick={loading || disabled ? this.stopPropagation : undefined}>
         <Button
           disabled={loading}
           {...this.props}

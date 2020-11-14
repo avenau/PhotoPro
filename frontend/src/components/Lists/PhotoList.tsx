@@ -23,7 +23,22 @@ interface Photo {
   likes: number;
 }
 
-class PhotoList extends React.Component<Props> {
+interface State {
+  buyBtnsDisabled: boolean;
+}
+
+class PhotoList extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      buyBtnsDisabled: false,
+    };
+  }
+
+  setBuyBtnsDisabled = (buyBtnsDisabled: boolean) => {
+    this.setState({ buyBtnsDisabled: buyBtnsDisabled });
+  };
+
   render() {
     return (
       <div className="photo-results">
@@ -41,6 +56,8 @@ class PhotoList extends React.Component<Props> {
               updatePage={this.props.updatePage}
               popular={this.props.popular}
               refreshCredits={this.props.refreshCredits}
+              buyBtnLoading={this.state.buyBtnsDisabled}
+              setBuyBtnsDisabled={this.setBuyBtnsDisabled}
             />
           </div>
         ))}

@@ -21,12 +21,14 @@ interface Props extends RouteComponentProps {
   deleted?: boolean;
   updatePage?: () => void;
   refreshCredits?: () => void;
+  buyBtnLoading: boolean;
+  setBuyBtnsDisabled?: (set: boolean) => void;
 }
 
 interface BetterInterface {
   owns: boolean;
   photoB64: string;
-  loading: boolean;
+  btnLoading: boolean;
 }
 
 class PhotoThumbnail extends React.Component<Props, BetterInterface> {
@@ -35,15 +37,24 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
     this.state = {
       owns: this.props.owns,
       photoB64: `${this.props.metadata}${this.props.photoStr}`,
-      loading: false,
+      btnLoading: false,
     };
+  }
+
+  enableBuyButtons() {
+    let unused = this.props.setBuyBtnsDisabled?.(false);
+  }
+
+  disableBuyButtons() {
+    let unused = this.props.setBuyBtnsDisabled?.(true);
   }
 
   private handleBuy(e: React.MouseEvent<HTMLElement, MouseEvent>) {
     e.preventDefault();
     e.stopPropagation();
     const token = localStorage.getItem("token");
-    this.setState({ loading: true });
+    this.disableBuyButtons();
+    this.setState({ btnLoading: true });
     axios
       .post("/purchasephoto", {
         token,
@@ -53,8 +64,9 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
         this.setState({
           owns: res.data.purchased,
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
-          loading: false,
         });
+        this.enableBuyButtons();
+        this.setState({ btnLoading: false });
         if (this.props.refreshCredits) {
           this.props.refreshCredits();
         }
@@ -63,7 +75,8 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
         }
       })
       .catch(() => {
-        this.setState({ loading: false });
+        this.enableBuyButtons();
+        this.setState({ btnLoading: false });
       });
   }
 
@@ -71,7 +84,7 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
     e.preventDefault();
     e.stopPropagation();
     const token = localStorage.getItem("token");
-    this.setState({ loading: true });
+    this.setState({ btnLoading: true });
     axios
       .get("/download", {
         params: {
@@ -80,7 +93,7 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
         },
       })
       .then((r) => {
-        this.setState({ loading: false });
+        this.setState({ btnLoading: false });
         const link = document.createElement("a");
         link.href = `${r.data.metadata}${r.data.base64_img}`;
         const titleWithoutSpaces = this.props.title.replace(/\s+/g, "");
@@ -93,7 +106,7 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
         link.remove();
       })
       .catch(() => {
-        this.setState({ loading: false });
+        this.setState({ btnLoading: false });
       });
   }
 
@@ -123,7 +136,8 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
           <Price fullPrice={this.props.price} discount={this.props.discount} />
           {!this.state.owns ? (
             <LoadingButton
-              loading={this.state.loading}
+              loading={this.state.btnLoading}
+              disabled={this.props.buyBtnLoading!}
               onClick={(e) => {
                 this.handleBuy(e);
               }}
@@ -132,7 +146,7 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
             </LoadingButton>
           ) : (
             <LoadingButton
-              loading={this.state.loading}
+              loading={this.state.btnLoading!}
               onClick={(e) => {
                 this.handleDownload(e);
               }}

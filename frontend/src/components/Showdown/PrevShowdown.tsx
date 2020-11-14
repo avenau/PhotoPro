@@ -32,7 +32,7 @@ class PrevShowdown extends React.Component<Props> {
             }}
             className="showdown-photo"
           >
-            <PhotoThumbnail {...photo} />
+            <PhotoThumbnail {...photo} buyBtnLoading={false} />
           </div>
         ) : (
           <div>

@@ -1,9 +1,8 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
 import CommentMessage from "./CommentMessage";
 import "./PhotoComments.scss";
-import axios from "axios";
-import _ from "lodash";
 
 interface CommentObject {
   content: string;
@@ -28,7 +27,7 @@ export default function PhotoComments(props: CommentProps) {
   const [commentDate, setDate] = useState(new Date());
   const [commentContent, setContent] = useState("");
   const [new_to_old, setOrder] = useState(true);
-  const [status, setStatus] = useState(false);
+  const [, setStatus] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     setDate(new Date());
@@ -58,9 +57,9 @@ export default function PhotoComments(props: CommentProps) {
       .get(`/comments/get_comments?p_id=${photoId}&new_to_old=${order}`)
       .then((response) => {
         const tempComments: CommentObject[] = [];
-        for (const comment of response.data.comments) {
-          tempComments.push(JSON.parse(comment));
-        }
+        response.data.comments.forEach((comment: string) =>
+          tempComments.push(JSON.parse(comment))
+        );
         setComments(tempComments);
         setStatus(response.data.status);
       })
