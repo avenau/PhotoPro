@@ -26,7 +26,7 @@ def get_data(req_user):
     if current_showdown == None:
         return {
             "participants": [],
-            "prevWinnerPhoto": {},
+            "prevWinnerPhoto": None,
             "currentVote": "",
         }
     try:
