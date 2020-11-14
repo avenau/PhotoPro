@@ -91,7 +91,7 @@ export default function ManageAccount(props: any) {
     setLoading(true);
 
     axios
-      .post("http://localhost:8001/manageaccount/confirm", {
+      .post("/manageaccount/confirm", {
         password: inputPassword,
         token: localStorage.getItem("token"),
       })
