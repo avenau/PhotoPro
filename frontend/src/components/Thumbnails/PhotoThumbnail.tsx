@@ -21,8 +21,8 @@ interface Props extends RouteComponentProps {
   deleted?: boolean;
   updatePage?: () => void;
   refreshCredits?: () => void;
-  buyBtnLoading?: boolean;
-  setBuyBtnsDisabled?: (set: boolean) => void;
+  buyBtnLoading: boolean;
+  setBuyBtnsDisabled: (set: boolean) => void;
 }
 
 interface BetterInterface {

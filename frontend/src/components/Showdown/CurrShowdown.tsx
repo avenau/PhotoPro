@@ -29,6 +29,7 @@ interface State {
   loading: boolean;
   votes: { [key: string]: number };
   currentVote: string;
+  buyBtnsDisabled: boolean;
 }
 
 class CurrShowdown extends React.Component<Props, State> {
@@ -45,6 +46,7 @@ class CurrShowdown extends React.Component<Props, State> {
       loading: false,
       votes,
       currentVote,
+      buyBtnsDisabled: false,
     };
   }
 
@@ -96,6 +98,10 @@ class CurrShowdown extends React.Component<Props, State> {
     return "Vote";
   }
 
+  setBuyBtnsDisabled = (buyBtnsDisabled: boolean) => {
+    this.setState({ buyBtnsDisabled: buyBtnsDisabled });
+  };
+
   render() {
     const { photos } = this.props;
     const { votes } = this.state;
@@ -119,6 +125,8 @@ class CurrShowdown extends React.Component<Props, State> {
                 <PhotoThumbnail
                   {...photo}
                   refreshCredits={this.props.refreshCredits}
+                  buyBtnLoading={this.state.buyBtnsDisabled}
+                  setBuyBtnsDisabled={this.setBuyBtnsDisabled}
                 />
               </div>
               <LoadingButton
