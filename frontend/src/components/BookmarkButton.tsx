@@ -40,11 +40,26 @@ export default class BookmarkButton extends React.Component<
     this.state = {
       showModal: false,
       showNewCol: false,
-      collections: props.collections,
+      collections: this.props.collections,
     };
   }
 
-  onComponentMount() {}
+  componentDidMount() {
+    if (localStorage.getItem("token")) {
+      const query = `/collection/getall?token=${localStorage.getItem(
+        "token"
+      )}&photoId=${this.props.pId}`;
+      axios
+        .get(query)
+        .then((result) => {
+          const collections = result.data.map((obj: Collection) => obj);
+          this.setState({
+            collections,
+          });
+        })
+        .catch(() => {});
+    }
+  }
 
   openModal = () => this.setState({ showModal: true });
 
@@ -129,7 +144,7 @@ export default class BookmarkButton extends React.Component<
               </Modal.Title>
               <Modal.Body>
                 <Form
-                  className="updateCollection p-3"
+                  className="updateCollection"
                   onSubmit={this.updateCollections}
                 >
                   {this.state.collections.map((collection: Collection) => (
