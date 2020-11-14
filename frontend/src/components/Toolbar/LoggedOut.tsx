@@ -8,7 +8,7 @@ function LoggedOut() {
         <Nav.Link href="/register">Create Account</Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link href="/login">Login</Nav.Link>
+        <Nav.Link href="/login">Log In</Nav.Link>
       </Nav.Item>
     </Nav>
   );

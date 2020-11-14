@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { Button, Modal } from "react-bootstrap";
 import LoadingButton from "../LoadingButton/LoadingButton";
+import { takeRight } from "lodash";
 
 interface FollowButtonProps {
   userId: string; // This is the user_id of the person being followed
@@ -25,10 +26,6 @@ export default class FollowButton extends React.Component<
       following: this.props.following,
       btnLoading: false,
     };
-  }
-
-  componentWillReceiveProps(nextProps: FollowButtonProps) {
-    this.setState({ following: nextProps.following });
   }
 
   private loginAlert() {
@@ -70,6 +67,8 @@ export default class FollowButton extends React.Component<
   }
 
   render() {
+    // If not yet clicked, use props.following
+    // If has been clicked, use state.following
     return (
       <div onClick={(e) => e.stopPropagation()}>
         {this.state.following ? (

@@ -75,7 +75,7 @@ export default function UserDetails(props: any) {
       />
       <br />
       <Form.Group>
-        <Form.Label>About me</Form.Label>
+        <Form.Label>About me (Optional)</Form.Label>
         <Form.Control
           type="text"
           placeholder={props.oDetails.aboutMe}
