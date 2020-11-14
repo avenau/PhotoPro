@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import renderToast from "../../axios";
 import PhotoThumbnail from "../Thumbnails/PhotoThumbnail";
 import LoadingButton from "../LoadingButton/LoadingButton";
 
@@ -55,7 +56,6 @@ class CurrShowdown extends React.Component<Props, State> {
     e.stopPropagation();
     const token = localStorage.getItem("token");
     if (token) {
-      // TODO fix request
       this.setState({ loading: true });
       axios
         .post("/showdown/updatelikes", {
@@ -88,7 +88,7 @@ class CurrShowdown extends React.Component<Props, State> {
         });
       }
     } else {
-      alert("You must be logged in to do that");
+      renderToast("You must be logged in to do that");
     }
   }
 
@@ -99,7 +99,7 @@ class CurrShowdown extends React.Component<Props, State> {
   }
 
   setBuyBtnsDisabled = (buyBtnsDisabled: boolean) => {
-    this.setState({ buyBtnsDisabled: buyBtnsDisabled });
+    this.setState({ buyBtnsDisabled });
   };
 
   render() {
@@ -109,7 +109,11 @@ class CurrShowdown extends React.Component<Props, State> {
       <div className="showdown-photo-container">
         {photos.length !== 0 ? (
           photos.map((photo: Photo) => (
-            <div style={{ padding: "10px" }} key={photo.id}>
+            <div
+              style={{ padding: "10px" }}
+              key={photo.id}
+              className="showdown-photo-subcontainer"
+            >
               <div>
                 {votes[photo.participantId]}{" "}
                 {votes[photo.participantId] === 1 ? "Vote" : "Votes"}
