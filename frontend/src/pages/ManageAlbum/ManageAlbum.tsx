@@ -77,7 +77,7 @@ class ManageAlbum extends React.Component<Props, State> {
         albumId: this.state.albumId,
       })
       .then(() => {
-        this.props.history.push(`/user/${this.state.uId}`);
+        this.props.history.push(`/album/${this.state.albumId}`);
       })
       .catch(() => {});
   }
