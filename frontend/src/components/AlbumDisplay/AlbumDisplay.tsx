@@ -87,7 +87,6 @@ class AlbumDisplay extends React.Component<
         {this.props.isOwner ? (
           <>
             <div className="album-price-display">
-              <p>{this.props.discount}% off original price!</p>
               <Savings albumId={this.state.albumId} />
             </div>
           </>
@@ -95,7 +94,6 @@ class AlbumDisplay extends React.Component<
           <p>You've purchased this album already</p>
         ) : (
           <div className="album-price-display">
-            <p>{this.props.discount}% off original price!</p>
             <Savings albumId={this.state.albumId} />
             <Button
               onClick={() => {

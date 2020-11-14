@@ -48,6 +48,7 @@ export default class AlbumSavings extends React.Component<
           rawAlbumDiscount: res.data.rawAlbumDiscount,
           savings: res.data.savings,
         });
+        console.log(res.data.rawAlbumDiscount);
       })
       .catch(() => {});
   }
@@ -55,6 +56,7 @@ export default class AlbumSavings extends React.Component<
   render() {
     return (
       <>
+        <p>{this.state.rawAlbumDiscount}% off original price!</p>
         <p>
           <b>Originally, you would pay:</b> {this.state.originalPrice} CR{" "}
         </p>
