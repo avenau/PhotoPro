@@ -36,7 +36,7 @@ def user_search(data):
     """
     Search user collection
     """
-    query = urllib.parse.unquote_plus(data["query"])
+    query = urllib.parse.unquote_plus(data["query"].lower())
     # Handle anon users with this try-except
     try:
         searcher = User.objects.get(id=get_uid(data["token"]))
@@ -46,18 +46,11 @@ def user_search(data):
     except:
         following = []
 
+    print(query.split(" "))
+
     sort = get_sort_method(data["orderby"])
     res = User.objects.aggregate(
         [
-            {
-                "$match": {
-                    "$or": [
-                        {"fname": {"$regex": query, "$options": "i"}},
-                        {"lname": {"$regex": query, "$options": "i"}},
-                        {"nickname": {"$regex": query, "$options": "i"}},
-                    ]
-                }
-            },
             {
                 "$project": {
                     "fname": 1,
@@ -72,7 +65,57 @@ def user_search(data):
                     },
                     "profilePic": "$profile_pic",
                     "id": {"$toString": "$_id"},
-                    "_id": 0,
+                    "valid": {
+                        "$or": [
+                            {
+                                "$regexMatch": {
+                                    "input": "$fname",
+                                    "regex": query,
+                                    "options": "i",
+                                }
+                            },
+                            {
+                                "$regexMatch": {
+                                    "input": "$lname",
+                                    "regex": query,
+                                    "options": "i",
+                                }
+                            },
+                            {
+                                "$regexMatch": {
+                                    "input": "$nickname",
+                                    "regex": query,
+                                    "options": "i",
+                                }
+                            },
+                            {
+                                "$regexMatch": {
+                                    "input": query,
+                                    "regex": "$fname",
+                                    "options": "i",
+                                }
+                            },
+                            {
+                                "$regexMatch": {
+                                    "input": query,
+                                    "regex": "$lname",
+                                    "options": "i",
+                                }
+                            },
+                            {
+                                "$regexMatch": {
+                                    "input": query,
+                                    "regex": "$nickname",
+                                    "options": "i",
+                                }
+                            },
+                        ]
+                    },
+                }
+            },
+            {
+                "$match": {
+                    "valid": True,
                 }
             },
             sort,
@@ -88,7 +131,7 @@ def photo_search(data):
     """
     Search photo collection
     """
-    query = urllib.parse.unquote_plus(data["query"])
+    query = urllib.parse.unquote_plus(data["query"].lower())
     sort = get_sort_method(data["orderby"])
 
     valid_extensions = [".jpg", ".jpeg", ".png", ".svg"]
@@ -167,7 +210,7 @@ def collection_search(data):
     """
     Search collections collection
     """
-    query = urllib.parse.unquote_plus(data["query"])
+    query = urllib.parse.unquote_plus(data["query"].lower())
     sort = get_sort_method(data["orderby"])
     try:
         req_user = get_uid(data["token"])
@@ -211,7 +254,7 @@ def album_search(data):
     """
     Search albums collection
     """
-    query = urllib.parse.unquote_plus(data["query"])
+    query = urllib.parse.unquote_plus(data["query"].lower())
     sort = get_sort_method(data["orderby"])
     res = Album.objects.aggregate(
         [
