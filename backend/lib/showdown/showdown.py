@@ -70,15 +70,15 @@ class Showdown(Document):
 
     def get_duration(self):
         """
-        Get the duration in hours of the showdown
+        Get the duration in minutes of the showdown
         """
         return self.duration
 
-    def set_duration(self, hours):
+    def set_duration(self, minutes):
         """
-        Set the duration in hours of the showdown
+        Set the duration in minutes of the showdown
         """
-        self.duration = hours
+        self.duration = minutes
 
     def add_participant(self, participant):
         """

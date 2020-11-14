@@ -3,6 +3,7 @@
 
 dev=0
 localfs=0
+showdownLength=1440
 
 # Parse args
 for arg in $@
@@ -10,26 +11,36 @@ do
   if [ "$arg" = "-d" ]
   then
     dev=1
-    continue
-  fi
-  if [ "$arg" = "-l" ]
+  elif [ "$arg" = "-l" ]
   then
     localfs=1
-    continue
-  fi
-  if [ "$arg" = "-h" ] || [ "$arg" = "--help" ]
+  elif [ "$arg" = "-s" ]
+  then
+    # Do nothing, -s is more important as prev
+    :
+  elif [ "$prev" = "-s" ]
+  then
+    if [ $arg -gt 0 ]
+    then
+      localfs=1
+    else
+      echo "Error: Showdown duration of $arg minutes is invalid."
+      exit 1
+    fi
+  elif [ "$arg" = "-h" ] || [ "$arg" = "--help" ]
   then
       echo "Usage: prepare.sh [OPTION]"
-      echo "  -d,         Start in development mode"
-      echo "  -l,         Use local database"
-      echo "  -h, --help  Show help options"
+      echo "  -d,            Start in development mode"
+      echo "  -l,            Use local database"
+      echo "  -s <minutes>,  Change the showdown duration"
+      echo "  -h, --help     Show help options"
       exit 0
-  fi
-  if [[ "$arg" =~ ^- ]]
+  elif [[ "$arg" =~ ^- ]]
   then
-    echo -e "Unknown option $arg\nUsage: $0 [-d] [-l]" >&2
+    echo -e "Unknown option $arg\nUse --help or -h for more information." >&2
     exit 1
   fi
+  prev="$arg"
 done
 
 
@@ -79,4 +90,4 @@ fi
 
 echo "========== Running backend on port $port_b =============="
 
-./utils/run_back.sh $port_b
+./utils/run_back.sh $port_b $showdownLength
