@@ -6,6 +6,7 @@ import AlbumList from "../Lists/AlbumList";
 import CollectionList from "../Lists/CollectionList";
 import PhotoList from "../Lists/PhotoList";
 import UserList from "../Lists/UserList";
+import ArtistList from "../Lists/ArtistList";
 import NoContent from "./NoContent";
 
 interface Props {
@@ -118,6 +119,8 @@ export default class ContentLoader extends React.Component<Props, State> {
         return <CollectionList collections={this.state.results} />;
       case "user":
         return <UserList users={this.state.results} />;
+      case "artist":
+        return <ArtistList artists={this.state.results} />;
       case "albumPhotos":
         return (
           <PhotoList
