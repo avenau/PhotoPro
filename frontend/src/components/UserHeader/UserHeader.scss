@@ -17,6 +17,9 @@
     justify-content: center;
     display: flex;
     margin-right: 10px;
+    border-style: solid;
+    border-color: #badcb694;
+    border-width: 2px;
     .image {
       object-fit: cover;
       width: 100%;
