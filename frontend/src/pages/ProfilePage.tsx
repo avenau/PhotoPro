@@ -1,15 +1,14 @@
 import axios from "axios";
 import React from "react";
 import { Dropdown } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import Toolbar from "../components/Toolbar/Toolbar";
-import UserHeader from "../components/UserHeader/UserHeader";
 import ContentLoader from "../components/ContentLoader/ContentLoader";
 import CreateCatalogueModal from "../components/ProfilePage/CreateCatalogueModal";
+import UserHeader from "../components/UserHeader/UserHeader";
 import "./Profile.scss";
 
 interface Props extends RouteComponentProps {
@@ -59,6 +58,7 @@ class ProfilePage extends React.Component<Props, State> {
 
   componentDidMount() {
     this.getUserDetails(this.state.userId);
+    document.title = `User | PhotoPro`;
   }
 
   private getUserDetails(userId: string) {
@@ -73,6 +73,7 @@ class ProfilePage extends React.Component<Props, State> {
         });
         this.setState(newState);
         this.setState({ pageLoading: false });
+        document.title = `@${r.data.nickname} | PhotoPro`;
       })
       .catch(() => {
         const newState = this.state as any;

@@ -23,6 +23,30 @@ axios.interceptors.request.use((request) => {
   return request;
 });
 
+const renderToast = (contents: string) => {
+  ReactDOM.render(
+    <Toast
+      style={{
+        fontSize: "1.2rem",
+      }}
+      delay={3000}
+      autohide
+      onClose={() => {
+        ReactDOM.unmountComponentAtNode(
+          document.getElementById("toast") as Element
+        );
+      }}
+    >
+      <Toast.Header closeButton>
+        {/* <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" /> */}
+        <strong className="mr-auto">PhotoPro</strong>
+      </Toast.Header>
+      <Toast.Body>{contents}</Toast.Body>
+    </Toast>,
+    document.getElementById("toast")
+  );
+};
+
 const errorHandler = (error: any) => {
   // great gist https://gist.github.com/saqueib/a495af17d7c0e2fd5c2316b0822ebac3
 
@@ -31,27 +55,7 @@ const errorHandler = (error: any) => {
 
   if (error.response && error.response.data && error.response.data.show_toast) {
     console.error(error.response);
-    ReactDOM.render(
-      <Toast
-        style={{
-          fontSize: "1.2rem",
-        }}
-        delay={3000}
-        autohide
-        onClose={() => {
-          ReactDOM.unmountComponentAtNode(
-            document.getElementById("toast") as Element
-          );
-        }}
-      >
-        <Toast.Header closeButton>
-          {/* <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" /> */}
-          <strong className="mr-auto">PhotoPro</strong>
-        </Toast.Header>
-        <Toast.Body>{error.response.data.message}</Toast.Body>
-      </Toast>,
-      document.getElementById("toast")
-    );
+    renderToast(error.response.data.message);
   }
 
   return Promise.reject({ ...error });
@@ -60,3 +64,5 @@ const errorHandler = (error: any) => {
 const responseHandler = (response: any) => response;
 
 axios.interceptors.response.use(responseHandler, errorHandler);
+
+export default renderToast;

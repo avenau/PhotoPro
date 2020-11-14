@@ -1,13 +1,12 @@
-import React from "react";
-import { RouteComponentProps, Link } from "react-router-dom";
 import axios from "axios";
+import React from "react";
+import { Col, Row } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
+import { Link, RouteComponentProps } from "react-router-dom";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
 import ContentLoader from "../../components/ContentLoader/ContentLoader";
-import "../AlbumDetails/AlbumDetails.scss";
-import { Row, Col } from "react-bootstrap";
-import { stringify } from "qs";
 import Tags from "../../components/TagLinks";
+import "../AlbumDetails/AlbumDetails.scss";
 
 interface Props extends RouteComponentProps<MatchParams> {
   isOwner?: boolean;
@@ -55,6 +54,7 @@ class CollectionDetails extends React.Component<Props, State> {
         .get(`/collection/get?token=${token}&collectionId=${collectionId}`)
         .then((res) => {
           if (res.data) {
+            document.title = `${res.data.tile} | PhotoPro`;
             this.setState({
               title: res.data.title,
               isOwner: res.data.isOwner,
@@ -64,7 +64,7 @@ class CollectionDetails extends React.Component<Props, State> {
             });
           }
         })
-        .catch((err) => {
+        .catch(() => {
           this.props.history.push("/page-not-found");
         });
     }
@@ -78,12 +78,12 @@ class CollectionDetails extends React.Component<Props, State> {
           <Row>
             <Col>
               <Link to={`/user/${this.state.owner}`}>
-                By @​​​​​​​{this.state.nickname}
+                By @{this.state.nickname}
               </Link>
               <div className="album-price-display">
                 <p>
-                  {this.state.nickname}'s {this.state.title} collection. They've
-                  bookmarked photos into this collection.
+                  {this.state.nickname}&apos;s {this.state.title} collection.
+                  They&apos;ve bookmarked photos into this collection.
                 </p>
               </div>
             </Col>

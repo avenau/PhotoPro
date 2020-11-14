@@ -7,13 +7,12 @@ interface Props {
 }
 
 export default class PhotoDetails extends React.Component<Props> {
-  photoId = window.location.pathname.split("/")[2];
-
   render() {
+    const photoId = window.location.pathname.split("/")[2];
     return (
       <div>
         <PhotoContents
-          photoId={this.photoId}
+          photoId={photoId}
           refreshCredits={this.props.refreshCredits}
         />
       </div>

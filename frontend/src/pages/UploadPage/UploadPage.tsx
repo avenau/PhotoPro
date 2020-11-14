@@ -36,6 +36,10 @@ class UploadPage extends React.Component<RouteChildrenProps, any> {
     this.deactivateUploadButton = this.deactivateUploadButton.bind(this);
   }
 
+  componentDidMount() {
+    document.title = "Upload | PhotoPro";
+  }
+
   setPhoto() {
     return new Promise((resolve, reject) => {
       const fileInput = this.state.photoElement as HTMLInputElement;
