@@ -83,7 +83,6 @@ class PhotoContents extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const token = localStorage.getItem("token");
     axios
       .get("/photodetailspage", {
         params: {
@@ -116,17 +115,6 @@ class PhotoContents extends React.Component<Props, State> {
         });
       })
       .catch(() => {});
-    if (localStorage.getItem("token")) {
-      const query = `/collection/getall?token=${token}&photoId=${this.props.photoId}`;
-      axios
-        .get(query)
-        .then((res) => {
-          this.setState({
-            collections: res.data.map((obj: Collection) => obj),
-          });
-        })
-        .catch(() => {});
-    }
   }
 
   purchasePhoto(e: any) {
