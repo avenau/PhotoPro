@@ -5,14 +5,18 @@ import "./App.css";
 import "./axios";
 import AnonRoute from "./components/AnonRoute/AnonRoute";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import DoesNotExistPage from "./pages/DoesNotExistPage";
 import Toolbar from "./components/Toolbar/Toolbar";
+import AlbumDetails from "./pages/AlbumDetails/AlbumDetails";
+import CollectionDetails from "./pages/CollectionDetails/CollectionDetails";
+import DoesNotExistPage from "./pages/DoesNotExistPage";
 import EditPhoto from "./pages/EditPhoto";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
+import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
+import ManageCollection from "./pages/ManageCollection/ManageCollection";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import ProfilePage from "./pages/ProfilePage";
 import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
@@ -21,10 +25,6 @@ import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
 import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
-import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
-import ManageCollection from "./pages/ManageCollection/ManageCollection";
-import AlbumDetails from "./pages/AlbumDetails/AlbumDetails";
-import CollectionDetails from "./pages/CollectionDetails/CollectionDetails";
 
 interface Props {}
 
@@ -66,7 +66,7 @@ class App extends React.Component<Props, State> {
           },
         })
         .then((res) => {
-          if (this.state.credits != res.data.credits) {
+          if (this.state.credits !== res.data.credits) {
             this.setState({ credits: res.data.credits });
           }
         })
@@ -87,7 +87,6 @@ class App extends React.Component<Props, State> {
         })
         .then((res) => {
           this.setState({ credits: res.data.credits });
-          console.log(res.data.credits);
         })
         .catch(() => {});
     }

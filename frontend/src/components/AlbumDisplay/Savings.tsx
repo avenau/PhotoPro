@@ -48,7 +48,6 @@ export default class AlbumSavings extends React.Component<
           rawAlbumDiscount: res.data.rawAlbumDiscount,
           savings: res.data.savings,
         });
-        console.log(res.data.rawAlbumDiscount);
       })
       .catch(() => {});
   }

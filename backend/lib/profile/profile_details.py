@@ -33,6 +33,7 @@ def get_profile_details(data):
         "profilePic": profile_owner.get_profile_pic(),
         "aboutMe": profile_owner.get_about_me(),
         "following": following,
+        "contributor": bool(profile_owner.get_posts()),
     }
 
 
@@ -110,7 +111,6 @@ def user_collection_search(data):
             {"$limit": data["limit"]},
         ]
     )
-    # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
     for result in res:
         result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
@@ -135,7 +135,6 @@ def user_album_search(data):
             {"$limit": data["limit"]},
         ]
     )
-    # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
     for result in res:
         result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
@@ -165,6 +164,7 @@ def user_following_search(data):
         tmp_dict["email"] = followed.get_email()
         tmp_dict["location"] = followed.get_location()
         tmp_dict["profilePic"] = followed.get_profile_pic()
+        tmp_dict["contributor"] = bool(followed.get_posts())
         tmp_dict["following"] = (
             followed in user_obj.get_following()[skip : skip + limit]
         )

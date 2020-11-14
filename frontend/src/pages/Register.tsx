@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import Container from "react-bootstrap/Container";
 import axios from "axios";
+import React, { useState, useEffect } from "react";
+import Container from "react-bootstrap/Container";
 import { RouteChildrenProps } from "react-router-dom";
-import Toolbar from "../components/Toolbar/Toolbar";
 import UserDetails from "../components/AccountManagement/UserDetails";
 import countries from "../constants";
 
 export default function Register(props: RouteChildrenProps) {
+  useEffect(() => {
+    document.title = "Register | PhotoPro";
+  });
   const [validateFeedback, setFeedback] = useState(false);
 
   // Form input
@@ -20,7 +22,7 @@ export default function Register(props: RouteChildrenProps) {
   });
 
   // Placeholder user details
-  const [oDetails, setODetails] = useState({
+  const [oDetails] = useState({
     fname: "Enter first name",
     lname: "Enter last name",
     email: "Enter email address",
@@ -82,7 +84,10 @@ export default function Register(props: RouteChildrenProps) {
               throw new Error();
             }
             setLoading(false);
-            props.history.push("/login");
+            localStorage.setItem("token", r.data.token);
+            localStorage.setItem("u_id", r.data.id);
+            localStorage.setItem("nickname", r.data.nickname);
+            props.history.push("/");
           })
           .catch(() => {
             setLoading(false);
