@@ -22,6 +22,7 @@ interface Props {
   aboutMe?: string;
   userId: string;
   following: boolean;
+  contributor?: boolean;
 }
 
 export default class UserHeader extends React.Component<Props> {
@@ -92,9 +93,14 @@ export default class UserHeader extends React.Component<Props> {
         </div>
         <div className="text-container">
           {this.props.header ? (
-            <h2>{this.props.name}</h2>
+            <h3>{this.props.name}</h3>
           ) : (
             <h4>{this.props.name}</h4>
+          )}
+          {this.props.contributor ? (
+            <b>Contributor</b>
+          ) : (
+            <b>Explorer</b>
           )}
           <div>@{this.props.nickname}</div>
           <div>Based in {this.props.location}</div>

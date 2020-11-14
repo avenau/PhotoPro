@@ -459,7 +459,8 @@ def _profile_details():
         email,
         profilePic,
         aboutMe,
-        following
+        following,
+        contributor
     }
     -------
     """
