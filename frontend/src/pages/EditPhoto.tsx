@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   Button,
-  Form,
-  Modal,
-  Container,
-  Row,
   Col,
+  Container,
+  Form,
   Image,
+  Modal,
+  Row,
 } from "react-bootstrap";
-
-// Functional components
-import Title from "../components/PhotoEdit/Title";
-import Price from "../components/PhotoEdit/Price";
-import Tags from "../components/PhotoEdit/Tags";
 import Album from "../components/PhotoEdit/Album";
 import Discount from "../components/PhotoEdit/Discount";
+import Price from "../components/PhotoEdit/Price";
+import Tags from "../components/PhotoEdit/Tags";
+// Functional components
+import Title from "../components/PhotoEdit/Title";
+import LoadingPage from "./LoadingPage";
 
 export default function EditPhoto(props: any) {
   const [title, setTitle] = useState("");
@@ -150,7 +150,7 @@ export default function EditPhoto(props: any) {
   }
 
   return loading ? (
-    <div>Loading...</div>
+    <LoadingPage />
   ) : (
     <>
       <Container className="mt-5">

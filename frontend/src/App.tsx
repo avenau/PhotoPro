@@ -25,6 +25,7 @@ import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
 import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
+import LoadingPage from "./pages/LoadingPage";
 
 interface Props {}
 
@@ -94,7 +95,7 @@ class App extends React.Component<Props, State> {
 
   render() {
     return this.state.loading ? (
-      <div>Loading...</div>
+      <LoadingPage />
     ) : (
       <Router forceRefresh>
         <Toolbar credits={this.state.credits} />
