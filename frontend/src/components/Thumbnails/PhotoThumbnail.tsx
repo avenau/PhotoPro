@@ -22,7 +22,7 @@ interface Props extends RouteComponentProps {
   updatePage?: () => void;
   refreshCredits?: () => void;
   buyBtnLoading: boolean;
-  setBuyBtnsDisabled: (set: boolean) => void;
+  setBuyBtnsDisabled?: (set: boolean) => void;
 }
 
 interface BetterInterface {
@@ -41,11 +41,19 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
     };
   }
 
+  enableBuyButtons() {
+    let unused = this.props.setBuyBtnsDisabled?.(false);
+  }
+
+  disableBuyButtons() {
+    let unused = this.props.setBuyBtnsDisabled?.(true);
+  }
+
   private handleBuy(e: React.MouseEvent<HTMLElement, MouseEvent>) {
     e.preventDefault();
     e.stopPropagation();
     const token = localStorage.getItem("token");
-    this.props.setBuyBtnsDisabled!(true);
+    this.disableBuyButtons();
     this.setState({ btnLoading: true });
     axios
       .post("/purchasephoto", {
@@ -57,7 +65,7 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
           owns: res.data.purchased,
           photoB64: `${res.data.metadata}${res.data.photoStr}`,
         });
-        this.props.setBuyBtnsDisabled!(false);
+        this.enableBuyButtons();
         this.setState({ btnLoading: false });
         if (this.props.refreshCredits) {
           this.props.refreshCredits();
@@ -67,7 +75,7 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
         }
       })
       .catch(() => {
-        this.props.setBuyBtnsDisabled!(false);
+        this.enableBuyButtons();
         this.setState({ btnLoading: false });
       });
   }

@@ -20,10 +20,6 @@ interface Photo {
 }
 
 class PrevShowdown extends React.Component<Props> {
-  literallyDoNothing(foo: boolean) {
-    return;
-  }
-
   render() {
     const { photo } = this.props;
     return (
@@ -36,11 +32,7 @@ class PrevShowdown extends React.Component<Props> {
             }}
             className="showdown-photo"
           >
-            <PhotoThumbnail
-              {...photo}
-              buyBtnLoading={false}
-              setBuyBtnsDisabled={this.literallyDoNothing}
-            />
+            <PhotoThumbnail {...photo} buyBtnLoading={false} />
           </div>
         ) : (
           <div>
