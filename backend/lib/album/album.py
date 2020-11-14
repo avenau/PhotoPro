@@ -21,14 +21,14 @@ class Album(catalogue.Catalogue):
     def get_discount(self):
         """
         Get the price of an album
-        return: int(discount)
+        return: discount: int
         """
         return self.discount
 
     def set_discount(self, discount):
         """
         Set the price of the album
-        @param: int(discount)
+        @param: discount: int
         """
         self.discount = discount
 
@@ -36,7 +36,7 @@ class Album(catalogue.Catalogue):
         """
         Remove a photo from this collection
         Remove this collection from the photo
-        @param photo: Photo(Document)
+        @param photo: Document.Photo
         """
         if self in old_photo.albums:
             old_photo.albums.remove(self)

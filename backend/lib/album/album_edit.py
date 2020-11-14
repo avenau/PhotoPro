@@ -12,9 +12,9 @@ import lib.album
 def create_album(title, user):
     """
     Create a new album for a user
-    @param title(str): title of album
-    @param user: user object
-    return: str(albumid) of created album
+    @param title: str
+    @param user: Document.User
+    return: {albumId: str}
     """
 
     album = lib.album.album.Album(
@@ -37,8 +37,8 @@ def create_album(title, user):
 def get_albums(user):
     """
     Get albums of a user
-    @param user: user object
-    return: 2D array of albums. Inner array: [albumId: albumTitle]
+    @param user: Document.User
+    return: {albumList: [[str, str], [str, str]...]}
     """
     albums = user.get_albums()
 

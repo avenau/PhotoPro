@@ -25,7 +25,7 @@ def get_collection(_collection):
         photos: [Photo],
         creation_date: datetime,
         private: boolean,
-        price, int
+        price: int
         tags: [string],
     }
     """
@@ -210,8 +210,8 @@ def get_user_price(_user, _collection):
 
 def get_all_collections(args):
     """
-    token: string
-    photoId (optional): string
+    @param: args[token]: string
+    @param: args[photoId] (optional): string
     """
     token = args.get("token")
     photo_id = ""
@@ -235,6 +235,8 @@ def get_all_collections(args):
 def collection_photo_search(data):
     """
     Get thumbnails of the photos in a collection
+    @param: data:{token: string, query: string, offset: int, limit: int}
+    @return: ret_data
     """
     try:
         req_user = get_uid(data["token"])

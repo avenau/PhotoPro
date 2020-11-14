@@ -12,8 +12,7 @@ def validate_title(title):
     """
     Check if the user can make an album with a given title.
     Duplicate album/collection names for a user are not
-    @param title str
-    @param user mongo obj
+    @param: title:str
     """
     try:
         mongoengine.StringField(max_length=40).validate(title)
@@ -27,6 +26,7 @@ def validate_title(title):
 
 def validate_photos(photos):
     """
+    Check that only photos are being added to a collection
     @param [Document.photo]
     """
     try:
@@ -38,7 +38,8 @@ def validate_photos(photos):
 
 def validate_creation_date(creation_date):
     """
-    @param creation_date:datetime
+    Check that date is being uploaded in the right format
+    @param: creation_date:datetime
     """
     try:
         mongoengine.DateTimeField().validate(creation_date)

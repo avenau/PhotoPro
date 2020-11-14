@@ -12,9 +12,9 @@ def get_price(_user, _album):
     """
     Calculate the price of an album for a user, before and after discount.
     Do not include photos they have purchased already.
-    @param: _user obj
-    @param: _album obj
-    return: {yourPrice, albumPrice, rawAlbumDiscount, savings}
+    @param: _user: Document.User
+    @param: _album: Document.Album
+    return: {yourPrice: str, albumPrice: str, rawAlbumDiscount: str, savings: str}
     """
     # Price for the current user
     your_price = 0
@@ -49,8 +49,8 @@ def purchase_album(user_id, album_id):
     """
     Purchase album. Add photos to purchased for buyer.
     Reduce credits for buyer and increase credits for photo owner.
-    @param: str(user_id)
-    @param: str(album_id)
+    @param: user_id: str
+    @param: album_id: str
     return: {purchased: boolean}
     """
     buyer = User.objects.get(id=user_id)

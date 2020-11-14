@@ -32,8 +32,8 @@ def update_album(_album, title, discount, tags):
 def album_photo_search(data):
     """
     Get thumbnails of the photos in an album
-    @param: dict(data)
-    return: [photo_obj]
+    @param: data: dict
+    return: [Document.Photo]
     """
     try:
         req_user = get_uid(data["token"])
@@ -96,9 +96,9 @@ def album_photo_search(data):
 def catalogue_thumbnail(catalogue_obj, u_id):
     """
     Get the thumbnail of first photo (not deleted) from an album
-    @param: catalogue_obj
-    @param: str(u_id)
-    return: {"thumbnail": photostr}
+    @param: catalogue_obj: Document.Catalogue
+    @param: u_id: str
+    return: {"thumbnail": str}
     """
 
     photos = catalogue_obj.get_photos()

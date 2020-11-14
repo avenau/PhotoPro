@@ -52,7 +52,7 @@ class Collection(lib.catalogue.catalogue.Catalogue):
         """
         Remove a photo from this collection
         Remove this collection from the photo
-        @param photo: Photo(Document)
+        @param photo: Document.photo
         """
         if self in old_photo.collections:
             old_photo.collections.remove(self)
@@ -64,7 +64,7 @@ class Collection(lib.catalogue.catalogue.Catalogue):
 
     def get_collection_json(self):
         """
-        Get collection as a json string
+        Get details of a collection as a json string
         """
         return {
             "title": self.get_title(),

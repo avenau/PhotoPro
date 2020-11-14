@@ -8,6 +8,7 @@ import lib.Error as Error
 
 def validate_private(private):
     """
+    Validate if privacy of collection is boolean value
     @param private:boolean
     """
     try:
