@@ -17,7 +17,21 @@ interface Profile {
   following: boolean;
 }
 
-class UserList extends React.Component<Props> {
+interface State {
+  followBtnsDisabled: boolean;
+}
+
+class UserList extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      followBtnsDisabled: false,
+    };
+  }
+  setFollowBtnsDisabled = (followBtnsDisabled: boolean) => {
+    this.setState({ followBtnsDisabled: followBtnsDisabled });
+  };
+
   render() {
     return (
       <>
@@ -36,6 +50,8 @@ class UserList extends React.Component<Props> {
               {...profile}
               following={profile.following}
               userId={profile.id}
+              followBtnsDisabled={this.state.followBtnsDisabled}
+              setFollowBtnsDisabled={this.setFollowBtnsDisabled}
             />
           </div>
         ))}
