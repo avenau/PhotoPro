@@ -15,6 +15,11 @@ def password_reset_request(email):
     Given an email address, if the user is a registered user, semd an email
     with a link that they can access temporarily to change their password
     """
+    try:
+        User.objects.get(email=email)
+    except:
+        return None
+
     reset_code = md5(f"{email}{random()}".encode()).hexdigest()[:6]
     reset_codes.append({"email": email, "reset_code": reset_code})
 

@@ -54,7 +54,7 @@ class CollectionDetails extends React.Component<Props, State> {
         .get(`/collection/get?token=${token}&collectionId=${collectionId}`)
         .then((res) => {
           if (res.data) {
-            document.title = `${res.data.tile} | PhotoPro`;
+            document.title = `${res.data.title} | PhotoPro`;
             this.setState({
               title: res.data.title,
               isOwner: res.data.isOwner,
@@ -112,11 +112,11 @@ class CollectionDetails extends React.Component<Props, State> {
               </Container>
             </Col>
           </Row>
-          <hr></hr>
+          <hr />
           <Row id="the-photos-heading">
-            <h1>This Collection's Photos</h1>
+            <h1>This Collection&quot;s Photos</h1>
           </Row>
-          <hr></hr>
+          <hr />
           <ContentLoader
             query={this.state.collectionId}
             route="/collection/photos"

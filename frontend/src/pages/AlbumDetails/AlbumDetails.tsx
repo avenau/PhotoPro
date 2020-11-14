@@ -57,7 +57,7 @@ class AlbumDetails extends React.Component<Props, State> {
         .get(`/album?token=${token}&album_id=${albumId}`)
         .then((res) => {
           if (res.data) {
-            document.title = `${res.data.tile} | PhotoPro`;
+            document.title = `${res.data.title} | PhotoPro`;
             this.setState({
               title: res.data.title,
               discount: res.data.discount,
@@ -119,11 +119,11 @@ class AlbumDetails extends React.Component<Props, State> {
               </Container>
             </Col>
           </Row>
-          <hr></hr>
+          <hr />
           <Row id="the-photos-heading">
-            <h1>This Album's Photos</h1>
+            <h1>This Album&quot;s Photos</h1>
           </Row>
-          <hr></hr>
+          <hr />
           <ContentLoader
             query={this.state.albumId}
             route="/album/photos"

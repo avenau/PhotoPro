@@ -100,7 +100,11 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
     }
     return (
       <Jumbotron className="forgot-jumbo">
-        <p>Enter the verification code sent to {email}</p>
+        <p>
+          If there is an account associated with {email} an email will be sent
+          containing a verification code. Enter the verification code below to
+          reset your password
+        </p>
         <Form
           onSubmit={(e: React.FormEvent<HTMLElement>) => this.handleSubmit(e)}
         >
