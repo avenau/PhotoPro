@@ -48,6 +48,18 @@ def create_photo_entry(photo_details):
         posted=datetime.datetime.now(),
     )
     new_photo.save()
+    print({ 'title': new_photo.title,
+            'price': new_photo.price,
+            'user': new_photo.user,
+            'tags': new_photo.tags,
+            'metadata': new_photo.metadata,
+            'extendion': new_photo.extension,
+            'albums': new_photo.albums,
+            'collections': new_photo.collections
+        })
+    print({'photo_details["albums"]': photo_details['albums']})
+    print(type(photo_details['albums']))
+    print(type(photo_details['albums'][0]))
     new_photo.set_albums(photo_details["albums"])
     try:
         process_photo(base64_str, str(new_photo.get_id()), extension)

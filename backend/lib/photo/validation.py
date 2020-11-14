@@ -25,7 +25,7 @@ def validate_price(price):
     try:
         mongoengine.IntField().validate(price)
     except mongoengine.ValidationError:
-        print(traceback.print_exc())
+        print(traceback.format_exc())
         raise Error.ValidationError("Price field is not an integer")
 
     # Our own custom validation
@@ -40,7 +40,7 @@ def validate_discount(discount):
     try:
         mongoengine.IntField().validate(discount)
     except mongoengine.ValidationError:
-        print(traceback.print_exc())
+        print(traceback.format_exc())
         raise Error.ValidationError("Discount is not a valid integer")
     if discount < 0:
         raise Error.ValidationError("Discount must be greater than 0")
@@ -56,7 +56,7 @@ def validate_extension(extension):
     try:
         mongoengine.StringField().validate(extension)
     except mongoengine.ValidationError:
-        print(traceback.print_exc())
+        print(traceback.format_exc())
         raise Error.ValidationError("Extension is not valid")
     exts = [".jpg", ".jpeg", ".png", ".svg"]
     if extension not in exts:
@@ -70,7 +70,7 @@ def validate_tags(tags):
     try:
         mongoengine.ListField().validate(tags)
     except mongoengine.ValidationError:
-        print(traceback.print_exc())
+        print(traceback.format_exc())
         raise Error.ValidationError("Tag list is not valid")
 
     if len(tags) > 10:
@@ -80,7 +80,7 @@ def validate_tags(tags):
         try:
             mongoengine.StringField().validate(tag)
         except mongoengine.ValidationError:
-            print(traceback.print_exc())
+            print(traceback.format_exc())
             raise Error.ValidationError("String field for tag is not valid")
         if tag is None or len(tag) < 1:
             raise Error.ValidationError("Tag cannot be an empty string")
@@ -96,7 +96,7 @@ def validate_title(title):
     try:
         mongoengine.StringField().validate(title)
     except mongoengine.ValidationError:
-        print(traceback.print_exc())
+        print(traceback.format_exc())
         raise Error.ValidationError("Title is not a valid string")
     if title is None or len(title) < 1 or len(title) > 40:
         raise Error.ValidationError("Title must be between 1 and 40 characters")
@@ -112,14 +112,10 @@ def validate_albums(albums):
         print(traceback.format_exc())
         raise Error.ValidationError
 
-    for i in albums:
-        if i is None or i == "":
-            raise Error.ValueError("Cannot be empty or None")
-
 
 def validate_collections(collections):
     """
-    @param tags: [Collection]
+    @param collections: [Collection]
     """
     try:
         mongoengine.ListField().validate(collections)

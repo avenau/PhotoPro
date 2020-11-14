@@ -99,7 +99,7 @@ class Catalogue(Document):
         """
         if new_photo not in self.photos:
             self.photos.append(new_photo)
-            new_photo.add_collection(self)
+            # new_photo.add_collection(self)
 
     def add_photos(self, new_photos):
         """

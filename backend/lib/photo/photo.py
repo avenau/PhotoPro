@@ -168,11 +168,12 @@ class Photo(Document):
         album_replace = []
         for _id in albums:
             album_obj = album.Album.objects.get(id=_id)
-            album_replace.append(album_obj)
-            if self not in album_obj.photos:
-                # Add photo to Album document
-                album_obj.add_photo(self)
-                album_obj.save()
+            if album_obj:
+                album_replace.append(album_obj)
+                if self not in album_obj.photos:
+                    # Add photo to Album document
+                    album_obj.add_photo(self)
+                    album_obj.save()
 
         self.albums = album_replace
         self.save()
