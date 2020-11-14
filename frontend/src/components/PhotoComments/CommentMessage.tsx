@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import _ from "lodash";
-import { Link } from "react-router-dom";
+import { Trash } from "react-bootstrap-icons";
+import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import { Row, Col } from "react-bootstrap";
 import profilePic from "../../static/profile-pic.png";
 import "./CommentMessage.scss";
-import { Row, Col, Container } from "react-bootstrap";
+import HoverText from "../HoverText"
 
 interface MessageProp {
   message: string;
@@ -48,7 +50,7 @@ export default function CommentMessage(props: MessageProp) {
         c_id,
         p_id,
       })
-      .then((response) => {
+      .then(() => {
         props.getComments(p_id, props.new_to_old);
       });
   };
@@ -77,56 +79,58 @@ export default function CommentMessage(props: MessageProp) {
   }, [showDelete]);
 
   return (
-    <div className="comment">
-      <Row>
-        <Col>
-          <Container>
-            <Row>
-              <Link to={`/user/${props.author_id}`}>
-                <img src={getPic()} className="thumbnail" />
-              </Link>
-            </Row>
-            <Row>
-              <a href={`/user/${props.author_id}`}>
-                <b>{props.author}</b>
-              </a>
-            </Row>
-          </Container>
-        </Col>
-        <Col xs={9}>
-          <div>{props.message}</div>
-        </Col>
-        <Col>
-          {showDelete ? (
-            <Button
-              className="DeleteButton"
-              variant="light"
-              onClick={DeleteComment}
+    <Card className="comment">
+      <Card.Header>
+        <a
+          href={`/user/${props.author_id}`}
+          style={{textDecoration: "none", backgroundColor: "none", color: "black"}}
+        >
+          <b>{props.author}</b>
+        </a>
+        {showDelete ? (
+          <div className="DeleteButton">
+            <HoverText
+              id="deleteCommentButton"
+              helpfulText="Delete Comment"
+              placement="left"
             >
-              <svg
-                width="1em"
-                height="1em"
-                viewBox="0 0 16 16"
-                className="bi bi-trash-fill"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
+              <Button
+                onClick={DeleteComment}
+                variant="light"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"
-                />
-              </svg>
-            </Button>
+                <Trash />
+              </Button>
+            </HoverText>
+          </div>
           ) : (
             <></>
           )}
-        </Col>
-      </Row>
-      <Row className="time">
-        <div onMouseOver={showExactDate} onMouseLeave={showTimeAfter}>
-          {showingDate}
+      </Card.Header>
+      <Card.Body>
+        <Row>
+          <Col md="auto">
+            <a href={`/user/${props.author_id}`}>
+              <Card.Img
+                src={getPic()}
+                className="thumbnail"
+                alt="userThumbnail" 
+              />
+            </a>
+          </Col>
+          <Col>
+            <Card.Text>{props.message}</Card.Text>
+          </Col>
+        </Row>
+      </Card.Body>
+      <Card.Footer>
+        <div
+          onMouseOver={showExactDate}
+          onMouseLeave={showTimeAfter}
+          onFocus={showExactDate}
+        >
+          <small>{showingDate}</small>
         </div>
-      </Row>
-    </div>
+      </Card.Footer>
+    </Card>
   );
 }
