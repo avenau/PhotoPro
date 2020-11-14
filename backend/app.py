@@ -279,7 +279,13 @@ def _account_registration():
     except:
         raise Error.ValueError("An account is already registered with this email")
 
-    return dumps({})
+    return dumps(
+        {
+            "id": str(this_user.get_id()),
+            "token": token_functions.create_token(str(this_user.get_id())),
+            "nickname": this_user.get_nickname(),
+        }
+    )
 
 
 @app.route("/userdetails", methods=["GET"])
