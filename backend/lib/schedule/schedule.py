@@ -26,7 +26,7 @@ def initialise_schedule(length):
     if timer != None:
         timer.cancel()
 
-    if length == None or length < 0:
+    if length == None or length <= 0:
         length = 1440
 
     current_showdown = Showdown.objects().order_by("-start_date").first()
