@@ -1,5 +1,4 @@
 import React from "react";
-import Toolbar from "../components/Toolbar/Toolbar";
 import Showdown from "../components/Showdown/Showdown";
 import PopularContributors from "../components/Welcome/PopularContributors";
 import PopularImages from "../components/Welcome/PopularImages";

@@ -121,7 +121,7 @@ class AlbumDetails extends React.Component<Props, State> {
           </Row>
           <hr />
           <Row id="the-photos-heading">
-            <h1>This Album&quot;s Photos</h1>
+            <h1>This Album&apos;s Photos</h1>
           </Row>
           <hr />
           <ContentLoader

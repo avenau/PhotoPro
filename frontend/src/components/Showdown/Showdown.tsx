@@ -1,8 +1,9 @@
-import React from "react";
 import axios from "axios";
+import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import PrevShowdown from "./PrevShowdown";
+import LoadingPage from "../../pages/LoadingPage";
 import CurrShowdown from "./CurrShowdown";
+import PrevShowdown from "./PrevShowdown";
 import "./Showdown.scss";
 
 interface Props extends RouteComponentProps {
@@ -76,7 +77,7 @@ class Showdown extends React.Component<Props, State> {
         <div className="subcontainer">
           <h3>Last Showdown Winner</h3>
           {this.state.loading ? (
-            <div>Loading...</div>
+            <LoadingPage />
           ) : (
             <PrevShowdown photo={this.state.prevWinnerPhoto} />
           )}
@@ -84,7 +85,7 @@ class Showdown extends React.Component<Props, State> {
         <div className="subcontainer">
           <h3>Today&apos;s Photo Showdown</h3>
           {this.state.loading ? (
-            <div>Loading...</div>
+            <LoadingPage />
           ) : (
             <CurrShowdown
               photos={this.state.participants}

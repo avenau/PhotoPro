@@ -9,6 +9,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import ContentLoader from "../components/ContentLoader/ContentLoader";
 import CreateCatalogueModal from "../components/ProfilePage/CreateCatalogueModal";
 import UserHeader from "../components/UserHeader/UserHeader";
+import LoadingPage from "./LoadingPage";
 import "./Profile.scss";
 
 interface Props extends RouteComponentProps {
@@ -133,7 +134,7 @@ class ProfilePage extends React.Component<Props, State> {
     const userId = localStorage.getItem("u_id");
     const isCurrentUser = this.state.userId === userId;
     return this.state.pageLoading ? (
-      <div>Loading...</div>
+      <LoadingPage />
     ) : (
       <>
         <div>
