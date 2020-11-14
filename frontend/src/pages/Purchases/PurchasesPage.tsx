@@ -54,11 +54,11 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
               </Jumbotron>
             </Col>
           </Row>
-          <hr></hr>
+          <hr />
           <Row id="purchasesHeading">
             <h1>Your Purchases</h1>
           </Row>
-          <hr></hr>
+          <hr />
           <ContentLoader
             query={localStorage.getItem("u_id")!}
             route="/user/purchasedphotos"
