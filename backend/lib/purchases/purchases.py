@@ -14,9 +14,11 @@ from lib import Error
 
 def get_purchased_photos(data):
     """
+    Get purchased photo of current user
     @param data: {token: string,
                   offset: int,
                   limit: int}
+    return: response:dict
     """
     try:
         u_id = get_uid(data["token"])

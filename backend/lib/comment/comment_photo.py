@@ -14,6 +14,10 @@ from datetime import datetime
 def comments_photo(p_id, u_id, content, current_date):
     """
     Create a comment and attach it to the photo
+    @param: p_id:string
+    @param: u_id:string
+    @param: content:string
+    @param: current_date:Date
     """
     this_user = user.User.objects.get(id=u_id)
     if not this_user:
@@ -36,6 +40,8 @@ def comments_photo(p_id, u_id, content, current_date):
 def delete_photos(p_id, c_id):
     """
     Deletes a comment
+    @param: p_id:string
+    @param: c_id:string
     """
     this_photo = photo.Photo.objects.get(id=p_id)
     this_comment = comment.Comment.objects.get(id=c_id)

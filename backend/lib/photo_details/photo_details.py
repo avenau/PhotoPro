@@ -15,6 +15,14 @@ import math
 
 
 def photo_detail_results(photo_id, token):
+    """
+    Get details of a photo for photo details page.
+    Conditionally render manage account button or download full image
+    if they are the owner of the photo or purchased the photo.
+    @param: photo_id:string
+    @param: token:string
+    return: response:object
+    """
     try:
         req_user = token_functions.get_uid(token)
     except:

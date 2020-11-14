@@ -20,7 +20,7 @@ def login(bcrypt, email, password):
     @param bcrypt: flask_bcrypt object
     @param email: string
     @param password: binary
-    @return user: {u_id: string, token: string, nickname: string}
+    return user: {u_id: string, token: string, nickname: string}
     """
     user = lib.user.user.User.objects(email=email).first()
     if not user:

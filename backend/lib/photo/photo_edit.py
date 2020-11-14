@@ -23,6 +23,15 @@ def create_photo_entry(photo_details):
     """
     Creates photo entry in photo collection and adds
     photo/post in the user collection
+
+    @param: photo_details:{
+        photo: string,
+        extension: string,
+        token: string,
+        tags: string[],
+        price: int,
+        albums: string[]
+        }
     """
 
     photo_details = reformat_lists(photo_details)
@@ -63,9 +72,9 @@ def process_photo(base64_str, name, extension):
     """
     Process base64 str of a photo, convert and save/upload file
 
-    @param base64_str: raw base64 str
-    @param name: name of photo
-    @param extension: photo type
+    @param base64_str:string
+    @param name:string
+    @param extension:string
     """
 
     filename = name + extension
@@ -100,6 +109,8 @@ def make_thumbnail(img_data, filename_thumbnail):
 def make_thumbnail_svg(img_data, name):
     """
     Convert svg to png for thumbnail purposes.
+    @param: img_data:bytestring
+    @param: name:string
     """
     filename_thumbnail = name + "_t.png"
     png_bytes = cairosvg.svg2png(img_data)
@@ -115,10 +126,12 @@ def make_thumbnail_svg(img_data, name):
 def make_watermarked_copy(img_data, name, extension):
     """
     Make watermarked copy of png and jpg images.
-
-    Thumbnail before watermark.
-
+    Create a thumbnail before watermarking.
     Do not pass an svg directly to this function.
+
+    @param: img_data:bytestring
+    @param: name:string
+    @param: extension:string
     """
     watermarked_filename = name + "_w" + extension
     img = Image.open(BytesIO(img_data))
@@ -143,7 +156,6 @@ def get_photo_edit(photo_id, token):
     """
     Get photo details from the database,
         validates if user is authorised to edit the photo
-    @param mongo(object): Mongo databse
     @param photoId: str
     @param token: str
     @returns: response body
@@ -178,7 +190,6 @@ def update_photo_details(photo_details):
     """
     Update photo details in the database, validates photo details
     modifable_categories = ["title", "price", "tags", "albums", "discount"]
-    @param mongo(object): Mongo databse
     @param photo_details(object): object containing values to change
     @returns: response body
     """
@@ -225,6 +236,7 @@ def reformat_lists(photo_details):
 def lower_tags(photo_details):
     """
     Convert tags to lowercase
+    @param: photo_details: dict
     """
     tags = photo_details["tags"]
     if not isinstance(tags, list):
@@ -239,6 +251,7 @@ def lower_tags(photo_details):
 def convert_album_list(photo_details):
     """
     Convert JSON album list to python
+    @param: photo_details:dict
     """
     albums = photo_details["albums"]
     if not isinstance(albums, list):

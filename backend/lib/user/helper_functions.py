@@ -11,9 +11,13 @@ import lib.user.user as user
 
 def update_value(bcrypt, user, key, value):
     """
-    Update the key/value pair in the database
+    Update the key/value pair in the database of a user
     mongoengine reimplementation
     Update this list as necessary
+    @param: bcrypt:bcrypt obj
+    @param: user:Document.user
+    @param: key:string
+    @param: value:string
     """
 
     if key == "fname":
@@ -46,6 +50,9 @@ def update_follow(token, followed_id):
     """
     User with token 'token' follows user with id 'followed_id'.
     Returns True if action is follow, False if action is unfollow.
+    @param: token:string
+    @param: followed_id:string
+    return: boolean
     """
     try:
         user_id = token_functions.get_uid(token)

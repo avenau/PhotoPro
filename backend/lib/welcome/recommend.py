@@ -14,9 +14,9 @@ from bson.objectid import ObjectId
 def recommend_keywords(u_id):
     """
     Get the default or 10 top photo keywords based on recently liked,
-    purchased and searched photos
+    purchased and searched photos. This will be used as a metric to recommend photos.
     @param: u_id str
-    @returns: list(str(keywords))
+    @returns: list(string)
 
     """
     liked_kw = liked_photo_keywords(u_id)
@@ -76,6 +76,16 @@ def count_res(u_id, keywords):
 
 
 def recommend_photos(data):
+    """
+    Get recommended photos for a user based on their past purchased, like
+    and search history
+    @param: data{
+        token: string,
+        skip: int,
+        limit: int
+    }
+    return: res:dict
+    """
     u_id = get_uid(data["token"])
     keywords = recommend_keywords(u_id)
 
@@ -125,9 +135,9 @@ def recommend_photos(data):
 
 def aggregate_photo_keywords(photos):
     """
-    Return title and tags in photos.
-    @param: list(Photo obj)
-    @returns: list(str(keyword))
+    Return title and tags associated with photos.
+    @param: list(Document.photo)
+    return: list(string)
     """
     keywords = []
 
@@ -158,9 +168,9 @@ def get_top_keywords(keywords, count=10):
 
 def search_history_keywords(u_id):
     """
-    Get tags and titles of count/25 most recently purchased photos of user
+    Get tags and titles of count most recently searched photos of user
 
-    Returns: list(keywords)
+    Returns: list(string)
     """
     user = lib.user.user.User.objects.get(id=u_id)
     searches = user.get_searches()
@@ -175,9 +185,9 @@ def search_history_keywords(u_id):
 
 def liked_photo_keywords(u_id, count=10):
     """
-    Get tags and titles of count/25 most recently like photos of user
+    Get tags and titles of count most recently like photos of user
 
-    Returns: list(keywords)
+    Returns: list(string)
     """
     user = lib.user.user.User.objects.get(id=u_id)
     liked_photos = user.get_liked()[-count:]
@@ -188,9 +198,9 @@ def liked_photo_keywords(u_id, count=10):
 
 def purchased_photo_keywords(u_id, count=10):
     """
-    Get tags and titles of count/25 most recently liked photos of user
+    Get tags and titles of count most recently liked purchased of user
 
-    Returns: list(keywords)
+    Returns: list(string)
     """
     user = lib.user.user.User.objects.get(id=u_id)
     purchased = user.get_purchased()[-count:]

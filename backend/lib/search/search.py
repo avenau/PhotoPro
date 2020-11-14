@@ -17,6 +17,7 @@ from lib.token_functions import get_uid
 def get_sort_method(sortid):
     """
     Get the mongodb sort command associated with the id given
+    @param: sortid:string
     """
     if sortid == "recent":
         return {"$sort": {"created": -1, "id": -1}}
@@ -35,6 +36,12 @@ def get_sort_method(sortid):
 def user_search(data):
     """
     Search user collection
+    @param: data{token: string,
+                offset: int,
+                limit: int,
+                query: string,
+                orderby: string}
+    return: res:list(dict)
     """
     query = urllib.parse.unquote_plus(data["query"].lower())
     # Handle anon users with this try-except
@@ -128,6 +135,12 @@ def user_search(data):
 def photo_search(data):
     """
     Search photo collection
+    @param: data{token: string,
+                offset: int,
+                limit: int,
+                query: string,
+                orderby: string}
+    return: res:list(dict)
     """
     query = urllib.parse.unquote_plus(data["query"].lower())
     sort = get_sort_method(data["orderby"])
@@ -221,6 +234,12 @@ def photo_search(data):
 def collection_search(data):
     """
     Search collections collection
+    @param: data{token: string,
+                offset: int,
+                limit: int,
+                query: string,
+                orderby: string}
+    return: res:list(dict)
     """
     query = urllib.parse.unquote_plus(data["query"].lower())
     sort = get_sort_method(data["orderby"])
@@ -265,6 +284,12 @@ def collection_search(data):
 def album_search(data):
     """
     Search albums collection
+    @param: data{token: string,
+                offset: int,
+                limit: int,
+                query: string,
+                orderby: string}
+    return: res:list(dict)
     """
     query = urllib.parse.unquote_plus(data["query"].lower())
     sort = get_sort_method(data["orderby"])

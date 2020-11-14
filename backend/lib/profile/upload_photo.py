@@ -14,6 +14,8 @@ def extension_to_mimetype(extension):
 
     The extensions within the if statements will get converted
     otherwise return the input.
+    @param: extension:string
+    return: mime:string
     """
     mime = ""
     if extension == ".jpg" or extension == ".jpeg":
@@ -32,6 +34,9 @@ def update_user_thumbnail(base64_image, extension):
     """
     MAIN CALLABALE FUNCTION
     Modified by Allan to take a base64 string as opposed to url
+    @param: base64_image:string
+    @param: extension:string
+    return: tuple(string, string)
     """
     mime = extension_to_mimetype(extension)
     base64_image = base64_image.split(",")[1]

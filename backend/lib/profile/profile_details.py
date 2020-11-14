@@ -11,6 +11,11 @@ from lib import Error
 
 
 def get_profile_details(data):
+    """
+    Get details to display on a user's profile page
+    @param: data:{token:string, u_id:string}
+    return: result:Object
+    """
     try:
         searcher = User.objects.get(id=get_uid(data["token"]))
         following = searcher.get_following()
@@ -38,12 +43,25 @@ def get_profile_details(data):
 
 def user_photo_search(data):
     """
+    Get the photos posted by a user. Do not return photos which have been deleted
     @param data{
         offset: int
         limit: int
         token: string
         query: string
     }
+    return: [{
+                "title": string,
+                "price": int,
+                "discount": int,
+                "extension": string,
+                "posted": Date,
+                "user": string,
+                "id": string,
+                "metadata": string,
+                "photoStr": string,
+                "owns": boolean
+            }]:list(obj)
     """
     try:
         req_user = get_uid(data["token"])
@@ -94,12 +112,19 @@ def user_photo_search(data):
 
 def user_collection_search(data):
     """
+    Get collections of a user to display on the profile page
     @param data{
         offset: int
         limit: int
         token: string
         query: string
     }
+    return: [{"title": string,
+            "authorId": string,
+            "created": Date,
+            "id": string,
+            "author": string
+            }]:list(Object)
     """
     try:
         req_user = get_uid(data["token"])
@@ -141,6 +166,24 @@ def user_collection_search(data):
 
 
 def user_album_search(data):
+    """
+    Get the albums which a user has created
+    @param: data{
+        offset: int
+        limit: int
+        token: string
+        query: string
+    }
+    return: [{
+                "title": string,
+                "authorId": string,
+                "created": Date,
+                "discount": int,
+                "id": string,
+                "author": string
+            },
+    ]
+    """
     res = Album.objects.aggregate(
         [
             {"$match": {"created_by": ObjectId(data["query"])}},
@@ -165,6 +208,17 @@ def user_album_search(data):
 
 
 def user_following_search(data):
+    """
+    Get a list of users which the user follows 
+    (user of profile page being displayed)
+    @param: data{
+        offset: int
+        limit: int
+        token: string
+        query: string
+    }
+    return: response:Object 
+    """
     try:
         u_id = get_uid(data["token"])
     except:

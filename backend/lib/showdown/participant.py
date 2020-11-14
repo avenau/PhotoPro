@@ -1,5 +1,5 @@
 """
-Participant Class for mongoengine
+Participant Class for mongoengine. This logs participants of a showdown.
 """
 
 from mongoengine import ListField

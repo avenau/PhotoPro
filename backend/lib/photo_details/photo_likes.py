@@ -47,6 +47,7 @@ def like_photo(token, photo_id):
     Toggle like on a photo
     If photo is already liked, dislike it
     If photo is not liked, like it
+    return: boolean
     """
     user_id = token_functions.verify_token(token)["u_id"]
     # Get the User

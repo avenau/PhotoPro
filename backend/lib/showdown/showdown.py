@@ -1,5 +1,5 @@
 """
-User Class for mongoengine
+User Class for mongoengine. Collection contains all previous showdowns.
 """
 
 from datetime import timedelta, datetime

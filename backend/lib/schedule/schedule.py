@@ -33,6 +33,8 @@ def initialise_schedule():
 def create_showdown(prev_showdown):
     """
     Create a new showdown entry
+    @param: prev_showdown:Document.showdown
+    return: Document.showdown
     """
 
     participants = []

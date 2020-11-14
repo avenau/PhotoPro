@@ -26,7 +26,7 @@ def valid_email(mongo, email):
     Used Pymongo method
     @param mongo database
     @param email: str
-    @return True on success
+    return True on success
     """
     # Check if email is in valid format
     regex = r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.][\w.]+$"
@@ -42,7 +42,7 @@ def valid_name(name):
     """
     Checks the name is valid by checking it's not empty
     @param name: str
-    @return True on success
+    return True on success
     """
     if name is None:
         raise NameError("Cannot have no name")

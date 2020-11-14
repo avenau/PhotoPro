@@ -21,6 +21,24 @@ to_ignore = [
 def get_data(req_user):
     """
     Get all of the data related to showdown
+    @param: req_user:string
+    return: {
+        participants: [{
+            photoStr: string,
+            metadata: string,
+            id: string,
+            owns: boolean,
+            votes: length,
+            participantId: string
+        }],
+        prevWinnerPhoto: {
+            photoStr: string,
+            metadata: string,
+            id: string,
+            owns: boolean,
+        },
+        currentVote: string
+    }
     """
     current_showdown = Showdown.objects().order_by("-start_date").first()
     if current_showdown == None:
@@ -77,6 +95,8 @@ def get_data(req_user):
 def count_wins_user(id):
     """
     Count all of the showdowns that the user with id given has won
+    @param: id:string
+    return: int
     """
     wins = 0
     user = User.objects.get(id=id)
@@ -87,6 +107,8 @@ def count_wins_user(id):
 def count_wins_photo(id):
     """
     Count all of the showdowns that the user with id given has won
+    @param: id:string
+    return: int
     """
     wins = 0
     photo = Photo.objects.get(id=id)

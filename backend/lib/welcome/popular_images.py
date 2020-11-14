@@ -9,10 +9,12 @@ from bson.json_util import dumps
 def get_popular_images(u_id, offset, limit):
     """
     Get the most popular images from the platform at the moment
-
-     Returns
+    @param: u_id:string
+    @param: offset:int
+    @param: limit:int
+    Returns
     -------
-    {
+    [{
         title : string
         price : int
         discount : int
@@ -21,7 +23,7 @@ def get_popular_images(u_id, offset, limit):
         likes: int
         owns: boolean
         id : string
-    }
+    }]
     """
     res = PopularPhoto.objects.aggregate(
         [
