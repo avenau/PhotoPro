@@ -84,25 +84,21 @@ class AlbumDisplay extends React.Component<
         <Link to={`/user/${this.props.owner}`}>
           By @​​​​​​​{this.props.nickname}
         </Link>
+        <div className="album-price-display">
+          <Savings albumId={this.state.albumId} />
+        </div>
         {this.props.isOwner ? (
-          <>
-            <div className="album-price-display">
-              <Savings albumId={this.state.albumId} />
-            </div>
-          </>
+          <></>
         ) : this.state.purchased ? (
-          <p>You've purchased this album already</p>
+          <p>You own all the photos in this album!</p>
         ) : (
-          <div className="album-price-display">
-            <Savings albumId={this.state.albumId} />
-            <Button
-              onClick={() => {
-                this.purchaseAlbum();
-              }}
-            >
-              Purchase
-            </Button>
-          </div>
+          <Button
+            onClick={() => {
+              this.purchaseAlbum();
+            }}
+          >
+            Purchase
+          </Button>
         )}
       </>
     );
