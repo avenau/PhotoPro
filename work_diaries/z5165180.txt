@@ -38,11 +38,33 @@ Finished LoginPage in time for demo A.
 For next week I am planning to implement photo uploading. 
 
 Week 6
-Almost finished photo uploading. Just need to add the uploader to the photo db entry, and accept .gifs. 
-For next week I plan to implement credit purchasing/refunding. 
+Almost finished photo uploading. Just need to add the uploader to the photo db entry, and accept .gifs.
+Obstacle was not allocating enough time to implement photo uploading.
+For next week I plan to finish off photo uploading, then implement credit purchasing/refunding. 
 If I finish that I plan to add other user stories to my tasks on Jira.
 
 Week 7
 Finished photo uploading.
 Finished credit purchasing/refunding.
-For next week I plan to save watermarked copies of images.
+For next week I plan to save watermarked copies of images for demo B.
+
+Week 8
+Changed back end to pass around binary image data as opposed to base64, since binary image data is smaller and avoids multiple encodes and decodes, increasing speed.
+Finish watermarking for all file types except animated gifs.
+Obstacle was that PIL breaks the colours of some gifs after processing or drawing on them. If we want to watermark gifs then I probably can't use PIL for it.
+If we can't watermark animated gifs then we may only be able to display the first frame of the gif with a watermark.
+For next week I plan to implement purchasing and accessing of photos and albums. If I get that finished early then I will help out with other user stories such as feed recommendations, and photo showdown.
+
+Week 9
+Implemented purchasing and accessing of photos.
+Fixed profile picture management.
+Removed support for gifs entirely.
+Fixed thumbnails and downloads for SVGs.
+Helped fix little bugs here and there such as discount rounding errors, refreshing thumbnails on purchase.
+Implemented credits being displayed on toolbar at all times.
+Improved the watermark.
+Tested on VLAB.
+Before submission, I plan to help with final implementation difficulties, cleaning up code (style, remove unused), and the Project Report.
+
+
+
