@@ -6,6 +6,7 @@ import axios from "axios";
 import { RouteComponentProps, withRouter, Link } from "react-router-dom";
 import Savings from "./Savings";
 import Album from "../PhotoEdit/Album";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
 import "./AlbumDisplay.scss";
 
 interface AlbumDisplayProps extends RouteComponentProps {
@@ -28,6 +29,7 @@ interface AlbumDisplayState {
   photos?: string[];
   albumId: string;
   purchased: boolean;
+  purchaseBtnLoading: boolean;
 }
 
 class AlbumDisplay extends React.Component<
@@ -43,13 +45,13 @@ class AlbumDisplay extends React.Component<
       photos: props.photos,
       albumId: props.albumId,
       purchased: false,
+      purchaseBtnLoading: false,
     };
   }
 
   purchaseAlbum() {
-    const token = localStorage.getItem("token")
-      ? localStorage.getItem("token")
-      : "";
+    const token = localStorage.getItem("token");
+    this.setState({ purchaseBtnLoading: true });
     axios
       .post("/purchasealbum", {
         token,
@@ -57,9 +59,12 @@ class AlbumDisplay extends React.Component<
       })
       .then((res) => {
         this.props.setPurchased(true);
+        this.setState({ purchaseBtnLoading: false });
         window.location.reload();
       })
-      .catch(() => {});
+      .catch(() => {
+        this.setState({ purchaseBtnLoading: false });
+      });
   }
 
   render() {
@@ -76,13 +81,14 @@ class AlbumDisplay extends React.Component<
         ) : this.props.purchased ? (
           <p>You own all the photos in this album!</p>
         ) : (
-          <Button
+          <LoadingButton
+            loading={this.state.purchaseBtnLoading}
             onClick={() => {
               this.purchaseAlbum();
             }}
           >
             Purchase
-          </Button>
+          </LoadingButton>
         )}
       </>
     );
