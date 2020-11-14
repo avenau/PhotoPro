@@ -35,7 +35,8 @@ def password_reset_request(email):
         f"<p>Do not share this code with anyone. This code will remain\
                  valid for "
         "up to 10 minutes, if the code has expired you may repeat the\
-                 process and a new code will be emailed to you.</p></div>"
+                 process and a new code will be emailed to you.</p>"
+        f"<p>If you were not expecting this email, please delete it. Thank you.</p></div>"
     )
 
     return msg
