@@ -46,24 +46,6 @@ class AlbumDisplay extends React.Component<
     };
   }
 
-  // componentDidMount() {
-  //   this.checkIfPurchased();
-  // }
-
-  // checkIfPurchased() {
-  //   const token = localStorage.getItem("token")
-  //     ? localStorage.getItem("token")
-  //     : "";
-  //   axios
-  //     .get(`/album/checkpurchased?token=${token}&albumId=${this.state.albumId}`)
-  //     .then((res) => {
-  //       if (res.data.purchased) {
-  //         this.setState({ purchased: true });
-  //       }
-  //     })
-  //     .catch(() => {});
-  // }
-
   purchaseAlbum() {
     const token = localStorage.getItem("token")
       ? localStorage.getItem("token")
