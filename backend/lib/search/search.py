@@ -23,9 +23,9 @@ def get_sort_method(sortid):
     if sortid == "old":
         return {"$sort": {"created": 1, "id": 1}}
     if sortid == "low":
-        return {"$sort": {"price": 1, "id": 1}}
+        return {"$sort": {"discountedPrice": 1, "id": 1}}
     if sortid == "high":
-        return {"$sort": {"price": -1, "id": -1}}
+        return {"$sort": {"discountedPrice": -1, "id": -1}}
     if sortid == "az":
         return {"$sort": {"title": 1, "nickname": 1, "id": 1}}
     if sortid == "za":
@@ -154,8 +154,8 @@ def photo_search(data):
 
     if float(data["priceMax"]) != -1:
         price_filter = [
-            {"price": {"$gt": float(data["priceMin"])}},
-            {"price": {"$lt": float(data["priceMax"])}},
+            {"discountedPrice": {"$gt": float(data["priceMin"])}},
+            {"discountedPrice": {"$lt": float(data["priceMax"])}},
         ]
 
     res = Photo.objects.aggregate(
@@ -169,7 +169,6 @@ def photo_search(data):
                     ],
                     "extension": {"$in": valid_extensions},
                     "deleted": False,
-                    "$and": price_filter,
                 }
             },
             {
@@ -181,9 +180,24 @@ def photo_search(data):
                     "created": "$posted",
                     "user": {"$toString": "$user"},
                     "id": {"$toString": "$_id"},
+                    # discountedPrice = round(price - (price * discount/100))
+                    "discountedPrice": {
+                        "$round": {
+                            "$subtract": [
+                                "$price",
+                                {
+                                    "$multiply": [
+                                        "$price",
+                                        {"$divide": ["$discount", 100]},
+                                    ]
+                                },
+                            ]
+                        }
+                    },
                     "_id": 0,
                 }
             },
+            {"$match": {"$and": price_filter}},
             sort,
             {"$skip": data["offset"]},
             {"$limit": data["limit"]},

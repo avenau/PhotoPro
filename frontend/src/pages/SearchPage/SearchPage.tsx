@@ -104,7 +104,7 @@ class SearchPage extends React.Component<Props, State> {
             orderby={this.state.orderby}
             onChange={(name) => this.orderChange(name)}
           />
-          {["photo", "album"].includes(type) ? (
+          {["photo"].includes(type) ? (
             <PriceFilter
               min={priceMin}
               max={priceMax}
