@@ -6,6 +6,7 @@ import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
 import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import Tags from "../../components/TagLinks";
+import LoadingPage from "../../pages/LoadingPage";
 
 interface Props extends RouteComponentProps<MatchParams> {
   isOwner: boolean;
@@ -83,7 +84,7 @@ class AlbumDetails extends React.Component<Props, State> {
 
   render() {
     return this.state.loading ? (
-      <p>Loading...</p>
+      <LoadingPage />
     ) : (
       <div className="createAlbumPage">
         <Container className="mt-5">
