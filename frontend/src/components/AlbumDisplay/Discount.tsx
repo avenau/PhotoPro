@@ -25,7 +25,7 @@ export default function Discount(props: any) {
       <Form.Group controlId="price">
         <Form.Label>Album Discount as a percentage</Form.Label>
         <Form.Control
-          value={props.discountDef}
+          placeholder={props.discountDef}
           type="number"
           onChange={(discount) => {
             discount.preventDefault();
