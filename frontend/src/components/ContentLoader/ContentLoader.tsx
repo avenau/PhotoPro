@@ -122,7 +122,6 @@ export default class ContentLoader extends React.Component<Props, State> {
               this.props.addPhotoId?.(newPhotoId)
             }
             updatePage={this.props.updatePage}
-            // refreshCredits={this.props.refreshCredits}
           />
         );
       case "collectionPhotos":
