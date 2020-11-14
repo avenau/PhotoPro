@@ -113,8 +113,6 @@ export default function ManageAccount(props: any) {
       setFormInput({ ...formInput, password });
     }
     setProfilePic().then((response: any) => {
-      console.log("here");
-      console.log(response);
       setLoading(true);
       axios
         .post("/manageaccount/success", {
@@ -124,12 +122,14 @@ export default function ManageAccount(props: any) {
           extension: response[1] ? response[1] : originalExtension,
           token: localStorage.getItem("token"),
         })
-        .then((r) => {
+        .then((r:any) => {
           if (r.status !== 200) {
             throw new Error();
           }
           setLoading(false);
           const id = localStorage.getItem("u_id");
+          if(r.data.nickname)
+            localStorage.setItem('nickname', r.data.nickname);
           props.history.push(`/user/${id}`);
         })
         .catch(() => {
