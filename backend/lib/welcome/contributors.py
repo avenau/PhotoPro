@@ -20,7 +20,7 @@ def get_popular_contributors_images(artists=10):
     """
     res = PopularUser.objects.aggregate(
         [
-            {"$match": {"likes": {"$gt": 0}}},
+            {"$match": {"likes": {"$gte": 0}}},
             {"$project": {"user": {"$toString": "$user"}, "likes": "$likes"}},
             {"$sort": {"likes": -1, "user": -1}},
             {"$limit": artists},
