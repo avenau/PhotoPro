@@ -1,9 +1,9 @@
+import axios from "axios";
 import React from "react";
 import Image from "react-bootstrap/Image";
 import { Link } from "react-router-dom";
 import Thumbnail from "../../static/catalouge.png";
 import "./AlbumThumbnail.scss";
-import axios from "axios";
 
 interface Props {
   id: string;
