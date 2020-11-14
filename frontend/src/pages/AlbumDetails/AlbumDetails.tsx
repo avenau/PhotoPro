@@ -6,6 +6,7 @@ import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
 import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import Tags from "../../components/TagLinks";
+import LoadingPage from "../../pages/LoadingPage";
 
 interface Props extends RouteComponentProps<MatchParams> {
   isOwner: boolean;
@@ -26,6 +27,8 @@ interface State {
   isOwner: boolean;
   owner: string;
   nickname: string;
+  purchased: boolean;
+  loading: boolean;
 }
 
 class AlbumDetails extends React.Component<Props, State> {
@@ -42,6 +45,8 @@ class AlbumDetails extends React.Component<Props, State> {
       isOwner: !!props.isOwner,
       owner: "",
       nickname: "",
+      purchased: false,
+      loading: true,
     };
   }
 
@@ -65,6 +70,8 @@ class AlbumDetails extends React.Component<Props, State> {
               albumId: res.data.albumId,
               owner: res.data.owner,
               nickname: res.data.nickname,
+              purchased: res.data.purchased,
+              loading: false,
             });
             if (this.state.uId === res.data.owner) {
               this.setState({ isOwner: true });
@@ -76,7 +83,9 @@ class AlbumDetails extends React.Component<Props, State> {
   }
 
   render() {
-    return (
+    return this.state.loading ? (
+      <LoadingPage />
+    ) : (
       <div className="createAlbumPage">
         <Container className="mt-5">
           <h1>{this.state.title}</h1>
@@ -91,6 +100,10 @@ class AlbumDetails extends React.Component<Props, State> {
                 isOwner={this.state.isOwner}
                 owner={this.state.owner}
                 nickname={this.state.nickname}
+                purchased={this.state.purchased}
+                setPurchased={(bool: boolean) =>
+                  this.setState({ purchased: bool })
+                }
               />
             </Col>
             <Col xs={7}>
