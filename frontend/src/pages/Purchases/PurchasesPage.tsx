@@ -56,9 +56,11 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
               </Button>
             </Col>
           </Row>
+          <hr></hr>
           <Row id="purchasesHeading">
             <h1>Your Purchases</h1>
           </Row>
+          <hr></hr>
           <ContentLoader
             query={localStorage.getItem("u_id")!}
             route="/user/purchasedphotos"
