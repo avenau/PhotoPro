@@ -38,6 +38,8 @@ export default class ShowdownBadge extends React.Component<Props, State> {
   }
 
   render() {
+    console.log(this.state);
+
     return this.state.count > 0 ? (
       <div className="showdown-badge">
         <HoverText

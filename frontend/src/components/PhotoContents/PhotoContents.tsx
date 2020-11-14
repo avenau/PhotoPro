@@ -9,6 +9,7 @@ import LikeButton from "../LikeButton";
 import LoadingButton from "../LoadingButton/LoadingButton";
 import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
+import ShowdownBadge from "../Showdown/ShowdownBadge";
 import Tags from "../TagLinks";
 import "./PhotoContents.scss";
 
@@ -22,8 +23,40 @@ interface Props extends RouteComponentProps {
   photoId: string;
   refreshCredits: () => void;
 }
+interface Comment {
+  content: string;
+  datePosted: string;
+  commenter: string;
+  commenter_id: string;
+  exact_time: string;
+  time_after: string;
+  comment_id: string;
+  profile_pic: string[];
+}
 
-class PhotoContents extends React.Component<Props, any> {
+interface State {
+  artistId: string;
+  nickname: string;
+  email: string;
+  title: string;
+  fullPrice: number;
+  discount: number;
+  postedDate: string;
+  likes: number;
+  isLiked: boolean;
+  tags: string[];
+  purchased: boolean;
+  photoB64: string;
+  isArtist: boolean;
+  comments: Comment[];
+  loading: boolean;
+  msg: string;
+  collections: Collection[];
+  downloadBtnLoading: boolean;
+  purchaseBtnLoading: boolean;
+}
+
+class PhotoContents extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -44,13 +77,13 @@ class PhotoContents extends React.Component<Props, any> {
       loading: true,
       msg: "Loading...",
       collections: [],
-      token: localStorage.getItem("token") ? localStorage.getItem("token") : "",
       downloadBtnLoading: false,
       purchaseBtnLoading: false,
     };
   }
 
   componentDidMount() {
+    const token = localStorage.getItem("token");
     axios
       .get("/photodetailspage", {
         params: {
@@ -60,14 +93,12 @@ class PhotoContents extends React.Component<Props, any> {
       })
       .then((res) => {
         document.title = `${res.data.title} | PhotoPro`;
-        const tempComments: string[] = [];
+        const tempComments: Comment[] = [];
         res.data.comments.map((comment: any) =>
           tempComments.push(JSON.parse(comment))
         );
         this.setState({
           comments: tempComments,
-        });
-        this.setState({
           artistId: res.data.artist_id,
           nickname: res.data.artist_nickname,
           email: res.data.artist_email,
@@ -86,7 +117,7 @@ class PhotoContents extends React.Component<Props, any> {
       })
       .catch(() => {});
     if (localStorage.getItem("token")) {
-      const query = `/collection/getall?token=${this.state.token}&photoId=${this.props.photoId}`;
+      const query = `/collection/getall?token=${token}&photoId=${this.props.photoId}`;
       axios
         .get(query)
         .then((res) => {
@@ -260,6 +291,7 @@ class PhotoContents extends React.Component<Props, any> {
                   <h2 className="PhotoTitle">
                     <b>{this.state.title}</b>
                   </h2>
+                  <ShowdownBadge entryId={this.props.photoId} type="photo" />
                 </Row>
                 <Row>
                   by{" "}
@@ -301,6 +333,7 @@ class PhotoContents extends React.Component<Props, any> {
                     <Price
                       fullPrice={this.state.fullPrice}
                       discount={this.state.discount}
+                      className="price"
                     />
                   </Row>
                 ) : (
