@@ -59,6 +59,13 @@ class SearchPage extends React.Component<Props, State> {
     };
   }
 
+  componentDidMount() {
+    const { type } = this.state;
+    document.title = `${
+      type.charAt(0).toUpperCase() + type.slice(1)
+    } Search | PhotoPro`;
+  }
+
   private orderChange(orderid: string) {
     this.setState({ orderby: orderid });
   }

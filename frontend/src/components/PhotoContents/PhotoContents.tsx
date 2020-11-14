@@ -59,6 +59,7 @@ class PhotoContents extends React.Component<Props, any> {
         },
       })
       .then((res) => {
+        document.title = `${res.data.title} | PhotoPro`;
         const tempComments: string[] = [];
         res.data.comments.map((comment: any) =>
           tempComments.push(JSON.parse(comment))

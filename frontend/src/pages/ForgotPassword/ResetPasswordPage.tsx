@@ -1,11 +1,12 @@
+import axios from "axios";
 import React from "react";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import axios from "axios";
 import Jumbotron from "react-bootstrap/Jumbotron";
-import "./ForgotPasswordPage.scss";
 import { Redirect, RouteComponentProps } from "react-router-dom";
+import renderToast from "../../axios";
 import ValidatePassword from "../../components/AccountManagement/ValidatePassword";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
+import "./ForgotPasswordPage.scss";
 
 interface Props extends RouteComponentProps {}
 
@@ -14,6 +15,8 @@ interface State {
   newPassword?: string;
   email?: string;
   validPass?: boolean;
+  submitLoading?: boolean;
+  resendLoading?: boolean;
 }
 
 type LocState = {
@@ -26,6 +29,8 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
     this.state = {
       email: "",
       validPass: false,
+      submitLoading: false,
+      resendLoading: false,
     };
   }
 
@@ -34,11 +39,11 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
     const { code } = this.state;
     const password = this.state.newPassword;
     const { email } = this.state;
-    // TODO replace with toast in axios
     if (!this.state.validPass) {
-      alert("Passwords Don't Match");
+      renderToast("Passwords don't meet the requirements");
       return;
     }
+    this.setState({ submitLoading: true });
     axios
       .post("/passwordreset/reset", {
         reset_code: code,
@@ -46,10 +51,12 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
         email,
       })
       .then(() => {
-        // TODO intermediate confirmation page
         this.props.history.push("/login");
+        this.setState({ submitLoading: false });
       })
-      .catch(() => {});
+      .catch(() => {
+        this.setState({ submitLoading: false });
+      });
   }
 
   private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -63,14 +70,16 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
     email: string
   ) {
     event.preventDefault();
-    // TODO update these notifications with toast
+    this.setState({ resendLoading: true });
     axios
       .post("/passwordreset/request", { email })
       .then(() => {
-        alert("Email Sent");
+        renderToast("Email Sent");
+        this.setState({ resendLoading: false });
       })
       .catch(() => {
-        alert("Failed to send");
+        renderToast("Failed to send");
+        this.setState({ resendLoading: false });
       });
   }
 
@@ -78,6 +87,7 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
     if (this.props.location.state instanceof Object) {
       this.setState({ email: (this.props.location.state as LocState).email });
     }
+    document.title = "Forgot Password | PhotoPro";
   }
 
   render() {
@@ -114,18 +124,31 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
             }}
             required
           />
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>{" "}
-          <Button
-            variant="primary"
-            type="button"
-            onClick={(e) => {
-              this.resendEmail(e, email);
-            }}
-          >
-            Re-send Email
-          </Button>{" "}
+          <div style={{ display: "flex", marginTop: "5px" }}>
+            <LoadingButton
+              variant="primary"
+              type="submit"
+              loading={
+                this.state.submitLoading ? this.state.submitLoading : false
+              }
+              onClick={() => {}}
+              className="mr-2"
+            >
+              Submit
+            </LoadingButton>{" "}
+            <LoadingButton
+              variant="primary"
+              type="button"
+              loading={
+                this.state.resendLoading ? this.state.resendLoading : false
+              }
+              onClick={(e) => {
+                this.resendEmail(e, email);
+              }}
+            >
+              Re-send Email
+            </LoadingButton>{" "}
+          </div>
         </Form>
       </Jumbotron>
     );

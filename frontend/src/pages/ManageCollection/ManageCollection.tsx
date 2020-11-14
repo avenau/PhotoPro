@@ -1,12 +1,11 @@
+import axios from "axios";
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import axios from "axios";
-
-import Title from "../../components/PhotoEdit/Title";
+import { RouteComponentProps } from "react-router-dom";
 import Tags from "../../components/PhotoEdit/Tags";
+import Title from "../../components/PhotoEdit/Title";
 
 interface Props extends RouteComponentProps<MatchParams> {}
 interface MatchParams {
@@ -14,10 +13,8 @@ interface MatchParams {
 }
 
 interface State {
-  uId: string;
   token: string;
   title: string;
-  discount: number;
   tags: string[];
   collectionId?: string;
   private: boolean;
@@ -28,10 +25,8 @@ class ManageCollection extends React.Component<Props, State> {
     super(props);
     const collectionId = this.props.match.params.collection_id;
     this.state = {
-      uId: String(localStorage.getItem("u_id")),
       token: String(localStorage.getItem("token")),
       title: "",
-      discount: 0,
       tags: [],
       collectionId,
       private: true,
@@ -48,12 +43,12 @@ class ManageCollection extends React.Component<Props, State> {
   getCollection() {
     const { token } = this.state;
     const { collectionId } = this.state;
-    if (this.state.collectionId != "") {
+    if (this.state.collectionId !== "") {
       axios
         .get(`/collection/get?token=${token}&collectionId=${collectionId}`)
         .then((res) => {
-          console.log(res);
           if (res.data) {
+            document.title = `Manage ${res.data.tile} | PhotoPro`;
             this.setState({
               title: res.data.title,
               tags: res.data.tags,
@@ -77,7 +72,7 @@ class ManageCollection extends React.Component<Props, State> {
         collectionId: this.state.collectionId,
         private: this.state.private,
       })
-      .then((res) => {
+      .then(() => {
         this.props.history.push(`/collection/${this.state.collectionId}`);
       })
       .catch();
@@ -94,7 +89,7 @@ class ManageCollection extends React.Component<Props, State> {
   }
 
   getButton() {
-    if (this.state.collectionId == "") {
+    if (this.state.collectionId === "") {
       return (
         <Button id="createButton" className="mt-2" type="submit">
           Create Collection
@@ -135,7 +130,11 @@ class ManageCollection extends React.Component<Props, State> {
                 checked={this.state.private}
                 type="checkbox"
                 label="Make collection private"
-                onClick={() => this.setState({ private: !this.state.private })}
+                onClick={() =>
+                  this.setState((prevState) => ({
+                    private: !prevState.private,
+                  }))
+                }
               />
             </Form.Group>
             {this.getButton()}

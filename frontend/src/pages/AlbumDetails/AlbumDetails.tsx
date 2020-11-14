@@ -1,11 +1,11 @@
-import React from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { Container, Row, Col, Card } from "react-bootstrap";
 import axios from "axios";
-import Tags from "../../components/TagLinks";
+import React from "react";
+import { Col, Container, Row } from "react-bootstrap";
+import { RouteComponentProps } from "react-router-dom";
+import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
 import ContentLoader from "../../components/ContentLoader/ContentLoader";
-import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
+import Tags from "../../components/TagLinks";
 
 interface Props extends RouteComponentProps<MatchParams> {
   isOwner: boolean;
@@ -52,11 +52,12 @@ class AlbumDetails extends React.Component<Props, State> {
   private getAlbum() {
     const { albumId } = this.state;
     const { token } = this.state;
-    if (this.state.albumId != "") {
+    if (this.state.albumId !== "") {
       axios
         .get(`/album?token=${token}&album_id=${albumId}`)
         .then((res) => {
           if (res.data) {
+            document.title = `${res.data.tile} | PhotoPro`;
             this.setState({
               title: res.data.title,
               discount: res.data.discount,
@@ -65,7 +66,7 @@ class AlbumDetails extends React.Component<Props, State> {
               owner: res.data.owner,
               nickname: res.data.nickname,
             });
-            if (this.state.uId == res.data.owner) {
+            if (this.state.uId === res.data.owner) {
               this.setState({ isOwner: true });
             }
           }

@@ -1,12 +1,11 @@
+import axios from "axios";
 import React from "react";
-import { RouteChildrenProps } from "react-router-dom";
-import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import axios from "axios";
-import Toolbar from "../../components/Toolbar/Toolbar";
+import { RouteChildrenProps } from "react-router-dom";
 import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import "./PurchasesPage.css";
 
@@ -20,6 +19,7 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
 
   componentDidMount() {
     const token = localStorage.getItem("token");
+    document.title = "Purchases | PhotoPro";
     axios
       .get("/userdetails", {
         params: {

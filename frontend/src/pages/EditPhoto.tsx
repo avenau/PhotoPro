@@ -23,10 +23,9 @@ export default function EditPhoto(props: any) {
   const [tags, setTags] = useState<string[]>();
   const [discount, setDiscount] = useState<number>();
   const [albums, setAlbums] = useState<string[]>();
-  const [metadata, setMetaData] = useState<string>();
 
   const { params } = props.match;
-  const [photoId, setPhotoId] = useState(Object.values(params)[0] as string);
+  const [photoId] = useState(Object.values(params)[0] as string);
 
   const [imagePreview, setPreview] = useState<string>();
   const [modalSave, setModalSave] = useState(false);
@@ -123,7 +122,6 @@ export default function EditPhoto(props: any) {
         setTags(response.data.tags);
         setAlbums(response.data.albums);
         setDiscount(response.data.discount);
-        setMetaData(response.data.metadata);
 
         setOriginal({
           oTitle: response.data.title,
@@ -134,6 +132,7 @@ export default function EditPhoto(props: any) {
         // Set image preview
         setPreview(response.data.metadata + response.data.photoStr);
         setLoading(false);
+        document.title = `Manage ${response.data.title} | PhotoPro`;
       })
       .catch(() => {
         props.history.goBack();

@@ -45,6 +45,7 @@ export default function ManageAccount(props: any) {
 
   useEffect(() => {
     getUserInfo();
+    document.title = "Manage Account | PhotoPro";
   }, []);
   const getUserInfo = () => {
     const token = localStorage.getItem("token");

@@ -1,38 +1,46 @@
+import axios from "axios";
 import React from "react";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import axios from "axios";
 import Jumbotron from "react-bootstrap/Jumbotron";
-import "./ForgotPasswordPage.scss";
 import { RouteChildrenProps } from "react-router-dom";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
+import "./ForgotPasswordPage.scss";
 
 interface Props extends RouteChildrenProps {}
 
 interface State {
   email?: string;
+  loading?: boolean;
 }
 
 export default class ForgotPasswordPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = {};
+    this.state = {
+      loading: false,
+    };
+  }
+
+  componentDidMount() {
+    document.title = "Forgot Password | PhotoPro";
   }
 
   private handleSubmit(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
     const { email } = this.state;
+    this.setState({ loading: true });
     axios
       .post("/passwordreset/request", { email })
-      .then((r) => {
-        if (r.status !== 200) {
-          throw new Error();
-        }
+      .then(() => {
+        this.setState({ loading: false });
         this.props.history.push({
           pathname: "/forgotpassword/reset",
           state: { email },
         });
       })
-      .catch((e) => console.log(e));
+      .catch(() => {
+        this.setState({ loading: false });
+      });
   }
 
   private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -62,9 +70,14 @@ export default class ForgotPasswordPage extends React.Component<Props, State> {
               }
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
+          <LoadingButton
+            variant="primary"
+            type="submit"
+            loading={this.state.loading ? this.state.loading : false}
+            onClick={() => {}}
+          >
             Submit
-          </Button>
+          </LoadingButton>
         </Form>
       </Jumbotron>
     );
