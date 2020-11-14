@@ -1,0 +1,31 @@
+.artist-thumbnail {
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  justify-content: center;
+  display: flex;
+  object-fit: cover;
+}
+.artist-overlay {
+  background-color: rgba(0, 0, 0, 0.75);
+  width: 100%;
+  height: 100%;
+  color: white;
+  font-weight: bold;
+  font-size: 1.3rem;
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  text-align: center;
+  align-items: center;
+  border-radius: 50%;
+  &:hover {
+    opacity: 1;
+  }
+}
+
