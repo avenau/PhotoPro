@@ -40,20 +40,18 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
             <Col xs={9}>
               <Jumbotron>
                 <h1>You have {this.state.credits} Credits.</h1>
-                <p>You need more.</p>
                 <Button href="/purchases/buycredits" size="lg">
                   Buy Credits
                 </Button>
+                <Button
+                  href="/purchases/refundcredits"
+                  variant="danger"
+                  size="lg"
+                  className="m-2"
+                >
+                  Refund Credits
+                </Button>
               </Jumbotron>
-            </Col>
-            <Col>
-              <Button
-                href="/purchases/refundcredits"
-                size="sm"
-                variant="danger"
-              >
-                Refund Credits
-              </Button>
             </Col>
           </Row>
           <Row id="purchasesHeading">
@@ -63,6 +61,7 @@ class PurchasesPage extends React.Component<RouteChildrenProps, any> {
             query={localStorage.getItem("u_id")!}
             route="/user/purchasedphotos"
             type="photo"
+            noContentMessage="You have not purchased any photos yet."
           />
         </Container>
       </div>

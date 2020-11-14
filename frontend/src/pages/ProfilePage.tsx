@@ -203,6 +203,7 @@ class ProfilePage extends React.Component<Props, State> {
                 route="/user/photos"
                 type="photo"
                 refreshCredits={this.props.refreshCredits}
+                noContentMessage="You have not posted any photos."
               />
             </Tab>
             <Tab eventKey="albums" title="Albums" unmountOnExit>
@@ -210,6 +211,7 @@ class ProfilePage extends React.Component<Props, State> {
                 query={this.state.userId}
                 route="/user/albums"
                 type="album"
+                noContentMessage="You have not created any Albums."
               />
             </Tab>
             <Tab eventKey="collections" title="Collections" unmountOnExit>
@@ -217,6 +219,7 @@ class ProfilePage extends React.Component<Props, State> {
                 query={this.state.userId}
                 route="/user/collections"
                 type="collection"
+                noContentMessage="You have not created any Collections."
               />
             </Tab>
             {isCurrentUser ? (
@@ -225,6 +228,7 @@ class ProfilePage extends React.Component<Props, State> {
                   query={this.state.userId}
                   route="/user/following"
                   type="user"
+                  noContentMessage="You are not following any Contributors."
                 />
               </Tab>
             ) : (

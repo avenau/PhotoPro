@@ -27,6 +27,7 @@ class PopularContributors extends Component<any, any> {
             query=""
             route="/welcome/popularcontributors"
             type="artist"
+            noContentMessage="There are currently no popular Contributors"
           />
         </div>
       </Container>
