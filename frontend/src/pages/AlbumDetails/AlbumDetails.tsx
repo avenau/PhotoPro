@@ -119,6 +119,11 @@ class AlbumDetails extends React.Component<Props, State> {
               </Container>
             </Col>
           </Row>
+          <hr></hr>
+          <Row id="the-photos-heading">
+            <h1>This Album's Photos</h1>
+          </Row>
+          <hr></hr>
           <ContentLoader
             query={this.state.albumId}
             route="/album/photos"

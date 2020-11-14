@@ -112,6 +112,11 @@ class CollectionDetails extends React.Component<Props, State> {
               </Container>
             </Col>
           </Row>
+          <hr></hr>
+          <Row id="the-photos-heading">
+            <h1>This Collection's Photos</h1>
+          </Row>
+          <hr></hr>
           <ContentLoader
             query={this.state.collectionId}
             route="/collection/photos"
