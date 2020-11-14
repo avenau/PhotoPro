@@ -67,6 +67,9 @@ def user_search(data):
                     "location": 1,
                     "created": 1,
                     "following": {"$in": ["$_id", following]},
+                    "contributor": {
+                        "$cond": [{"$gt": [{"$size": "$posts"}, 0]}, True, False]
+                    },
                     "profilePic": "$profile_pic",
                     "id": {"$toString": "$_id"},
                     "_id": 0,
