@@ -1,9 +1,6 @@
 import React from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./PhotoDetails.scss";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import PhotoContents from "../../components/PhotoContents/PhotoContents";
+import "./PhotoDetails.scss";
 
 interface Props {
   refreshCredits: () => void;

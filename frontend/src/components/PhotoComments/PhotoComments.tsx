@@ -114,7 +114,7 @@ export default function PhotoComments(props: CommentProps) {
                 {limitMessage}
               </Form.Text>
             </Col>
-            <Col>
+            <Col md="auto">
               <Button
                 disabled={validComment}
                 variant="primary"
