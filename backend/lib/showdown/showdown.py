@@ -57,7 +57,6 @@ class Showdown(Document):
         Get the winner of the current showdown
         """
         if self.winner:
-            print("----------------------------")
             return self.winner
         return self.get_prev_winner()
 

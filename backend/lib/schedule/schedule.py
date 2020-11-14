@@ -35,8 +35,6 @@ def create_showdown(prev_showdown):
     Create a new showdown entry
     """
 
-    print("Creating new showdown")
-
     participants = []
     showdown = Showdown(
         start_date=datetime.now(),

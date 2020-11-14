@@ -98,7 +98,6 @@ def get_photo():
     photoStr: str
     """
     r = request.args.to_dict()
-    print(r)
     try:
         with open(f"./backend/images/{r['filename']}", "rb") as f:
             img = f.read()
@@ -124,7 +123,6 @@ def get_iamges():
     images: zip file
     """
     r = request.args.to_dict()
-    print(r)
     try:
         memory_file = BytesIO()
         with zipfile.ZipFile(memory_file, "w") as zf:
@@ -137,7 +135,6 @@ def get_iamges():
             memory_file, attachment_filename="images.zip", as_attachment=True
         )
     except Exception as e:
-        print(e)
         abort(404)
 
 
@@ -156,7 +153,6 @@ def test_secret():
     Use this decorator to verify the token is
     valid and matches the secret
     """
-    print("YAY")
     return dumps({"success": "success"})
 
 

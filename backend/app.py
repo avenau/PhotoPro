@@ -1848,7 +1848,6 @@ def _update_collection():
     private: boolean
     tags: string[]
     """
-    print("past token decorator")
     params = request.form.to_dict()
     token = params["token"]
     collection_id = params["collectionId"]

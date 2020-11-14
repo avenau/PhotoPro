@@ -35,7 +35,6 @@ export default class AlbumThumbnail extends React.Component<Props, State> {
         },
       })
       .then((res) => {
-        console.log(res.data);
         if (res.data.thumbnail !== "") {
           this.setState({ albumThumbnail: res.data.thumbnail });
         }

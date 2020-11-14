@@ -23,7 +23,6 @@ def get_profile_details(data):
         raise Error.UserDNE("User you're looking for doesn't exist.")
 
     following = profile_owner in following
-    print(following)
     return {
         "fname": profile_owner.get_fname(),
         "lname": profile_owner.get_lname(),
@@ -38,14 +37,14 @@ def get_profile_details(data):
 
 
 def user_photo_search(data):
-    '''
+    """
     @param data{
         offset: int
         limit: int
         token: string
         query: string
     }
-    '''
+    """
     try:
         req_user = get_uid(data["token"])
     except:
@@ -94,14 +93,14 @@ def user_photo_search(data):
 
 
 def user_collection_search(data):
-    '''
+    """
     @param data{
         offset: int
         limit: int
         token: string
         query: string
     }
-    '''
+    """
     try:
         req_user = get_uid(data["token"])
     except:
