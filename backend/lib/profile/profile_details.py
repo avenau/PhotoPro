@@ -38,6 +38,14 @@ def get_profile_details(data):
 
 
 def user_photo_search(data):
+    '''
+    @param data{
+        offset: int
+        limit: int
+        token: string
+        query: string
+    }
+    '''
     try:
         req_user = get_uid(data["token"])
     except:
@@ -86,15 +94,31 @@ def user_photo_search(data):
 
 
 def user_collection_search(data):
+    '''
+    @param data{
+        offset: int
+        limit: int
+        token: string
+        query: string
+    }
+    '''
     try:
         req_user = get_uid(data["token"])
     except:
         req_user = ""
+
+    # If anonymouse user, everything that is public by the queries user
+    if req_user == "":
+        query = [{"private": False}]
+    # If logged in user, everything that is public AND private IF the user
+    # created it
+    else:
+        query = [{"private": False}, {"created_by": ObjectId(req_user)}]
     res = Collection.objects.aggregate(
         [
             {
                 "$match": {
-                    "$or": [{"private": False}, {"created_by": ObjectId(req_user)}],
+                    "$or": query,
                     "created_by": ObjectId(data["query"]),
                 }
             },
