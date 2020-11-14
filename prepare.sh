@@ -1,6 +1,7 @@
 #!/bin/bash
 
 local=0
+dev=0
 
 for arg in $@
 do
@@ -9,10 +10,16 @@ do
     local=1
     continue
   fi
+  if [ "$arg" = "-d" ]
+  then
+    dev=1
+    continue
+  fi
   if [ "$arg" = "-h" ] || [ "$arg" = "--help" ]
   then
     echo "Usage: prepare.sh [OPTION]"
-    echo "  -l,         Only install but don't build production"
+    echo "  -d,         Only install but don't build production"
+    echo "  -l,         Download images from the remote filesystem"
     echo "  -h, --help  Show help options"
     exit 0
   fi
@@ -33,6 +40,16 @@ then
 fi
 
 if [ $local -eq 1 ]
+then
+  ./utils/download_fs.sh
+  if [ $? -ne 0 ]
+  then
+    echo "Something went wrong with the filesystem download..."
+    exit 1
+  fi
+fi
+
+if [ $dev -eq 1 ]
 then
   exit 0
 fi
