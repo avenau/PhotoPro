@@ -17,6 +17,8 @@ interface AlbumDisplayProps extends RouteComponentProps {
   isOwner: boolean;
   owner: string;
   nickname: string;
+  purchased: boolean;
+  setPurchased: (b: boolean) => void;
 }
 
 interface AlbumDisplayState {
@@ -44,23 +46,23 @@ class AlbumDisplay extends React.Component<
     };
   }
 
-  componentDidMount() {
-    this.checkIfPurchased();
-  }
+  // componentDidMount() {
+  //   this.checkIfPurchased();
+  // }
 
-  checkIfPurchased() {
-    const token = localStorage.getItem("token")
-      ? localStorage.getItem("token")
-      : "";
-    axios
-      .get(`/album/checkpurchased?token=${token}&albumId=${this.state.albumId}`)
-      .then((res) => {
-        if (res.data.purchased) {
-          this.setState({ purchased: true });
-        }
-      })
-      .catch(() => {});
-  }
+  // checkIfPurchased() {
+  //   const token = localStorage.getItem("token")
+  //     ? localStorage.getItem("token")
+  //     : "";
+  //   axios
+  //     .get(`/album/checkpurchased?token=${token}&albumId=${this.state.albumId}`)
+  //     .then((res) => {
+  //       if (res.data.purchased) {
+  //         this.setState({ purchased: true });
+  //       }
+  //     })
+  //     .catch(() => {});
+  // }
 
   purchaseAlbum() {
     const token = localStorage.getItem("token")
@@ -72,7 +74,7 @@ class AlbumDisplay extends React.Component<
         albumId: this.state.albumId,
       })
       .then((res) => {
-        this.setState({ purchased: true });
+        this.props.setPurchased(true);
         window.location.reload();
       })
       .catch(() => {});
@@ -89,7 +91,7 @@ class AlbumDisplay extends React.Component<
         </div>
         {this.props.isOwner ? (
           <></>
-        ) : this.state.purchased ? (
+        ) : this.props.purchased ? (
           <p>You own all the photos in this album!</p>
         ) : (
           <Button

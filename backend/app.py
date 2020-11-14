@@ -2002,6 +2002,10 @@ def _get_album():
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=request.args.get("album_id"))
 
+    purchased = all(
+        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos()
+    )
+
     return {
         "title": _album.get_title(),
         "discount": _album.get_discount(),
@@ -2009,6 +2013,7 @@ def _get_album():
         "albumId": album_id,
         "owner": str(_album.get_created_by().get_id()),
         "nickname": str(_album.get_created_by().get_nickname()),
+        "purchased": purchased,
     }
 
 
@@ -2037,25 +2042,6 @@ def _album_thumbnail():
     except:
         u_id = ""
     return dumps(catalogue_thumbnail(_album, u_id))
-
-
-@app.route("/album/checkpurchased", methods=["GET"])
-def _check_puchased():
-    """
-    Check if the album has already been purchased
-
-    """
-
-    token = request.args.get("token")
-    album_id = request.args.get("albumId")
-    _user = user.User.objects.get(id=token_functions.get_uid(token))
-    _album = album.Album.objects.get(id=request.args.get("albumId"))
-
-    purchased = all(
-        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos()
-    )
-    return dumps({"purchased": purchased})
-
 
 @app.route("/album/delete", methods=["DELETE"])
 @validate_token
