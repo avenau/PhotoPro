@@ -93,14 +93,14 @@ export default class LoginPage extends React.Component<
                 </a>
               </Col>
               <Col>
-              <LoadingButton 
-                loading={this.state.btnLoading}
-                type="submit"
-                size="lg"
-                onClick={(e)=>{return}}
-              >
-                Log In
-              </LoadingButton>
+                <LoadingButton
+                  loading={this.state.btnLoading}
+                  type="submit"
+                  size="lg"
+                  onClick={(e) => {}}
+                >
+                  Log In
+                </LoadingButton>
               </Col>
             </Row>
           </Form>
