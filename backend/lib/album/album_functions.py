@@ -8,7 +8,6 @@ from bson.objectid import ObjectId
 from lib.token_functions import get_uid
 import lib.photo.photo as photo
 from lib.user.user import User
-from lib.album.album import Album
 
 
 def update_album(_album, title, discount, tags):
@@ -73,7 +72,8 @@ def album_photo_search(data):
     remove_photo = []
     for result in res:
         cur_photo = photo.Photo.objects.get(id=result["id"])
-        result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
+        result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(
+            req_user)
 
         if cur_photo in purchased:
             # Someone who has purchased a photo, should still be able to
