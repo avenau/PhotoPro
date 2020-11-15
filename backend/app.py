@@ -1546,6 +1546,7 @@ def _photo_liked():
 
 
 @app.route("/photo_details/like_photo", methods=["POST"])
+@validate_token
 def _like_photo():
     """
     Description
