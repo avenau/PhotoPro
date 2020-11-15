@@ -24,6 +24,18 @@ import lib.photo.validation as validation
 class Photo(Document):
     """
     Photo definition and methods
+    title: string
+    price: int
+    albums: [Album]
+    collections: [Collection]
+    tags: [string]
+    metadata: string
+    discount: int
+    posted: datetime
+    user: User
+    likes: int
+    comments: [Comment]
+    deleted: boolean
     """
 
     # Title of the photo
@@ -31,28 +43,35 @@ class Photo(Document):
     # Price of the photo
     price = IntField(required=True, validation=validation.validate_price)
     # List of Albums references that the photo is associated with
-    albums = ListField(ReferenceField("album.Album"))
+    albums = ListField(
+        ReferenceField("album.Album"), validation=validation.validate_albums
+    )
     # List of Collection references that the photo is associated with
-    collections = ListField(ReferenceField("collection.Collection"))
+    collections = ListField(
+        ReferenceField("collection.Collection"),
+        validation=validation.validate_collections,
+    )
     # List of Tags, updated to be unique on save
     tags = ListField(StringField(), validation=validation.validate_tags)
     # Metadata of the photo
-    metadata = StringField()
+    metadata = StringField(validation=validation.validate_metadata)
     # Discounted price of the photo
     discount = IntField(default=0, validation=validation.validate_discount)
     # Posted date of the photo.
-    posted = DateTimeField(required=True)
+    posted = DateTimeField(required=True, validation=validation.validate_posted)
     # User reference to the owner of the photo
-    user = ReferenceField("user.User")
+    user = ReferenceField("user.User", validation=validation.validate_user)
     # Photo's extension
     extension = StringField(validation=validation.validate_extension)
     # Number of likes of the photo
-    likes = IntField(default=0)
+    likes = IntField(default=0, validation=validation.validate_likes)
     # List of Comments associated with the photo
     # comments = ListField(ObjectIdField())
-    comments = ListField(ReferenceField("comment.Comment"))
+    comments = ListField(
+        ReferenceField("comment.Comment"), validation=validation.validate_comments
+    )
     # Whether the photo is deleted or not
-    deleted = BooleanField(default=False)
+    deleted = BooleanField(default=False, validation=validation.validate_deleted)
     # Metadata of the photo {collection: collection-name}
     meta = {"collection": "photos"}
 
@@ -69,12 +88,22 @@ class Photo(Document):
         """
         # Ensure unique
         self.tags = set(tags).union(set(self.tags))
+        self.update_tags()
+
+    def set_tags(self, tags):
+        """
+        Add a list of tags
+        @params tags: list
+        """
+        self.tags = set(tags)
+        self.update_tags()
 
     def add_tag(self, tag):
         """
         Add an individual tag
         """
-        self.tags = set(self.tags).add(tag)
+        self.tags = set(self.tags).add(tag.lower())
+        self.update_tags()
 
     def get_tags(self):
         """
@@ -87,7 +116,10 @@ class Photo(Document):
         """
         Ensure that all tags are unique
         """
-        self.tags = set(self.tags)
+        tags = []
+        for tag in self.tags:
+            tags.append(tag.lower())
+        self.tags = set(tags)
 
     def set_title(self, title):
         """
@@ -113,11 +145,11 @@ class Photo(Document):
         """
         return self.price
 
-    def add_album(self, album):
+    def add_album(self, new_album):
         """
         Add album to photo albums list
         """
-        self.albums.append(album)
+        self.albums.append(new_album)
 
     def set_albums(self, albums):
         """
@@ -135,13 +167,14 @@ class Photo(Document):
         # Update list of albums for current photo
         # Add photo to albums in list
         album_replace = []
-        for id in albums:
-            album_obj = album.Album.objects.get(id=id)
-            album_replace.append(album_obj)
-            if self not in album_obj.photos:
-                # Add photo to Album document
-                album_obj.add_photo(self)
-                album_obj.save()
+        for _id in albums:
+            album_obj = album.Album.objects.get(id=_id)
+            if album_obj:
+                album_replace.append(album_obj)
+                if self not in album_obj.photos:
+                    # Add photo to Album document
+                    album_obj.add_photo(self)
+                    album_obj.save()
 
         self.albums = album_replace
         self.save()
@@ -345,16 +378,15 @@ class Photo(Document):
             this_user = user.User.objects.get(id=u_id)
             if self in this_user.get_all_purchased() or this_user == self.get_user():
                 return [metadata, find_photo(f"{self.get_id()}{extension}"), extension]
-            else:
-                if extension == ".svg":
-                    metadata = metadata.replace("svg+xml", "png")
-                    extension = ".png"
+            if extension == ".svg":
+                metadata = metadata.replace("svg+xml", "png")
+                extension = ".png"
 
-                return [
-                    metadata,
-                    find_photo(f"{self.get_id()}_w{extension}"),
-                    extension,
-                ]
+            return [
+                metadata,
+                find_photo(f"{self.get_id()}_w{extension}"),
+                extension,
+            ]
         except:
             if extension == ".svg":
                 metadata = metadata.replace("svg+xml", "png")
@@ -370,6 +402,9 @@ class Photo(Document):
         return this_user == self.get_user()
 
     def is_owned(self, req_user):
+        """
+        @param req_user:mongoengine.Document.User
+        """
         try:
             return (self in req_user.get_all_purchased()) or (
                 self.is_photo_owner(req_user)

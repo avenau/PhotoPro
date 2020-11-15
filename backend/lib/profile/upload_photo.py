@@ -7,12 +7,15 @@ from io import BytesIO
 import base64
 from PIL import Image
 
+
 def extension_to_mimetype(extension):
     """
     Return mimetype based on given extension
 
     The extensions within the if statements will get converted
     otherwise return the input.
+    @param: extension:string
+    return: mime:string
     """
     mime = ""
     if extension == ".jpg" or extension == ".jpeg":
@@ -26,10 +29,14 @@ def extension_to_mimetype(extension):
 
     return mime
 
+
 def update_user_thumbnail(base64_image, extension):
     """
     MAIN CALLABALE FUNCTION
     Modified by Allan to take a base64 string as opposed to url
+    @param: base64_image:string
+    @param: extension:string
+    return: tuple(string, string)
     """
     mime = extension_to_mimetype(extension)
     base64_image = base64_image.split(",")[1]

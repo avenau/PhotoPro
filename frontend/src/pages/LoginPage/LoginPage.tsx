@@ -7,7 +7,6 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import axios from "axios";
 import { RouteChildrenProps } from "react-router-dom";
-import Toolbar from "../../components/Toolbar/Toolbar";
 
 export default class LoginPage extends React.Component<
   RouteChildrenProps,
@@ -18,12 +17,11 @@ export default class LoginPage extends React.Component<
     this.state = {
       email: "",
       password: "",
-      isLoggedIn: false,
     };
   }
 
-  handleLoginClick() {
-    this.setState({ isLoggedIn: true });
+  componentDidMount() {
+    document.title = "Login | PhotoPro";
   }
 
   handleSubmit(e: React.FormEvent<HTMLElement>) {
@@ -39,12 +37,9 @@ export default class LoginPage extends React.Component<
         localStorage.setItem("token", data.token);
         localStorage.setItem("u_id", data.u_id);
         localStorage.setItem("nickname", data.nickname);
-        this.handleLoginClick();
         this.props.history.push("/");
       })
-      .catch((e) => {
-        console.log(e);
-      });
+      .catch(() => {});
   }
 
   handleChange(event: any) {
@@ -91,7 +86,6 @@ export default class LoginPage extends React.Component<
                   Forgot your password? Click here.
                 </a>
               </Col>
-              <Col />
               <Col>
                 <Button variant="primary" type="submit" size="lg">
                   Log In

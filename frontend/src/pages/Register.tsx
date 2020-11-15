@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import Container from "react-bootstrap/Container";
 import axios from "axios";
+import React, { useState, useEffect } from "react";
+import Container from "react-bootstrap/Container";
 import { RouteChildrenProps } from "react-router-dom";
-import Toolbar from "../components/Toolbar/Toolbar";
 import UserDetails from "../components/AccountManagement/UserDetails";
 import countries from "../constants";
 
 export default function Register(props: RouteChildrenProps) {
+  useEffect(() => {
+    document.title = "Register | PhotoPro";
+  });
   const [validateFeedback, setFeedback] = useState(false);
 
   // Form input
@@ -20,7 +22,7 @@ export default function Register(props: RouteChildrenProps) {
   });
 
   // Placeholder user details
-  const [oDetails, setODetails] = useState({
+  const [oDetails] = useState({
     fname: "Enter first name",
     lname: "Enter last name",
     email: "Enter email address",
@@ -32,6 +34,8 @@ export default function Register(props: RouteChildrenProps) {
   // Password states
   const [validPassword, setValidPass] = useState(false);
   const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   // Profile pic stuff
   const [profilePicInput, setProfilePicInput] = useState<HTMLElement | null>();
@@ -60,6 +64,7 @@ export default function Register(props: RouteChildrenProps) {
     const form = event.currentTarget;
     event.preventDefault();
     event.stopPropagation();
+    setLoading(true);
     setProfilePic().then((response: any) => {
       if (form.checkValidity() === true) {
         axios
@@ -78,9 +83,15 @@ export default function Register(props: RouteChildrenProps) {
             if (r.status !== 200) {
               throw new Error();
             }
-            props.history.push("/login");
+            setLoading(false);
+            localStorage.setItem("token", r.data.token);
+            localStorage.setItem("u_id", r.data.id);
+            localStorage.setItem("nickname", r.data.nickname);
+            props.history.push("/");
           })
-          .catch(() => {});
+          .catch(() => {
+            setLoading(false);
+          });
         setFeedback(true);
       }
     });
@@ -92,6 +103,7 @@ export default function Register(props: RouteChildrenProps) {
       <Container>
         <h1>Join PhotoPro</h1>
         <UserDetails
+          loading={loading}
           validateFeedback={validateFeedback}
           validPassword={validPassword}
           countries={countries}

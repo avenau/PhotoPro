@@ -1,27 +1,31 @@
+.comment-form {
+  margin-top: 40px;
+}
+
 .PhotoComments {
-    display: flex;
-    justify-content: center;
-    padding-top: 10px;
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+  margin-top: 15px;
+  margin-bottom: 20px;
 }
 
 .CommentDisplay {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .CommentMessages {
-    margin-bottom: 15px;
-    border: black solid 2px;
+  margin-bottom: 15px;
+  border: black solid 2px;
 }
 
 #WarningMessage {
-    color:red;
+  color: red;
 }
 
-.DeleteButton{
-    position: relative;
-    float: right;
-    
+.DeleteButton {
+  position: relative;
+  float: right;
 }

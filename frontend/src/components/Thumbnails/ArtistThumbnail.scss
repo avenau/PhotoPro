@@ -6,6 +6,9 @@
   justify-content: center;
   display: flex;
   object-fit: cover;
+  border-style: solid;
+  border-color: #badcb694;
+  border-width: 5px;
 }
 .artist-overlay {
   background-color: rgba(0, 0, 0, 0.75);

@@ -1,13 +1,13 @@
 import React from "react";
 
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
 import axios from "axios";
-import { RouteComponentProps, withRouter, Link } from 'react-router-dom';
+import { RouteComponentProps, withRouter, Link } from "react-router-dom";
 import Savings from "./Savings";
 import Album from "../PhotoEdit/Album";
-import "./AlbumDisplay.scss"
-
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
+import "./AlbumDisplay.scss";
 
 interface AlbumDisplayProps extends RouteComponentProps {
   albumTitle?: string;
@@ -18,6 +18,8 @@ interface AlbumDisplayProps extends RouteComponentProps {
   isOwner: boolean;
   owner: string;
   nickname: string;
+  purchased: boolean;
+  setPurchased: (b: boolean) => void;
 }
 
 interface AlbumDisplayState {
@@ -27,9 +29,13 @@ interface AlbumDisplayState {
   photos?: string[];
   albumId: string;
   purchased: boolean;
+  purchaseBtnLoading: boolean;
 }
 
-class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState> {
+class AlbumDisplay extends React.Component<
+  AlbumDisplayProps,
+  AlbumDisplayState
+> {
   constructor(props: AlbumDisplayProps) {
     super(props);
     this.state = {
@@ -39,67 +45,53 @@ class AlbumDisplay extends React.Component<AlbumDisplayProps, AlbumDisplayState>
       photos: props.photos,
       albumId: props.albumId,
       purchased: false,
-    }
-  }
-
-  componentDidMount() {
-    this.checkIfPurchased()
-  }
-
-  checkIfPurchased() {
-    const token = localStorage.getItem('token') ? localStorage.getItem('token') : '';
-    axios
-      .get(`/album/checkpurchased?token=${token}&albumId=${this.state.albumId}`)
-      .then((res) => {
-        if (res.data.purchased) {
-          this.setState({ purchased: true })
-        }
-      })
+      purchaseBtnLoading: false,
+    };
   }
 
   purchaseAlbum() {
-    const token = localStorage.getItem('token') ? localStorage.getItem('token') : '';
+    const token = localStorage.getItem("token");
+    this.setState({ purchaseBtnLoading: true });
     axios
       .post("/purchasealbum", {
         token,
-        albumId: this.state.albumId
+        albumId: this.state.albumId,
       })
       .then((res) => {
-        this.setState({ purchased: true })
-        window.location.reload()
+        this.props.setPurchased(true);
+        this.setState({ purchaseBtnLoading: false });
+        window.location.reload();
       })
-      .catch((err) => {
-        console.log(err)
-      })
+      .catch(() => {
+        this.setState({ purchaseBtnLoading: false });
+      });
   }
 
   render() {
     return (
       <>
-        <Link
-          to={`/user/${this.props.owner}`}
-        >
+        <Link to={`/user/${this.props.owner}`}>
           By @​​​​​​​{this.props.nickname}
         </Link>
-        {this.props.isOwner ?
-          <>
-            <div className="album-price-display">
-              <p>{this.props.discount}% off original price!</p>
-              <Savings albumId={this.state.albumId} />
-            </div>
-          </> :
-          this.state.purchased ? 
-            <p>You've purchased this album already</p>
-            :
-            <div className="album-price-display">
-              <p>{this.props.discount}% off original price!</p>
-              <Savings albumId={this.state.albumId} />
-              <Button onClick={() => { this.purchaseAlbum() }}>
-                Purchase
-              </Button>
-            </div>
-        }
-      </>);
+        <div className="album-price-display">
+          <Savings albumId={this.state.albumId} />
+        </div>
+        {this.props.isOwner ? (
+          <></>
+        ) : this.props.purchased ? (
+          <p>You own all the photos in this album!</p>
+        ) : (
+          <LoadingButton
+            loading={this.state.purchaseBtnLoading}
+            onClick={() => {
+              this.purchaseAlbum();
+            }}
+          >
+            Purchase
+          </LoadingButton>
+        )}
+      </>
+    );
   }
 }
-export default withRouter(AlbumDisplay)
+export default withRouter(AlbumDisplay);

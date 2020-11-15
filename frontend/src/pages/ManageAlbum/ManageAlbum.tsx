@@ -1,15 +1,12 @@
+import axios from "axios";
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import axios from "axios";
-
-import Toolbar from "../../components/Toolbar/Toolbar";
+import { RouteComponentProps } from "react-router-dom";
 import Discount from "../../components/AlbumDisplay/Discount";
-
-import Title from "../../components/PhotoEdit/Title";
 import Tags from "../../components/PhotoEdit/Tags";
+import Title from "../../components/PhotoEdit/Title";
 
 interface Props extends RouteComponentProps<MatchParams> {}
 interface MatchParams {
@@ -49,16 +46,20 @@ class ManageAlbum extends React.Component<Props, State> {
   getAlbum() {
     const { token } = this.state;
     const { albumId } = this.state;
-    if (this.state.albumId != "") {
-      axios.get(`/album?token=${token}&album_id=${albumId}`).then((res) => {
-        if (res.data) {
-          this.setState({
-            title: res.data.title,
-            discount: res.data.discount,
-            tags: res.data.tags,
-          });
-        }
-      });
+    if (this.state.albumId !== "") {
+      axios
+        .get(`/album?token=${token}&album_id=${albumId}`)
+        .then((res) => {
+          if (res.data) {
+            document.title = `Manage ${res.data.tile} | PhotoPro`;
+            this.setState({
+              title: res.data.title,
+              discount: res.data.discount,
+              tags: res.data.tags,
+            });
+          }
+        })
+        .catch(() => {});
     }
   }
 
@@ -75,10 +76,10 @@ class ManageAlbum extends React.Component<Props, State> {
         token: this.state.token,
         albumId: this.state.albumId,
       })
-      .then((res) => {
-        this.props.history.push(`/user/${this.state.uId}`);
+      .then(() => {
+        this.props.history.push(`/album/${this.state.albumId}`);
       })
-      .catch();
+      .catch(() => {});
   }
 
   activateCreateButton() {
@@ -92,7 +93,7 @@ class ManageAlbum extends React.Component<Props, State> {
   }
 
   getButton() {
-    if (this.state.albumId == "") {
+    if (this.state.albumId === "") {
       return (
         <Button id="createButton" className="mt-2" type="submit">
           Create Album
@@ -110,7 +111,7 @@ class ManageAlbum extends React.Component<Props, State> {
     return (
       <div className="createAlbumPage">
         <Container className="mt-5">
-          <h1>Album</h1>
+          <h1>Manage your album</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Title
               titleType="Album"

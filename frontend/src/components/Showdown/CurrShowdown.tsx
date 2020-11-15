@@ -1,11 +1,12 @@
 import React from "react";
 import axios from "axios";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import renderToast from "../../axios";
 import PhotoThumbnail from "../Thumbnails/PhotoThumbnail";
 import LoadingButton from "../LoadingButton/LoadingButton";
 
 interface Props extends RouteComponentProps {
-  photos: Photo[] | null;
+  photos: Photo[];
   currentVote: string;
   currentId: string;
   refreshCredits: () => void;
@@ -29,6 +30,7 @@ interface State {
   loading: boolean;
   votes: { [key: string]: number };
   currentVote: string;
+  buyBtnsDisabled: boolean;
 }
 
 class CurrShowdown extends React.Component<Props, State> {
@@ -45,6 +47,7 @@ class CurrShowdown extends React.Component<Props, State> {
       loading: false,
       votes,
       currentVote,
+      buyBtnsDisabled: false,
     };
   }
 
@@ -53,7 +56,6 @@ class CurrShowdown extends React.Component<Props, State> {
     e.stopPropagation();
     const token = localStorage.getItem("token");
     if (token) {
-      // TODO fix request
       this.setState({ loading: true });
       axios
         .post("/showdown/updatelikes", {
@@ -86,7 +88,7 @@ class CurrShowdown extends React.Component<Props, State> {
         });
       }
     } else {
-      alert("You must be logged in to do that");
+      renderToast("You must be logged in to do that");
     }
   }
 
@@ -96,14 +98,22 @@ class CurrShowdown extends React.Component<Props, State> {
     return "Vote";
   }
 
+  setBuyBtnsDisabled = (buyBtnsDisabled: boolean) => {
+    this.setState({ buyBtnsDisabled });
+  };
+
   render() {
     const { photos } = this.props;
     const { votes } = this.state;
     return (
       <div className="showdown-photo-container">
-        {photos !== null ? (
+        {photos.length !== 0 ? (
           photos.map((photo: Photo) => (
-            <div style={{ padding: "10px" }} key={photo.id}>
+            <div
+              style={{ padding: "10px" }}
+              key={photo.id}
+              className="showdown-photo-subcontainer"
+            >
               <div>
                 {votes[photo.participantId]}{" "}
                 {votes[photo.participantId] === 1 ? "Vote" : "Votes"}
@@ -119,6 +129,8 @@ class CurrShowdown extends React.Component<Props, State> {
                 <PhotoThumbnail
                   {...photo}
                   refreshCredits={this.props.refreshCredits}
+                  buyBtnLoading={this.state.buyBtnsDisabled}
+                  setBuyBtnsDisabled={this.setBuyBtnsDisabled}
                 />
               </div>
               <LoadingButton

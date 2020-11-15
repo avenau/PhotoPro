@@ -26,7 +26,7 @@ do
   fi
   if [[ "$arg" =~ ^- ]]
   then
-    echo -e "Unknown option $arg\nUsage: $0 [-d] [-l]" >&2
+    echo -e "Unknown option $arg\nUse --help or -h for more information." >&2
     exit 1
   fi
 done

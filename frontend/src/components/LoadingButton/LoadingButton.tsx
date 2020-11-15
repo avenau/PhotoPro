@@ -13,18 +13,37 @@ export default class LoadingButton extends React.Component<Props> {
   }
 
   render() {
+    const { loading, disabled } = this.props;
     return (
-      <span onClick={this.props.loading ? this.stopPropagation : undefined}>
-        <Button disabled={this.props.loading} {...this.props} loading="">
-          {this.props.loading ? (
-            <Spinner animation="border" role="status" key="spin" size="sm">
-              <span className="sr-only">Loading...</span>
-            </Spinner>
-          ) : (
-            this.props.children
-          )}
+      <div onClick={loading || disabled ? this.stopPropagation : undefined}>
+        <Button
+          disabled={loading}
+          {...this.props}
+          loading=""
+          style={{
+            position: "relative",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <>
+            <div style={{ position: "absolute" }}>
+              <Spinner
+                animation="border"
+                role="status"
+                key="spin"
+                size="sm"
+                hidden={!loading}
+              >
+                <span className="sr-only">Loading...</span>
+              </Spinner>
+            </div>
+            <div style={{ opacity: loading ? 0 : 1 }}>
+              {this.props.children}
+            </div>
+          </>
         </Button>
-      </span>
+      </div>
     );
   }
 }

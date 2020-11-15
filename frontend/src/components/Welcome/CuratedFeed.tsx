@@ -16,9 +16,7 @@ export default function CuratedFeed(props: Props) {
       <Container>
         <h3>Recommended for you</h3>
         {token === null ? (
-          <NoContent
-            message="Create an account today, and we'll curate photos just for you."
-          />
+          <NoContent message="Create an account today, and we'll curate photos just for you." />
         ) : (
           <ContentLoader
             query=""

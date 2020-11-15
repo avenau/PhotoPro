@@ -9,7 +9,10 @@ from lib.user.user import User
 
 
 def do_like(photo):
-    # Get Popular photo and user objects, create them if they don't exit yet
+    """
+    Get Popular photo and user objects, create them if they don't exit yet
+    @param: photo:Document.photo
+    """
     try:
         pop_photo = PopularPhoto.objects.get(photo=photo)
     except:
@@ -29,7 +32,10 @@ def do_like(photo):
 
 
 def do_unlike(photo):
-    # Get Popular photo and user objects, create them if they don't exit yet
+    """
+    Get Popular photo and user objects, create them if they don't exit yet
+    @param: photo:Document.photo
+    """
     try:
         pop_photo = PopularPhoto.objects.get(photo=photo)
     except:

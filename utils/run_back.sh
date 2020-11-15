@@ -3,7 +3,7 @@
 # Help features
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]
 then
-    echo "Usage: prepare.sh [PORT]"
+    echo "Usage: prepare.sh [PORT] [SHOWDOWN-LENGTH]"
     echo "  -h, --help  Show help options"
     exit 0
 fi
@@ -11,8 +11,9 @@ fi
 cd backend
 
 export FLASK_APP=app.py
-export FLASK_ENV=development
+export FLASK_ENV=production
 export BACKEND_PORT=$1
+export SHOWDOWN_LENGTH=$2
 
 # Host 0.0.0.0 is just for the server, you can run host=127.0.0.1 locally
 # Only need to be in venv when installing new packages

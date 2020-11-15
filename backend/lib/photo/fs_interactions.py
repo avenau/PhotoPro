@@ -1,6 +1,6 @@
-'''
+"""
 Filesystem Interactions
-'''
+"""
 
 import os
 import requests
@@ -16,10 +16,8 @@ def save_photo(img_data, filename):
     @param img_data: decoded base 64 image
     @param filename: filename and extension of photo to save
     """
-    data = {"filename": filename, "photo": base64.b64encode(img_data).decode('utf-8')}
-    requests.post(f"{FS_API_URL}/save",
-                  data=data,
-                  headers=headers)
+    data = {"filename": filename, "photo": base64.b64encode(img_data).decode("utf-8")}
+    requests.post(f"{FS_API_URL}/save", data=data, headers=headers)
 
 
 def find_photo(filename):
@@ -28,7 +26,5 @@ def find_photo(filename):
     @param filename: filename and extension of photo to find
     """
     params = {"filename": filename}
-    r = requests.get(f"{FS_API_URL}/get",
-                     params=params,
-                     headers=headers)
+    r = requests.get(f"{FS_API_URL}/get", params=params, headers=headers)
     return r.content.decode("utf-8")

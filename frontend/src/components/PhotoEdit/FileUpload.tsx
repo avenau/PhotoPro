@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 
-interface InterfaceFile {
+interface Props {
   pickedPhoto: (arg0: boolean) => void;
   onChange: (arg0: HTMLElement | null) => void;
   deactivateUploadButton: () => void;
@@ -10,7 +10,7 @@ interface InterfaceFile {
   label: string;
 }
 
-export default function FileUpload(props: InterfaceFile) {
+export default function FileUpload(props: Props) {
   const [fileErrMsg, setErrMsg] = useState("");
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -61,7 +61,7 @@ export default function FileUpload(props: InterfaceFile) {
       <Form.Group>
         <Form.File
           id="photoId"
-          label="Select A Photo"
+          label={props.label}
           accept=".jpeg, .jpg, .png, .svg"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             handleFileChange(e)

@@ -1,15 +1,15 @@
 import axios from "axios";
 import React from "react";
 import { Dropdown } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import Toolbar from "../components/Toolbar/Toolbar";
-import UserHeader from "../components/UserHeader/UserHeader";
 import ContentLoader from "../components/ContentLoader/ContentLoader";
 import CreateCatalogueModal from "../components/ProfilePage/CreateCatalogueModal";
+import UserHeader from "../components/UserHeader/UserHeader";
+import LoadingPage from "./LoadingPage";
 import "./Profile.scss";
 
 interface Props extends RouteComponentProps {
@@ -29,6 +29,9 @@ interface State {
   newAlbum: boolean;
   newCollection: boolean;
   title: string;
+  following: boolean;
+  pageLoading: boolean;
+  contributor: boolean;
 }
 
 class ProfilePage extends React.Component<Props, State> {
@@ -48,27 +51,36 @@ class ProfilePage extends React.Component<Props, State> {
       newAlbum: false,
       newCollection: false,
       title: "",
+      following: false,
+      pageLoading: true,
+      contributor: true,
     };
   }
 
   componentDidMount() {
     this.getUserDetails(this.state.userId);
+    document.title = `User | PhotoPro`;
   }
 
   private getUserDetails(userId: string) {
     axios
-      .get(`/profiledetails?u_id=${userId}`)
+      .get(
+        `/profiledetails?u_id=${userId}&token=${localStorage.getItem("token")}`
+      )
       .then((r) => {
         const newState = this.state as any;
         Object.entries(r.data).forEach((item) => {
           [, newState[item[0]]] = item;
         });
         this.setState(newState);
+        this.setState({ pageLoading: false });
+        document.title = `@${r.data.nickname} | PhotoPro`;
       })
       .catch(() => {
         const newState = this.state as any;
         newState.dne = true;
         this.setState(newState);
+        this.setState({ pageLoading: false });
       });
   }
 
@@ -120,10 +132,12 @@ class ProfilePage extends React.Component<Props, State> {
 
   render() {
     const userId = localStorage.getItem("u_id");
-    const currentUser = this.state.userId === userId;
-    return (
+    const isCurrentUser = this.state.userId === userId;
+    return this.state.pageLoading ? (
+      <LoadingPage />
+    ) : (
       <>
-        <div>
+        <div className="profile-page">
           <Modal
             backdrop="static"
             show={this.state.dne}
@@ -164,7 +178,7 @@ class ProfilePage extends React.Component<Props, State> {
             type="collection"
           />
           <UserHeader
-            currentUser={currentUser}
+            isCurrentUser={isCurrentUser}
             showEdit
             header
             name={`${this.state.fname} ${this.state.lname}`}
@@ -175,6 +189,8 @@ class ProfilePage extends React.Component<Props, State> {
             profilePic={this.state.profilePic}
             userId={this.state.userId}
             className="user-header"
+            following={this.state.following}
+            contributor={this.state.contributor}
           />
           <br />
           <Tabs
@@ -188,6 +204,7 @@ class ProfilePage extends React.Component<Props, State> {
                 route="/user/photos"
                 type="photo"
                 refreshCredits={this.props.refreshCredits}
+                noContentMessage="You have not posted any photos."
               />
             </Tab>
             <Tab eventKey="albums" title="Albums" unmountOnExit>
@@ -195,6 +212,7 @@ class ProfilePage extends React.Component<Props, State> {
                 query={this.state.userId}
                 route="/user/albums"
                 type="album"
+                noContentMessage="You have not created any Albums."
               />
             </Tab>
             <Tab eventKey="collections" title="Collections" unmountOnExit>
@@ -202,24 +220,26 @@ class ProfilePage extends React.Component<Props, State> {
                 query={this.state.userId}
                 route="/user/collections"
                 type="collection"
+                noContentMessage="You have not created any Collections."
               />
             </Tab>
-            {currentUser ? (
+            {isCurrentUser ? (
               <Tab eventKey="following" title="Following" unmountOnExit>
                 <ContentLoader
                   query={this.state.userId}
                   route="/user/following"
                   type="user"
+                  noContentMessage="You are not following any Contributors."
                 />
               </Tab>
             ) : (
               <></>
-              )}
-            {currentUser ? (
+            )}
+            {isCurrentUser ? (
               <Tab title={this.createAddButton()} tabClassName="no-border" />
             ) : (
               <></>
-              )}
+            )}
           </Tabs>
         </div>
       </>

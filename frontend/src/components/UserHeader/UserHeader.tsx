@@ -2,16 +2,17 @@ import _ from "lodash";
 import React from "react";
 import { Image } from "react-bootstrap";
 import { PencilSquare } from "react-bootstrap-icons";
-import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import profilePic from "../../static/profile-pic.png";
 import "./UserHeader.scss";
-import FollowButton from "./FollowButton"
+import FollowButton from "./FollowButton";
+import ShowdownBadge from "../Showdown/ShowdownBadge";
+import HoverText from "../HoverText";
 
 interface Props {
   profilePic?: string[];
   header: boolean;
-  currentUser: boolean;
+  isCurrentUser: boolean;
   showEdit: boolean;
   name: string;
   nickname: string;
@@ -20,6 +21,10 @@ interface Props {
   className: string;
   aboutMe?: string;
   userId: string;
+  following: boolean;
+  contributor?: boolean;
+  followBtnsDisabled?: boolean;
+  setFollowBtnsDisabled?: (set: boolean) => void;
 }
 
 export default class UserHeader extends React.Component<Props> {
@@ -32,49 +37,35 @@ export default class UserHeader extends React.Component<Props> {
 
   /** Return edit button if current user */
   private getEditButton() {
-    if (!this.props.showEdit || !this.props.currentUser) {
+    if (!this.props.showEdit || !this.props.isCurrentUser) {
       return null;
     }
     return (
-      <Link to="/manage_account" className="button-container">
-        <PencilSquare size="2rem" color="#343a40" />
-      </Link>
+      <HoverText
+        id="manage-account-hover"
+        helpfulText="Manage your account details"
+        placement="right"
+      >
+        <Link to="/manage_account" className="button-container">
+          <PencilSquare size="2rem" color="#343a40" />
+        </Link>
+      </HoverText>
     );
   }
 
   /** Return follow button if not current user */
   private getFollowButton() {
-    if (this.props.currentUser) {
+    if (this.props.isCurrentUser) {
       return null;
     }
-
-    /* const alreadyFollowing = false;
-     if (alreadyFollowing) {
-       return (
-         <Button
-           className="button-container"
-           variant="outline-primary"
-           onClick={(e) => {
-             e.stopPropagation();
-           }}
-         >
-           Following
-         </Button>
-       );
-     }
-     return (
-       <Button
-         className="button-container"
-         onClick={(e) => {
-           e.stopPropagation();
-         }}
-       >
-         Follow
-       </Button>
-     ); */
     return (
-      <FollowButton currentUser={this.props.currentUser} userId={this.props.userId} />
-    )
+      <FollowButton
+        following={this.props.following}
+        userId={this.props.userId}
+        followBtnsDisabled={this.props.followBtnsDisabled}
+        setFollowBtnsDisabled={this.props.setFollowBtnsDisabled}
+      />
+    );
   }
 
   private getPic() {
@@ -105,10 +96,11 @@ export default class UserHeader extends React.Component<Props> {
         </div>
         <div className="text-container">
           {this.props.header ? (
-            <h2>{this.props.name}</h2>
+            <h3>{this.props.name}</h3>
           ) : (
             <h4>{this.props.name}</h4>
-            )}
+          )}
+          {this.props.contributor ? <b>Contributor</b> : <b>Explorer</b>}
           <div>@{this.props.nickname}</div>
           <div>Based in {this.props.location}</div>
           <div>{this.props.email}</div>
@@ -116,8 +108,9 @@ export default class UserHeader extends React.Component<Props> {
             <div>About me: {this.props.aboutMe}</div>
           ) : (
             <></>
-            )}
+          )}
         </div>
+        <ShowdownBadge type="user" entryId={this.props.userId} />
         {this.getEditButton()}
         {this.getFollowButton()}
       </div>

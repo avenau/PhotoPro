@@ -17,11 +17,12 @@ class Config(object):
     MAIL_USERNAME = "photopro.jajac@gmail.com"
     MAIL_PASSWORD = "photoprodemopassword"
     PORT_NUMBER = os.getenv("BACKEND_PORT")
+    SHOWDOWN_LENGTH = os.getenv("SHOWDOWN_LENGTH")
     MAIL_SUPPRESS_SEND = False
 
 
 class DevelopmentConfig(Config):
-    MONGO_URI = local_db 
+    MONGO_URI = local_db
     TESTING = True
     DEBUG = True
 

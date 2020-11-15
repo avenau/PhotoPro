@@ -1,11 +1,12 @@
-import React from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { Container, Row, Col, Card } from "react-bootstrap";
 import axios from "axios";
-import Tags from "../../components/Tags";
-import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
-import ContentLoader from '../../components/ContentLoader/ContentLoader';
+import React from "react";
+import { Col, Container, Row } from "react-bootstrap";
+import { RouteComponentProps } from "react-router-dom";
 import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
+import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
+import ContentLoader from "../../components/ContentLoader/ContentLoader";
+import Tags from "../../components/TagLinks";
+import LoadingPage from "../../pages/LoadingPage";
 
 interface Props extends RouteComponentProps<MatchParams> {
   isOwner: boolean;
@@ -26,6 +27,8 @@ interface State {
   isOwner: boolean;
   owner: string;
   nickname: string;
+  purchased: boolean;
+  loading: boolean;
 }
 
 class AlbumDetails extends React.Component<Props, State> {
@@ -42,6 +45,8 @@ class AlbumDetails extends React.Component<Props, State> {
       isOwner: !!props.isOwner,
       owner: "",
       nickname: "",
+      purchased: false,
+      loading: true,
     };
   }
 
@@ -52,11 +57,12 @@ class AlbumDetails extends React.Component<Props, State> {
   private getAlbum() {
     const { albumId } = this.state;
     const { token } = this.state;
-    if (this.state.albumId != "") {
+    if (this.state.albumId !== "") {
       axios
         .get(`/album?token=${token}&album_id=${albumId}`)
         .then((res) => {
           if (res.data) {
+            document.title = `${res.data.title} | PhotoPro`;
             this.setState({
               title: res.data.title,
               discount: res.data.discount,
@@ -64,8 +70,10 @@ class AlbumDetails extends React.Component<Props, State> {
               albumId: res.data.albumId,
               owner: res.data.owner,
               nickname: res.data.nickname,
+              purchased: res.data.purchased,
+              loading: false,
             });
-            if (this.state.uId == res.data.owner) {
+            if (this.state.uId === res.data.owner) {
               this.setState({ isOwner: true });
             }
           }
@@ -75,7 +83,9 @@ class AlbumDetails extends React.Component<Props, State> {
   }
 
   render() {
-    return (
+    return this.state.loading ? (
+      <LoadingPage />
+    ) : (
       <div className="createAlbumPage">
         <Container className="mt-5">
           <h1>{this.state.title}</h1>
@@ -90,20 +100,29 @@ class AlbumDetails extends React.Component<Props, State> {
                 isOwner={this.state.isOwner}
                 owner={this.state.owner}
                 nickname={this.state.nickname}
+                purchased={this.state.purchased}
+                setPurchased={(bool: boolean) =>
+                  this.setState({ purchased: bool })
+                }
               />
             </Col>
             <Col xs={7}>
               <Container>
-                <p><b>Tags</b></p>
+                <p>
+                  <b>Tags</b>
+                </p>
                 <Container>
                   <Row>
-                    { this.state.tags.map((tag) => (
-                      <Tags key={tag} tagName={tag} type="album" />
+                    {this.state.tags.length > 0 ? (
+                      this.state.tags.map((tag) => (
+                        <Tags key={tag} tagName={tag} type="album" />
                       ))
-                    }
+                    ) : (
+                      <p>No album tags found</p>
+                    )}
                   </Row>
                 </Container>
-              
+
                 <AlbumHeader
                   isOwner={this.state.isOwner}
                   catalogueId={this.state.albumId}
@@ -113,11 +132,18 @@ class AlbumDetails extends React.Component<Props, State> {
               </Container>
             </Col>
           </Row>
+          <hr />
+          <Row id="the-photos-heading">
+            <h1>This Album&apos;s Photos</h1>
+          </Row>
+          <hr />
           <ContentLoader
             query={this.state.albumId}
-            route='/album/photos'
+            route="/album/photos"
             type="albumPhotos"
-            updatePage={() => {window.location.reload()}}
+            updatePage={() => {
+              window.location.reload();
+            }}
           />
         </Container>
       </div>

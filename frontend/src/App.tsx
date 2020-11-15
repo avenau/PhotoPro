@@ -5,15 +5,18 @@ import "./App.css";
 import "./axios";
 import AnonRoute from "./components/AnonRoute/AnonRoute";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import DoesNotExistPage from "./pages/DoesNotExistPage";
 import Toolbar from "./components/Toolbar/Toolbar";
+import AlbumDetails from "./pages/AlbumDetails/AlbumDetails";
+import CollectionDetails from "./pages/CollectionDetails/CollectionDetails";
+import DoesNotExistPage from "./pages/DoesNotExistPage";
 import EditPhoto from "./pages/EditPhoto";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ManageAccount from "./pages/ManageAccount/ManageAccount";
-// import ManageConfirmation from "./pages/ManageAccount/ManageConfirmation";
+import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
+import ManageCollection from "./pages/ManageCollection/ManageCollection";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
 import ProfilePage from "./pages/ProfilePage";
 import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
@@ -22,9 +25,7 @@ import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
 import Register from "./pages/Register";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import UploadPage from "./pages/UploadPage/UploadPage";
-import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
-import AlbumDetails from "./pages/AlbumDetails/AlbumDetails";
-import CollectionDetails from "./pages/CollectionDetails/CollectionDetails";
+import LoadingPage from "./pages/LoadingPage";
 
 interface Props {}
 
@@ -66,7 +67,7 @@ class App extends React.Component<Props, State> {
           },
         })
         .then((res) => {
-          if (this.state.credits != res.data.credits) {
+          if (this.state.credits !== res.data.credits) {
             this.setState({ credits: res.data.credits });
           }
         })
@@ -87,7 +88,6 @@ class App extends React.Component<Props, State> {
         })
         .then((res) => {
           this.setState({ credits: res.data.credits });
-          console.log(res.data.credits);
         })
         .catch(() => {});
     }
@@ -95,7 +95,7 @@ class App extends React.Component<Props, State> {
 
   render() {
     return this.state.loading ? (
-      <div>Loading...</div>
+      <LoadingPage />
     ) : (
       <Router forceRefresh>
         <Toolbar credits={this.state.credits} />
@@ -127,20 +127,12 @@ class App extends React.Component<Props, State> {
             path="/forgotpassword/reset"
             component={ResetPasswordPage}
           />
-          <Route
-            exact
-            path="/forgotpassword/reset"
-            component={ResetPasswordPage}
-          />
           <Route path="/user/:user_id">
-            {" "}
             <ProfilePage refreshCredits={this.refreshCredits} />
           </Route>
           <Route path="/search/:type">
             <SearchPage refreshCredits={this.refreshCredits} />
           </Route>
-          {/* component={SearchPage} /> */}
-
           <Route valid={this.state.valid} path="/photo/:photo_id">
             <PhotoDetails refreshCredits={this.refreshCredits} />
           </Route>
@@ -153,10 +145,18 @@ class App extends React.Component<Props, State> {
           <ProtectedRoute
             valid={this.state.valid}
             exact
+            path="/collection/manage/:collection_id"
+            component={ManageCollection}
+          />
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
             path="/album/:album_id"
             component={AlbumDetails}
           />
-          <Route
+          <ProtectedRoute
+            valid={this.state.valid}
+            exact
             path="/collection/:collection_id"
             component={CollectionDetails}
           />
@@ -196,7 +196,6 @@ class App extends React.Component<Props, State> {
             component={RefundCreditsPage}
           />
           <Route path="*" component={DoesNotExistPage} />
-          {/* <ProtectedRoute path="/photo/:photo_id" component={DummyFeed} /> */}
         </Switch>
       </Router>
     );

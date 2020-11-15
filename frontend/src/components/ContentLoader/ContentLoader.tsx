@@ -29,6 +29,7 @@ interface Props {
   addPhotoId?: (newPhotoId: string) => void;
   updatePage?: () => void;
   refreshCredits?: () => void;
+  noContentMessage?: string;
 }
 
 interface State {
@@ -42,11 +43,13 @@ interface State {
   filetype: string;
   priceMin: number;
   priceMax: number;
+  noContentMessage: string;
 }
 
 export default class ContentLoader extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+    const noContent = "No results were found :("
     this.state = {
       query: this.props.query,
       loading: false,
@@ -58,6 +61,7 @@ export default class ContentLoader extends React.Component<Props, State> {
       filetype: this.props.filetype !== undefined ? this.props.filetype : "all",
       priceMin: this.props.priceMin !== undefined ? this.props.priceMin : 0,
       priceMax: this.props.priceMax !== undefined ? this.props.priceMax : -1,
+      noContentMessage: this.props.noContentMessage ? this.props.noContentMessage : noContent
     };
   }
 
@@ -92,13 +96,11 @@ export default class ContentLoader extends React.Component<Props, State> {
     // Add message for the user if there are no results
     if (this.state.results.length < 1 && this.state.atEnd) {
       if (this.props.curatedFeed === true) {
-        return <NoContent 
-          message="Like and search more photos for a curated feed. We won't recommend photos that you have already purchased."
-        />
+        return (
+          <NoContent message="Like and search more photos for a curated feed. We won't recommend photos that you have already purchased." />
+        );
       }
-      return <NoContent 
-        message="No results were found :("
-      />
+      return <NoContent message={this.state.noContentMessage} />;
     }
 
     switch (this.props.type) {
@@ -127,7 +129,6 @@ export default class ContentLoader extends React.Component<Props, State> {
               this.props.addPhotoId?.(newPhotoId)
             }
             updatePage={this.props.updatePage}
-            // refreshCredits={this.props.refreshCredits}
           />
         );
       case "collectionPhotos":

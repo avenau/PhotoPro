@@ -27,6 +27,7 @@ class PopularImages extends Component<Props, any> {
             type="photo"
             popular
             refreshCredits={this.props.refreshCredits}
+            noContentMessage="There are currently no Popular Images. Try liking more photos"
           />
         </Container>
       </div>

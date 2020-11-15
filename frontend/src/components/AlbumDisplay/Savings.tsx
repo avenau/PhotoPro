@@ -1,9 +1,9 @@
 import React from "react";
-import Card from 'react-bootstrap/Card';
+import Card from "react-bootstrap/Card";
 import axios from "axios";
 
 interface AlbumSavingsProps {
-    albumId: string;
+  albumId: string;
 }
 
 interface AlbumSavingsState {
@@ -15,10 +15,11 @@ interface AlbumSavingsState {
   albumId: string;
 }
 
-
-
-export default class AlbumSavings extends React.Component<AlbumSavingsProps, AlbumSavingsState> {
-  constructor(props: AlbumSavingsProps){
+export default class AlbumSavings extends React.Component<
+  AlbumSavingsProps,
+  AlbumSavingsState
+> {
+  constructor(props: AlbumSavingsProps) {
     super(props);
     this.state = {
       albumId: props.albumId,
@@ -27,34 +28,53 @@ export default class AlbumSavings extends React.Component<AlbumSavingsProps, Alb
       savings: 0,
       yourPrice: 0,
       rawAlbumDiscount: 0,
-    }
+    };
   }
 
-  componentDidMount(){
-    this.getPrice()
+  componentDidMount() {
+    this.getPrice();
   }
 
-  getPrice(){
-    const token = localStorage.getItem('token') ? localStorage.getItem('token') : '';
+  getPrice() {
+    const token = localStorage.getItem("token")
+      ? localStorage.getItem("token")
+      : "";
     axios
       .get(`/album/price?token=${token}&albumId=${this.state.albumId}`)
       .then((res) => {
-        console.log(res)
         this.setState({
           yourPrice: res.data.yourPrice,
           originalPrice: res.data.albumPrice,
           rawAlbumDiscount: res.data.rawAlbumDiscount,
-          savings: res.data.savings
-        })
+          savings: res.data.savings,
+        });
       })
+      .catch(() => {});
   }
 
   render() {
-    return (<>
-      <p><b>Originally, you would pay:</b> {this.state.originalPrice} CR </p>
-      <p><b>After discount, you would pay:</b> {this.state.yourPrice} CR</p>
-      <p><b>You save:</b> {this.state.savings} CR </p>
-    </>
-    )
+    return (
+      <>
+        {this.state.rawAlbumDiscount > 0 ? (
+          <>
+            <p>{this.state.rawAlbumDiscount}% off original price!</p>
+            <p>
+              <b>Originally, you would pay:</b> {this.state.originalPrice} CR{" "}
+            </p>
+            <p>
+              <b>After discount, you pay:</b> {this.state.yourPrice} CR
+            </p>
+            <p>
+              <b>You save:</b> {this.state.savings} CR{" "}
+            </p>
+          </>
+        ) : (
+          <p>
+            <p>There is no discount on this album</p>
+            <b>Total Price:</b> {this.state.originalPrice}
+          </p>
+        )}
+      </>
+    );
   }
 }

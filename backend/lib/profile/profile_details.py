@@ -7,9 +7,62 @@ from lib.collection.collection import Collection
 from lib.photo.photo import Photo
 from lib.token_functions import get_uid
 from lib.user.user import User
+from lib import Error
+
+
+def get_profile_details(data):
+    """
+    Get details to display on a user's profile page
+    @param: data:{token:string, u_id:string}
+    return: result:Object
+    """
+    try:
+        searcher = User.objects.get(id=get_uid(data["token"]))
+        following = searcher.get_following()
+    except:
+        following = []
+
+    try:
+        profile_owner = User.objects.get(id=data["u_id"])
+    except:
+        raise Error.UserDNE("User you're looking for doesn't exist.")
+
+    following = profile_owner in following
+    return {
+        "fname": profile_owner.get_fname(),
+        "lname": profile_owner.get_lname(),
+        "nickname": profile_owner.get_nickname(),
+        "location": profile_owner.get_location(),
+        "email": profile_owner.get_email(),
+        "profilePic": profile_owner.get_profile_pic(),
+        "aboutMe": profile_owner.get_about_me(),
+        "following": following,
+        "contributor": bool(profile_owner.get_posts()),
+    }
 
 
 def user_photo_search(data):
+    """
+    Get the photos posted by a user. Do not return photos which have been deleted
+    @param data{
+        offset: int
+        limit: int
+        token: string
+        query: string
+    }
+    return: [{
+                "title": string,
+                "price": int,
+                "discount": int,
+                "extension": string,
+                "posted": Date,
+                "user": string,
+                "id": string,
+                "metadata": string,
+                "photoStr": string,
+                "owns": boolean
+            }]:list(obj)
+    """
     try:
         req_user = get_uid(data["token"])
     except:
@@ -50,20 +103,46 @@ def user_photo_search(data):
         cur_photo = Photo.objects.get(id=result["id"])
         result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
         if req_user:
-            result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (cur_photo.is_photo_owner(req_user_obj))
+            result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (
+                cur_photo.is_photo_owner(req_user_obj)
+            )
 
     return res
 
+
 def user_collection_search(data):
+    """
+    Get collections of a user to display on the profile page
+    @param data{
+        offset: int
+        limit: int
+        token: string
+        query: string
+    }
+    return: [{"title": string,
+            "authorId": string,
+            "created": Date,
+            "id": string,
+            "author": string
+            }]:list(Object)
+    """
     try:
         req_user = get_uid(data["token"])
     except:
         req_user = ""
+
+    # If anonymouse user, everything that is public by the queries user
+    if req_user == "":
+        query = [{"private": False}]
+    # If logged in user, everything that is public AND private IF the user
+    # created it
+    else:
+        query = [{"private": False}, {"created_by": ObjectId(req_user)}]
     res = Collection.objects.aggregate(
         [
             {
                 "$match": {
-                    "$or": [{"private": False}, {"created_by": ObjectId(req_user)}],
+                    "$or": query,
                     "created_by": ObjectId(data["query"]),
                 }
             },
@@ -80,7 +159,6 @@ def user_collection_search(data):
             {"$limit": data["limit"]},
         ]
     )
-    # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
     for result in res:
         result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
@@ -88,6 +166,24 @@ def user_collection_search(data):
 
 
 def user_album_search(data):
+    """
+    Get the albums which a user has created
+    @param: data{
+        offset: int
+        limit: int
+        token: string
+        query: string
+    }
+    return: [{
+                "title": string,
+                "authorId": string,
+                "created": Date,
+                "discount": int,
+                "id": string,
+                "author": string
+            },
+    ]
+    """
     res = Album.objects.aggregate(
         [
             {"$match": {"created_by": ObjectId(data["query"])}},
@@ -105,7 +201,6 @@ def user_album_search(data):
             {"$limit": data["limit"]},
         ]
     )
-    # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
     for result in res:
         result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
@@ -113,28 +208,43 @@ def user_album_search(data):
 
 
 def user_following_search(data):
+    """
+    Get a list of users which the user follows 
+    (user of profile page being displayed)
+    @param: data{
+        offset: int
+        limit: int
+        token: string
+        query: string
+    }
+    return: response:Object 
+    """
     try:
-        req_user = get_uid(data["token"])
+        u_id = get_uid(data["token"])
     except:
-        req_user = ""
-    res = User.objects().aggregate(
-        [
-            {"$unwind": "$following"},
-            {
-                "$project": {
-                    "fname": 1,
-                    "lname": 1,
-                    "nickname": 1,
-                    "email": 1,
-                    "location": 1,
-                    "created": 1,
-                    "id": {"$toString": "$_id"},
-                    "_id": 0,
-                }
-            },
-            {"$skip": data["offset"]},
-            {"$limit": data["limit"]},
-        ]
-    )
-    res = loads(dumps(res))
+        raise Error.UserDNE(
+            "Sorry, couldn't identify you. Try logging out and back in."
+        )
+
+    skip = data["offset"]
+    limit = data["limit"]
+    user_obj = User.objects.get(id=u_id)
+    following_list = user_obj.get_following()[skip : skip + limit]
+
+    res = []
+    for followed in following_list:
+        tmp_dict = {}
+        tmp_dict["id"] = str(followed.get_id())
+        tmp_dict["nickname"] = followed.get_nickname()
+        tmp_dict["fname"] = followed.get_fname()
+        tmp_dict["lname"] = followed.get_lname()
+        tmp_dict["email"] = followed.get_email()
+        tmp_dict["location"] = followed.get_location()
+        tmp_dict["profilePic"] = followed.get_profile_pic()
+        tmp_dict["contributor"] = bool(followed.get_posts())
+        tmp_dict["following"] = (
+            followed in user_obj.get_following()[skip : skip + limit]
+        )
+        res.append(tmp_dict)
+
     return res

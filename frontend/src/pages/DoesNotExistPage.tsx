@@ -1,6 +1,10 @@
-import React from 'react';
+import React from "react";
 
 export default class DoesNotExistPage extends React.Component {
+  componentDidMount() {
+    document.title = "Page Does Not Exist | PhotoPro";
+  }
+
   render() {
     return (
       <>

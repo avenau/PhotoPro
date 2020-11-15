@@ -6,7 +6,6 @@ import OrderBy from "../../components/Search/OrderBy";
 import PriceFilter from "../../components/Search/PriceFilter";
 import Search from "../../components/Search/Search";
 import TypeFilter from "../../components/Search/TypeFilter";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import "./SearchPage.scss";
 
@@ -60,6 +59,13 @@ class SearchPage extends React.Component<Props, State> {
     };
   }
 
+  componentDidMount() {
+    const { type } = this.state;
+    document.title = `${
+      type.charAt(0).toUpperCase() + type.slice(1)
+    } Search | PhotoPro`;
+  }
+
   private orderChange(orderid: string) {
     this.setState({ orderby: orderid });
   }
@@ -86,7 +92,7 @@ class SearchPage extends React.Component<Props, State> {
             <div />
           )}
           <Search
-            prefill={search}
+            prefill={decodeURIComponent(search)}
             type={type}
             order={orderby}
             filetype={filetype}
@@ -98,7 +104,7 @@ class SearchPage extends React.Component<Props, State> {
             orderby={this.state.orderby}
             onChange={(name) => this.orderChange(name)}
           />
-          {["photo", "album"].includes(type) ? (
+          {["photo"].includes(type) ? (
             <PriceFilter
               min={priceMin}
               max={priceMax}

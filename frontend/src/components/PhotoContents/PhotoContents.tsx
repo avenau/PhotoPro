@@ -1,15 +1,17 @@
-import React from "react";
-import { RouteComponentProps, withRouter, Link } from "react-router-dom";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import axios from "axios";
+import React from "react";
+import { Col, Container, Image, Row } from "react-bootstrap";
+import { ArrowDownSquare, CartPlus, PencilSquare } from "react-bootstrap-icons";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import BookmarkButton from "../BookmarkButton";
+import HoverText from "../HoverText";
 import LikeButton from "../LikeButton";
-import "./PhotoContents.scss";
-
+import LoadingButton from "../LoadingButton/LoadingButton";
 import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
-import Tags from "../Tags";
-import LoadingButton from "../LoadingButton/LoadingButton";
+import ShowdownBadge from "../Showdown/ShowdownBadge";
+import Tags from "../TagLinks";
+import "./PhotoContents.scss";
 
 interface Collection {
   title: string;
@@ -21,9 +23,40 @@ interface Props extends RouteComponentProps {
   photoId: string;
   refreshCredits: () => void;
 }
+interface Comment {
+  content: string;
+  datePosted: string;
+  commenter: string;
+  commenter_id: string;
+  exact_time: string;
+  time_after: string;
+  comment_id: string;
+  profile_pic: string[];
+}
 
+interface State {
+  artistId: string;
+  nickname: string;
+  email: string;
+  title: string;
+  fullPrice: number;
+  discount: number;
+  postedDate: string;
+  likes: number;
+  isLiked: boolean;
+  tags: string[];
+  purchased: boolean;
+  photoB64: string;
+  isArtist: boolean;
+  comments: Comment[];
+  loading: boolean;
+  msg: string;
+  collections: Collection[];
+  downloadBtnLoading: boolean;
+  purchaseBtnLoading: boolean;
+}
 
-class PhotoContents extends React.Component<Props, any> {
+class PhotoContents extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -44,8 +77,6 @@ class PhotoContents extends React.Component<Props, any> {
       loading: true,
       msg: "Loading...",
       collections: [],
-      token: localStorage.getItem("token") ? localStorage.getItem("token") : "",
-      uId: localStorage.getItem("u_id") ? localStorage.getItem("u_id") : "",
       downloadBtnLoading: false,
       purchaseBtnLoading: false,
     };
@@ -60,14 +91,13 @@ class PhotoContents extends React.Component<Props, any> {
         },
       })
       .then((res) => {
-        const tempComments: string[] = [];
+        document.title = `${res.data.title} | PhotoPro`;
+        const tempComments: Comment[] = [];
         res.data.comments.map((comment: any) =>
           tempComments.push(JSON.parse(comment))
         );
         this.setState({
           comments: tempComments,
-        });
-        this.setState({
           artistId: res.data.artist_id,
           nickname: res.data.artist_nickname,
           email: res.data.artist_email,
@@ -84,14 +114,7 @@ class PhotoContents extends React.Component<Props, any> {
           loading: false,
         });
       })
-      .catch(() => { });
-    if (localStorage.getItem("token")) {
-      const query = `/collection/getall?token=${this.state.token}&photoId=${this.props.photoId}`
-      axios.get(query)
-        .then((res) => {
-          this.setState({ collections: res.data.map((obj: Collection) => obj) });
-        });
-    }
+      .catch(() => {});
   }
 
   purchasePhoto(e: any) {
@@ -150,117 +173,177 @@ class PhotoContents extends React.Component<Props, any> {
   returnDynamicButtons() {
     if (this.state.isArtist) {
       return (
-        <div>
-          <LoadingButton
-            loading={this.state.downloadBtnLoading}
-            onClick={(e) => this.downloadPhoto(e)}
-          >
-            Download Full Photo
-          </LoadingButton>
-          <Button href={`/edit/${this.props.photoId}`} className="ml-1">
-            Manage Photo
-          </Button>
-        </div>
+        <>
+          <Row>
+            <HoverText
+              id="downloadButton"
+              helpfulText="Download"
+              placement="bottom"
+            >
+              <LoadingButton
+                loading={this.state.downloadBtnLoading}
+                onClick={(e) => this.downloadPhoto(e)}
+                variant="light"
+                className="m-2 ml-4"
+              >
+                <ArrowDownSquare />
+              </LoadingButton>
+            </HoverText>
+            <HoverText
+              id="manageButton"
+              helpfulText="Manage Photo"
+              placement="bottom"
+            >
+              <LoadingButton
+                loading={false}
+                onClick={() =>
+                  this.props.history.push(`/edit/${this.props.photoId}`)
+                }
+                variant="light"
+                className="m-2"
+              >
+                <PencilSquare />
+              </LoadingButton>
+            </HoverText>
+          </Row>
+        </>
       );
     }
     if (this.state.purchased) {
       return (
-        <div>
-          <LoadingButton
-            loading={this.state.downloadBtnLoading}
-            onClick={(e) => this.downloadPhoto(e)}
+        <Row>
+          <HoverText
+            id="downloadButton"
+            helpfulText="Download"
+            placement="bottom"
           >
-            Download Full Photo
-          </LoadingButton>
-        </div>
+            <LoadingButton
+              loading={this.state.downloadBtnLoading}
+              onClick={(e) => this.downloadPhoto(e)}
+              className="m-2 ml-4"
+              variant="light"
+            >
+              <ArrowDownSquare />
+            </LoadingButton>
+          </HoverText>
+        </Row>
       );
     }
     return (
-      <div>
-        <LoadingButton
-          loading={this.state.downloadBtnLoading}
-          onClick={(e) => this.downloadPhoto(e)}
-        >
-          Download Watermarked Photo
-        </LoadingButton>
-        <LoadingButton
-          className="ml-1"
-          loading={this.state.purchaseBtnLoading}
-          onClick={(e) => this.purchasePhoto(e)}
-        >
-          Purchase Photo
-        </LoadingButton>
-        <Price
-          fullPrice={this.state.fullPrice}
-          discount={this.state.discount}
-        />
-      </div>
+      <>
+        <Row>
+          <HoverText
+            id="downloadWatermarked"
+            helpfulText="Download Watermarked Photo"
+            placement="bottom"
+          >
+            <LoadingButton
+              loading={this.state.downloadBtnLoading}
+              onClick={(e) => this.downloadPhoto(e)}
+              className="m-2 ml-4"
+              variant="light"
+            >
+              <ArrowDownSquare />
+            </LoadingButton>
+          </HoverText>
+          <HoverText
+            id="purchasePhoto"
+            helpfulText="Purchase Photo"
+            placement="bottom"
+          >
+            <LoadingButton
+              className="m-2"
+              loading={this.state.purchaseBtnLoading}
+              onClick={(e) => this.purchasePhoto(e)}
+              variant="light"
+            >
+              <CartPlus />
+            </LoadingButton>
+          </HoverText>
+        </Row>
+      </>
     );
   }
 
   render() {
     return !this.state.loading ? (
-      <div className="PhotoContents">
-        <Container className="container">
-          <Row className="PhotoRow">
-            <img className="actualPhoto" src={this.state.photoB64} />
-          </Row>
-          <Row className="PhotoInteraction">
-            <div className="LikeButton">
-              <LikeButton
-                p_id={this.props.photoId}
-                like_count={this.state.likes}
-                isLiked={this.state.isLiked}
-              />
+      <div className="photo-contents">
+        <Container>
+          <div className="top-container">
+            <div className="photo-component">
+              <Image className="actualPhoto" src={this.state.photoB64} fluid />
             </div>
-            <div className="BookmarkButton" data-type="toggle" title="Add to Collection">
-              <BookmarkButton
-                pId={this.props.photoId}
-                collections={this.state.collections}
-              />
+            <div>
+              <div className="photo-info">
+                <Row>
+                  <h2 className="PhotoTitle">
+                    <b>{this.state.title}</b>
+                  </h2>
+                  <ShowdownBadge entryId={this.props.photoId} type="photo" />
+                </Row>
+                <Row>
+                  by{" "}
+                  <a className="mx-1" href={`/user/${this.state.artistId}`}>
+                    {this.state.nickname}
+                  </a>{" "}
+                  on {this.state.postedDate}
+                </Row>
+                <Row>{this.state.email}</Row>
+                <br />
+                <Row>
+                  <Col>
+                    <Row>
+                      <div>
+                        <b>Tags</b> (click tag to search)
+                      </div>
+                    </Row>
+                    <Row>
+                      {this.state.tags.map((tag: string) => (
+                        <Tags key={tag} tagName={tag} type="photo" />
+                      ))}
+                    </Row>
+                  </Col>
+                </Row>
+                <Row className="photo-interactions">
+                  <LikeButton
+                    pId={this.props.photoId}
+                    likeCount={this.state.likes}
+                    isLiked={this.state.isLiked}
+                  />
+                  <BookmarkButton
+                    pId={this.props.photoId}
+                    collections={this.state.collections}
+                  />
+                  {this.returnDynamicButtons()}
+                </Row>
+                {this.state.isArtist || !this.state.purchased ? (
+                  <Row>
+                    <Price
+                      fullPrice={this.state.fullPrice}
+                      discount={this.state.discount}
+                      className="price"
+                    />
+                  </Row>
+                ) : (
+                  <></>
+                )}
+              </div>
             </div>
-
-          </Row>
-          <Row>
-            {this.returnDynamicButtons()}
-          </Row>
-          <div className="ArtistInfo">
-            <Row>
-              <h2 className="PhotoTitle">
-                <b>{this.state.title}</b>
-              </h2>
-            </Row>
-            <Row>
-              by{" "}
-              <a className="mx-1" href={`/user/${this.state.artistId}`}>
-                {this.state.nickname}
-              </a>{" "}
-              on {this.state.postedDate}
-            </Row>
-            <Row>{this.state.email}</Row>
           </div>
-          <Row className="ContentRow">
-            <Col className="Details">
-              <Row>Tags (click tag to search)</Row>
-              <Row>
-                {this.state.tags.map((tag: string) => (
-                  <Tags key={tag} tagName={tag} type="photo" />
-                ))}
-              </Row>
-            </Col>
-          </Row>
         </Container>
-        <PhotoComments
-          p_id={this.props.photoId}
-          comments={this.state.comments}
-        />
+        <Container>
+          <PhotoComments
+            p_id={this.props.photoId}
+            comments={this.state.comments}
+          />
+        </Container>
       </div>
     ) : (
       <div>
         {" "}
         <p>{this.state.msg}</p>{" "}
       </div>
-      );
+    );
   }
 }
 

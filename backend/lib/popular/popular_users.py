@@ -7,6 +7,7 @@ from mongoengine import Document
 from mongoengine import ReferenceField
 
 import lib.user.user as user
+import lib.popular.validation as validation
 
 
 class PopularUser(Document):
@@ -17,7 +18,7 @@ class PopularUser(Document):
     # Which user is being tracked
     user = ReferenceField("user.User")
     # Number of likes received
-    likes = IntField(default=0)
+    likes = IntField(default=0, validation=validation.validate_likes)
 
     meta = {"collection": "popular-users"}
 
@@ -46,7 +47,6 @@ class PopularUser(Document):
         Remove a like - THIS SHOULD ALLOW NEGATIVE VALUES
         """
         self.likes -= 1
-        
 
     def reset_likes(self):
         """

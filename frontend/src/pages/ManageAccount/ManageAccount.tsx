@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
 import UserDetails from "../../components/AccountManagement/UserDetails";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
 import Toolbar from "../../components/Toolbar/Toolbar";
 import countries from "../../constants";
 import "./ManageAccount.scss";
@@ -29,6 +30,8 @@ export default function ManageAccount(props: any) {
   const [validPassword, setValidPass] = useState(true);
   const [password, setPassword] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   // Profile pic stuff
   const [profilePicInput, setProfilePicInput] = useState<HTMLElement | null>();
   const [profilePicPreview, setProfilePicPreview] = useState("");
@@ -42,13 +45,16 @@ export default function ManageAccount(props: any) {
 
   useEffect(() => {
     getUserInfo();
+    document.title = "Manage Account | PhotoPro";
   }, []);
   const getUserInfo = () => {
     const token = localStorage.getItem("token");
     if (token !== null) {
+      setLoading(true);
       axios
         .get(`/userdetails?token=${token}`)
         .then((response) => {
+          setLoading(false);
           setODetails({
             fname: response.data.fname,
             lname: response.data.lname,
@@ -66,7 +72,9 @@ export default function ManageAccount(props: any) {
             setHasProfilePic(true);
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          setLoading(false);
+        });
     }
   };
 
@@ -80,20 +88,24 @@ export default function ManageAccount(props: any) {
     if (event) {
       event.preventDefault();
     }
+    setLoading(true);
 
     axios
-      .post("http://localhost:8001/manageaccount/confirm", {
+      .post("/manageaccount/confirm", {
         password: inputPassword,
         token: localStorage.getItem("token"),
       })
       .then((response) => {
+        setLoading(false);
         if (response.data.password === "true") {
           saveDetails();
         } else {
           setPassFeedback("The password you entered is incorrect!");
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        setLoading(false);
+      });
   }
 
   function saveDetails() {
@@ -101,8 +113,7 @@ export default function ManageAccount(props: any) {
       setFormInput({ ...formInput, password });
     }
     setProfilePic().then((response: any) => {
-      console.log("here");
-      console.log(response);
+      setLoading(true);
       axios
         .post("/manageaccount/success", {
           ...oDetails,
@@ -111,14 +122,20 @@ export default function ManageAccount(props: any) {
           extension: response[1] ? response[1] : originalExtension,
           token: localStorage.getItem("token"),
         })
-        .then((r) => {
+        .then((r:any) => {
           if (r.status !== 200) {
             throw new Error();
           }
+          setLoading(false);
           const id = localStorage.getItem("u_id");
+          if(r.data.nickname)
+            localStorage.setItem('nickname', r.data.nickname);
           props.history.push(`/user/${id}`);
         })
-        .catch(() => {});
+        .catch(() => {
+          setLoading(false);
+          setShow(false);
+        });
       setFeedback(true);
     });
   }
@@ -186,17 +203,25 @@ export default function ManageAccount(props: any) {
               />
               <Form.Text id="passwordFeedback">{passwordFeedback}</Form.Text>
             </Form.Group>
-            <Button variant="primary" type="submit">
-              Save Change
-            </Button>{" "}
-            <Button
-              variant="primary"
-              onClick={() => {
-                setShow(false);
-              }}
-            >
-              Cancel
-            </Button>{" "}
+            <div style={{ display: "flex" }}>
+              <LoadingButton
+                variant="primary"
+                type="submit"
+                onClick={() => {}}
+                loading={loading}
+                className="mr-2"
+              >
+                Save Change
+              </LoadingButton>{" "}
+              <Button
+                variant="danger"
+                onClick={() => {
+                  setShow(false);
+                }}
+              >
+                Cancel
+              </Button>{" "}
+            </div>
           </Form>
         </Modal>
       </Container>

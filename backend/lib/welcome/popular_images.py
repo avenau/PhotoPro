@@ -9,10 +9,12 @@ from bson.json_util import dumps
 def get_popular_images(u_id, offset, limit):
     """
     Get the most popular images from the platform at the moment
-
-     Returns
+    @param: u_id:string
+    @param: offset:int
+    @param: limit:int
+    Returns
     -------
-    {
+    [{
         title : string
         price : int
         discount : int
@@ -21,7 +23,7 @@ def get_popular_images(u_id, offset, limit):
         likes: int
         owns: boolean
         id : string
-    }
+    }]
     """
     res = PopularPhoto.objects.aggregate(
         [
@@ -34,7 +36,7 @@ def get_popular_images(u_id, offset, limit):
     )
 
     res = json.loads(dumps(res))
-    
+
     try:
         # Get purchased photos of register user
         cur_user = User.objects.get(id=u_id)
@@ -42,7 +44,7 @@ def get_popular_images(u_id, offset, limit):
     except:
         # Anonymous user
         purchased = []
-    
+
     deleted_photos = []
 
     for result in res:
@@ -63,7 +65,6 @@ def get_popular_images(u_id, offset, limit):
                 result["owns"] = True
             else:
                 result["owns"] = False
-           
 
     res = [i for i in res if i not in deleted_photos]
     return res

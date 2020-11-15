@@ -14,7 +14,13 @@ def password_reset_request(email):
     """
     Given an email address, if the user is a registered user, semd an email
     with a link that they can access temporarily to change their password
+    @param: email:string
     """
+    try:
+        User.objects.get(email=email)
+    except:
+        return None
+
     reset_code = md5(f"{email}{random()}".encode()).hexdigest()[:6]
     reset_codes.append({"email": email, "reset_code": reset_code})
 
@@ -35,13 +41,20 @@ def password_reset_request(email):
         f"<p>Do not share this code with anyone. This code will remain\
                  valid for "
         "up to 10 minutes, if the code has expired you may repeat the\
-                 process and a new code will be emailed to you.</p></div>"
+                 process and a new code will be emailed to you.</p>"
+        f"<p>If you were not expecting this email, please delete it. Thank you.</p></div>"
     )
 
     return msg
 
 
 def password_reset_reset(email, reset_code, new_password):
+    """
+    Reset the password of a user if the reset code is valid
+    @param: email:string
+    @param: reset_code:string
+    @param: new_password:string
+    """
     if valid_reset_code(email, reset_code):
         try:
             user = User.objects(email=email).first()
@@ -57,6 +70,12 @@ def password_reset_reset(email, reset_code, new_password):
 
 
 def valid_reset_code(email, reset_code):
+    """
+    Check if the reset code is valid
+    @param: email:string
+    @param: reset_code:string
+    return: boolean
+    """
     if reset_codes.count({"email": email, "reset_code": reset_code}) > 0:
         return True
     return False

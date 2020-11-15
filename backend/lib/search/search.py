@@ -4,8 +4,9 @@ Methods relating to getting search results
 from json import loads
 from bson.json_util import dumps
 from bson.objectid import ObjectId
-from lib.album.album import Album
+import urllib.parse
 
+from lib.album.album import Album
 from lib.collection.collection import Collection
 from lib.user.user import User
 from lib.photo.photo import Photo
@@ -16,15 +17,16 @@ from lib.token_functions import get_uid
 def get_sort_method(sortid):
     """
     Get the mongodb sort command associated with the id given
+    @param: sortid:string
     """
     if sortid == "recent":
         return {"$sort": {"created": -1, "id": -1}}
     if sortid == "old":
         return {"$sort": {"created": 1, "id": 1}}
     if sortid == "low":
-        return {"$sort": {"price": 1, "id": 1}}
+        return {"$sort": {"discountedPrice": 1, "id": 1}}
     if sortid == "high":
-        return {"$sort": {"price": -1, "id": -1}}
+        return {"$sort": {"discountedPrice": -1, "id": -1}}
     if sortid == "az":
         return {"$sort": {"title": 1, "nickname": 1, "id": 1}}
     if sortid == "za":
@@ -34,19 +36,26 @@ def get_sort_method(sortid):
 def user_search(data):
     """
     Search user collection
+    @param: data{token: string,
+                offset: int,
+                limit: int,
+                query: string,
+                orderby: string}
+    return: res:list(dict)
     """
+    query = urllib.parse.unquote_plus(data["query"].lower())
+    # Handle anon users with this try-except
+    try:
+        searcher = User.objects.get(id=get_uid(data["token"]))
+        following = searcher.get_following()
+        for idx, followed in enumerate(following):
+            following[idx] = ObjectId(followed.get_id())
+    except:
+        following = []
+
     sort = get_sort_method(data["orderby"])
     res = User.objects.aggregate(
         [
-            {
-                "$match": {
-                    "$or": [
-                        {"fname": {"$regex": data["query"], "$options": "i"}},
-                        {"lname": {"$regex": data["query"], "$options": "i"}},
-                        {"nickname": {"$regex": data["query"], "$options": "i"}},
-                    ]
-                }
-            },
             {
                 "$project": {
                     "fname": 1,
@@ -55,9 +64,63 @@ def user_search(data):
                     "email": 1,
                     "location": 1,
                     "created": 1,
+                    "following": {"$in": ["$_id", following]},
+                    "contributor": {
+                        "$cond": [{"$gt": [{"$size": "$posts"}, 0]}, True, False]
+                    },
                     "profilePic": "$profile_pic",
                     "id": {"$toString": "$_id"},
-                    "_id": 0,
+                    "valid": {
+                        "$or": [
+                            {
+                                "$regexMatch": {
+                                    "input": "$fname",
+                                    "regex": query,
+                                    "options": "i",
+                                }
+                            },
+                            {
+                                "$regexMatch": {
+                                    "input": "$lname",
+                                    "regex": query,
+                                    "options": "i",
+                                }
+                            },
+                            {
+                                "$regexMatch": {
+                                    "input": "$nickname",
+                                    "regex": query,
+                                    "options": "i",
+                                }
+                            },
+                            {
+                                "$regexMatch": {
+                                    "input": query,
+                                    "regex": "$fname",
+                                    "options": "i",
+                                }
+                            },
+                            {
+                                "$regexMatch": {
+                                    "input": query,
+                                    "regex": "$lname",
+                                    "options": "i",
+                                }
+                            },
+                            {
+                                "$regexMatch": {
+                                    "input": query,
+                                    "regex": "$nickname",
+                                    "options": "i",
+                                }
+                            },
+                        ]
+                    },
+                }
+            },
+            {
+                "$match": {
+                    "valid": True,
                 }
             },
             sort,
@@ -72,8 +135,16 @@ def user_search(data):
 def photo_search(data):
     """
     Search photo collection
+    @param: data{token: string,
+                offset: int,
+                limit: int,
+                query: string,
+                orderby: string}
+    return: res:list(dict)
     """
+    query = urllib.parse.unquote_plus(data["query"].lower())
     sort = get_sort_method(data["orderby"])
+
     valid_extensions = [".jpg", ".jpeg", ".png", ".svg"]
     if data["filetype"] == "jpgpng":
         valid_extensions = [".jpg", ".jpeg", ".png"]
@@ -83,9 +154,9 @@ def photo_search(data):
     try:
         req_user = get_uid(data["token"])
         this_user = User.objects.get(id=req_user)
-        if data["query"] != "":
+        if query != "":
             print(this_user.get_searches())
-            this_user.add_search(data["query"])
+            this_user.add_search(query)
             this_user.save()
     except:
         req_user = ""
@@ -94,8 +165,8 @@ def photo_search(data):
 
     if float(data["priceMax"]) != -1:
         price_filter = [
-            {"price": {"$gt": float(data["priceMin"])}},
-            {"price": {"$lt": float(data["priceMax"])}},
+            {"discountedPrice": {"$gt": float(data["priceMin"])}},
+            {"discountedPrice": {"$lt": float(data["priceMax"])}},
         ]
 
     res = Photo.objects.aggregate(
@@ -103,12 +174,12 @@ def photo_search(data):
             {
                 "$match": {
                     "$or": [
-                        {"title": {"$regex": data["query"], "$options": "i"}},
-                        {"tags": {"$in": [data["query"]]}},
+                        {"title": {"$regex": query, "$options": "i"}},
+                        {"tags": {"$in": [query]}},
+                        {"tags": {"$in": query.split(" ")}},
                     ],
                     "extension": {"$in": valid_extensions},
                     "deleted": False,
-                    "$and": price_filter,
                 }
             },
             {
@@ -120,9 +191,24 @@ def photo_search(data):
                     "created": "$posted",
                     "user": {"$toString": "$user"},
                     "id": {"$toString": "$_id"},
+                    # discountedPrice = round(price - (price * discount/100))
+                    "discountedPrice": {
+                        "$round": {
+                            "$subtract": [
+                                "$price",
+                                {
+                                    "$multiply": [
+                                        "$price",
+                                        {"$divide": ["$discount", 100]},
+                                    ]
+                                },
+                            ]
+                        }
+                    },
                     "_id": 0,
                 }
             },
+            {"$match": {"$and": price_filter}},
             sort,
             {"$skip": data["offset"]},
             {"$limit": data["limit"]},
@@ -148,10 +234,18 @@ def photo_search(data):
 def collection_search(data):
     """
     Search collections collection
+    @param: data{token: string,
+                offset: int,
+                limit: int,
+                query: string,
+                orderby: string}
+    return: res:list(dict)
     """
+    query = urllib.parse.unquote_plus(data["query"].lower())
     sort = get_sort_method(data["orderby"])
     try:
         req_user = get_uid(data["token"])
+        req_user = ObjectId(req_user)
     except:
         req_user = ""
     res = Collection.objects.aggregate(
@@ -159,10 +253,11 @@ def collection_search(data):
             {
                 "$match": {
                     "$or": [
-                        {"title": {"$regex": data["query"], "$options": "i"}},
-                        {"tags": {"$in": [data["query"]]}},
+                        {"title": {"$regex": query, "$options": "i"}},
+                        {"tags": {"$in": [query]}},
+                        {"tags": {"$in": query.split(" ")}},
                     ],
-                    "$or": [{"private": False}, {"created_by": ObjectId(req_user)}],
+                    "$or": [{"private": False}, {"created_by": req_user}],
                 }
             },
             {
@@ -179,7 +274,6 @@ def collection_search(data):
             {"$limit": data["limit"]},
         ]
     )
-    # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
     for result in res:
         result["author"] = User.objects.get(id=result["authorId"]).get_nickname()
@@ -190,15 +284,23 @@ def collection_search(data):
 def album_search(data):
     """
     Search albums collection
+    @param: data{token: string,
+                offset: int,
+                limit: int,
+                query: string,
+                orderby: string}
+    return: res:list(dict)
     """
+    query = urllib.parse.unquote_plus(data["query"].lower())
     sort = get_sort_method(data["orderby"])
     res = Album.objects.aggregate(
         [
             {
                 "$match": {
                     "$or": [
-                        {"title": {"$regex": data["query"], "$options": "i"}},
-                        {"tags": {"$in": [data["query"]]}},
+                        {"title": {"$regex": query, "$options": "i"}},
+                        {"tags": {"$in": [query]}},
+                        {"tags": {"$in": query.split(" ")}},
                     ],
                 }
             },
@@ -217,7 +319,6 @@ def album_search(data):
             {"$limit": data["limit"]},
         ]
     )
-    # TODO Possibly return first X photos for thumbnail
     res = loads(dumps(res))
     for result in res:
         result["author"] = User.objects.get(id=result["authorId"]).get_nickname()

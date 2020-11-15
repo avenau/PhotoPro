@@ -66,6 +66,7 @@ from lib.photo_details.photo_details import (
 # Profile
 from lib.profile.upload_photo import update_user_thumbnail
 from lib.profile.profile_details import (
+    get_profile_details,
     user_album_search,
     user_collection_search,
     user_following_search,
@@ -79,13 +80,13 @@ from lib.search.search import album_search, photo_search, user_search, collectio
 import lib.showdown.get_data as showdown_data
 
 # Schedule
-from lib.schedule.schedule import initialise_schedule
+from lib.schedule.schedule import initialise_schedule, end_showdown
 
 # User
 from lib.user.validate_login import login
 import lib.user.helper_functions
 import lib.user.password_reset as password_reset
-from lib.user.helper_functions import is_following, update_follow
+from lib.user.helper_functions import update_follow  # , is_following
 
 # Purchases
 from lib.purchases.purchases import get_purchased_photos
@@ -106,14 +107,14 @@ from lib.token_functions import get_uid
 from config import DevelopmentConfig, defaultHandler
 
 
-app = Flask(__name__, static_url_path="/static")
+app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
-app.register_error_handler(HTTPException, defaultHandler)
+app.register_error_handler(Error.CustomError, defaultHandler)
 CORS(app)
 bcrypt = Bcrypt(app)
 mongoengine.connect("angular-flask-muckaround", host=app.config["MONGO_URI"])
 
-initialise_schedule()
+initialise_schedule(app.config["SHOWDOWN_LENGTH"])
 
 """
 --------------------------
@@ -194,8 +195,9 @@ def _auth_password_reset_request():
     email = request.form.get("email")
 
     msg = password_reset.password_reset_request(email)
-    mail = Mail(app)
-    mail.send(msg)
+    if msg != None:
+        mail = Mail(app)
+        mail.send(msg)
 
     return dumps({})
 
@@ -275,10 +277,17 @@ def _account_registration():
     )
     try:
         this_user.save()
-    except:
-        raise Error.ValueError("An account is already registered with this email")
+    except mongoengine.errors.NotUniqueError:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Email address is already registered")
 
-    return dumps({})
+    return dumps(
+        {
+            "id": str(this_user.get_id()),
+            "token": token_functions.create_token(str(this_user.get_id())),
+            "nickname": this_user.get_nickname(),
+        }
+    )
 
 
 @app.route("/userdetails", methods=["GET"])
@@ -295,9 +304,13 @@ def user_info_with_token():
 
     Returns
     -------
-    {fname:str, lname:str, nickname:str,
-     email:str, DOB:str, location:str, aboutMe:str}
-
+    fname:str
+    lname:str
+    nickname:str
+    email:str
+    DOB:str
+    location:str
+    aboutMe:str
     """
     token = request.args.get("token")
     u_id = token_functions.get_uid(token)
@@ -333,7 +346,7 @@ def _get_credits():
 
     Returns
     -------
-    {credits: int}
+    credits: int
 
     """
     token = request.args.get("token")
@@ -355,19 +368,15 @@ def manage_account():
 
     Parameters
     ----------
-    user:object
-
-    e.g.
-    user {
-        u_id: string,
-        password: string,
-        profilePic: string,
-        ...:...,
-    }
+    u_id: string,
+    password: string,
+    profilePic: string
+    ...
 
     Returns
     -------
-    {'success: boolean}
+    success: boolean
+    nickname: string
     """
     success = False
     data = request.form.to_dict()
@@ -387,12 +396,18 @@ def manage_account():
         for key, value in data.items():
             lib.user.helper_functions.update_value(bcrypt, this_user, key, value)
         success = True
-    except Exception:
+    except Exception as e:
         print("Errors... :-(")
         print(traceback.format_exc())
         success = False
+        raise e
 
-    return dumps({"success": success})
+    if "nickname" in data:
+        nickname = data["nickname"]
+    else:
+        nickname = None
+
+    return dumps({"success": success, "nickname": nickname})
 
 
 @app.route("/manageaccount/confirm", methods=["GET", "POST"])
@@ -427,14 +442,48 @@ def password_check():
         data["password"] = "false"
 
     return data
+@app.route("/userdetails", methods=["GET"])
+@validate_token
+def _user_info_with_token():
+    """
+    Description
+    -----------
+    GET request to get user details using a token
 
+    Parameters
+    ----------
+    token : string
+
+    Returns
+    -------
+    {fname:str, lname:str, nickname:str,
+     email:str, DOB:str, location:str, aboutMe:str}
+
+    """
+    token = request.args.get("token")
+    u_id = token_functions.get_uid(token)
+    this_user = user.User.objects.get(id=u_id)
+    if not this_user:
+        raise Error.UserDNE("Could not find user")
+    # JSON Doesn't like ObjectId format
+    return dumps(
+        {
+            "fname": this_user.get_fname(),
+            "lname": this_user.get_lname(),
+            "email": this_user.get_email(),
+            "nickname": this_user.get_nickname(),
+            "credits": this_user.get_credits(),
+            "location": this_user.get_location(),
+            "aboutMe": this_user.get_about_me(),
+            "profilePic": this_user.get_profile_pic(),
+        }
+    )
 
 """
 --------------------
 - Profile Routes -
 --------------------
 """
-
 
 @app.route("/profiledetails", methods=["GET"])
 def _profile_details():
@@ -445,44 +494,37 @@ def _profile_details():
 
     Parameters
     ----------
-    u_id : str
+    token: str (token of the profile viewer),
+    u_id : str (id of the profile owner)
 
     Returns
-    {
-        fname,
-        lname,
-        nickname,
-        location,
-        email,
-        profilePic,
-        aboutMe
-    }
+    -------
+    fname: string
+    lname: string
+    nickname: string
+    location: string
+    email: string
+    profilePic: string
+    aboutMe: string
+    following: boolean
+    contributor: string
     -------
     """
-    u_id = request.args.get("u_id")
-    if not u_id or u_id == "":
-        raise Error.UserDNE("Couldn't find user")
-    this_user = user.User.objects.get(id=u_id)
-    if not this_user:
-        raise Error.UserDNE("Couldn't find user")
-
-    return dumps(
-        {
-            "fname": this_user.get_fname(),
-            "lname": this_user.get_lname(),
-            "nickname": this_user.get_nickname(),
-            "location": this_user.get_location(),
-            "email": this_user.get_email(),
-            "profilePic": this_user.get_profile_pic(),
-        }
-    )
-
+    data = request.args.to_dict()
+    return dumps(get_profile_details(data))
 
 @app.route("/collection/thumbnail", methods=["GET"])
 def _collection_thumbnail():
     """
     Get first photo from collection to use a thumbnail
+    Parameters
+    ----------
+    token: str (token of the profile viewer),
+    albumId: string
 
+    Returns
+    -------
+    thumbnail: string
     """
     collection_id = request.args.get("albumId")
     _collection = lib.collection.collection.Collection.objects.get(id=collection_id)
@@ -498,7 +540,6 @@ def _collection_thumbnail():
 - Purchases Routes -
 --------------------
 """
-
 
 @app.route("/user/photos", methods=["GET"])
 def _get_photo_from_user():
@@ -516,6 +557,7 @@ def _get_photo_from_user():
 
     Returns
     -------
+    List of 
     {
         title : string
         price : int
@@ -548,6 +590,7 @@ def _get_collection_from_user():
 
     Returns
     -------
+    List of 
     {
         title : string
         authorId : string
@@ -579,7 +622,8 @@ def _get_album_from_user():
 
     Returns
     -------
-    {
+    List of 
+    { 
         title : string
         authorId : string
         author : string
@@ -596,6 +640,7 @@ def _get_album_from_user():
 
 
 @app.route("/user/following", methods=["GET"])
+@validate_token
 def _get_following_from_user():
     """
     Description
@@ -611,14 +656,16 @@ def _get_following_from_user():
 
     Returns
     -------
+    List of 
     {
+        id : string
+        nickname : string
         fname : string
         lname : string
-        nickname : string
         email : string
         location : string
-        created : string
-        id : string
+        profilePic: string[]
+        following: bool
     }
     """
     data = request.args.to_dict()
@@ -627,43 +674,17 @@ def _get_following_from_user():
 
     return dumps(user_following_search(data))
 
-
-@app.route("/user/isfollowing", methods=["GET"])
-def _is_followed():
-    """
-    Description
-    -----------
-    GET request to check whether a person is following someone
-
-    Parameters
-    ----------
-    follower_u_id : string
-    followed_u_id : string
-
-    Returns
-    -------
-    {
-        is_followed : boolean
-    }
-    """
-    data = request.args.to_dict()
-    follower_u_id = data["follower_u_id"]
-    followed_u_id = data["followed_u_id"]
-
-    return dumps({"is_followed": is_following(follower_u_id, followed_u_id)})
-
-
 @app.route("/user/follow", methods=["POST"])
 def _follow():
     """
     Description
     -----------
-    GET request to update following or unfollowing a user
+    POST request to update following or unfollowing a user
 
     Parameters
     ----------
     token : string
-    followed_u_id : string (User Id of the user being follwoed)
+    followed_u_id : string (User Id of the user being followed)
 
     Returns
     -------
@@ -671,8 +692,8 @@ def _follow():
     """
     token = request.form.get("token")
     followed_u_id = request.form.get("followed_u_id")
-    result = update_follow(token, followed_u_id)
-    return dumps({})
+    followed = update_follow(token, followed_u_id)
+    return dumps({"followed": followed})
 
 
 @app.route("/user/purchasedphotos", methods=["GET"])
@@ -692,6 +713,7 @@ def _get_purchased_photos_from_user():
 
     Returns
     -------
+    List of 
     {
         title : string
         price : int
@@ -729,7 +751,7 @@ def _buy_credits():
 
     Returns
     -------
-    {'credits_bought': int}
+    credits_bought: int
     """
     token = request.form.get("token")
     user_id = token_functions.get_uid(token)
@@ -758,7 +780,7 @@ def _refund_credits():
 
     Returns
     -------
-    {'credits_refunded': int}
+    credits_refunded: int
     """
     token = request.form.get("token")
     user_id = token_functions.get_uid(token)
@@ -789,7 +811,7 @@ def buy_photo():
 
     Returns
     -------
-    {'bought': boolean}
+    bought: boolean
     """
     token = request.form.get("token")
     try:
@@ -849,7 +871,7 @@ def buy_album():
 
     Returns
     -------
-    {'bought': boolean}
+    bought: boolean
     """
     token = request.form.get("token")
     try:
@@ -905,11 +927,11 @@ def download_full_photo():
 
 """
 --------------------
-- Main Feed Routes -
+- Showdown Routes -
 --------------------
 """
 
-# Returns the two showdown images for the day
+
 @app.route("/showdown", methods=["GET"])
 def _get_showdown():
     """
@@ -923,11 +945,9 @@ def _get_showdown():
 
     Returns
     -------
-    {
-        participants: object[],
-        prevWinnerPhoto: object,
-        currentVote: string <- either participant id or empty
-    }
+    participants: object[],
+    prevWinnerPhoto: object,
+    currentVote: string <- either participant id or empty
     """
     token = request.args.get("token")
     try:
@@ -953,9 +973,7 @@ def _update_likes():
 
     Returns
     -------
-    {
-        "votes" : number
-    }
+    votes : number
     """
     token = request.form.get("token")
     part_id = request.form.get("part_id")
@@ -989,6 +1007,68 @@ def _update_likes():
     )
 
 
+@app.route("/showdownwins/<string:type>", methods=["GET"])
+def _count_showdown_wins(type):
+    """
+    Description
+    -----------
+    Count how many times a user or photo has won a showdown
+
+    Parameters
+    ----------
+    id : string (Id to compare with showdown wins)
+
+    Returns
+    -------
+    wins : number
+    """
+    id = request.args.get("id")
+    wins = 0
+
+    try:
+        if type == "user":
+            wins = showdown_data.count_wins_user(id)
+        elif type == "photo":
+            wins = showdown_data.count_wins_photo(id)
+    except:
+        wins = 0
+
+    return dumps(
+        {
+            "wins": wins,
+        }
+    )
+
+@app.route("/showdown/end", methods=["GET"])
+def _end_showdown():
+    """
+    Description
+    -----------
+    NOTICE - THIS SHOULD ONLY BE USED IN DEMONSTRATIONS AND TESTING. IN
+    A PRODUCTION ENVIRONMENT THIS ENDPOINT SHOULD BE REMOVED OR SECURED
+
+    End the currently running showdown - this also resets
+    popular contributor and photo counters
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    {}
+    """
+    end_showdown()
+    initialise_schedule(app.config["SHOWDOWN_LENGTH"])
+    return dumps({})
+
+"""
+--------------------
+- Main Feed Routes -
+--------------------
+"""
+
+
 @app.route("/welcome/popularcontributors", methods=["GET"])
 def _welcome_get_contributors():
     """
@@ -1002,7 +1082,11 @@ def _welcome_get_contributors():
 
     Returns
     -------
-    A list of images
+    [{
+        name: string
+        artistImg : string
+        user : string (id)
+    }]
     """
     return dumps(get_popular_contributors_images())
 
@@ -1020,8 +1104,16 @@ def _welcome_get_popular_images():
 
     Returns
     -------
-    {popular_images: tup}
-        tuple of image paths
+    [{
+        title : string
+        price : int
+        discount : int
+        photoStr : string
+        metadata : string
+        likes: int
+        owns: boolean
+        id : string
+    }]
     """
     data = request.args.to_dict()
     try:
@@ -1043,7 +1135,7 @@ def welcome_recommend_photos():
 
     Parameters
     ----------
-    query : string[] // list of recommended topics
+    query : string[]
     offset : int
     limit : int
     orderby : string
@@ -1051,132 +1143,25 @@ def welcome_recommend_photos():
 
     Returns
     -------
-    {
+    [{
         title : string
         price : int
         discount : int
         photoStr : string
         metadata : string
         id : string
-    }
+    }]
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
     data["limit"] = int(data["limit"])
     return dumps(recommend_photos(data))
 
-
-@app.route("/userdetails", methods=["GET"])
-@validate_token
-def _user_info_with_token():
-    """
-    Description
-    -----------
-    GET request to get user details using a token
-
-    Parameters
-    ----------
-    token : string
-
-    Returns
-    -------
-    {fname:str, lname:str, nickname:str,
-     email:str, DOB:str, location:str, aboutMe:str}
-
-    """
-    token = request.args.get("token")
-    u_id = token_functions.get_uid(token)
-    this_user = user.User.objects.get(id=u_id)
-    if not this_user:
-        raise Error.UserDNE("Could not find user")
-    # JSON Doesn't like ObjectId format
-    return dumps(
-        {
-            "fname": this_user.get_fname(),
-            "lname": this_user.get_lname(),
-            "email": this_user.get_email(),
-            "nickname": this_user.get_nickname(),
-            "credits": this_user.get_credits(),
-            "location": this_user.get_location(),
-            "aboutMe": this_user.get_about_me(),
-            "profilePic": this_user.get_profile_pic(),
-        }
-    )
-
-
-@app.route("/manageaccount/success", methods=["POST"])
-def _manage_account():
-    """
-    Description
-    -----------
-    Takes a user object and updates key:value pairs in the database
-
-    Parameters
-    ----------
-    user:object
-
-    e.g.
-    user {
-        u_id: string,
-        password: string,
-        profilePic: string,
-        ...:...,
-    }
-
-    Returns
-    -------
-    {'success: boolean}
-    """
-    success = False
-    data = loads(request.data.decode())
-    this_user = user.User.objects.get(id=data["u_id"])
-    if this_user is None:
-        raise Error.UserDNE("User with id " + data["u_id"] + "does not exist")
-    try:
-        for key, value in data.items():
-            lib.user.helper_functions.update_value(bcrypt, this_user, key, value)
-        success = True
-    except Exception:
-        print("Errors... :-(")
-        print(traceback.format_exc())
-        success = False
-
-    return dumps({"success": success})
-
-
-@app.route("/manageaccount/confirm", methods=["GET", "POST"])
-def _password_check():
-    """
-    Description
-    -----------
-
-    Parameters
-    ----------
-
-    Returns
-    -------
-    """
-    data = request.form.to_dict()
-    current_user = data["u_id"]
-    user_object = user.User.objects.get(id=current_user)
-    if user_object is None:
-        raise Error.UserDNE("User " + current_user + "does not exist")
-
-    # TODO: set the token properly with jwt
-    if bcrypt.check_password_hash(user_object.get_password(), data["password"]):
-        data["password"] = "true"
-    else:
-        data["password"] = "false"
-
-    return data
-
-
 """
 --------------------------
 - Upload/Edit Photo Routes -
 --------------------------
 """
-
 
 @app.route("/user/uploadphoto", methods=["POST"])
 @validate_token
@@ -1220,7 +1205,7 @@ def _photo_details_edit():
 
     Returns
     -------
-    success or error
+    success: boolean
     """
 
     photo_id = request.args.get("photoId")
@@ -1251,9 +1236,10 @@ def _update_photo():
 
     Returns
     -------
-    success or error
+    success: boolean
     """
     these_photo_details = request.form.to_dict()
+    print(these_photo_details)
     # Update either price, title, keywords or add discount
     return dumps(update_photo_details(these_photo_details))
 
@@ -1264,7 +1250,8 @@ def _check_deleted():
     """
     Description
     -----------
-    Check if the photo is marked as deleted
+    Check if the photo is marked as deleted. This ensures they cannot 
+    edit a photo which has been deleted
 
     Parameters
     ----------
@@ -1272,7 +1259,7 @@ def _check_deleted():
 
      Returns
     -------
-    {deleted: boolean(string)}
+    deleted: boolean
     """
     photo_id = request.args.get("photoId")
     this_photo = lib.photo.photo.Photo.objects.get(id=photo_id)
@@ -1298,7 +1285,7 @@ def _user_remove_photo():
 
     Returns
     -------
-    {success: boolean(string)}
+    success: boolean
     """
     token = request.args.get("token")
     u_id = token_functions.get_uid(token)
@@ -1315,7 +1302,6 @@ def _user_remove_photo():
 ---------------
 """
 
-
 @app.route("/search/user", methods=["GET"])
 def _search_user():
     """
@@ -1329,17 +1315,20 @@ def _search_user():
     offset : int
     limit : int
     orderby : string
-    token : string
+    token: string
 
     Returns
     -------
-    {
+    [{
         fname: str,
         lname: str,
         nickname: str,
         email: str,
         location: str,
-    }
+        profilePic: str[],
+        id: str,
+        following: bool,
+    }]
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
@@ -1368,14 +1357,14 @@ def _search_photo():
 
     Returns
     -------
-    {
+    [{
         title : string
         price : int
         discount : int
         photoStr : string
         metadata : string
         id : string
-    }
+    }]
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
@@ -1401,12 +1390,12 @@ def _search_collection():
 
     Returns
     -------
-    {
+    [{
         title : string,
         created_by : string,
         created: Date,
         id : string
-    }
+    }]
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
@@ -1432,14 +1421,14 @@ def _search_album():
 
     Returns
     -------
-    {
+    [{
         title : string,
         created_by : string,
         created: Date,
         id : string,
         authorId: string,
         discount : int
-    }
+    }]
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
@@ -1447,19 +1436,11 @@ def _search_album():
 
     return dumps(album_search(data))
 
-
-"""
--------------------
-- End Search Routes -
--------------------
-"""
-
 """
 ----------------------
 - Photo Details Routes -
 ----------------------
 """
-
 
 @app.route("/photodetailspage", methods=["GET"])
 def _photo_details_page():
@@ -1542,9 +1523,7 @@ def _photo_liked():
 
     Returns
     -------
-    {
-        'liked': boolean
-    }
+    liked: boolean
     """
     photo_id = request.args.get("p_id")
     token = request.args.get("token")
@@ -1672,6 +1651,7 @@ def _get_collection():
         originalPrice: int
     }
     """
+    print(request.args)
     token = request.args.get("token")
     collection_id = request.args.get("collectionId")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
@@ -1679,19 +1659,15 @@ def _get_collection():
     owns = _collection.get_created_by() == _user
     if _collection.is_private() and _collection.get_created_by() != _user:
         return dumps({}), 401
-    user_price, price_without_own = collection_functions.get_user_price(
-        _user, _collection
-    )
 
     return dumps(
         {
             "title": _collection.get_title(),
             "private": _collection.is_private(),
-            "price": user_price,
             "tags": _collection.get_tags(),
-            "price": user_price,
-            "originalPrice": price_without_own,
             "isOwner": owns,
+            "owner": str(_collection.get_created_by().get_id()),
+            "nickname": _collection.get_created_by().get_nickname(),
         }
     )
 
@@ -1749,7 +1725,7 @@ def _create_collection():
 
     Returns
     ----------
-    { 'collection_id': string }
+    'collection_id': string
     """
     # Get Parameters
     params = request.form.to_dict()
@@ -1775,11 +1751,16 @@ def _update_collection():
     title: string
     private: boolean
     tags: string[]
+
+    Returns
+    ----------
+    None
     """
     params = request.form.to_dict()
-    token = request.args.get("token")
+    token = params["token"]
+    collection_id = params["collectionId"]
     u_id = token_functions.get_uid(token)
-    collection_id = request.args.get("collectionId")
+
     _user = user.User.objects.get(id=u_id)
     if not _user:
         raise Error.UserDNE("Could not find user")
@@ -1790,6 +1771,7 @@ def _update_collection():
         raise PermissionError("User not permitted to edit this Collection")
 
     collection_functions.update_collection(params, _collection)
+    return dumps({})
 
 
 @app.route("/collection/delete", methods=["DELETE"])
@@ -1807,7 +1789,7 @@ def _delete_collection():
 
     Returns
     ----------
-    { 'collection_id': string }
+    collection_id': string
     """
     # Get arguments
     u_id = token_functions.get_uid(request.args.get("token"))
@@ -1827,7 +1809,7 @@ def _get_collection_photos():
     """
     Description
     -----------
-    Create a new collection
+    Get collection's photos from a collection id. 
 
     Parameters
     ----------
@@ -1839,14 +1821,14 @@ def _get_collection_photos():
 
     Returns
     ----------
-    {
+    [{
         title : string
         price : int
         discount : int
         photoStr : string
         metadata : string
         id : string
-    }
+    }]
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
@@ -1873,7 +1855,7 @@ def _add_collection_photo():
 
     Returns
     ----------
-    { 'success': boolean }
+    success: boolean
     """
 
     # Get arguments
@@ -1897,13 +1879,11 @@ def _add_collection_photo():
 
     return dumps(new_collections)
 
-
 """
 ---------------
 - Album Routes -
 ---------------
 """
-
 
 @app.route("/album", methods=["GET"])
 @validate_token
@@ -1911,8 +1891,7 @@ def _get_album():
     """
     Description
     -----------
-
-    Get a single album
+    Get a single album's details based on an albumId
 
     Parameters
     ----------
@@ -1921,6 +1900,7 @@ def _get_album():
     albumId: string
 
     Returns
+    -------
 
     title: string
     discount: integer
@@ -1932,6 +1912,10 @@ def _get_album():
     _user = user.User.objects.get(id=token_functions.get_uid(token))
     _album = album.Album.objects.get(id=request.args.get("album_id"))
 
+    purchased = all(
+        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos()
+    )
+
     return {
         "title": _album.get_title(),
         "discount": _album.get_discount(),
@@ -1939,12 +1923,15 @@ def _get_album():
         "albumId": album_id,
         "owner": str(_album.get_created_by().get_id()),
         "nickname": str(_album.get_created_by().get_nickname()),
+        "purchased": purchased,
     }
 
 
 @app.route("/album/thumbnail", methods=["GET"])
 def _album_thumbnail():
     """
+    Description
+    ----------
     Return thumbnail of first photo from an album to use as
     the thumbnail for an album
 
@@ -1955,9 +1942,7 @@ def _album_thumbnail():
 
     Returns
     ----------
-    {
-        thumbnail: string
-    }
+    thumbnail: string
     """
     album_id = request.args.get("albumId")
     _album = lib.album.album.Album.objects.get(id=album_id)
@@ -1968,32 +1953,23 @@ def _album_thumbnail():
         u_id = ""
     return dumps(catalogue_thumbnail(_album, u_id))
 
-
-@app.route("/album/checkpurchased", methods=["GET"])
-def _check_puchased():
-    """
-    Check if the album has already been purchased
-
-    """
-
-    token = request.args.get("token")
-    album_id = request.args.get("albumId")
-    _user = user.User.objects.get(id=token_functions.get_uid(token))
-    _album = album.Album.objects.get(id=request.args.get("albumId"))
-
-    purchased = all(
-        alb_photo in _user.get_purchased() for alb_photo in _album.get_photos()
-    )
-    return dumps({"purchased": purchased})
-
-
 @app.route("/album/delete", methods=["DELETE"])
 @validate_token
 def _delete_album():
     """
-    @param token: string
-    @param _id: string
-    @param albumId: string
+    Description
+    ----------
+    Given an albumId, delete an album
+
+    Parameters
+    ----------
+    albumId: string
+    token: string
+    _id: string
+
+    Returns
+    ----------
+    success: boolean
     """
     token = request.args.get("token")
     u_id = token_functions.get_uid(token)
@@ -2010,6 +1986,23 @@ def _delete_album():
 @app.route("/album/price", methods=["GET"])
 @validate_token
 def _get_price():
+    """
+    Description
+    ----------
+    Given an albumId, get the price of the album for the user
+
+    Parameters
+    ----------
+    albumId: string
+    token: string
+
+    Returns
+    ----------
+    yourPrice: string,
+    albumPrice: string,
+    rawAlbumDiscount: string,
+    savings: string,
+    """
     token = request.args.get("token")
     album_id = request.args.get("albumId")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
@@ -2035,14 +2028,14 @@ def _get_album_photos():
 
     Returns
     -------
-    {
+    [{
         title : string
         price : int
         discount : int
         photoStr : string
         metadata : string
         id : string
-    }
+    }]
     """
     data = request.args.to_dict()
     data["offset"] = int(data["offset"])
@@ -2057,8 +2050,7 @@ def _albums():
     """
     Description
     -----------
-    Gets albums of a user
-
+    Gets albums of a user. Used when creating albums and adding photos to albums.
 
     Parameters
     ----------
@@ -2089,7 +2081,7 @@ def _add_album():
     """
     Description
     -----------
-    Add album to user
+    Add new album to user object
 
     Parameters
     ----------
@@ -2098,10 +2090,7 @@ def _add_album():
 
     Returns
     -------
-    {
-        albumId: int
-    }
-
+    albumId: string
     """
     token = request.form.get("token")
     u_id = token_functions.verify_token(token)["u_id"]
@@ -2118,7 +2107,7 @@ def _update_album():
     """
     Description
     -----------
-    Add album to user
+    Update album details to user
 
     Parameters
     ----------

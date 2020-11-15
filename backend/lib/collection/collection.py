@@ -1,6 +1,6 @@
-'''
+"""
 Collection related methods
-'''
+"""
 
 from mongoengine import BooleanField
 from mongoengine import IntField
@@ -9,10 +9,12 @@ from mongoengine import IntField
 import lib.collection.validation as validation
 import lib.catalogue.catalogue
 
-from lib.collection.validation import validate_title
+import lib.Error as Error
+from lib.collection.validation import validate_private
+
 
 class Collection(lib.catalogue.catalogue.Catalogue):
-    '''
+    """
     Collection class definition
     Sub class of Catalogue
     Collection {
@@ -21,53 +23,37 @@ class Collection(lib.catalogue.catalogue.Catalogue):
         creation_date: datetime,
         deleted: boolean,
         private: boolean,
-        price, int
         tags: [string],
     }
-    '''
-    private = BooleanField(default=False)
-    price = IntField(default=0, validation=validation.validate_price)
-    meta = {'collection': 'collections'}
+    """
 
-    def get_price(self):
-        '''
-        Get the price of the collection
-        '''
-        return self.price
-
-    def update_price(self):
-        '''
-        Iterate through the photos and update the price
-        '''
-        price = 0
-        for this_photo in self.photos:
-            price += this_photo.price
-        self.price = price
+    private = BooleanField(default=False, validation=validate_private)
+    meta = {"collection": "collections"}
 
     def is_private(self):
-        '''
+        """
         Get whether the Collection is private
-        '''
+        """
         return self.private
 
     def set_private(self):
-        '''
+        """
         Set the collection to private
-        '''
+        """
         self.private = True
 
     def set_public(self):
-        '''
+        """
         Set the collection to public
-        '''
+        """
         self.private = False
 
     def remove_photo(self, old_photo):
-        '''
+        """
         Remove a photo from this collection
         Remove this collection from the photo
-        @param photo: Photo(Document)
-        '''
+        @param photo: Document.photo
+        """
         if self in old_photo.collections:
             old_photo.collections.remove(self)
             old_photo.save()
@@ -77,24 +63,31 @@ class Collection(lib.catalogue.catalogue.Catalogue):
             self.save()
 
     def get_collection_json(self):
-        '''
-        Get collection as a json string
-        '''
+        """
+        Get details of a collection as a json string
+        """
         return {
-            'title': self.get_title(),
-            'photos': [this_photo.id for this_photo in self.get_photos()],
-            'creation_date': str(self.get_creation_date()),
-            'private': self.is_private(),
-            'price': self.get_price(),
-            'tags': self.get_tags(),
+            "title": self.get_title(),
+            "photos": [this_photo.id for this_photo in self.get_photos()],
+            "creation_date": str(self.get_creation_date()),
+            "private": self.is_private(),
+            "tags": self.get_tags(),
         }
 
     def clean(self):
-        '''
+        """
         Methods to be performed on a self.save()
-        1) Update the tags
-        2) Update the price
-        '''
-        super().clean()
-        validate_title(self.title, self.created_by, self.id)
-        self.update_price()
+        """
+        _user = self.created_by
+        if self.id:
+            if Collection.objects(
+                created_by=self.created_by, title=self.title, id__ne=self.id
+            ):
+                raise Error.ValidationError(
+                    "Cannot have two Collections with the same title"
+                )
+        else:
+            if Collection.objects(created_by=self.created_by, title=self.title):
+                raise Error.ValidationError(
+                    "Cannot have two Collections with the same title"
+                )

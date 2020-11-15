@@ -1,18 +1,25 @@
-import React from "react";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Jumbotron from "react-bootstrap/Jumbotron";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import { ArrowLeft } from "react-bootstrap-icons";
-import { RouteChildrenProps } from "react-router-dom";
 import axios from "axios";
+import React from "react";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
+import Jumbotron from "react-bootstrap/Jumbotron";
+import Row from "react-bootstrap/Row";
+import { RouteChildrenProps } from "react-router-dom";
 import BackButton from "../../components/BackButton/BackButton";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import "./BuyCreditsPage.css";
 
-class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
+interface State {
+  credits: string;
+  price: number;
+  priceMsg: string;
+  ncredits: number;
+  creditsErrMsg: string;
+  location: string;
+}
+
+class BuyCreditsPage extends React.Component<RouteChildrenProps, State> {
   constructor(props: RouteChildrenProps) {
     super(props);
     this.state = {
@@ -30,6 +37,7 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
 
   componentDidMount() {
     const token = localStorage.getItem("token");
+    document.title = "Buy Credits | PhotoPro";
     axios
       .get("/userdetails", {
         params: {
@@ -42,9 +50,7 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
           location: res.data.location,
         });
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(() => {});
   }
 
   handleSubmit(e: React.FormEvent<HTMLElement>) {
@@ -60,12 +66,10 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
         token,
         ncredits: this.state.ncredits,
       })
-      .then((response) => {
+      .then(() => {
         this.props.history.push("/purchases");
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(() => {});
   }
 
   handleCreditsChange(e: any) {
@@ -75,14 +79,16 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, any> {
   }
 
   setPrice() {
-    const price = Number(this.state.ncredits / 100).toFixed(2);
-    this.setState({ price }, this.setPriceMsg);
+    this.setState((prevState) => {
+      const price = Number((prevState.ncredits / 100).toFixed(2));
+      return { price };
+    }, this.setPriceMsg);
   }
 
   setPriceMsg() {
-    this.setState({
-      priceMsg: `Price: ${this.state.price.toString()} USD.`,
-    });
+    this.setState((prevState) => ({
+      priceMsg: `Price: ${prevState.price.toString()} USD.`,
+    }));
   }
 
   deactivatePurchaseButtons() {

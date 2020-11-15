@@ -1,6 +1,8 @@
 """
 Showdown related functions
 """
+from lib.photo.photo import Photo
+from lib.showdown.participant import Participant
 from lib.showdown.showdown import Showdown
 from json import loads
 from lib.user.user import User
@@ -19,8 +21,32 @@ to_ignore = [
 def get_data(req_user):
     """
     Get all of the data related to showdown
+    @param: req_user:string
+    return: {
+        participants: [{
+            photoStr: string,
+            metadata: string,
+            id: string,
+            owns: boolean,
+            votes: length,
+            participantId: string
+        }],
+        prevWinnerPhoto: {
+            photoStr: string,
+            metadata: string,
+            id: string,
+            owns: boolean,
+        },
+        currentVote: string
+    }
     """
     current_showdown = Showdown.objects().order_by("-start_date").first()
+    if current_showdown == None:
+        return {
+            "participants": [],
+            "prevWinnerPhoto": None,
+            "currentVote": "",
+        }
     try:
         req_user_obj = User.objects.get(id=req_user)
     except:
@@ -30,10 +56,11 @@ def get_data(req_user):
     prev_winner = current_showdown.get_prev_winner()
     prev = None
     if prev_winner != None:
-        prev = loads(prev_winner.to_json())
-        prev["metadata"], prev["photoStr"] = prev_winner.get_thumbnail(req_user)
-        prev["id"] = str(prev_winner.get_id())
-        prev["owns"] = prev_winner.is_owned(req_user_obj)
+        prev_winner_photo = prev_winner.get_photo()
+        prev = loads(prev_winner_photo.to_json())
+        prev["metadata"], prev["photoStr"] = prev_winner_photo.get_thumbnail(req_user)
+        prev["id"] = str(prev_winner_photo.get_id())
+        prev["owns"] = prev_winner_photo.is_owned(req_user_obj)
         for key in to_ignore:
             prev.pop(key)
 
@@ -63,3 +90,27 @@ def get_data(req_user):
         "prevWinnerPhoto": prev,
         "currentVote": current_vote,
     }
+
+
+def count_wins_user(id):
+    """
+    Count all of the showdowns that the user with id given has won
+    @param: id:string
+    return: int
+    """
+    wins = 0
+    user = User.objects.get(id=id)
+    wins = Participant.objects(won=True, user=user).count()
+    return wins
+
+
+def count_wins_photo(id):
+    """
+    Count all of the showdowns that the user with id given has won
+    @param: id:string
+    return: int
+    """
+    wins = 0
+    photo = Photo.objects.get(id=id)
+    wins = Participant.objects(won=True, photo=photo).count()
+    return wins

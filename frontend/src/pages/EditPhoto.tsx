@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { RouteChildrenProps, RouteComponentProps } from "react-router-dom";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   Button,
-  Form,
-  Modal,
-  Container,
-  Row,
   Col,
+  Container,
+  Form,
   Image,
+  Modal,
+  Row,
 } from "react-bootstrap";
-
-// Functional components
-import Title from "../components/PhotoEdit/Title";
-import Toolbar from "../components/Toolbar/Toolbar";
-import Price from "../components/PhotoEdit/Price";
-import Tags from "../components/PhotoEdit/Tags";
+import LoadingButton from "../components/LoadingButton/LoadingButton";
 import Album from "../components/PhotoEdit/Album";
 import Discount from "../components/PhotoEdit/Discount";
+import Price from "../components/PhotoEdit/Price";
+import Tags from "../components/PhotoEdit/Tags";
+// Functional components
+import Title from "../components/PhotoEdit/Title";
+import LoadingPage from "./LoadingPage";
 
 export default function EditPhoto(props: any) {
   const [title, setTitle] = useState("");
@@ -25,15 +24,15 @@ export default function EditPhoto(props: any) {
   const [tags, setTags] = useState<string[]>();
   const [discount, setDiscount] = useState<number>();
   const [albums, setAlbums] = useState<string[]>();
-  const [metadata, setMetaData] = useState<string>();
 
   const { params } = props.match;
-  const [photoId, setPhotoId] = useState(Object.values(params)[0] as string);
+  const [photoId] = useState(Object.values(params)[0] as string);
 
   const [imagePreview, setPreview] = useState<string>();
   const [modalSave, setModalSave] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   // Original values to display on page
   const [originalVal, setOriginal] = useState({
@@ -51,6 +50,7 @@ export default function EditPhoto(props: any) {
   function handleSave(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
     const token = localStorage.getItem("token");
+    setSaveLoading(true);
     axios
       .put("/user/updatephoto", {
         title,
@@ -61,19 +61,20 @@ export default function EditPhoto(props: any) {
         token,
         photoId,
       })
-      .then((response) => {
+      .then(() => {
+        setSaveLoading(false);
         props.history.push(`/photo/${photoId}`);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
+        setSaveLoading(false);
       });
   }
 
-  function handleDelete(event: React.FormEvent<HTMLElement>) {
+  function handleDelete() {
     // Navigate back to user profile
     const token = localStorage.getItem("token");
     if (token !== null) {
-      const u_id = localStorage.getItem("u_id");
+      const uId = localStorage.getItem("u_id");
       axios
         .delete("/user/updatephoto", {
           params: {
@@ -81,21 +82,19 @@ export default function EditPhoto(props: any) {
             imgId: photoId,
           },
         })
-        .then((response) => {
-          props.history.push(`/user/${u_id}`);
+        .then(() => {
+          props.history.push(`/user/${uId}`);
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch(() => {});
     }
   }
 
-  function checkDelete(photoId: string) {
+  function checkDelete(pId: string) {
     const token = localStorage.getItem("token");
     axios
       .get("/user/updatephoto/deleted", {
         params: {
-          photoId,
+          photoId: pId,
           token,
         },
       })
@@ -105,18 +104,17 @@ export default function EditPhoto(props: any) {
           props.history.goBack();
         }
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         props.history.goBack();
       });
   }
 
-  function getPhotoDetails(photoId: string) {
+  function getPhotoDetails(pId: string) {
     const token = localStorage.getItem("token");
     axios
       .get("/user/updatephoto", {
         params: {
-          photoId,
+          photoId: pId,
           token,
         },
       })
@@ -130,7 +128,6 @@ export default function EditPhoto(props: any) {
         setTags(response.data.tags);
         setAlbums(response.data.albums);
         setDiscount(response.data.discount);
-        setMetaData(response.data.metadata);
 
         setOriginal({
           oTitle: response.data.title,
@@ -141,9 +138,9 @@ export default function EditPhoto(props: any) {
         // Set image preview
         setPreview(response.data.metadata + response.data.photoStr);
         setLoading(false);
+        document.title = `Manage ${response.data.title} | PhotoPro`;
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         props.history.goBack();
       });
   }
@@ -159,14 +156,14 @@ export default function EditPhoto(props: any) {
   }
 
   return loading ? (
-    <div>Loading...</div>
+    <LoadingPage />
   ) : (
     <>
       <Container className="mt-5">
         <h1>Edit Photo</h1>
         <Form>
           <Title
-            onChange={(title: string) => setTitle(title)}
+            onChange={(newTitle: string) => setTitle(newTitle)}
             deactivateUploadButton={deactivateSaveButton}
             activateUploadButton={activateSaveButton}
             titleDef={title}
@@ -178,7 +175,7 @@ export default function EditPhoto(props: any) {
           <Price
             deactivateUploadButton={deactivateSaveButton}
             activateUploadButton={activateSaveButton}
-            onChange={(price: number) => setPrice(price)}
+            onChange={(newPrice: number) => setPrice(newPrice)}
             priceDef={price}
           />
           <p style={{ fontSize: "13px" }}>
@@ -198,7 +195,7 @@ export default function EditPhoto(props: any) {
             price={price}
             oPrice={originalVal.oPrice}
             oDiscount={originalVal.oDiscount}
-            onChange={(discount: number) => setDiscount(discount)}
+            onChange={(newDiscount: number) => setDiscount(newDiscount)}
           />
           <Row>
             <Col xs={6}>
@@ -253,7 +250,8 @@ export default function EditPhoto(props: any) {
             Are you sure you want to make changes to your photo?!
           </Modal.Body>
           <Modal.Footer>
-            <Button
+            <LoadingButton
+              loading={saveLoading}
               id="saveConfirmed"
               variant="primary"
               onClick={(e) => {
@@ -261,7 +259,7 @@ export default function EditPhoto(props: any) {
               }}
             >
               Save photo
-            </Button>
+            </LoadingButton>
             <Button
               id="cancelSave"
               variant="secondary"
@@ -291,8 +289,8 @@ export default function EditPhoto(props: any) {
             <Button
               id="deleteConfirmed"
               variant="danger"
-              onClick={(e) => {
-                handleDelete(e);
+              onClick={() => {
+                handleDelete();
               }}
             >
               Delete photo
