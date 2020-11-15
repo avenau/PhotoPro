@@ -10,7 +10,7 @@ import base64
 import zipfile
 from json import dumps
 from io import BytesIO
-from flask import Flask, request, abort, send_from_directory
+from flask import Flask, request, abort
 from flask.helpers import send_file
 from flask_cors import CORS
 from functools import wraps
@@ -108,7 +108,7 @@ def get_photo():
 @app.route("/download", methods=["GET"])
 @validate_secret
 @dir_check
-def get_iamges():
+def get_images():
     """
     Description
     -----------
@@ -135,6 +135,27 @@ def get_iamges():
         )
     except Exception as e:
         abort(404)
+
+
+@app.route("/restore", methods=["GET"])
+@validate_secret
+def restore_db():
+    """
+    Description
+    -----------
+    Restore the DB to a previous save
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    """
+
+    os.system("./utils/restore_db_manual.sh")
+
+    return dumps({})
 
 
 """
