@@ -59,13 +59,14 @@ export default class AlbumSavings extends React.Component<
           <>
             <p>{this.state.rawAlbumDiscount}% off original price!</p>
             <p>
-              <b>Originally, you would pay:</b> {this.state.originalPrice} CR{" "}
+              <b>Originally, you would pay:</b> {this.state.originalPrice}{" "}
+              Credits{" "}
             </p>
             <p>
-              <b>After discount, you pay:</b> {this.state.yourPrice} CR
+              <b>After discount, you pay:</b> {this.state.yourPrice} Credits
             </p>
             <p>
-              <b>You save:</b> {this.state.savings} CR{" "}
+              <b>You save:</b> {this.state.savings} Credits{" "}
             </p>
           </>
         ) : (
