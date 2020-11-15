@@ -557,7 +557,7 @@ def _get_photo_from_user():
 
     Returns
     -------
-    List of 
+    List of
     {
         title : string
         price : int
@@ -590,7 +590,7 @@ def _get_collection_from_user():
 
     Returns
     -------
-    List of 
+    List of
     {
         title : string
         authorId : string
@@ -622,8 +622,8 @@ def _get_album_from_user():
 
     Returns
     -------
-    List of 
-    { 
+    List of
+    {
         title : string
         authorId : string
         author : string
@@ -656,7 +656,7 @@ def _get_following_from_user():
 
     Returns
     -------
-    List of 
+    List of
     {
         id : string
         nickname : string
@@ -675,6 +675,7 @@ def _get_following_from_user():
     return dumps(user_following_search(data))
 
 @app.route("/user/follow", methods=["POST"])
+@validate_token
 def _follow():
     """
     Description
@@ -713,7 +714,7 @@ def _get_purchased_photos_from_user():
 
     Returns
     -------
-    List of 
+    List of
     {
         title : string
         price : int
@@ -1250,7 +1251,7 @@ def _check_deleted():
     """
     Description
     -----------
-    Check if the photo is marked as deleted. This ensures they cannot 
+    Check if the photo is marked as deleted. This ensures they cannot
     edit a photo which has been deleted
 
     Parameters
@@ -1809,7 +1810,7 @@ def _get_collection_photos():
     """
     Description
     -----------
-    Get collection's photos from a collection id. 
+    Get collection's photos from a collection id.
 
     Parameters
     ----------
