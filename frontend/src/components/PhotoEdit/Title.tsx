@@ -22,7 +22,7 @@ export default function Title(props: any) {
   return (
     <>
       <Form.Group controlId="title">
-        <Form.Label>Photo Title</Form.Label>
+        <Form.Label>{props.titleType} Title</Form.Label>
         <Form.Control
           required
           placeholder={props.titleDef}
