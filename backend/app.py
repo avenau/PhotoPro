@@ -277,8 +277,9 @@ def _account_registration():
     )
     try:
         this_user.save()
-    except:
-        raise Error.ValueError("An account is already registered with this email")
+    except mongoengine.errors.NotUniqueError:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Email address is already registered")
 
     return dumps(
         {

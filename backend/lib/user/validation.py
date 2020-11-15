@@ -35,9 +35,12 @@ def validate_email(email):
     """
     try:
         mongoengine.EmailField().validate(email)
+    except mongoengine.errors.NotUniqueError:
+        print(traceback.format_exc())
+        raise Error.ValidationError("Email address is already registered")
     except mongoengine.ValidationError:
         print(traceback.format_exc())
-        raise Error.ValidationError("Could not validate email")
+        raise Error.ValidationError("Email address is not valid")
 
 
 def validate_nickname(nickname):
