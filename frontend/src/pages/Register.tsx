@@ -66,34 +66,32 @@ export default function Register(props: RouteChildrenProps) {
     event.stopPropagation();
     setLoading(true);
     setProfilePic().then((response: any) => {
-      if (form.checkValidity() === true) {
-        axios
-          .post("/accountregistration", {
-            fname: formInput.fname,
-            lname: formInput.lname,
-            email: formInput.email,
-            nickname: formInput.nickname,
-            password,
-            profilePic: response[0],
-            extension: response[1],
-            location: formInput.location,
-            aboutMe: formInput.aboutMe,
-          })
-          .then((r) => {
-            if (r.status !== 200) {
-              throw new Error();
-            }
-            setLoading(false);
-            localStorage.setItem("token", r.data.token);
-            localStorage.setItem("u_id", r.data.id);
-            localStorage.setItem("nickname", r.data.nickname);
-            props.history.push("/");
-          })
-          .catch(() => {
-            setLoading(false);
-          });
-        setFeedback(true);
-      }
+      axios
+        .post("/accountregistration", {
+          fname: formInput.fname,
+          lname: formInput.lname,
+          email: formInput.email,
+          nickname: formInput.nickname,
+          password,
+          profilePic: response[0],
+          extension: response[1],
+          location: formInput.location,
+          aboutMe: formInput.aboutMe,
+        })
+        .then((r) => {
+          if (r.status !== 200) {
+            throw new Error();
+          }
+          setLoading(false);
+          localStorage.setItem("token", r.data.token);
+          localStorage.setItem("u_id", r.data.id);
+          localStorage.setItem("nickname", r.data.nickname);
+          props.history.push("/");
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+      setFeedback(true);
     });
   };
 
