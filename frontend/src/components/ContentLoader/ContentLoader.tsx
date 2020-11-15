@@ -49,7 +49,7 @@ interface State {
 export default class ContentLoader extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    const noContent = "No results were found :("
+    const noContent = "No results were found :(";
     this.state = {
       query: this.props.query,
       loading: false,
@@ -61,7 +61,9 @@ export default class ContentLoader extends React.Component<Props, State> {
       filetype: this.props.filetype !== undefined ? this.props.filetype : "all",
       priceMin: this.props.priceMin !== undefined ? this.props.priceMin : 0,
       priceMax: this.props.priceMax !== undefined ? this.props.priceMax : -1,
-      noContentMessage: this.props.noContentMessage ? this.props.noContentMessage : noContent
+      noContentMessage: this.props.noContentMessage
+        ? this.props.noContentMessage
+        : noContent,
     };
   }
 

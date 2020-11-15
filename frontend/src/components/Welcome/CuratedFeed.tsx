@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Container } from "react-bootstrap";
-import axios from "axios";
 import ContentLoader from "../ContentLoader/ContentLoader";
 import NoContent from "../ContentLoader/NoContent";
 
