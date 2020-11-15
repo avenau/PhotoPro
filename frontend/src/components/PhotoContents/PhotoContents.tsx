@@ -114,7 +114,13 @@ class PhotoContents extends React.Component<Props, State> {
           loading: false,
         });
       })
-      .catch(() => {});
+      .catch(() => {
+        // Sleep to display the Toast long enough to read it.
+        const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay))
+        const sleepBaby = async () => {await sleep(3000)}
+        sleepBaby()
+        .then(()=> this.props.history.push('/purchases'));
+      });
   }
 
   purchasePhoto(e: any) {
