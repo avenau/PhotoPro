@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 import qs from "qs";
-import { Toast } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 axios.defaults.baseURL = `http://localhost:${(window as any).BACKEND_PORT}/`;
 axios.defaults.headers.put["Content-Type"] =
@@ -25,24 +25,20 @@ axios.interceptors.request.use((request) => {
 
 const renderToast = (contents: string) => {
   ReactDOM.render(
-    <Toast
-      style={{
-        fontSize: "1.2rem",
-      }}
-      delay={3000}
-      autohide
-      onClose={() => {
+    <Modal
+      show
+      autoFocus
+      onHide={() =>
         ReactDOM.unmountComponentAtNode(
           document.getElementById("toast") as Element
-        );
-      }}
+        )
+      }
     >
-      <Toast.Header closeButton>
-        {/* <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" /> */}
-        <strong className="mr-auto">PhotoPro</strong>
-      </Toast.Header>
-      <Toast.Body>{contents}</Toast.Body>
-    </Toast>,
+      <Modal.Header closeButton>
+        <Modal.Title>PhotoPro</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>{contents}</Modal.Body>
+    </Modal>,
     document.getElementById("toast")
   );
 };

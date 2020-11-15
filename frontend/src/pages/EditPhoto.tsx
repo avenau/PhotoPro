@@ -163,6 +163,7 @@ export default function EditPhoto(props: any) {
         <h1>Edit Photo</h1>
         <Form>
           <Title
+            titleType="Photo"
             onChange={(newTitle: string) => setTitle(newTitle)}
             deactivateUploadButton={deactivateSaveButton}
             activateUploadButton={activateSaveButton}

@@ -5,7 +5,7 @@ Album functions used to purchase an album
 
 from lib.user.user import User
 from lib.album.album import Album
-from lib.Error import ValueError
+import lib.Error as Error
 
 
 def get_price(_user, _album):
@@ -22,8 +22,6 @@ def get_price(_user, _album):
     discounted_price = 0
     # Price without prior ownership, without discounts
     original_price = 0
-    # Savings on all discounts and ownership
-    savings = 0
 
     raw_album_discount = _album.get_discount()
 
@@ -34,8 +32,8 @@ def get_price(_user, _album):
             original_price += photo.get_price()
 
     # Add the additional album discount
-    your_price = int(your_price - (discounted_price * (raw_album_discount / 100)))
-    savings = original_price - your_price
+    your_price = int(your_price - (discounted_price *
+                                   (raw_album_discount / 100)))
 
     return {
         "yourPrice": str(your_price),
@@ -63,7 +61,6 @@ def purchase_album(user_id, album_id):
         raise Error.ValueError("You cannot buy your own album")
 
     album_photos = album.get_photos()
-    buyer_photos = buyer.get_purchased()
 
     # Get price for buyer. Only includes photos which they
     # have not yet purchased
@@ -72,7 +69,8 @@ def purchase_album(user_id, album_id):
     # Check that the buyer has sufficient money
     buyer_credits = buyer.get_credits()
     if buyer_credits < album_price:
-        raise ValueError("You don't have enough credits to buy this photo.")
+        raise Error.ValueError(
+            "You don't have enough credits to buy this photo.")
 
     # Exchange credits
     buyer.remove_credits(album_price)

@@ -9,14 +9,6 @@ class PopularContributors extends Component<any, any> {
     this.state = {};
   }
 
-  componentDidMount() {
-    this.checkContributors();
-  }
-
-  checkContributors() {
-    axios.get("/").catch(() => {});
-  }
-
   render() {
     return (
       <Container>

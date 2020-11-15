@@ -57,7 +57,7 @@ def update_follow(token, followed_id):
     try:
         user_id = token_functions.get_uid(token)
     except (InvalidSignatureError, DecodeError, Error.TokenError, InvalidTokenError):
-        raise Error.UserDNE("You must be logged in to follow!")
+        raise Error.AccessError("You must be logged in to follow!")
 
     try:
         followed_user = user.User.objects.get(id=followed_id)

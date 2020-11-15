@@ -28,9 +28,9 @@ def get_sort_method(sortid):
     if sortid == "high":
         return {"$sort": {"discountedPrice": -1, "id": -1}}
     if sortid == "az":
-        return {"$sort": {"title": 1, "nickname": 1, "id": 1}}
+        return {"$sort": {"lower": 1, "id": 1}}
     if sortid == "za":
-        return {"$sort": {"title": -1, "nickname": -1, "id": -1}}
+        return {"$sort": {"lower": -1, "id": -1}}
 
 
 def user_search(data):
@@ -68,6 +68,7 @@ def user_search(data):
                     "contributor": {
                         "$cond": [{"$gt": [{"$size": "$posts"}, 0]}, True, False]
                     },
+                    "lower": {"$toLower": "$nickname"},
                     "profilePic": "$profile_pic",
                     "id": {"$toString": "$_id"},
                     "valid": {
@@ -155,7 +156,6 @@ def photo_search(data):
         req_user = get_uid(data["token"])
         this_user = User.objects.get(id=req_user)
         if query != "":
-            print(this_user.get_searches())
             this_user.add_search(query)
             this_user.save()
     except:
@@ -191,6 +191,7 @@ def photo_search(data):
                     "created": "$posted",
                     "user": {"$toString": "$user"},
                     "id": {"$toString": "$_id"},
+                    "lower": {"$toLower": "$title"},
                     # discountedPrice = round(price - (price * discount/100))
                     "discountedPrice": {
                         "$round": {
@@ -265,6 +266,7 @@ def collection_search(data):
                     "title": 1,
                     "authorId": {"$toString": "$created_by"},
                     "created": "$creation_date",
+                    "lower": {"$toLower": "$title"},
                     "id": {"$toString": "$_id"},
                     "_id": 0,
                 }
@@ -309,6 +311,7 @@ def album_search(data):
                     "title": 1,
                     "authorId": {"$toString": "$created_by"},
                     "created": "$creation_date",
+                    "lower": {"$toLower": "$title"},
                     "discount": 1,
                     "id": {"$toString": "$_id"},
                     "_id": 0,

@@ -442,6 +442,8 @@ def password_check():
         data["password"] = "false"
 
     return data
+
+
 @app.route("/userdetails", methods=["GET"])
 @validate_token
 def _user_info_with_token():
@@ -479,11 +481,13 @@ def _user_info_with_token():
         }
     )
 
+
 """
 --------------------
 - Profile Routes -
 --------------------
 """
+
 
 @app.route("/profiledetails", methods=["GET"])
 def _profile_details():
@@ -513,6 +517,7 @@ def _profile_details():
     data = request.args.to_dict()
     return dumps(get_profile_details(data))
 
+
 @app.route("/collection/thumbnail", methods=["GET"])
 def _collection_thumbnail():
     """
@@ -541,6 +546,7 @@ def _collection_thumbnail():
 --------------------
 """
 
+
 @app.route("/user/photos", methods=["GET"])
 def _get_photo_from_user():
     """
@@ -557,7 +563,7 @@ def _get_photo_from_user():
 
     Returns
     -------
-    List of 
+    List of
     {
         title : string
         price : int
@@ -590,7 +596,7 @@ def _get_collection_from_user():
 
     Returns
     -------
-    List of 
+    List of
     {
         title : string
         authorId : string
@@ -622,8 +628,8 @@ def _get_album_from_user():
 
     Returns
     -------
-    List of 
-    { 
+    List of
+    {
         title : string
         authorId : string
         author : string
@@ -656,7 +662,7 @@ def _get_following_from_user():
 
     Returns
     -------
-    List of 
+    List of
     {
         id : string
         nickname : string
@@ -674,7 +680,9 @@ def _get_following_from_user():
 
     return dumps(user_following_search(data))
 
+
 @app.route("/user/follow", methods=["POST"])
+@validate_token
 def _follow():
     """
     Description
@@ -713,7 +721,7 @@ def _get_purchased_photos_from_user():
 
     Returns
     -------
-    List of 
+    List of
     {
         title : string
         price : int
@@ -1039,6 +1047,7 @@ def _count_showdown_wins(type):
         }
     )
 
+
 @app.route("/showdown/end", methods=["GET"])
 def _end_showdown():
     """
@@ -1061,6 +1070,7 @@ def _end_showdown():
     end_showdown()
     initialise_schedule(app.config["SHOWDOWN_LENGTH"])
     return dumps({})
+
 
 """
 --------------------
@@ -1157,11 +1167,13 @@ def welcome_recommend_photos():
     data["limit"] = int(data["limit"])
     return dumps(recommend_photos(data))
 
+
 """
 --------------------------
 - Upload/Edit Photo Routes -
 --------------------------
 """
+
 
 @app.route("/user/uploadphoto", methods=["POST"])
 @validate_token
@@ -1239,7 +1251,6 @@ def _update_photo():
     success: boolean
     """
     these_photo_details = request.form.to_dict()
-    print(these_photo_details)
     # Update either price, title, keywords or add discount
     return dumps(update_photo_details(these_photo_details))
 
@@ -1250,7 +1261,7 @@ def _check_deleted():
     """
     Description
     -----------
-    Check if the photo is marked as deleted. This ensures they cannot 
+    Check if the photo is marked as deleted. This ensures they cannot
     edit a photo which has been deleted
 
     Parameters
@@ -1301,6 +1312,7 @@ def _user_remove_photo():
 - Search Routes -
 ---------------
 """
+
 
 @app.route("/search/user", methods=["GET"])
 def _search_user():
@@ -1436,11 +1448,13 @@ def _search_album():
 
     return dumps(album_search(data))
 
+
 """
 ----------------------
 - Photo Details Routes -
 ----------------------
 """
+
 
 @app.route("/photodetailspage", methods=["GET"])
 def _photo_details_page():
@@ -1532,6 +1546,7 @@ def _photo_liked():
 
 
 @app.route("/photo_details/like_photo", methods=["POST"])
+@validate_token
 def _like_photo():
     """
     Description
@@ -1651,7 +1666,6 @@ def _get_collection():
         originalPrice: int
     }
     """
-    print(request.args)
     token = request.args.get("token")
     collection_id = request.args.get("collectionId")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
@@ -1809,7 +1823,7 @@ def _get_collection_photos():
     """
     Description
     -----------
-    Get collection's photos from a collection id. 
+    Get collection's photos from a collection id.
 
     Parameters
     ----------
@@ -1879,11 +1893,13 @@ def _add_collection_photo():
 
     return dumps(new_collections)
 
+
 """
 ---------------
 - Album Routes -
 ---------------
 """
+
 
 @app.route("/album", methods=["GET"])
 @validate_token
@@ -1952,6 +1968,7 @@ def _album_thumbnail():
     except:
         u_id = ""
     return dumps(catalogue_thumbnail(_album, u_id))
+
 
 @app.route("/album/delete", methods=["DELETE"])
 @validate_token
@@ -2136,35 +2153,6 @@ def _update_album():
     )
 
     return {"success": "true"} if ret else {"success": "false"}
-
-
-"""
----------------
-- Test Routes -
----------------
-"""
-
-
-@app.route("/testdecorator", methods=["GET"])
-@validate_token
-def _test_decorator():
-    """
-    Testing decorator for validating token
-    Use this decorator to verify the token is
-    valid and matches the secret
-    """
-    return dumps({"success": "success"})
-
-
-@app.route("/", methods=["GET"])
-def _basic():
-    """
-    Basic Test route
-    """
-    arguments = {"first_name": "test", "colour": "test"}
-    if request.args:
-        arguments = request.args
-    return dumps(arguments)
 
 
 if __name__ == "__main__":

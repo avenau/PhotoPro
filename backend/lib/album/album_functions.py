@@ -8,7 +8,6 @@ from bson.objectid import ObjectId
 from lib.token_functions import get_uid
 import lib.photo.photo as photo
 from lib.user.user import User
-from lib.album.album import Album
 
 
 def update_album(_album, title, discount, tags):
@@ -73,7 +72,8 @@ def album_photo_search(data):
     remove_photo = []
     for result in res:
         cur_photo = photo.Photo.objects.get(id=result["id"])
-        result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
+        result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(
+            req_user)
 
         if cur_photo in purchased:
             # Someone who has purchased a photo, should still be able to
@@ -81,7 +81,7 @@ def album_photo_search(data):
             result["owns"] = True
         else:
             result["owns"] = False
-            if result["deleted"] == True:
+            if result["deleted"]:
                 # Check if photo is deleted, if it is, remove from result list
                 remove_photo.append(result)
             if req_user == str(cur_photo.get_user().get_id()):
@@ -100,7 +100,6 @@ def catalogue_thumbnail(catalogue_obj, u_id):
     @param: u_id: str
     return: {"thumbnail": str}
     """
-
     photos = catalogue_obj.get_photos()
 
     thumbnail = {"thumbnail": ""}
@@ -108,8 +107,8 @@ def catalogue_thumbnail(catalogue_obj, u_id):
     for _photo in photos:
         if not _photo.is_deleted():
             # Get first image which has not been deleted
-            metadata, photoStr = _photo.get_thumbnail(u_id)
-            thumbnail["thumbnail"] = metadata + photoStr
+            metadata, photo_str = _photo.get_thumbnail(u_id)
+            thumbnail["thumbnail"] = metadata + photo_str
             break
 
     return thumbnail

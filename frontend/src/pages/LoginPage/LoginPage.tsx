@@ -1,4 +1,5 @@
 import React from "react";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
@@ -17,6 +18,7 @@ export default class LoginPage extends React.Component<
     this.state = {
       email: "",
       password: "",
+      btnLoading: false,
     };
   }
 
@@ -30,16 +32,20 @@ export default class LoginPage extends React.Component<
     }
     const { email } = this.state;
     const { password } = this.state;
+    this.setState({ btnLoading: true });
     axios
       .post("/login", { email, password })
       .then((response: any) => {
         const { data } = response;
+        this.setState({ btnLoading: false });
         localStorage.setItem("token", data.token);
         localStorage.setItem("u_id", data.u_id);
         localStorage.setItem("nickname", data.nickname);
         this.props.history.push("/");
       })
-      .catch(() => {});
+      .catch(() => {
+        this.setState({ btnLoading: false });
+      });
   }
 
   handleChange(event: any) {
@@ -87,9 +93,14 @@ export default class LoginPage extends React.Component<
                 </a>
               </Col>
               <Col>
-                <Button variant="primary" type="submit" size="lg">
+                <LoadingButton
+                  loading={this.state.btnLoading}
+                  type="submit"
+                  size="lg"
+                  onClick={(e) => {}}
+                >
                   Log In
-                </Button>
+                </LoadingButton>
               </Col>
             </Row>
           </Form>

@@ -1,17 +1,15 @@
 """
 Photo Details
 """
-from bson.errors import InvalidId
-from bson.objectid import ObjectId
-from lib import Error
+import traceback
+from datetime import datetime
+import math
 from json import dumps
+from lib import Error
 from lib.photo.photo import Photo
 from lib.user.user import User
 from lib import token_functions
 from lib.popular.popular_interactions import do_like, do_unlike
-import traceback
-from datetime import datetime, date, timedelta
-import math
 
 
 def photo_detail_results(photo_id, token):
@@ -31,9 +29,11 @@ def photo_detail_results(photo_id, token):
     try:
         this_photo = Photo.objects.get(id=photo_id)
     except:
-        raise Error.PhotoDNE("Photo with ID: " + photo_id + " couldn't be found.")
+        raise Error.PhotoDNE("Photo with ID: " +
+                             photo_id + " couldn't be found.")
     if this_photo.is_deleted():
-        raise Error.PhotoDNE("This photo has been deleted. Redirecting you now.")
+        raise Error.PhotoDNE(
+            "This photo has been deleted. Redirecting you now.")
     # If signed in
     if req_user != "":
         this_user = User.objects.get(id=req_user)
@@ -80,26 +80,20 @@ def get_all_comments(p_id, current_date, order):
     this_photo = Photo.objects.get(id=p_id)
     if not this_photo:
         print(traceback.format_exc)
-        raise PhotoDNE("Could not find photo")
+        raise Error.PhotoDNE("Could not find photo")
     comments = this_photo.get_comments()
     result = []
 
-    def takeDate(elem):
+    def take_date(elem):
         seconds = datetime.now() - elem.get_posted()
         return seconds.total_seconds()
 
     if order == "true":
-        comments.sort(key=takeDate, reverse=False)
+        comments.sort(key=take_date, reverse=False)
     else:
-        comments.sort(key=takeDate, reverse=True)
+        comments.sort(key=take_date, reverse=True)
 
     for comment in comments:
-        years_ago = current_date.year - comment.get_posted().year
-        months_ago = current_date.month - comment.get_posted().month
-        days_ago = current_date.day - comment.get_posted().day
-        hours_ago = current_date.hour - comment.get_posted().hour
-        minutes_ago = current_date.minute - comment.get_posted().minute
-
         time_diff = current_date - comment.get_posted()
         time_diff_sec = time_diff.total_seconds()
 

@@ -6,6 +6,7 @@ import Form from "react-bootstrap/Form";
 import { RouteComponentProps } from "react-router-dom";
 import Tags from "../../components/PhotoEdit/Tags";
 import Title from "../../components/PhotoEdit/Title";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
 
 interface Props extends RouteComponentProps<MatchParams> {}
 interface MatchParams {
@@ -18,6 +19,7 @@ interface State {
   tags: string[];
   collectionId?: string;
   private: boolean;
+  btnLoading: boolean;
 }
 
 class ManageCollection extends React.Component<Props, State> {
@@ -30,6 +32,7 @@ class ManageCollection extends React.Component<Props, State> {
       tags: [],
       collectionId,
       private: true,
+      btnLoading: false,
     };
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -64,6 +67,7 @@ class ManageCollection extends React.Component<Props, State> {
     if (this.state.tags.length < 1) {
       return;
     }
+    this.setState({ btnLoading: true });
     axios
       .put("/collection/update", {
         title: this.state.title,
@@ -73,9 +77,12 @@ class ManageCollection extends React.Component<Props, State> {
         private: this.state.private,
       })
       .then(() => {
+        this.setState({ btnLoading: false });
         this.props.history.push(`/collection/${this.state.collectionId}`);
       })
-      .catch();
+      .catch(() => {
+        this.setState({ btnLoading: false });
+      });
   }
 
   activateCreateButton() {
@@ -91,15 +98,27 @@ class ManageCollection extends React.Component<Props, State> {
   getButton() {
     if (this.state.collectionId === "") {
       return (
-        <Button id="createButton" className="mt-2" type="submit">
+        <LoadingButton
+          loading={this.state.btnLoading}
+          id="createButton"
+          className="mt-2"
+          type="submit"
+          onClick={() => {}}
+        >
           Create Collection
-        </Button>
+        </LoadingButton>
       );
     }
     return (
-      <Button id="createButton" className="mt-2" type="submit">
+      <LoadingButton
+        loading={this.state.btnLoading}
+        id="createButton"
+        className="mt-2"
+        type="submit"
+        onClick={() => {}}
+      >
         Update Collection {"  "}
-      </Button>
+      </LoadingButton>
     );
   }
 
