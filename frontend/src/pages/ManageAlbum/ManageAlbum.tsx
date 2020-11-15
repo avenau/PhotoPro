@@ -7,6 +7,7 @@ import { RouteComponentProps } from "react-router-dom";
 import Discount from "../../components/AlbumDisplay/Discount";
 import Tags from "../../components/PhotoEdit/Tags";
 import Title from "../../components/PhotoEdit/Title";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
 
 interface Props extends RouteComponentProps<MatchParams> {}
 interface MatchParams {
@@ -19,6 +20,7 @@ interface State {
   discount: number;
   tags: string[];
   albumId?: string;
+  btnLoading: boolean;
 }
 
 class ManageAlbum extends React.Component<Props, State> {
@@ -31,6 +33,7 @@ class ManageAlbum extends React.Component<Props, State> {
       discount: 0,
       tags: [],
       albumId,
+      btnLoading: false,
     };
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -66,6 +69,7 @@ class ManageAlbum extends React.Component<Props, State> {
     if (this.state.tags.length < 1) {
       return;
     }
+    this.setState({ btnLoading: true });
     axios
       .put("/albums/update", {
         title: this.state.title,
@@ -75,9 +79,12 @@ class ManageAlbum extends React.Component<Props, State> {
         albumId: this.state.albumId,
       })
       .then(() => {
+        this.setState({ btnLoading: false });
         this.props.history.push(`/album/${this.state.albumId}`);
       })
-      .catch(() => {});
+      .catch(() => {
+        this.setState({ btnLoading: false });
+      });
   }
 
   activateCreateButton() {
@@ -93,15 +100,27 @@ class ManageAlbum extends React.Component<Props, State> {
   getButton() {
     if (this.state.albumId === "") {
       return (
-        <Button id="createButton" className="mt-2" type="submit">
+        <LoadingButton
+          loading={this.state.btnLoading}
+          id="createButton"
+          className="mt-2"
+          type="submit"
+          onClick={() => {}}
+        >
           Create Album
-        </Button>
+        </LoadingButton>
       );
     }
     return (
-      <Button id="createButton" className="mt-2" type="submit">
+      <LoadingButton
+        loading={this.state.btnLoading}
+        id="createButton"
+        className="mt-2"
+        type="submit"
+        onClick={() => {}}
+      >
         Update Album {"  "}
-      </Button>
+      </LoadingButton>
     );
   }
 

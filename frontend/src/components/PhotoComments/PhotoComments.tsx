@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
 import CommentMessage from "./CommentMessage";
+import LoadingButton from "../LoadingButton/LoadingButton";
 import "./PhotoComments.scss";
 
 interface CommentObject {
@@ -28,6 +29,7 @@ export default function PhotoComments(props: CommentProps) {
   const [commentContent, setContent] = useState("");
   const [new_to_old, setOrder] = useState(true);
   const [, setStatus] = useState(false);
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     setDate(new Date());
@@ -36,6 +38,7 @@ export default function PhotoComments(props: CommentProps) {
     event.preventDefault();
     event.stopPropagation();
     if (commentContent.length > 0) {
+      setBtnLoading(true);
       axios
         .post("/comments/postcomment", {
           token,
@@ -46,8 +49,11 @@ export default function PhotoComments(props: CommentProps) {
         .then(() => {
           clearCommentInput();
           getComments(photoId, new_to_old);
+          setBtnLoading(false);
         })
-        .catch(() => {});
+        .catch(() => {
+          setBtnLoading(false);
+        });
     }
   };
 
@@ -78,10 +84,10 @@ export default function PhotoComments(props: CommentProps) {
     setContent(value);
     if (value.length >= 8000) {
       setLimitMessage("Comments MUST be less than 8000 characters long!");
-      setValidComment(true);
+      setValidComment(false);
     } else {
       setLimitMessage("");
-      setValidComment(false);
+      setValidComment(true);
     }
   };
 
@@ -114,14 +120,16 @@ export default function PhotoComments(props: CommentProps) {
               </Form.Text>
             </Col>
             <Col md="auto">
-              <Button
-                disabled={validComment}
+              <LoadingButton
+                loading={btnLoading}
+                disabled={btnLoading ? btnLoading : !validComment}
                 variant="primary"
                 type="submit"
                 className="commentButton"
+                onClick={() => {}}
               >
                 Comment
-              </Button>
+              </LoadingButton>
             </Col>
           </Form.Row>
         </Form>

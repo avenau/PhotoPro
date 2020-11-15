@@ -11,6 +11,7 @@ import PhotoComments from "../PhotoComments/PhotoComments";
 import Price from "../Price";
 import ShowdownBadge from "../Showdown/ShowdownBadge";
 import Tags from "../TagLinks";
+import LoadingPage from "../../pages/LoadingPage";
 import "./PhotoContents.scss";
 
 interface Collection {
@@ -116,10 +117,12 @@ class PhotoContents extends React.Component<Props, State> {
       })
       .catch(() => {
         // Sleep to display the Toast long enough to read it.
-        const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay))
-        const sleepBaby = async () => {await sleep(3000)}
-        sleepBaby()
-        .then(()=> this.props.history.push('/purchases'));
+        const sleep = (delay: number) =>
+          new Promise((resolve) => setTimeout(resolve, delay));
+        const sleepBaby = async () => {
+          await sleep(3000);
+        };
+        sleepBaby().then(() => this.props.history.push("/purchases"));
       });
   }
 
@@ -345,10 +348,7 @@ class PhotoContents extends React.Component<Props, State> {
         </Container>
       </div>
     ) : (
-      <div>
-        {" "}
-        <p>{this.state.msg}</p>{" "}
-      </div>
+      <LoadingPage />
     );
   }
 }
