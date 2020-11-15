@@ -28,3 +28,19 @@ Week 5
 - Finished Manage Account, however there were some bugs for different browsers.
 - Started Photo details which is to be completed by the next sprint
 
+Week 6
+- Implemented Parts of Photo details
+
+Week 7
+- Implemented Like Button
+- Implemented Photo Details but the frontend looks very ugly
+
+Week 8
+- Got comments working, however it is not infinite scrolling, all of the comments are displayed at once
+- Implemented Tags button but it was pretty much a button linking to search which Coen implemented
+
+Week 9
+- Implemented the like button for the showdown. 
+- Finished off functionality for follow button
+- Changed like notification to toasts
+

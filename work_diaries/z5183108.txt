@@ -133,7 +133,7 @@ NEXT
 - Finish creating albums from upload and edit page.
 - Also editing albums from profile page.
 
-=======================Week 7 (Wed 28 Oct - Wed 4 Oct)=======================
+=======================Week 7 (Wed 28 Oct - Wed 4 Nov)=======================
 
 PLANNED
 I planned on finishing creating abums from upload and edit page.
@@ -155,3 +155,34 @@ NEXT
 - Help out with bug fixes and github issues
 - Docstrings
 
+=======================Week 8 (Wed 4 Nov - Wed 11 Nov)=======================
+
+PLANNED
+- Finish recommend similar for main feed
+- Finish recommend artist
+- Help out with bug fixes and github issues
+- Help out with album/collection
+
+FINISHED
+- I was able to complete recommend similar quite quickly, but needed to adjust the code throughout the week as we went due to changes from other member's code.
+- I helped build the front end for recommend artist. Coen did the backend and I based a lot of my code from Coen's user search.
+- I implemented album purchase using mongoengine and also finished off Joe's front end work on the album purchase page.
+- Fixed some album logic errors including ensuring albums have unique titles per user not the entire collection.
+- Did some bug fixes and github issues
+  - Add frontend feedback if user adds an existing email
+  - Show full album details on page.
+
+CHALLENGES
+- Time management
+- Prioritising tasks. I was orginally supposed to finish off doing albums but since it overlapped a lot with Joe's collection user story. I offloaded these tasks to focus on the main feed.
+  - Once I finished my tasks, I was able to help again with album purchase and UI.
+
+REFLECTION
+- I think I was much more productive than last week, attending more pair programming.
+- It was also nice seeing the front page come together.
+- I did well in being flexible to ensure we met all the requirements; at least given our circumstance.
+
+NEXT
+- Need to fix docstrings in the code.
+- Work on the report.
+- Frontend for collection.
