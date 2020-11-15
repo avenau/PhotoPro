@@ -1088,7 +1088,8 @@ def _welcome_get_contributors():
 
     Parameters
     ----------
-    N/A
+    offset: number
+    limit: number
 
     Returns
     -------
@@ -1098,7 +1099,10 @@ def _welcome_get_contributors():
         user : string (id)
     }]
     """
-    return dumps(get_popular_contributors_images())
+    data = request.args.to_dict()
+    data["offset"] = int(data["offset"])
+    data["limit"] = int(data["limit"])
+    return dumps(get_popular_contributors_images(data["offset"], data["limit"]))
 
 
 @app.route("/welcome/getPopularImages", methods=["GET"])

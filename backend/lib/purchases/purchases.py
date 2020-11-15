@@ -28,10 +28,13 @@ def get_purchased_photos(data):
     skip = data["offset"]
     limit = data["limit"]
     user_obj = User.objects.get(id=u_id)
-    purchased_photos = user_obj.get_all_purchased()[skip : skip + limit]
+
+    purchased_photos = user_obj.get_all_purchased()
+    purchased_photos.reverse()
+    photos_to_send = purchased_photos[skip : skip + limit]
 
     res = []
-    for photo_obj in purchased_photos:
+    for photo_obj in photos_to_send:
         tmp_dict = {}
         tmp_dict["id"] = str(photo_obj.get_id())
         tmp_dict["title"] = photo_obj.get_title()

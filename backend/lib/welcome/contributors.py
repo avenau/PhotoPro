@@ -9,7 +9,7 @@ from bson.objectid import ObjectId
 from bson.json_util import dumps
 
 
-def get_popular_contributors_images(artists=10):
+def get_popular_contributors_images(offset, limit):
     """
     Get top liked artists (default top 10) from x period of time
     return [{
@@ -18,12 +18,20 @@ def get_popular_contributors_images(artists=10):
         user : string (id)
     }]
     """
+    max = 15
+    if limit + offset > max:
+        limit = max - offset
+
+    if limit < 0:
+        return []
+
     res = PopularUser.objects.aggregate(
         [
             {"$match": {"likes": {"$gte": 0}}},
             {"$project": {"user": {"$toString": "$user"}, "likes": "$likes"}},
             {"$sort": {"likes": -1, "user": -1}},
-            {"$limit": artists},
+            {"$skip": offset},
+            {"$limit": limit},
         ]
     )
     res = json.loads(dumps(res))

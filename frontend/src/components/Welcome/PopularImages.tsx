@@ -1,20 +1,12 @@
 import React, { Component } from "react";
 import { Container } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
 import ContentLoader from "../ContentLoader/ContentLoader";
 
 interface Props {
   refreshCredits: () => void;
 }
 
-class PopularImages extends Component<Props, any> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      popularImages: [],
-    };
-  }
-
+class PopularImages extends Component<Props> {
   render() {
     // this.getPopularImagesPaths();
     return (
