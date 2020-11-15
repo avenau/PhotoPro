@@ -2155,35 +2155,5 @@ def _update_album():
 
     return {"success": "true"} if ret else {"success": "false"}
 
-
-"""
----------------
-- Test Routes -
----------------
-"""
-
-
-@app.route("/testdecorator", methods=["GET"])
-@validate_token
-def _test_decorator():
-    """
-    Testing decorator for validating token
-    Use this decorator to verify the token is
-    valid and matches the secret
-    """
-    return dumps({"success": "success"})
-
-
-@app.route("/", methods=["GET"])
-def _basic():
-    """
-    Basic Test route
-    """
-    arguments = {"first_name": "test", "colour": "test"}
-    if request.args:
-        arguments = request.args
-    return dumps(arguments)
-
-
 if __name__ == "__main__":
     app.run(port=8001, debug=True)
