@@ -5,139 +5,49 @@ PhotoPro was built using React, Python, Flask and MongoDB.
 
 # Getting started 🚀
 
-## Backend Requirements
+## Requirements
+
+Note that the following dependencies should already be installed on VLAB. Please ensure that they are.
 
 - python3
 - python3-venv
 - python3-pip
-- mongodb
-
-For all others see `requirements.txt`
-
-## Frontend Requirements
-
 - npm
-- npx
 
 All other dependencies are managed by npm in `frontend/package.json`
 
-## Running the project
+## Setting up the project on VLAB
 
-With a fresh copy of the repo install all of the requirements and build the frontend.
+Unzip our software quality submission.
 
-`./prepare.sh`
+`unzip photopro.zip`
 
-**Note: If you will be running start.sh below with `-l` you should also run prepare.sh with `-l` to download all images in the database from the server. Not applicable if you are running a local database also.**
+Change into the root directory of our application.
 
-After initially running the prepare script it does not need to be rerun unless changes are made to the code.
+`cd photopro`
 
-Start the webservers.
+Install the requirements of PhotoPro by running the `prepare.sh` script.
 
-`./start.sh`
+`./prepare.sh -l`
 
-To run the filesystem api locally instead of using the external server the start script can be ran with the `-l` flag, this will attempt to download the images/ directory from the server before running but all images will only be saved and retrieved from localhost.
+**Note: Running `-l` with `prepare.sh` is required to download all the images from our remote file system to VLAB's local file system. This is to reduce latency in our application**
 
-The website can be restarted with `./start.sh` without running `./prepare.sh` again after the initial run.
+The prepare script only needs to be run once.
 
-The start script can be run with the `-d` option to only run the backend server so frontend can be run in development mode.
+It may take 2-3 minutes to install all the dependencies.
 
-# Developer notes
+## Running the project on VLAB
 
-## Frontend
+In the photopro-JAJAC directory, run the start script to start PhotoPro.
 
-## Setup
+`./start.sh -l`
 
-**Note all of the following occurs from inside frontend/ directory**
+**Note: By running start.sh with the -l flag the user will be interacting with files on the local file system as opposed to a remote server. Note that the database is hosted on an external server, not on the user’s machine.**
 
-To run this locally you will need to first install all of the required npm packages. You can do this by running `npm install`. This installation only needs to be run when new packages have been added, it is a good idea to run `npm install` whenever you pull a new branch to avoid confusing errors of package mismatch.
+If you want to change the showdown duration for testing purposes, you can run this start script command instead.
 
-To add a dependency you can use `npm add <package-name>`, this will install the new dependency and add it to `package.json` for everyone else to use.
+`./start.sh -s <duration minutes>`
 
-If you run any of the npm commands in the root directory please note that this will not work and these changes should be reverted.
+e.g. `./start.sh -s 5` will have new showdowns starting every 5 minutes.
 
-## Running the project
-
-**Note all of the following occurs from inside frontend/ directory**
-
-The project can be run in development mode `npm start`, in this mode npm will watch for changes and update the website as you update the code. To create a production build use `npm run build`, this will create all of the minified javascript and place it in the `build/` directory (please don't commit this).
-
-### Storybook
-
-I have added another evironment where components can be tested using storybook. In this mode components are tested individually which can be useful for testing mnay combinations of inputs all at once. To run this environment use `npm run storybook`.
-
-### Linting
-
-eslint is added and runs on a slight modification to the [Airbnb style guide](https://github.com/airbnb/javascript/tree/master/react). From inside the frontend directory run the following command to lint the project `npx eslint --ext .tsx src/ -f html -o linting.html`. Additionally, quick changes such as spacing and trailing commas etc can be automatically fixed by eslint by adding `--fix` to the above command.
-
-## Backend
-
-### PyMongo
-
-https://www.w3schools.com/python/python_mongodb_getstarted.asp
-
-### Virtual Environments
-
-https://docs.python.org/3/tutorial/venv.html
-
-## Setup
-
-To run this locally you will need to have a running version of MongoDB as well as the required Python packages. These can be installed using pip from within the virtual environment (see below).
-
-### Setting up a virtual Environment
-
-A virtual environment allows us to keep all our required packages within our project. We then add the packages to our `.gitignore`. This stops our project from vommitting all over our system and leaving redundant packages once the project is finished. If you don't care, just run `pip3 install -r requirements.txt` and remember to update it manually whenever you add something new.
-
-#### Creating the virtual environment
-
-From root directory of our project:
-
-Create the python virtual environment directory (ignored in `.gitignore`):
-
-`python3 -m venv env`
-
-#### Setting your virtual environment in your current terminal
-
-Source that virtual environment before each run
-
-`source env/bin/activate`
-
-#### Leaving the virtual environment
-
-Leaving the virtual:
-
-`deactivate`
-
-#### Installing required packages
-
-Source the virtual environment so that packages are stored within our project
-
-`source env/bin/activate`
-
-Install the packages specified in `requirements.txt`
-
-`pip3 install -r requirements.txt`
-
-#### Adding packages to the project
-
-After sourcing the environment:
-
-`pip3 install foo`
-
-or for specific version
-
-`pip3 install foo==3.1.2`
-
-Saving this package to the list of requirements:
-
-`pip3 freeze > requirements.txt`
-
-### Setting up Flask app environment
-
-The backend app settings can be configured in `config.py` in file path `backend/config.py`.
-
-You can use either use the development or production configuration.
-
-- Development: sets flask in testing mode and uploads information to the local mongo database.
-- Production: sets flask in production mode and uploads infomation to a remote server mongo database.
-
-Change the line `app.config.from_object({Configuration})` in `app.py`, replacing configuration to the configuration class you want Flask to adhere to.
+And you're done 😎. You can start using PhotoPro!

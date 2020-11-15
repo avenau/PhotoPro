@@ -104,11 +104,11 @@ import lib
 from lib.token_functions import get_uid
 
 # Config
-from config import DevelopmentConfig, defaultHandler
+from config import DevelopmentConfig, ProductionConfig, defaultHandler
 
 
 app = Flask(__name__)
-app.config.from_object(DevelopmentConfig)
+app.config.from_object(ProductionConfig)
 app.register_error_handler(Error.CustomError, defaultHandler)
 CORS(app)
 bcrypt = Bcrypt(app)

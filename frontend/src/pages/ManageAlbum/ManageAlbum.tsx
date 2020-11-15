@@ -14,7 +14,6 @@ interface MatchParams {
 }
 
 interface State {
-  uId: string;
   token: string;
   title: string;
   discount: number;
@@ -27,7 +26,6 @@ class ManageAlbum extends React.Component<Props, State> {
     super(props);
     const albumId = this.props.match.params.album_id;
     this.state = {
-      uId: String(localStorage.getItem("u_id")),
       token: String(localStorage.getItem("token")),
       title: "",
       discount: 0,
@@ -51,7 +49,7 @@ class ManageAlbum extends React.Component<Props, State> {
         .get(`/album?token=${token}&album_id=${albumId}`)
         .then((res) => {
           if (res.data) {
-            document.title = `Manage ${res.data.tile} | PhotoPro`;
+            document.title = `Manage ${res.data.title} | PhotoPro`;
             this.setState({
               title: res.data.title,
               discount: res.data.discount,

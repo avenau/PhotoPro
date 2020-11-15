@@ -38,7 +38,7 @@ class PhotoDNE(CustomError):
 
     code = 400
     message = "No message specified"
-    toast = False
+    toast = True
 
 
 class ValueError(CustomError):

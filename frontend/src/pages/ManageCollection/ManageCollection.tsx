@@ -48,7 +48,7 @@ class ManageCollection extends React.Component<Props, State> {
         .get(`/collection/get?token=${token}&collectionId=${collectionId}`)
         .then((res) => {
           if (res.data) {
-            document.title = `Manage ${res.data.tile} | PhotoPro`;
+            document.title = `Manage ${res.data.title} | PhotoPro`;
             this.setState({
               title: res.data.title,
               tags: res.data.tags,
