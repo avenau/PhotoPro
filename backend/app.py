@@ -1251,7 +1251,6 @@ def _update_photo():
     success: boolean
     """
     these_photo_details = request.form.to_dict()
-    print(these_photo_details)
     # Update either price, title, keywords or add discount
     return dumps(update_photo_details(these_photo_details))
 
@@ -1666,7 +1665,6 @@ def _get_collection():
         originalPrice: int
     }
     """
-    print(request.args)
     token = request.args.get("token")
     collection_id = request.args.get("collectionId")
     _user = user.User.objects.get(id=token_functions.get_uid(token))
@@ -2154,6 +2152,7 @@ def _update_album():
     )
 
     return {"success": "true"} if ret else {"success": "false"}
+
 
 if __name__ == "__main__":
     app.run(port=8001, debug=True)

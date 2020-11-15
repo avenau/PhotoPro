@@ -156,7 +156,6 @@ def photo_search(data):
         req_user = get_uid(data["token"])
         this_user = User.objects.get(id=req_user)
         if query != "":
-            print(this_user.get_searches())
             this_user.add_search(query)
             this_user.save()
     except:
