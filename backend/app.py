@@ -442,6 +442,8 @@ def password_check():
         data["password"] = "false"
 
     return data
+
+
 @app.route("/userdetails", methods=["GET"])
 @validate_token
 def _user_info_with_token():
@@ -479,11 +481,13 @@ def _user_info_with_token():
         }
     )
 
+
 """
 --------------------
 - Profile Routes -
 --------------------
 """
+
 
 @app.route("/profiledetails", methods=["GET"])
 def _profile_details():
@@ -513,6 +517,7 @@ def _profile_details():
     data = request.args.to_dict()
     return dumps(get_profile_details(data))
 
+
 @app.route("/collection/thumbnail", methods=["GET"])
 def _collection_thumbnail():
     """
@@ -540,6 +545,7 @@ def _collection_thumbnail():
 - Purchases Routes -
 --------------------
 """
+
 
 @app.route("/user/photos", methods=["GET"])
 def _get_photo_from_user():
@@ -673,6 +679,7 @@ def _get_following_from_user():
     data["limit"] = int(data["limit"])
 
     return dumps(user_following_search(data))
+
 
 @app.route("/user/follow", methods=["POST"])
 @validate_token
@@ -1040,6 +1047,7 @@ def _count_showdown_wins(type):
         }
     )
 
+
 @app.route("/showdown/end", methods=["GET"])
 def _end_showdown():
     """
@@ -1062,6 +1070,7 @@ def _end_showdown():
     end_showdown()
     initialise_schedule(app.config["SHOWDOWN_LENGTH"])
     return dumps({})
+
 
 """
 --------------------
@@ -1158,11 +1167,13 @@ def welcome_recommend_photos():
     data["limit"] = int(data["limit"])
     return dumps(recommend_photos(data))
 
+
 """
 --------------------------
 - Upload/Edit Photo Routes -
 --------------------------
 """
+
 
 @app.route("/user/uploadphoto", methods=["POST"])
 @validate_token
@@ -1303,6 +1314,7 @@ def _user_remove_photo():
 ---------------
 """
 
+
 @app.route("/search/user", methods=["GET"])
 def _search_user():
     """
@@ -1437,11 +1449,13 @@ def _search_album():
 
     return dumps(album_search(data))
 
+
 """
 ----------------------
 - Photo Details Routes -
 ----------------------
 """
+
 
 @app.route("/photodetailspage", methods=["GET"])
 def _photo_details_page():
@@ -1880,11 +1894,13 @@ def _add_collection_photo():
 
     return dumps(new_collections)
 
+
 """
 ---------------
 - Album Routes -
 ---------------
 """
+
 
 @app.route("/album", methods=["GET"])
 @validate_token
@@ -1953,6 +1969,7 @@ def _album_thumbnail():
     except:
         u_id = ""
     return dumps(catalogue_thumbnail(_album, u_id))
+
 
 @app.route("/album/delete", methods=["DELETE"])
 @validate_token
