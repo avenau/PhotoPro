@@ -62,4 +62,4 @@ then
   exit 1
 fi
 
-echo '========== Preperation complete! Project is read to be run :) =============='
+echo '========== Preparation complete! Project is read to be run :) =============='
