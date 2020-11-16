@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
+import { Col, Container, Dropdown, Form, Row } from "react-bootstrap";
 import CommentMessage from "./CommentMessage";
 import LoadingButton from "../LoadingButton/LoadingButton";
 import "./PhotoComments.scss";
@@ -122,7 +122,7 @@ export default function PhotoComments(props: CommentProps) {
             <Col md="auto">
               <LoadingButton
                 loading={btnLoading}
-                disabled={btnLoading ? btnLoading : !validComment}
+                disabled={btnLoading || !validComment}
                 variant="primary"
                 type="submit"
                 className="commentButton"

@@ -1,5 +1,4 @@
 import React from "react";
-import Card from "react-bootstrap/Card";
 import axios from "axios";
 
 interface AlbumSavingsProps {
@@ -8,7 +7,6 @@ interface AlbumSavingsProps {
 
 interface AlbumSavingsState {
   originalPrice: number;
-  discountedPrice: number;
   savings: number;
   yourPrice: number;
   rawAlbumDiscount: number;
@@ -24,7 +22,6 @@ export default class AlbumSavings extends React.Component<
     this.state = {
       albumId: props.albumId,
       originalPrice: 0,
-      discountedPrice: 0,
       savings: 0,
       yourPrice: 0,
       rawAlbumDiscount: 0,

@@ -6,7 +6,7 @@ import AlbumDisplay from "../../components/AlbumDisplay/AlbumDisplay";
 import AlbumHeader from "../../components/AlbumDisplay/AlbumHeader";
 import ContentLoader from "../../components/ContentLoader/ContentLoader";
 import Tags from "../../components/TagLinks";
-import LoadingPage from "../../pages/LoadingPage";
+import LoadingPage from "../LoadingPage";
 
 interface Props extends RouteComponentProps<MatchParams> {
   isOwner: boolean;

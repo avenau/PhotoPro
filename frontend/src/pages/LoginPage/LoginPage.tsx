@@ -1,13 +1,12 @@
 import React from "react";
-import LoadingButton from "../../components/LoadingButton/LoadingButton";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Container from "react-bootstrap/Container";
-import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import axios from "axios";
 import { RouteChildrenProps } from "react-router-dom";
+import LoadingButton from "../../components/LoadingButton/LoadingButton";
 
 export default class LoginPage extends React.Component<
   RouteChildrenProps,
@@ -97,7 +96,7 @@ export default class LoginPage extends React.Component<
                   loading={this.state.btnLoading}
                   type="submit"
                   size="lg"
-                  onClick={(e) => {}}
+                  onClick={() => {}}
                 >
                   Log In
                 </LoadingButton>

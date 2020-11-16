@@ -11,10 +11,6 @@ interface Props {
 }
 
 export default class ArtistThumbnail extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
-
   private getPic() {
     if (_.isEqual(this.props.artistImg, ["", ""])) {
       return profilePic;
@@ -44,4 +40,3 @@ export default class ArtistThumbnail extends React.Component<Props> {
     );
   }
 }
-
