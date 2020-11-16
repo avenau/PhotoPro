@@ -78,3 +78,4 @@ __Week 10__
 
 - Worked on writing the report
 - Worked on preparing for the final presentation
+- Bug fixes
