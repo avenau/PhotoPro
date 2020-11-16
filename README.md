@@ -20,7 +20,7 @@ All other dependencies are managed by npm in `frontend/package.json`
 
 Unzip our software quality submission.
 
-`unzip photopro.zip`
+`unzip project.zip -d photopro`
 
 Change into the root directory of our application.
 
@@ -38,7 +38,7 @@ It may take 2-3 minutes to install all the dependencies.
 
 ## Running the project on VLAB
 
-In the photopro-JAJAC directory, run the start script to start PhotoPro.
+In the photopro directory, run the start script to start PhotoPro.
 
 `./start.sh -l`
 
