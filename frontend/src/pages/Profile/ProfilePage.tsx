@@ -86,7 +86,6 @@ class ProfilePage extends React.Component<Props, State> {
 
   /** Return add button if current user */
   private createAddButton() {
-    // TODO Edit these links when the pages exist
     return (
       <Dropdown>
         <Dropdown.Toggle

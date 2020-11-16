@@ -41,11 +41,11 @@ def defaultHandler(err):
 
     Parameters
     ----------
-    TODO
+    Error object
 
     Returns
     -------
-    TODO
+    JSON response
     """
     response = err.get_response()
     response.data = dumps(
