@@ -20,7 +20,7 @@ All other dependencies are managed by npm in `frontend/package.json`
 
 Unzip our software quality submission.
 
-`unzip project.zip -d photopro`
+`unzip project.zip`
 
 Change into the root directory of our application.
 
