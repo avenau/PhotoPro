@@ -1,8 +1,8 @@
 import axios from "axios";
 import React from "react";
 import { HandThumbsUp } from "react-bootstrap-icons";
-import HoverText from "./HoverText";
-import LoadingButton from "./LoadingButton/LoadingButton";
+import HoverText from "../HoverText";
+import LoadingButton from "../LoadingButton/LoadingButton";
 
 interface LikeProps {
   pId: string;
