@@ -161,6 +161,17 @@ def photo_search(data):
     except:
         req_user = ""
 
+    # If signed in
+    if req_user:
+        this_user_oid = ObjectId(req_user)
+        searcher_purchases = this_user.get_purchased()
+        for idx, purchase in enumerate(searcher_purchases):
+            searcher_purchases[idx] = ObjectId(purchase.get_id())
+    else:
+        this_user_oid = None
+        searcher_purchases = []
+
+
     price_filter = [{"price": {"$gt": float(data["priceMin"])}}]
 
     if float(data["priceMax"]) != -1:
@@ -206,6 +217,8 @@ def photo_search(data):
                             ]
                         }
                     },
+                    "owns": {"$or":
+                            [{"$in": ["$_id", searcher_purchases]}, {"$eq": ["$user", this_user_oid]}]},
                     "_id": 0,
                 }
             },
@@ -217,17 +230,17 @@ def photo_search(data):
     )
     res = loads(dumps(res))
 
-    # If signed in
-    if req_user:
-        req_user_obj = User.objects.get(id=req_user)
+    # # If signed in
+    # if req_user:
+    #     req_user_obj = User.objects.get(id=req_user)
 
     for result in res:
         cur_photo = Photo.objects.get(id=result["id"])
         result["metadata"], result["photoStr"] = cur_photo.get_thumbnail(req_user)
-        if req_user:
-            result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (
-                cur_photo.is_photo_owner(req_user_obj)
-            )
+        # if req_user:
+        #     result["owns"] = (cur_photo in req_user_obj.get_all_purchased()) or (
+        #         cur_photo.is_photo_owner(req_user_obj)
+        #     )
 
     return res
 
