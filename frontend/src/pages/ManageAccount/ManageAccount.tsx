@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
 import UserDetails from "../../components/AccountManagement/UserDetails";
 import LoadingButton from "../../components/LoadingButton/LoadingButton";
+import BackButton from "../../components/BackButton/BackButton";
 import countries from "../../constants";
 import "./ManageAccount.scss";
 
@@ -161,9 +162,12 @@ export default function ManageAccount(props: any) {
 
   return (
     <>
-      <br />
+      <BackButton
+        href={`/user/${localStorage.getItem("u_id")}`}
+        label="Back to Profile"
+      />
       <Container>
-        <h1>Change account details</h1>
+        <h1>Change Account Details</h1>
         <UserDetails
           validateFeedback={validateFeedback}
           validPassword={validPassword}

@@ -132,7 +132,7 @@ class BuyCreditsPage extends React.Component<RouteChildrenProps, State> {
     return (
       <div className="buyCreditsPage">
         <BackButton href="/purchases" label="Purchases" />
-        <Container className="mt-5">
+        <Container>
           <Row>
             <Col>
               <Jumbotron id="creditsJumbotron">

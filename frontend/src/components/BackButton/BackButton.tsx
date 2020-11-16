@@ -9,7 +9,7 @@ interface BackButtonProps {
 
 export default function BackButton(props: BackButtonProps) {
   return (
-    <Button className="ml-3" href={props.href}>
+    <Button className="ml-3 mt-3" href={props.href}>
       <ArrowLeft />
       {` ${props.label}`}
     </Button>

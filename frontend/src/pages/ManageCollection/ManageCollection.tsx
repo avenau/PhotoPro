@@ -6,6 +6,8 @@ import { RouteComponentProps } from "react-router-dom";
 import Tags from "../../components/PhotoEdit/Tags";
 import Title from "../../components/PhotoEdit/Title";
 import LoadingButton from "../../components/LoadingButton/LoadingButton";
+import BackButton from "../../components/BackButton/BackButton";
+import LoadingPage from "../../pages/LoadingPage";
 
 interface Props extends RouteComponentProps<MatchParams> {}
 interface MatchParams {
@@ -19,6 +21,7 @@ interface State {
   collectionId?: string;
   private: boolean;
   btnLoading: boolean;
+  pageLoading: boolean;
 }
 
 class ManageCollection extends React.Component<Props, State> {
@@ -32,6 +35,7 @@ class ManageCollection extends React.Component<Props, State> {
       collectionId,
       private: true,
       btnLoading: false,
+      pageLoading: true,
     };
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -55,8 +59,12 @@ class ManageCollection extends React.Component<Props, State> {
               title: res.data.title,
               tags: res.data.tags,
               private: res.data.private,
+              pageLoading: false,
             });
           }
+        })
+        .catch(() => {
+          this.setState({ pageLoading: false });
         });
     }
   }
@@ -122,10 +130,16 @@ class ManageCollection extends React.Component<Props, State> {
   }
 
   render() {
-    return (
+    return this.state.pageLoading ? (
+      <LoadingPage />
+    ) : (
       <div className="createAlbumPage">
-        <Container className="mt-5">
-          <h1>Manage your collection</h1>
+        <BackButton
+          href={`/collection/${this.state.collectionId}`}
+          label="Back to Collection"
+        />
+        <Container>
+          <h1>Manage your Collection</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Title
               titleType="Collection"
