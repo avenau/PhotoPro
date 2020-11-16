@@ -170,7 +170,7 @@ export default class ContentLoader extends React.Component<Props, State> {
             <Spinner
               animation="border"
               role="status"
-              style={{ display: "block", margin: "40px" }}
+              style={{ display: "block", margin: "40px auto" }}
               key="spin"
             >
               <span className="sr-only">Loading...</span>
