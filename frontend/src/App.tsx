@@ -8,7 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Toolbar from "./components/Toolbar/Toolbar";
 import AlbumDetails from "./pages/AlbumDetails/AlbumDetails";
 import CollectionDetails from "./pages/CollectionDetails/CollectionDetails";
-import DoesNotExistPage from "./pages/DoesNotExistPage";
+import DoesNotExistPage from "./pages/DoesNotExistPage/DoesNotExistPage";
 import EditPhoto from "./pages/EditPhoto";
 import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ForgotPassword/ResetPasswordPage";
