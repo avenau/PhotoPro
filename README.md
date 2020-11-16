@@ -28,9 +28,9 @@ Change into the root directory of our application.
 
 Install the requirements of PhotoPro by running the `prepare.sh` script.
 
-`./prepare.sh -l`
+`./prepare.sh -l -r`
 
-**Note: Running `-l` with `prepare.sh` is required to download all the images from our remote file system to VLAB's local file system. This is to reduce latency in our application**
+**Note: Running `-l` with `prepare.sh` is required to download all the images from our remote file system to VLAB's local file system as all logic is required to run on VLAB. Running `-r` with `prepare.sh` will reset the remote database to a pre-saved state, this is to ensure stability between the required local filesystem and remote database.**
 
 The prepare script only needs to be run once.
 

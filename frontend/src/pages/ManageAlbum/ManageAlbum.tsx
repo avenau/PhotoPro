@@ -1,13 +1,14 @@
 import axios from "axios";
 import React from "react";
-import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import { RouteComponentProps } from "react-router-dom";
+import LoadingPage from "../LoadingPage";
 import Discount from "../../components/AlbumDisplay/Discount";
 import Tags from "../../components/PhotoEdit/Tags";
 import Title from "../../components/PhotoEdit/Title";
 import LoadingButton from "../../components/LoadingButton/LoadingButton";
+import BackButton from "../../components/BackButton/BackButton";
 
 interface Props extends RouteComponentProps<MatchParams> {}
 interface MatchParams {
@@ -21,6 +22,7 @@ interface State {
   tags: string[];
   albumId?: string;
   btnLoading: boolean;
+  pageLoading: boolean;
 }
 
 class ManageAlbum extends React.Component<Props, State> {
@@ -34,6 +36,7 @@ class ManageAlbum extends React.Component<Props, State> {
       tags: [],
       albumId,
       btnLoading: false,
+      pageLoading: true,
     };
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -57,10 +60,13 @@ class ManageAlbum extends React.Component<Props, State> {
               title: res.data.title,
               discount: res.data.discount,
               tags: res.data.tags,
+              pageLoading: false,
             });
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          this.setState({ pageLoading: false });
+        });
     }
   }
 
@@ -125,10 +131,16 @@ class ManageAlbum extends React.Component<Props, State> {
   }
 
   render() {
-    return (
+    return this.state.pageLoading ? (
+      <LoadingPage />
+    ) : (
       <div className="createAlbumPage">
-        <Container className="mt-5">
-          <h1>Manage your album</h1>
+        <BackButton
+          href={`/album/${this.state.albumId}`}
+          label="Back to Album"
+        />
+        <Container>
+          <h1>Manage your Album</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Title
               titleType="Album"

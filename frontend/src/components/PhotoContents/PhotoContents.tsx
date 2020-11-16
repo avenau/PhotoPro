@@ -3,11 +3,11 @@ import React from "react";
 import { Col, Container, Image, Row } from "react-bootstrap";
 import { ArrowDownSquare, CartPlus, PencilSquare } from "react-bootstrap-icons";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import BookmarkButton from "../BookmarkButton";
+import BookmarkButton from "./BookmarkButton";
 import HoverText from "../HoverText";
-import LikeButton from "../LikeButton";
+import LikeButton from "./LikeButton";
 import LoadingButton from "../LoadingButton/LoadingButton";
-import PhotoComments from "../PhotoComments/PhotoComments";
+import PhotoComments from "./PhotoComments";
 import Price from "../Price";
 import ShowdownBadge from "../Showdown/ShowdownBadge";
 import Tags from "../TagLinks";
@@ -51,7 +51,6 @@ interface State {
   isArtist: boolean;
   comments: Comment[];
   loading: boolean;
-  msg: string;
   collections: Collection[];
   downloadBtnLoading: boolean;
   purchaseBtnLoading: boolean;
@@ -76,7 +75,6 @@ class PhotoContents extends React.Component<Props, State> {
       isArtist: false,
       comments: [],
       loading: true,
-      msg: "Loading...",
       collections: [],
       downloadBtnLoading: false,
       purchaseBtnLoading: false,

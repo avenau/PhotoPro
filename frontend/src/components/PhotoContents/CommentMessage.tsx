@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button";
 import { Row, Col } from "react-bootstrap";
 import profilePic from "../../static/profile-pic.png";
 import "./CommentMessage.scss";
-import HoverText from "../HoverText"
+import HoverText from "../HoverText";
 
 interface MessageProp {
   message: string;
@@ -52,7 +52,8 @@ export default function CommentMessage(props: MessageProp) {
       })
       .then(() => {
         props.getComments(p_id, props.new_to_old);
-      });
+      })
+      .catch(() => {});
   };
 
   function getPic() {
@@ -83,7 +84,11 @@ export default function CommentMessage(props: MessageProp) {
       <Card.Header>
         <a
           href={`/user/${props.author_id}`}
-          style={{textDecoration: "none", backgroundColor: "none", color: "black"}}
+          style={{
+            textDecoration: "none",
+            backgroundColor: "none",
+            color: "black",
+          }}
         >
           <b>{props.author}</b>
         </a>
@@ -94,17 +99,14 @@ export default function CommentMessage(props: MessageProp) {
               helpfulText="Delete Comment"
               placement="left"
             >
-              <Button
-                onClick={DeleteComment}
-                variant="light"
-              >
+              <Button onClick={DeleteComment} variant="light">
                 <Trash />
               </Button>
             </HoverText>
           </div>
-          ) : (
-            <></>
-          )}
+        ) : (
+          <></>
+        )}
       </Card.Header>
       <Card.Body>
         <Row>
@@ -113,7 +115,7 @@ export default function CommentMessage(props: MessageProp) {
               <Card.Img
                 src={getPic()}
                 className="thumbnail"
-                alt="userThumbnail" 
+                alt="userThumbnail"
               />
             </a>
           </Col>

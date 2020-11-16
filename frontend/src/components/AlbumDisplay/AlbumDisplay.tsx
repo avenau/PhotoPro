@@ -1,12 +1,9 @@
 import React from "react";
 
-import Container from "react-bootstrap/Container";
-import Button from "react-bootstrap/Button";
 import axios from "axios";
 import { RouteComponentProps, withRouter, Link } from "react-router-dom";
 import Savings from "./Savings";
-import Album from "../PhotoEdit/Album";
-import LoadingButton from "../../components/LoadingButton/LoadingButton";
+import LoadingButton from "../LoadingButton/LoadingButton";
 import "./AlbumDisplay.scss";
 
 interface AlbumDisplayProps extends RouteComponentProps {
@@ -23,12 +20,7 @@ interface AlbumDisplayProps extends RouteComponentProps {
 }
 
 interface AlbumDisplayState {
-  albumTitle?: string;
-  discount?: number;
-  tags?: string[];
-  photos?: string[];
   albumId: string;
-  purchased: boolean;
   purchaseBtnLoading: boolean;
 }
 
@@ -39,12 +31,7 @@ class AlbumDisplay extends React.Component<
   constructor(props: AlbumDisplayProps) {
     super(props);
     this.state = {
-      albumTitle: props.albumTitle,
-      discount: props.discount,
-      tags: props.tags,
-      photos: props.photos,
       albumId: props.albumId,
-      purchased: false,
       purchaseBtnLoading: false,
     };
   }
@@ -57,7 +44,7 @@ class AlbumDisplay extends React.Component<
         token,
         albumId: this.state.albumId,
       })
-      .then((res) => {
+      .then(() => {
         this.props.setPurchased(true);
         this.setState({ purchaseBtnLoading: false });
         window.location.reload();
@@ -67,29 +54,31 @@ class AlbumDisplay extends React.Component<
       });
   }
 
+  getPurchaseButton() {
+    if (this.props.isOwner) return <></>;
+    if (this.props.purchased)
+      return <p>You own all the photos in this album!</p>;
+
+    return (
+      <LoadingButton
+        loading={this.state.purchaseBtnLoading}
+        onClick={() => {
+          this.purchaseAlbum();
+        }}
+      >
+        Purchase
+      </LoadingButton>
+    );
+  }
+
   render() {
     return (
       <>
-        <Link to={`/user/${this.props.owner}`}>
-          By @​​​​​​​{this.props.nickname}
-        </Link>
+        <Link to={`/user/${this.props.owner}`}>By @{this.props.nickname}</Link>
         <div className="album-price-display">
           <Savings albumId={this.state.albumId} />
         </div>
-        {this.props.isOwner ? (
-          <></>
-        ) : this.props.purchased ? (
-          <p>You own all the photos in this album!</p>
-        ) : (
-          <LoadingButton
-            loading={this.state.purchaseBtnLoading}
-            onClick={() => {
-              this.purchaseAlbum();
-            }}
-          >
-            Purchase
-          </LoadingButton>
-        )}
+        {this.getPurchaseButton()}
       </>
     );
   }

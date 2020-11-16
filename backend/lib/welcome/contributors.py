@@ -27,7 +27,7 @@ def get_popular_contributors_images(offset, limit):
 
     res = PopularUser.objects.aggregate(
         [
-            {"$match": {"likes": {"$gte": 0}}},
+            {"$match": {"likes": {"$gte": 1}}},
             {"$project": {"user": {"$toString": "$user"}, "likes": "$likes"}},
             {"$sort": {"likes": -1, "user": -1}},
             {"$skip": offset},

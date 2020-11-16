@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import axios from "axios";
-import HoverText from "./HoverText";
+import HoverText from "../HoverText";
 
 interface Collection {
   title: string;

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 
-// Todo fix types
 export default function Title(props: any) {
   const [titleErrMsg, setErrMsg] = useState("");
 

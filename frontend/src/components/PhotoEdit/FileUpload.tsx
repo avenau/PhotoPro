@@ -17,7 +17,7 @@ export default function FileUpload(props: Props) {
     event.preventDefault();
 
     const path = event.target.value;
-    const match = path.toLowerCase().match(/\.[^\.]*$/);
+    const match = path.toLowerCase().match(/\.[^.]*$/);
     const fileExtension = match !== null ? match[0] : "";
     if (!fileExtension) {
       setErrMsg(
@@ -42,6 +42,7 @@ export default function FileUpload(props: Props) {
       props.pickedPhoto(false);
       props.onChange(null);
       props.deactivateUploadButton();
+      // eslint-disable-next-line no-param-reassign
       event.target.value = "";
     } else {
       setErrMsg("");
@@ -50,9 +51,9 @@ export default function FileUpload(props: Props) {
       props.activateUploadButton();
       // Set image preview
       // Source: https://stackoverflow.com/questions/4459379/preview-an-image-before-it-is-uploaded
-      event.target.files instanceof FileList
-        ? props.setPreview(URL.createObjectURL(event.target.files[0]))
-        : setErrMsg("This should never happen.");
+      if (event.target.files instanceof FileList)
+        props.setPreview(URL.createObjectURL(event.target.files[0]));
+      else setErrMsg("This should never happen.");
     }
   }
 

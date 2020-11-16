@@ -2,8 +2,9 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
 import UserDetails from "../../components/AccountManagement/UserDetails";
+import LoadingPage from "../LoadingPage";
 import LoadingButton from "../../components/LoadingButton/LoadingButton";
-import Toolbar from "../../components/Toolbar/Toolbar";
+import BackButton from "../../components/BackButton/BackButton";
 import countries from "../../constants";
 import "./ManageAccount.scss";
 
@@ -30,7 +31,7 @@ export default function ManageAccount(props: any) {
   const [validPassword, setValidPass] = useState(true);
   const [password, setPassword] = useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [btnLoading, setBtnLoading] = useState(false);
 
   // Profile pic stuff
   const [profilePicInput, setProfilePicInput] = useState<HTMLElement | null>();
@@ -43,6 +44,8 @@ export default function ManageAccount(props: any) {
   const [inputPassword, setInputPassword] = useState("");
   const [passwordFeedback, setPassFeedback] = useState("");
 
+  const [pageLoading, setPageLoading] = useState(true);
+
   useEffect(() => {
     getUserInfo();
     document.title = "Manage Account | PhotoPro";
@@ -50,11 +53,12 @@ export default function ManageAccount(props: any) {
   const getUserInfo = () => {
     const token = localStorage.getItem("token");
     if (token !== null) {
-      setLoading(true);
+      setBtnLoading(true);
       axios
         .get(`/userdetails?token=${token}`)
         .then((response) => {
-          setLoading(false);
+          setBtnLoading(false);
+          setPageLoading(false);
           setODetails({
             fname: response.data.fname,
             lname: response.data.lname,
@@ -73,7 +77,8 @@ export default function ManageAccount(props: any) {
           }
         })
         .catch(() => {
-          setLoading(false);
+          setBtnLoading(false);
+          setPageLoading(false);
         });
     }
   };
@@ -88,7 +93,7 @@ export default function ManageAccount(props: any) {
     if (event) {
       event.preventDefault();
     }
-    setLoading(true);
+    setBtnLoading(true);
 
     axios
       .post("/manageaccount/confirm", {
@@ -96,7 +101,7 @@ export default function ManageAccount(props: any) {
         token: localStorage.getItem("token"),
       })
       .then((response) => {
-        setLoading(false);
+        setBtnLoading(false);
         if (response.data.password === "true") {
           saveDetails();
         } else {
@@ -104,7 +109,7 @@ export default function ManageAccount(props: any) {
         }
       })
       .catch(() => {
-        setLoading(false);
+        setBtnLoading(false);
       });
   }
 
@@ -113,7 +118,7 @@ export default function ManageAccount(props: any) {
       setFormInput({ ...formInput, password });
     }
     setProfilePic().then((response: any) => {
-      setLoading(true);
+      setBtnLoading(true);
       axios
         .post("/manageaccount/success", {
           ...oDetails,
@@ -122,18 +127,18 @@ export default function ManageAccount(props: any) {
           extension: response[1] ? response[1] : originalExtension,
           token: localStorage.getItem("token"),
         })
-        .then((r:any) => {
+        .then((r: any) => {
           if (r.status !== 200) {
             throw new Error();
           }
-          setLoading(false);
+          setBtnLoading(false);
           const id = localStorage.getItem("u_id");
-          if(r.data.nickname)
-            localStorage.setItem('nickname', r.data.nickname);
+          if (r.data.nickname)
+            localStorage.setItem("nickname", r.data.nickname);
           props.history.push(`/user/${id}`);
         })
         .catch(() => {
-          setLoading(false);
+          setBtnLoading(false);
           setShow(false);
         });
       setFeedback(true);
@@ -160,11 +165,16 @@ export default function ManageAccount(props: any) {
     });
   }
 
-  return (
-    <>
-      <br />
+  return pageLoading ? (
+    <LoadingPage />
+  ) : (
+    <div>
+      <BackButton
+        href={`/user/${localStorage.getItem("u_id")}`}
+        label="Back to Profile"
+      />
       <Container>
-        <h1>Change account details</h1>
+        <h1>Change Account Details</h1>
         <UserDetails
           validateFeedback={validateFeedback}
           validPassword={validPassword}
@@ -182,8 +192,7 @@ export default function ManageAccount(props: any) {
           setHasProfilePic={setHasProfilePic}
           handleSubmit={handleSubmit}
         />
-        {/* Added animation={false} due to bug in bootstrap-React
-          https://github.com/react-bootstrap/react-bootstrap/issues/5075 */}
+        {/* Added animation={</div>react-bootstrap/react-bootstrap/issues/5075 */}
         <Modal show={showModal} onHide={() => setShow(false)} animation={false}>
           <Modal.Header closeButton />
           <Form onSubmit={(e) => checkPassword(e)} className="p-3">
@@ -208,7 +217,7 @@ export default function ManageAccount(props: any) {
                 variant="primary"
                 type="submit"
                 onClick={() => {}}
-                loading={loading}
+                loading={btnLoading}
                 className="mr-2"
               >
                 Save Change
@@ -225,6 +234,6 @@ export default function ManageAccount(props: any) {
           </Form>
         </Modal>
       </Container>
-    </>
+    </div>
   );
 }

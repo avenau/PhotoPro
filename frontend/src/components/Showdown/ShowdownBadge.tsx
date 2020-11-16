@@ -34,7 +34,8 @@ export default class ShowdownBadge extends React.Component<Props, State> {
         this.setState({
           count: res.data.wins,
         });
-      });
+      })
+      .catch(() => {});
   }
 
   render() {

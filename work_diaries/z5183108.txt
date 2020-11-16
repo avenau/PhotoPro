@@ -186,3 +186,25 @@ NEXT
 - Need to fix docstrings in the code.
 - Work on the report.
 - Frontend for collection.
+
+=======================Week 9 (Wed 11 Nov - Mon 16 Nov)=======================
+
+PLANNED
+
+- Need to fix docstrings in the code.
+- Work on the report.
+- Frontend for collection.
+
+FINISHED
+
+- All of above
+  - In the report, I worked on sections in the overview, third party functionalities, implementation challenges, user manual and references.
+- Helped redesign the photo details page.
+- Uploaded photos to photopro for the demo
+- Helped fix some minor bugs here and there (support through team programming)
+
+REFLECTION
+- I think all went well this week in terms of supporting the team where I needed to.
+
+NEXT
+- Practice demo

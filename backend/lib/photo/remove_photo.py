@@ -48,7 +48,6 @@ def remove_photo(u_id, identifier):
     except Exception:
         print(traceback.format_exc())
         raise Error.ValidationError("Could not delete photo")
-    # TODO: Do we need to remove the photo from the directory?
 
     return True
 

@@ -28,8 +28,8 @@ export default function Price(props: any) {
           onChange={(e) => setPrice(Number(e.target.value))}
         />
         <Form.Text className="text-muted priceInfo">
-          Price must be a positive whole number, or 0 if you'd like to release
-          your photo for free.
+          Price must be a positive whole number, or 0 if you&apos;d like to
+          release your photo for free.
           <p className="error">{priceErrMsg}</p>
         </Form.Text>
       </Form.Group>

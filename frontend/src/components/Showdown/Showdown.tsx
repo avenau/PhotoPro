@@ -71,7 +71,6 @@ class Showdown extends React.Component<Props, State> {
   }
 
   render() {
-    // TODO update this to use loading spinner
     return (
       <div className="showdown-container">
         <div className="subcontainer">

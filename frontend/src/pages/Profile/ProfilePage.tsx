@@ -6,10 +6,10 @@ import Modal from "react-bootstrap/Modal";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import ContentLoader from "../components/ContentLoader/ContentLoader";
-import CreateCatalogueModal from "../components/ProfilePage/CreateCatalogueModal";
-import UserHeader from "../components/UserHeader/UserHeader";
-import LoadingPage from "./LoadingPage";
+import ContentLoader from "../../components/ContentLoader/ContentLoader";
+import CreateCatalogueModal from "../../components/ProfilePage/CreateCatalogueModal";
+import UserHeader from "../../components/UserHeader/UserHeader";
+import LoadingPage from "../LoadingPage";
 import "./Profile.scss";
 
 interface Props extends RouteComponentProps {
@@ -86,7 +86,6 @@ class ProfilePage extends React.Component<Props, State> {
 
   /** Return add button if current user */
   private createAddButton() {
-    // TODO Edit these links when the pages exist
     return (
       <Dropdown>
         <Dropdown.Toggle
@@ -107,7 +106,7 @@ class ProfilePage extends React.Component<Props, State> {
               this.props.history.push("/upload");
             }}
           >
-            Upload Photo
+            Upload a Photo
           </Dropdown.Item>
           <Dropdown.Item
             as="button"

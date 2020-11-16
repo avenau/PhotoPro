@@ -3,7 +3,7 @@
 # Help features
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]
 then
-    echo "Usage: prepare.sh [PORT] [SHOWDOWN-LENGTH]"
+    echo "Usage: run_back.sh [PORT] [SHOWDOWN-LENGTH]"
     echo "  -h, --help  Show help options"
     exit 0
 fi

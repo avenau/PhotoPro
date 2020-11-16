@@ -17,6 +17,7 @@ import Tags from "../components/PhotoEdit/Tags";
 // Functional components
 import Title from "../components/PhotoEdit/Title";
 import LoadingPage from "./LoadingPage";
+import BackButton from "../components/BackButton/BackButton";
 
 export default function EditPhoto(props: any) {
   const [title, setTitle] = useState("");
@@ -159,7 +160,8 @@ export default function EditPhoto(props: any) {
     <LoadingPage />
   ) : (
     <>
-      <Container className="mt-5">
+      <BackButton href={`/photo/${photoId}`} label="Back to Details Page" />
+      <Container>
         <h1>Edit Photo</h1>
         <Form>
           <Title

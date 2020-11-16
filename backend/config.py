@@ -7,7 +7,7 @@ from json import dumps
 
 # Mongo setup, connect to the db
 local_db = "mongodb://localhost:27017/angular-flask-muckaround"
-remote_db = "mongodb://jajac:databasepassword@coen-townson.me:27017/angular-flask-muckaround?authSource=admin"
+remote_db = "mongodb://jajac:databasepassword@jaczel.com:27017/angular-flask-muckaround?authSource=admin"
 
 
 class Config(object):
@@ -41,11 +41,11 @@ def defaultHandler(err):
 
     Parameters
     ----------
-    TODO
+    Error object
 
     Returns
     -------
-    TODO
+    JSON response
     """
     response = err.get_response()
     response.data = dumps(
