@@ -7,6 +7,7 @@ import Tags from "../../components/PhotoEdit/Tags";
 import Title from "../../components/PhotoEdit/Title";
 import LoadingButton from "../../components/LoadingButton/LoadingButton";
 import BackButton from "../../components/BackButton/BackButton";
+import LoadingPage from "../../pages/LoadingPage";
 
 interface Props extends RouteComponentProps<MatchParams> {}
 interface MatchParams {
@@ -20,6 +21,7 @@ interface State {
   collectionId?: string;
   private: boolean;
   btnLoading: boolean;
+  pageLoading: boolean;
 }
 
 class ManageCollection extends React.Component<Props, State> {
@@ -33,6 +35,7 @@ class ManageCollection extends React.Component<Props, State> {
       collectionId,
       private: true,
       btnLoading: false,
+      pageLoading: true,
     };
     this.setState = this.setState.bind(this);
     this.activateCreateButton = this.activateCreateButton.bind(this);
@@ -56,8 +59,12 @@ class ManageCollection extends React.Component<Props, State> {
               title: res.data.title,
               tags: res.data.tags,
               private: res.data.private,
+              pageLoading: false,
             });
           }
+        })
+        .catch(() => {
+          this.setState({ pageLoading: false });
         });
     }
   }
@@ -123,7 +130,9 @@ class ManageCollection extends React.Component<Props, State> {
   }
 
   render() {
-    return (
+    return this.state.pageLoading ? (
+      <LoadingPage />
+    ) : (
       <div className="createAlbumPage">
         <BackButton
           href={`/collection/${this.state.collectionId}`}
