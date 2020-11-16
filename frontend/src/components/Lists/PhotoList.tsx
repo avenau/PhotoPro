@@ -36,7 +36,7 @@ class PhotoList extends React.Component<Props, State> {
   }
 
   setBuyBtnsDisabled = (buyBtnsDisabled: boolean) => {
-    this.setState({ buyBtnsDisabled: buyBtnsDisabled });
+    this.setState({ buyBtnsDisabled });
   };
 
   render() {

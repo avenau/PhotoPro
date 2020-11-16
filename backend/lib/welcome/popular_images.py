@@ -27,9 +27,9 @@ def get_popular_images(u_id, offset, limit):
     """
     res = PopularPhoto.objects.aggregate(
         [
-            {"$match": {"likes": {"$gte": 0}}},
+            {"$match": {"likes": {"$gte": 1}}},
             {"$project": {"id": {"$toString": "$photo"}, "likes": "$likes"}},
-            {"$sort": {"likes": -1}},
+            {"$sort": {"likes": -1, "id": -1}},
             {"$skip": offset},
             {"$limit": limit},
         ]

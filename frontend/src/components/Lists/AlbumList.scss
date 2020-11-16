@@ -3,6 +3,11 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
+  &::after {
+    content: "";
+    flex: auto;
+  }
 }
 .album-result {
   margin: 40px 10px;
