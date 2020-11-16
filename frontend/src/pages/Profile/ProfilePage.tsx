@@ -6,10 +6,10 @@ import Modal from "react-bootstrap/Modal";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import ContentLoader from "../components/ContentLoader/ContentLoader";
-import CreateCatalogueModal from "../components/ProfilePage/CreateCatalogueModal";
-import UserHeader from "../components/UserHeader/UserHeader";
-import LoadingPage from "./LoadingPage";
+import ContentLoader from "../../components/ContentLoader/ContentLoader";
+import CreateCatalogueModal from "../../components/ProfilePage/CreateCatalogueModal";
+import UserHeader from "../../components/UserHeader/UserHeader";
+import LoadingPage from "../LoadingPage";
 import "./Profile.scss";
 
 interface Props extends RouteComponentProps {

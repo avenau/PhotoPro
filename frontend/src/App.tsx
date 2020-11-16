@@ -18,7 +18,7 @@ import ManageAccount from "./pages/ManageAccount/ManageAccount";
 import ManageAlbum from "./pages/ManageAlbum/ManageAlbum";
 import ManageCollection from "./pages/ManageCollection/ManageCollection";
 import PhotoDetails from "./pages/PhotoDetails/PhotoDetails";
-import ProfilePage from "./pages/ProfilePage";
+import ProfilePage from "./pages/Profile/ProfilePage";
 import BuyCreditsPage from "./pages/Purchases/BuyCreditsPage";
 import PurchasesPage from "./pages/Purchases/PurchasesPage";
 import RefundCreditsPage from "./pages/Purchases/RefundsCreditsPage";
