@@ -13,7 +13,7 @@ export default function CuratedFeed(props: Props) {
   return (
     <>
       <Container>
-        <h3>Recommended for you</h3>
+        <h3>Recommended for You</h3>
         {token === null ? (
           <NoContent message="Create an account today, and we'll curate photos just for you." />
         ) : (

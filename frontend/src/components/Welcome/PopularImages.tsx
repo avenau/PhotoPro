@@ -12,7 +12,7 @@ class PopularImages extends Component<Props> {
     return (
       <div>
         <Container>
-          <h3>Popular images</h3>
+          <h3>Popular Images</h3>
           <ContentLoader
             query=""
             route="/welcome/getPopularImages"
