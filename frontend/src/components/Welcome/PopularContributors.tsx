@@ -11,7 +11,7 @@ class PopularContributors extends Component<any, any> {
   render() {
     return (
       <Container>
-        <h3>Popular contributors</h3>
+        <h3>Popular Contributors</h3>
 
         <div style={{ display: "flex", justifyContent: "left" }}>
           <ContentLoader

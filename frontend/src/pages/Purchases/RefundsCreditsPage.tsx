@@ -139,7 +139,7 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, State> {
           <Row>
             <Col>
               <Jumbotron id="creditsJumbotron">
-                <h1>How many credits would you like to refund?</h1>
+                <h1>How many Credits would you like to refund?</h1>
                 <h3>
                   <i>You currently have {this.state.credits} Credits.</i>
                 </h3>

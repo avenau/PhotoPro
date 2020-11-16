@@ -107,7 +107,7 @@ class ProfilePage extends React.Component<Props, State> {
               this.props.history.push("/upload");
             }}
           >
-            Upload Photo
+            Upload a Photo
           </Dropdown.Item>
           <Dropdown.Item
             as="button"
