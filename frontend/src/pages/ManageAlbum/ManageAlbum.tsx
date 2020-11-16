@@ -60,8 +60,8 @@ class ManageAlbum extends React.Component<Props, State> {
               title: res.data.title,
               discount: res.data.discount,
               tags: res.data.tags,
+              pageLoading: false,
             });
-            this.setState({ pageLoading: false });
           }
         })
         .catch(() => {
