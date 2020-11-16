@@ -1,12 +1,12 @@
 import axios from "axios";
 import React from "react";
-import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import { RouteComponentProps } from "react-router-dom";
 import Tags from "../../components/PhotoEdit/Tags";
 import Title from "../../components/PhotoEdit/Title";
 import LoadingButton from "../../components/LoadingButton/LoadingButton";
+import BackButton from "../../components/BackButton/BackButton";
 
 interface Props extends RouteComponentProps<MatchParams> {}
 interface MatchParams {
@@ -125,8 +125,12 @@ class ManageCollection extends React.Component<Props, State> {
   render() {
     return (
       <div className="createAlbumPage">
-        <Container className="mt-5">
-          <h1>Manage your collection</h1>
+        <BackButton
+          href={`/collection/${this.state.collectionId}`}
+          label="Back to Collection"
+        />
+        <Container>
+          <h1>Manage your Collection</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Title
               titleType="Collection"

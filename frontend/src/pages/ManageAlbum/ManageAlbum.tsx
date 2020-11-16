@@ -140,7 +140,7 @@ class ManageAlbum extends React.Component<Props, State> {
           label="Back to Album"
         />
         <Container>
-          <h1>Manage your album</h1>
+          <h1>Manage your Album</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Title
               titleType="Album"
