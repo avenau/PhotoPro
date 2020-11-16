@@ -258,7 +258,7 @@ def collection_search(data):
                         {"tags": {"$in": [query]}},
                         {"tags": {"$in": query.split(" ")}},
                     ],
-                    "$or": [{"private": False}, {"created_by": req_user}],
+                    "$and": [{"$or": [{"private": False}, {"created_by": req_user}]}],
                 }
             },
             {
