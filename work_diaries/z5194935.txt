@@ -49,6 +49,33 @@ __Week 7__
   
 __Week 8__
 
-- Continued working on migrating database from pymongo to mongoengine
+- Finished migrating database from pymongo to mongoengine
   - Reworked `app`.py` to use classes rather than pymongo calls
   - Reworked validation to be used within classes rather than within methods
+- Started working on Collections and Albums
+  - User can create a Collection from Profile page
+  - User can create an Album from teh Profile page
+  
+__Week 9__
+
+- Finished Collections and some of Albums
+  - User can create a Colelction from Photo Details page
+  - User can manage a Collection
+  - User can manage an Album
+  - User can delete a Collection
+  - User can delete an Album
+  - User can view photos in a Collection
+- Additional mongoengine refinements
+- UI fixes
+  - Padding to Photo Details page
+  - Additional buttons in Photo details page
+- Bug fixes
+  - Got all mongoengine validation to push to the frontend
+  - Resolved a bug where user could not create a tag 'photo' when uploading a photo
+  - Added catches to all axios calls
+
+__Week 10__
+
+- Worked on writing the report
+- Worked on preparing for the final presentation
+- Bug fixes
