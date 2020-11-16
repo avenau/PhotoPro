@@ -7,7 +7,7 @@ import Tags from "../../components/PhotoEdit/Tags";
 import Title from "../../components/PhotoEdit/Title";
 import LoadingButton from "../../components/LoadingButton/LoadingButton";
 import BackButton from "../../components/BackButton/BackButton";
-import LoadingPage from "../../pages/LoadingPage";
+import LoadingPage from "../LoadingPage";
 
 interface Props extends RouteComponentProps<MatchParams> {}
 interface MatchParams {

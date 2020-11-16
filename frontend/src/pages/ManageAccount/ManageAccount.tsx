@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
 import UserDetails from "../../components/AccountManagement/UserDetails";
-import LoadingPage from "../../pages/LoadingPage";
+import LoadingPage from "../LoadingPage";
 import LoadingButton from "../../components/LoadingButton/LoadingButton";
 import BackButton from "../../components/BackButton/BackButton";
 import countries from "../../constants";

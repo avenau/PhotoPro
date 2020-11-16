@@ -3,7 +3,7 @@ import React from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import { RouteComponentProps } from "react-router-dom";
-import LoadingPage from "../../pages/LoadingPage";
+import LoadingPage from "../LoadingPage";
 import Discount from "../../components/AlbumDisplay/Discount";
 import Tags from "../../components/PhotoEdit/Tags";
 import Title from "../../components/PhotoEdit/Title";

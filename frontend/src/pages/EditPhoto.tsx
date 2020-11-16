@@ -18,7 +18,6 @@ import Tags from "../components/PhotoEdit/Tags";
 import Title from "../components/PhotoEdit/Title";
 import LoadingPage from "./LoadingPage";
 import BackButton from "../components/BackButton/BackButton";
-import { Back } from "react-bootstrap-icons";
 
 export default function EditPhoto(props: any) {
   const [title, setTitle] = useState("");
