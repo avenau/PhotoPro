@@ -66,5 +66,12 @@ Improved the watermark.
 Tested on VLAB.
 Before submission, I plan to help with final implementation difficulties, cleaning up code (style, remove unused), and the Project Report.
 
+Week 10 (Submission day)
+Helped write up some functionality description and instructions in Project Report.
+Helped clean up code base e.g. unused code, commented out code, delete unused files.
+Added Coen's loading page to a bunch of pages
+Added Back buttons to a bunch of pages
+Good work team!
+
 
 
