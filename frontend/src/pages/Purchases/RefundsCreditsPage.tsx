@@ -135,7 +135,7 @@ class RefundCreditsPage extends React.Component<RouteChildrenProps, State> {
     return (
       <div className="refundCreditsPage" style={{ marginTop: "20px" }}>
         <BackButton href="/purchases" label="Purchases" />
-        <Container className="mt-5">
+        <Container>
           <Row>
             <Col>
               <Jumbotron id="creditsJumbotron">
