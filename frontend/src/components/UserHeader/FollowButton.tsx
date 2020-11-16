@@ -1,8 +1,7 @@
 import React from "react";
 import axios from "axios";
-import { Button, Modal } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import LoadingButton from "../LoadingButton/LoadingButton";
-import { takeRight } from "lodash";
 
 interface FollowButtonProps {
   userId: string; // This is the user_id of the person being followed
@@ -47,11 +46,13 @@ export default class FollowButton extends React.Component<
   }
 
   enableFollowButtons() {
-    let unused = this.props.setFollowBtnsDisabled?.(false);
+    if (this.props.setFollowBtnsDisabled)
+      this.props.setFollowBtnsDisabled(false);
   }
 
   disableFollowButtons() {
-    let unused = this.props.setFollowBtnsDisabled?.(true);
+    if (this.props.setFollowBtnsDisabled)
+      this.props.setFollowBtnsDisabled(true);
   }
 
   handleFollow(e: React.MouseEvent<HTMLElement, MouseEvent>) {

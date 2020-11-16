@@ -51,7 +51,6 @@ interface State {
   isArtist: boolean;
   comments: Comment[];
   loading: boolean;
-  msg: string;
   collections: Collection[];
   downloadBtnLoading: boolean;
   purchaseBtnLoading: boolean;
@@ -76,7 +75,6 @@ class PhotoContents extends React.Component<Props, State> {
       isArtist: false,
       comments: [],
       loading: true,
-      msg: "Loading...",
       collections: [],
       downloadBtnLoading: false,
       purchaseBtnLoading: false,

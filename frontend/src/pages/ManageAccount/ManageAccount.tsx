@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
 import UserDetails from "../../components/AccountManagement/UserDetails";
 import LoadingButton from "../../components/LoadingButton/LoadingButton";
-import Toolbar from "../../components/Toolbar/Toolbar";
 import countries from "../../constants";
 import "./ManageAccount.scss";
 
@@ -122,14 +121,14 @@ export default function ManageAccount(props: any) {
           extension: response[1] ? response[1] : originalExtension,
           token: localStorage.getItem("token"),
         })
-        .then((r:any) => {
+        .then((r: any) => {
           if (r.status !== 200) {
             throw new Error();
           }
           setLoading(false);
           const id = localStorage.getItem("u_id");
-          if(r.data.nickname)
-            localStorage.setItem('nickname', r.data.nickname);
+          if (r.data.nickname)
+            localStorage.setItem("nickname", r.data.nickname);
           props.history.push(`/user/${id}`);
         })
         .catch(() => {

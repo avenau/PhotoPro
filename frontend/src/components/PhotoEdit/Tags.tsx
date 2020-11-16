@@ -6,6 +6,8 @@ import Button from "react-bootstrap/Button";
 import HoverText from "../HoverText";
 
 export default function Tags(props: any) {
+  // JSX is a valid namespace but it is having issues being recognised
+  // eslint-disable-next-line no-undef
   const [tagButtons, setTagButtons] = useState<JSX.Element[]>();
   const [tagInput, setTagInput] = useState("");
   const [tagsErrMsg, setTagsErr] = useState(

@@ -1,7 +1,5 @@
-import React, { useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import Nav from "react-bootstrap/Nav";
-import { render } from "@testing-library/react";
 
 interface Props {
   nickname: string;

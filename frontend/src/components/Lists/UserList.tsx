@@ -28,8 +28,9 @@ class UserList extends React.Component<Props, State> {
       followBtnsDisabled: false,
     };
   }
+
   setFollowBtnsDisabled = (followBtnsDisabled: boolean) => {
-    this.setState({ followBtnsDisabled: followBtnsDisabled });
+    this.setState({ followBtnsDisabled });
   };
 
   render() {

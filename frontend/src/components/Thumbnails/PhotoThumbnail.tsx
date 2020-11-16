@@ -42,11 +42,11 @@ class PhotoThumbnail extends React.Component<Props, BetterInterface> {
   }
 
   enableBuyButtons() {
-    let unused = this.props.setBuyBtnsDisabled?.(false);
+    if (this.props.setBuyBtnsDisabled) this.props.setBuyBtnsDisabled(false);
   }
 
   disableBuyButtons() {
-    let unused = this.props.setBuyBtnsDisabled?.(true);
+    if (this.props.setBuyBtnsDisabled) this.props.setBuyBtnsDisabled(true);
   }
 
   private handleBuy(e: React.MouseEvent<HTMLElement, MouseEvent>) {
