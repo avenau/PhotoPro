@@ -56,15 +56,22 @@ def create_photo_entry(photo_details):
         extension=extension,
         posted=datetime.datetime.now(),
     )
-    new_photo.save()
     new_photo.set_albums(photo_details["albums"])
+    new_photo.save()
     try:
         process_photo(base64_str, str(new_photo.get_id()), extension)
         user.add_post(new_photo)
         user.save()
         return {"success": "true"}
+    except IndexError:
+        print(traceback.format_exc())
+        new_photo.delete_photo()
+        new_photo.save()
+        raise Error.ValueError("Image size too small")
     except Exception:
         print(traceback.format_exc())
+        new_photo.delete_photo()
+        new_photo.save()
         raise Error.ValidationError("Validation error on creating new photo")
 
 
@@ -140,12 +147,12 @@ def make_watermarked_copy(img_data, name, extension):
     x_quarter = img_width * 0.25
     y_middle = img_height * 0.5
     draw = ImageDraw.Draw(img)
-    medium_grey = (192, 192, 192)
+    medium_grey = (192, 192, 192, 1)
     # Write "PhotoPro (c)" in grey
     # Size determined via experimentation
     font_size = max([1, int(img_width / 11)])
     font = ImageFont.truetype("josefin-sans/JosefinSans-Regular.ttf", size=font_size)
-    draw.text((x_quarter, y_middle), "PhotoPro (c)", font=font, fill=medium_grey)
+    draw.text((x_quarter, y_middle), "PhotoPro (c)", "#c0c0c0", font=font)
 
     watermarked_img_buf = BytesIO()
     img.save(watermarked_img_buf, format=img.format)
