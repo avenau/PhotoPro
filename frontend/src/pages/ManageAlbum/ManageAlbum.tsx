@@ -139,7 +139,7 @@ class ManageAlbum extends React.Component<Props, State> {
           href={`/album/${this.state.albumId}`}
           label="Back to Album"
         />
-        <Container className="mt-5">
+        <Container>
           <h1>Manage your album</h1>
           <Form onSubmit={(e) => this.handleSubmit(e)}>
             <Title
